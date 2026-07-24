@@ -1,0 +1,15 @@
+# Cop process configuration (private, per-agent)
+[cop]
+role = "cop"
+local_port = 5000
+mcp_url = "http://localhost:5000/mcp"
+peer_url = ""  # Written by kickoff helper: thief's MCP URL
+
+[paths]
+games_root = "./cop/games"
+logs_suffix = "logs"
+
+[timeouts]
+watchdog_threshold_seconds = 60
+state_transition_timeout_seconds = 10
+opponent_response_timeout_seconds = 30
