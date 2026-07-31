@@ -61,10 +61,14 @@ class ReportBundleBuilder:
     async def _ensure_required_files(self, game_id: str) -> dict[str, Path]:
         """Return paths to required files; raise FileNotFoundError if any are missing."""
 
+        # Discover actual gamelet suffix (g01, g02, …) — do not hardcode g00
+        config_candidates = sorted(self.game_dir.glob(f"config_{game_id}_g*.json"))
+        log_candidates = sorted(self.game_dir.glob(f"log_{game_id}_g*.json"))
+
         required = {
             "declaration": self.game_dir / f"declaration_{game_id}.json",
-            "config": self.game_dir / f"config_{game_id}_g00.json",
-            "log": self.game_dir / f"log_{game_id}_g00.json",
+            "config": config_candidates[0] if config_candidates else self.game_dir / f"config_{game_id}_g01.json",
+            "log": log_candidates[0] if log_candidates else self.game_dir / f"log_{game_id}_g01.json",
             "result": self.game_dir / f"result_{game_id}.json",
         }
 
