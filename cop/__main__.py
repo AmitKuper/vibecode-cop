@@ -7,7 +7,7 @@ import sys
 import tomllib
 from pathlib import Path
 
-from agent.orchestrator import GameOrchestrator
+from agent.peer_agent_runtime import PeerAgentRuntime
 
 logging.basicConfig(
     level=logging.INFO,
@@ -17,54 +17,73 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def _load_dotenv(path: Path = Path(".env")) -> None:
+    """Load key=value pairs from .env into os.environ (existing vars win)."""
+    if not path.exists():
+        return
+    for line in path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
 async def main() -> int:
-    """Load config, initialize GameOrchestrator, run MCP server."""
-    config_path = Path("cop/config.toml")
+    """Load config, initialise PeerAgentRuntime (MCP server + PeerRuntime), run server."""
+    _load_dotenv()
+
+    # Accept config path as CLI arg; fall back to role-specific then root config.toml
     if len(sys.argv) > 1:
         config_path = Path(sys.argv[1])
+    elif Path("cop/config.toml").exists():
+        config_path = Path("cop/config.toml")
+    else:
+        config_path = Path("config.toml")
 
     try:
-        # Load config
         with open(config_path, "rb") as f:
             config = tomllib.load(f)
 
-        role = config["cop"]["role"]
-        local_port = int(os.environ.get("LOCAL_PORT", config["cop"]["local_port"]))
-        peer_url = config["cop"]["peer_url"]
+        # Support both [cop] and generic [agent] sections
+        agent_cfg = config.get("cop", config.get("agent", {}))
+        role = agent_cfg.get("role", "cop")
+        local_port = int(os.environ.get("LOCAL_PORT", agent_cfg.get("local_port", 5000)))
+        peer_url = os.environ.get("PEER_URL", agent_cfg.get("peer_url", ""))
 
-        # TODO: Load shared_secret from secure config or environment
-        # For now, use a placeholder (MUST be configured in production)
-        shared_secret = config.get("crypto", {}).get("shared_secret", "dev-secret-change-me")
+        shared_secret = os.environ.get(
+            "SHARED_SECRET",
+            config.get("crypto", {}).get("shared_secret", "dev-secret-change-me"),
+        )
 
-        # Compute SHA-256 from the shared canonical game config
         from agent.config.shared_config import load_shared_config, config_sha256 as _sha256_fn
         game_cfg = load_shared_config()
         config_sha256 = _sha256_fn(game_cfg)
         group_name = game_cfg.get("network_and_league", {}).get("group_name", "unknown")
 
         games_dir = Path(config.get("paths", {}).get("games_root", "cop/games"))
-
-        # Load LLM config
         llm_config = config.get("llm", {})
 
-        # Create GameOrchestrator
-        orchestrator = GameOrchestrator(
+        # Production runtime: PeerAgentRuntime = MCP server + PeerRuntime
+        runtime = PeerAgentRuntime(
             role=role,
             secret=shared_secret,
             config_sha256=config_sha256,
-            games_dir=games_dir,
             opponent_url=peer_url,
-            local_url=f"http://localhost:{local_port}",
-            llm_dict=llm_config if llm_config else None,
+            games_dir=games_dir,
             group_name=group_name,
+            llm_dict=llm_config if llm_config else None,
         )
 
-        logger.info(f"Starting Cop agent on port {local_port}")
-        await orchestrator.run_async(host="localhost", port=local_port)
+        logger.info(f"Starting Cop PeerAgentRuntime on port {local_port} (binding 0.0.0.0)")
+        await runtime.run_async(host="0.0.0.0", port=local_port)
         return 0
 
     except Exception as e:
-        logger.error(f"Orchestrator failed: {e}", exc_info=True)
+        logger.error(f"PeerAgentRuntime failed: {e}", exc_info=True)
         return 1
 
 
