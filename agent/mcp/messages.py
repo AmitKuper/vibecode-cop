@@ -115,8 +115,9 @@ def validate_action_message(msg: ActionMessage) -> tuple[bool, str | None]:
     elif phase == MessagePhase.REVEAL:
         # REVEAL is also used as a request (GameRunner -> Agent); move/state_hash only
         # required when an agent is SENDING a reveal, not when receiving the request.
-        if msg.move is not None and msg.move not in ["N", "S", "E", "W", "STAY"]:
-            return False, f"REVEAL phase move must be N/S/E/W/STAY, got {msg.move}"
+        _valid_moves = {"N", "S", "E", "W", "STAY", "NORTH", "SOUTH", "EAST", "WEST"}
+        if msg.move is not None and msg.move not in _valid_moves:
+            return False, f"REVEAL phase move must be a valid direction, got {msg.move}"
         if msg.intent is not None and msg.intent not in ["truth", "lie"]:
             return False, f"intent must be 'truth' or 'lie', got {msg.intent}"
         if msg.hint is not None and len(msg.hint.split()) > 15:
