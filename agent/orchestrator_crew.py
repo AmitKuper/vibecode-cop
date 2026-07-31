@@ -7,7 +7,7 @@ import logging
 
 try:
     from crewai import Crew
-except ModuleNotFoundError:
+except Exception:
     Crew = None  # type: ignore[assignment,misc]
 
 from agent.orchestrator_crew_helpers import (

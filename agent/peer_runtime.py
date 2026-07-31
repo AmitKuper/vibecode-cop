@@ -24,8 +24,23 @@ from agent.rules_engine import RulesEngine
 
 logger = logging.getLogger(__name__)
 
+try:
+    from agent.orchestrator_crew import CrewMixin as _CrewMixin
+except Exception as _crew_import_err:
+    logger.warning(f"CrewMixin unavailable ({_crew_import_err}); RL/LLM selection disabled")
+    class _CrewMixin:  # type: ignore[no-redef]
+        def _select_move_rl(self, obs): return None
+        def _select_move_llm(self, game_id, obs): raise RuntimeError("crewai unavailable")
+        def _build_observation(self, gs):
+            role = getattr(self, "role", "cop")
+            pos = gs.get("cop_position", [0, 0]) if role == "cop" else gs.get("thief_position", [3, 3])
+            return {"own_position": pos, "turn": gs.get("turn", 0),
+                    "scent_field": gs.get("scent_field", []), "candidate_actions": [], "grid_state": gs}
+        def _short_move(self, long): return {"NORTH":"N","SOUTH":"S","EAST":"E","WEST":"W","STAY":"STAY"}.get(long, long)
+        def _long_move(self, short): return {"N":"NORTH","S":"SOUTH","E":"EAST","W":"WEST","STAY":"STAY"}.get(short, short)
 
-class PeerRuntime:
+
+class PeerRuntime(_CrewMixin):
     """Production peer-to-peer runtime for one agent side of the game."""
 
     def __init__(
@@ -37,6 +52,7 @@ class PeerRuntime:
         games_dir: Path | str = Path("agent/memory"),
         max_turns: int = 35,
         group_name: str = "unknown",
+        llm_dict: dict | None = None,
     ):
         if role not in ("cop", "thief"):
             raise ValueError(f"role must be 'cop' or 'thief', got {role!r}")
@@ -53,6 +69,8 @@ class PeerRuntime:
         self.game_dir: Path = Path(".")
         self.board: Board = Board(cop_position=cop_start, thief_position=thief_start)
         self._my_commits: dict[int, dict] = {}
+        self.llm = self._init_llm(llm_dict)
+        self.crews: dict = {}
 
     async def run_game(self, game_id: str) -> dict:
         """Drive this agent's side of the game to completion."""
@@ -108,15 +126,10 @@ class PeerRuntime:
         self._my_commits[step] = payload
         store_commit(self.game_dir, self.role, step, payload)
 
-    def _build_observation(self, game_state: dict) -> dict:
-        """Build a partial observation dict (hidden-info compliant)."""
-        if self.role == "cop":
-            return {"my_position": game_state.get("cop_position", [0, 0]),
-                    "scent_field": game_state.get("scent_field", []),
-                    "turn": game_state.get("turn", 0)}
-        return {"my_position": game_state.get("thief_position", [6, 6]),
-                "turn": game_state.get("turn", 0)}
-
-    def _select_move_rl(self, observation: dict) -> str | None:
-        """Hook for RL/strategy move selection. Returns None to use heuristic."""
-        return None
+    def _init_llm(self, llm_dict: dict | None):
+        try:
+            from agent.llm import LLMFactory
+            return LLMFactory.create_from_dict(llm_dict) if llm_dict else LLMFactory.create_from_env()
+        except Exception as exc:
+            logger.warning(f"[PeerRuntime/{self.role}] LLM init failed: {exc}")
+            return None
