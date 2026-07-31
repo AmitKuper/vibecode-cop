@@ -1,0 +1,51 @@
+# Cop process configuration (private, per-agent)
+[cop]
+role = "cop"
+local_port = 61224
+public_url = "http://62.56.220.143:61224"  # share this with the opponent as your cop endpoint
+mcp_url = "http://localhost:61224"
+peer_url = "http://localhost:61223"  # thief's endpoint (use public IP for real match)
+
+[paths]
+games_root = "./cop/games"
+logs_suffix = "logs"
+
+[timeouts]
+watchdog_threshold_seconds = 60
+state_transition_timeout_seconds = 10
+opponent_response_timeout_seconds = 30
+
+[llm]
+# LLM backend: "ollama" | "anthropic" | "openai" | "azure"
+provider = "ollama"
+model = "llama3.1:8b"
+temperature = 0.3
+base_url = "http://localhost:11434"
+
+# To switch to Anthropic:
+# provider = "anthropic"
+# model = "claude-haiku-4-5-20251001"
+# api_key = "sk-ant-..."   # or set ANTHROPIC_API_KEY env var
+
+[reports]
+enabled = true
+plugins = ["file_json", "file_markdown", "gmail"]
+
+[reports.file_json]
+enabled = true
+format = "json"
+
+[reports.file_markdown]
+enabled = true
+format = "markdown"
+
+[reports.gmail]
+enabled = true
+mode = "send"  # disabled | dry_run | draft | send
+recipient = "agentsorch@gmail.com"
+credentials_path = "secrets/gmail/credentials.json"
+token_path = "secrets/gmail/token.json"
+attach_required_files = true
+attach_markdown_summary = true
+max_attachments_mb = 20
+max_sends_per_day = 10

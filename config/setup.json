@@ -1,0 +1,26 @@
+{
+  "_comment": "Application setup — paths and log levels. Override with environment variables where noted.",
+  "paths": {
+    "shared_config": "game_config.toml",
+    "cop_config": "cop/config.toml",
+    "thief_config": "thief/config.toml",
+    "cop_games_dir": "cop/games",
+    "thief_games_dir": "thief/games",
+    "models_dir": "models",
+    "logs_dir": "logs",
+    "secrets_dir": "secrets"
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "[%(asctime)s] [%(name)s] %(levelname)s: %(message)s",
+    "file_enabled": true,
+    "file_path": "logs/game.log",
+    "max_bytes": 10485760,
+    "backup_count": 5
+  },
+  "webserver": {
+    "host": "localhost",
+    "port": 8080,
+    "reload": false
+  }
+}

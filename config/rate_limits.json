@@ -1,0 +1,21 @@
+{
+  "_comment": "LLM API rate limits. All values are per-agent (cop or thief run separately).",
+  "llm": {
+    "max_requests_per_minute": 60,
+    "max_tokens_per_minute": 100000,
+    "max_retries": 3,
+    "retry_delay_seconds": 5,
+    "timeout_seconds": 30
+  },
+  "gmail": {
+    "max_sends_per_day": 10,
+    "max_sends_per_game": 1,
+    "max_attachments_mb": 20,
+    "rate_per_second": 1
+  },
+  "mcp": {
+    "max_requests_per_second": 10,
+    "opponent_response_timeout_seconds": 30,
+    "max_retries": 3
+  }
+}

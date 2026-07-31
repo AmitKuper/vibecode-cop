@@ -1,9 +1,19 @@
 # Cop process configuration (private, per-agent)
+# Copy to cop/config.toml (or pass path as CLI arg) and fill in CHANGE_ME values.
+
 [cop]
 role = "cop"
 local_port = 5000
 mcp_url = "http://localhost:5000/mcp"
-peer_url = ""  # Written by kickoff helper: thief's MCP URL
+peer_url = ""  # Thief's MCP URL, e.g. "http://opponent.ngrok.io/mcp"
+
+[crypto]
+shared_secret = "CHANGE_ME"  # Pre-agreed secret with opponent — never commit the real value
+
+[llm]
+provider = "anthropic"
+model = "claude-haiku-4-5-20251001"
+every_n_steps = 999  # Only use LLM fallback every N steps; 999 = RL only
 
 [paths]
 games_root = "./cop/games"
@@ -13,3 +23,12 @@ logs_suffix = "logs"
 watchdog_threshold_seconds = 60
 state_transition_timeout_seconds = 10
 opponent_response_timeout_seconds = 30
+
+[reports]
+plugins = ["file_json", "file_markdown"]  # Add "gmail" to enable Gmail drafts
+
+[reports.gmail]
+mode = "draft"
+recipient = "rmisegal+uoh26finalgame@gmail.com"
+credentials_path = "secrets/gmail/credentials.json"
+token_path = "secrets/gmail/token.json"
