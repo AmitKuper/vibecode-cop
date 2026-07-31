@@ -50,6 +50,7 @@ class PeerAgentRuntime:
             opponent_url=opponent_url, games_dir=Path(games_dir), group_name=group_name,
         )
         self._rules_ref: list = []  # mutable cell so passive helpers can update it
+        self._loop: asyncio.AbstractEventLoop | None = None
         self._mcp_server = AgentMCPServer(
             role=role, secret=secret, config_sha256=config_sha256,
             games_dir=Path(games_dir),
@@ -63,13 +64,12 @@ class PeerAgentRuntime:
     def _on_start_game(self, message) -> dict:
         game_id = message.game_id
         if self.role == "cop":
-            try:
-                loop = asyncio.get_running_loop()
-                loop.create_task(self._peer_runtime.run_game(game_id))
-                logger.info(f"[PeerAgentRuntime/cop] Scheduled PeerRuntime.run_game({game_id})")
-            except RuntimeError:
+            loop = self._loop
+            if loop is None or not loop.is_running():
                 logger.error("[PeerAgentRuntime/cop] No running event loop — cannot start game")
                 return {"ok": False, "error": "No event loop", "game_id": game_id}
+            asyncio.run_coroutine_threadsafe(self._peer_runtime.run_game(game_id), loop)
+            logger.info(f"[PeerAgentRuntime/cop] Scheduled PeerRuntime.run_game({game_id})")
         else:
             init_passive_game(self._peer_runtime, game_id, self._rules_ref)
         return {"ok": True, "game_id": game_id}
@@ -89,5 +89,6 @@ class PeerAgentRuntime:
 
     async def run_async(self, host: str = "0.0.0.0", port: int = 5000) -> None:
         """Start the MCP server. Cop's PeerRuntime loop starts on first start_game call."""
+        self._loop = asyncio.get_running_loop()
         logger.info(f"[PeerAgentRuntime/{self.role}] Starting MCP server on {host}:{port}")
         await self._mcp_server.run_async(host=host, port=port)
