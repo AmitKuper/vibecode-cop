@@ -7,8 +7,17 @@ an MCP client that connects to the thief agent.
 
 ```bash
 uv sync
-cp config.toml.example config.toml   # edit peer_url to thief's URL
+# Create the role-specific config file (code looks for cop/config.toml first)
+mkdir -p cop
+cp config.toml.example cop/config.toml
+# Edit cop/config.toml: set peer_url to thief's MCP URL and crypto.shared_secret
 python -m cop
+```
+
+Alternatively, pass the config path directly:
+
+```bash
+python -m cop /path/to/config.toml
 ```
 
 ## Architecture
@@ -35,7 +44,7 @@ cop/__main__.py
 
 ## Configuration
 
-Copy `config.toml.example` to `config.toml` and set:
+Copy `config.toml.example` to `cop/config.toml` and set:
 
 - `[cop] peer_url` — thief agent's MCP URL (e.g. `http://opponent.ngrok.io/mcp`)
 - `[crypto] shared_secret` — pre-agreed secret with opponent
@@ -43,16 +52,20 @@ Copy `config.toml.example` to `config.toml` and set:
 
 ## Protocol
 
-Each turn follows a two-round commit-reveal exchange:
+Each turn follows a two-round commit-reveal exchange. **Nonce is withheld until final_audit.**
 
 ```
-Cop Agent                           Thief Agent
-    │── COMMIT(h_commit_cop) ──────────► │
-    │◄─ ACK(h_commit_thief) ────────────│
-    │── REVEAL(move, hint, nonce) ─────► │
-    │◄─ ACK(opp_move, opp_nonce) ───────│
-    │  verify(h_commit_thief, opp_reveal)│
-    │  apply_moves(); check_status()     │
+Cop Agent                               Thief Agent
+    │── COMMIT(h_commit_cop) ──────────────► │
+    │◄─ ACK(h_commit_thief) ────────────────│
+    │── REVEAL(move, hint, intent, state_hash) ──► │
+    │◄─ ACK(opp_move, opp_hint, opp_intent) ──────│
+    │  [nonce withheld until final_audit]    │
+    │  apply_moves(); check_status()         │
+    │                                        │
+    │── FINAL_AUDIT(nonces) ────────────────► │
+    │◄─ ACK(opp_nonces) ────────────────────│
+    │  verify all commitments offline        │
 ```
 
 Commitment: `h_commit = SHA-256(canonical_json({game_id, gamelet, step, role, state_hash, move, hint, intent, nonce}))`
@@ -72,13 +85,17 @@ This satisfies the role-filtered hidden-info requirement (AC4).
 ## Running a Full Series
 
 ```bash
-python scripts/run_series.py --cop-url http://localhost:5000 --thief-url http://localhost:5001
+# Terminal 1 — start thief (passive, responds to cop's calls)
+python -m thief thief/config.toml
+
+# Terminal 2 — cop drives 6 P2P gamelets via PeerRuntime (no central judge)
+python scripts/run_series.py --thief-url http://localhost:5001/mcp
 ```
 
-Or start the cop directly and let the thief connect:
+Or start only the cop MCP server and wait for the thief to send start_game:
 
 ```bash
-python -m cop
+python -m cop cop/config.toml
 ```
 
 ## Auditing a Game Log
