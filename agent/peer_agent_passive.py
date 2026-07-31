@@ -19,7 +19,9 @@ _MOVE_ALIASES = {"N": "NORTH", "S": "SOUTH", "E": "EAST", "W": "WEST", "STAY": "
 
 
 def init_passive_game(rt: "PeerRuntime", game_id: str, rules_ref: list) -> None:
-    """Set up PeerRuntime state for a passive (thief) game."""
+    """Set up PeerRuntime state for a passive (thief) game. Idempotent per game_id."""
+    if rt.game_id == game_id:
+        return
     rt.game_id = game_id
     rt.game_dir = rt.games_dir / game_id
     rt.game_dir.mkdir(parents=True, exist_ok=True)

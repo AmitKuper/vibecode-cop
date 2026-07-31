@@ -20,8 +20,15 @@ from agent.peer_runtime import PeerRuntime
 
 logger = logging.getLogger(__name__)
 
+try:
+    from agent.orchestrator_discovery import DiscoveryMixin as _DiscoveryMixin
+except Exception as _disc_import_err:
+    logger.warning(f"DiscoveryMixin unavailable ({_disc_import_err}); MCP discovery disabled")
+    class _DiscoveryMixin:  # type: ignore[no-redef]
+        def discover_protocol(self, game_id, peer_url): pass
 
-class PeerAgentRuntime:
+
+class PeerAgentRuntime(_DiscoveryMixin):
     """Production agent runtime: wraps AgentMCPServer + PeerRuntime.
 
     Cop (role="cop"): active mode — PeerRuntime.run_game() is launched as a
@@ -44,12 +51,17 @@ class PeerAgentRuntime:
         if role not in ("cop", "thief"):
             raise ValueError(f"role must be 'cop' or 'thief', got {role!r}")
         self.role = role
-        self._llm_dict = llm_dict
+        self.secret = secret
         self._peer_runtime = PeerRuntime(
             role=role, secret=secret, config_sha256=config_sha256,
             opponent_url=opponent_url, games_dir=Path(games_dir), group_name=group_name,
+            llm_dict=llm_dict,
         )
-        self._rules_ref: list = []  # mutable cell so passive helpers can update it
+        self.llm = self._peer_runtime.llm
+        self._peer_url = opponent_url.rstrip("/").replace("/mcp", "")
+        self.protocol_model: dict = {}
+        self.mcp_skill = None
+        self._rules_ref: list = []
         self._loop: asyncio.AbstractEventLoop | None = None
         self._mcp_server = AgentMCPServer(
             role=role, secret=secret, config_sha256=config_sha256,
@@ -63,6 +75,10 @@ class PeerAgentRuntime:
 
     def _on_start_game(self, message) -> dict:
         game_id = message.game_id
+        try:
+            self.discover_protocol(game_id, self._peer_url)
+        except Exception as exc:
+            logger.warning(f"[PeerAgentRuntime/{self.role}] Discovery failed (non-fatal): {exc}")
         if self.role == "cop":
             loop = self._loop
             if loop is None or not loop.is_running():
