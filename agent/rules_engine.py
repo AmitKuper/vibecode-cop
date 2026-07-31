@@ -39,15 +39,7 @@ class RulesEngine:
         self._scent_grid: list[list[float]] = [[0.0] * n for _ in range(n)]
 
     def validate_move(self, role: str, action: str) -> bool:
-        """Check if a move is legal for a player.
-
-        Args:
-            role: "cop" or "thief"
-            action: One of NORTH, SOUTH, EAST, WEST, STAY
-
-        Returns:
-            True if move is legal, False otherwise.
-        """
+        """Return True if action is a legal move for role."""
         if action not in Board.DIRECTIONS:
             return False
 

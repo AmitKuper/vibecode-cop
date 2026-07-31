@@ -42,8 +42,6 @@ class RLPolicy:
         self.device = next(net.parameters()).device
         self.net.eval()
 
-    # --- Factory ---
-
     @classmethod
     def load(
         cls,
@@ -84,8 +82,6 @@ class RLPolicy:
         from agent.rl.policy_loader import rebuild_net
         return rebuild_net(state_dict, ckpt, algo, device)
 
-    # --- Inference ---
-
     def select_move(
         self,
         board: Board,
@@ -95,7 +91,6 @@ class RLPolicy:
         """Return the best move string for the current board state."""
         obs = self._build_obs(board, rules, last_revealed_cop_pos=last_revealed_cop_pos)
         obs_t = torch.tensor(obs, dtype=torch.float32).unsqueeze(0).to(self.device)
-
         with torch.no_grad():
             if self.algo == "dqn":
                 q = self.net(obs_t)
@@ -138,8 +133,6 @@ class RLPolicy:
         if rules is None:
             rules = RulesEngine(board)
         return self.select_move(board, rules, last_revealed_cop_pos=last_revealed_cop_pos)
-
-    # --- Internal helpers ---
 
     def _build_obs(
         self,

@@ -76,12 +76,25 @@ async def generate_output_files(
         },
         "llm_model": llm_model,
         "token_budget": getattr(runner, "token_budget", None),
+        "tokens": (
+            getattr(runner, "_token_counter", None).summary()
+            if getattr(runner, "_token_counter", None) is not None
+            else {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "llm_calls": 0}
+        ),
         "created_at": state.get("created_at"), "ended_at": state.get("ended_at"),
     })
+    # Include full shared config so replay verifier has all agreed parameters
+    try:
+        from agent.config.shared_config import load_shared_config
+        shared_config = load_shared_config()
+    except Exception:
+        shared_config = {}
     write_json(gd / f"config_{game_id}_g{g}.json", {
-        "game_id": game_id, "game_number": g,
-        "config_sha256": runner.config_sha256, "max_turns": runner.max_turns,
-        "board_size": 7, "cop_start": [0, 0], "thief_start": [3, 3],
+        "game_id": game_id,
+        "game_number": g,
+        "config_sha256": runner.config_sha256,
+        "max_turns": runner.max_turns,
+        "shared_config": shared_config,
     })
     log_hash = _write_log_file(runner, gd, game_id, g)
     result_out = {
@@ -101,16 +114,27 @@ async def generate_output_files(
 
 
 def _write_log_file(runner: object, gd: Path, game_id: str, g: str) -> str:
+    # _cop_nonces / _thief_nonces are populated after final_audit
+    cop_nonces = getattr(runner, "_cop_nonces", {})
+    thief_nonces = getattr(runner, "_thief_nonces", {})
     log_entries = []
     for step, cop_rev in runner._cop_reveals.items():
         thief_rev = runner._thief_reveals.get(step, {})
         log_entries.append({
             "step": step,
-            "cop_move": cop_rev.get("move"), "thief_move": thief_rev.get("move"),
+            "gamelet": g,
+            "cop_move": cop_rev.get("move"),
+            "thief_move": thief_rev.get("move"),
             "cop_h_commit": runner._cop_commits.get(step),
             "thief_h_commit": runner._thief_commits.get(step),
             "cop_state_hash": cop_rev.get("state_hash"),
             "thief_state_hash": thief_rev.get("state_hash"),
+            "cop_hint": cop_rev.get("hint"),
+            "thief_hint": thief_rev.get("hint"),
+            "cop_intent": cop_rev.get("intent"),
+            "thief_intent": thief_rev.get("intent"),
+            "cop_nonce": cop_nonces.get(step),
+            "thief_nonce": thief_nonces.get(step),
         })
     log_out = {
         "game_id": game_id, "game_number": g,
@@ -123,44 +147,4 @@ def _write_log_file(runner: object, gd: Path, game_id: str, g: str) -> str:
     return log_hash
 
 
-async def generate_reports(runner: object, game_id: str, game_state: dict) -> None:
-    """Run the report plugin pipeline (R5/R6/R7)."""
-    try:
-        import tomllib  # noqa: PLC0415
-
-        from agent.reports.bundle import ReportBundleBuilder  # noqa: PLC0415
-        from agent.reports.manager import ReportManager  # noqa: PLC0415
-        from agent.reports.plugin_factory import ReportPluginFactory  # noqa: PLC0415
-
-        context = await ReportBundleBuilder(runner._game_dir).build(
-            game_id=game_id, role="initiator", game_state=game_state,
-            result={"winner": game_state.get("winner"), "step": game_state.get("final_step", 0)},
-            config_hash=runner.config_sha256, metadata={},
-        )
-        reports_config: dict = {}
-        try:
-            config_path = Path("cop/config.toml")
-            if config_path.exists():
-                with open(config_path, "rb") as f:
-                    reports_config = tomllib.load(f).get("reports", {})
-        except Exception:
-            pass
-        plugins = await ReportPluginFactory.from_config(reports_config)
-        if not plugins:
-            logger.info(f"[GameRunner] No report plugins configured for {game_id}")
-            return
-        results = await ReportManager(plugins).generate_all(context)
-        plugin_results_list = []
-        for pname, pr in results.items():
-            plugin_results_list.append({
-                "plugin": pname, "ok": pr.ok, "status": pr.status,
-                "destination": pr.destination, "error": pr.error,
-            })
-            if pr.ok:
-                logger.info(f"[GameRunner] Report [{pname}] {pr.status}: {pr.destination}")
-            else:
-                logger.error(f"[GameRunner] Report [{pname}] FAILED: {pr.error}")
-        write_json(runner._game_dir / "report_plugin_results.json",
-                   {"game_id": game_id, "plugins": plugin_results_list})
-    except Exception as e:
-        logger.error(f"[GameRunner] Report pipeline failed: {e}", exc_info=True)
+from agent.game_runner_reports import generate_reports  # noqa: F401

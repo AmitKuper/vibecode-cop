@@ -1,11 +1,10 @@
-"""crewAI agents for MCP discovery and skill validation.
+"""crewAI agents for MCP protocol discovery.
 
 Flow (runs once at game start):
   1. MCPExplorerAgent  — probes peer_url, reads full inputSchema, and maps each
-                         tool to its semantic role AND the exact parameter names
-                         for message payload, HMAC signature, and game_id.
+                         tool to its semantic role AND the exact parameter names.
   2. Python            — fills a deterministic template with the discovered names.
-  3. SkillValidatorAgent — reads the file, confirms syntax and required functions.
+  3. SkillValidatorAgent — in mcp_skill_validator.py.
 """
 
 from typing import Any
@@ -13,7 +12,12 @@ from typing import Any
 from crewai import Agent, Task
 
 from agent.tools.mcp_probe_tool import probe_mcp_server
-from agent.tools.read_skill_tool import read_skill_file
+
+# Re-export validator for backwards compatibility
+from agent.agents.mcp_skill_validator import (  # noqa: F401
+    create_skill_validator_agent,
+    create_skill_validator_task,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -130,52 +134,4 @@ def create_mcp_explorer_task(agent: Agent) -> Task:
             "message_param, message_type, signature_param), ping_tool, "
             "field_map (dict mapping canonical name → peer's field name, or {{}})."
         ),
-    )
-
-
-# ---------------------------------------------------------------------------
-# Validator agent — checks the generated skill
-# ---------------------------------------------------------------------------
-
-def create_skill_validator_agent(llm: Any) -> Agent:
-    """Agent that validates the generated skill file."""
-    return Agent(
-        role="MCP Skill Validator",
-        goal=(
-            "Read the generated skill file using read_skill_file, verify it is "
-            "syntactically correct Python, contains the three required async "
-            "functions (start_game, action, ping), and that PEER_URL and "
-            "SECRET are present. Report problems clearly."
-        ),
-        backstory=(
-            "You are a code reviewer specialising in Python MCP adapters. "
-            "You ensure generated skill files are valid and safe to import."
-        ),
-        tools=[read_skill_file],
-        llm=llm,
-        verbose=False,
-        allow_delegation=False,
-    )
-
-
-def create_skill_validator_task(agent: Agent) -> Task:
-    """Task: validate the skill file and return structured feedback."""
-    return Task(
-        description=(
-            "Use read_skill_file to read the skill at {skill_path}.\n"
-            "Check all of:\n"
-            "  1. syntax_ok is true (no Python syntax errors).\n"
-            "  2. has_start_game is true.\n"
-            "  3. has_action is true.\n"
-            "  4. has_ping is true.\n"
-            "  5. PEER_URL is present in the source.\n"
-            "  6. SECRET = '__SECRET__' is present (literal placeholder).\n\n"
-            'Return JSON: {{"valid": true/false, "issues": ["..."], '
-            '"verdict": "PASS or short summary of problems"}}'
-        ),
-        agent=agent,
-        expected_output=(
-            "JSON with keys: valid (bool), issues (list[str]), verdict (str)."
-        ),
-        context=[],
     )

@@ -48,12 +48,9 @@ class GameRunner:
         self.cop_client = GameMCPClient(f"{self.cop_url}/mcp", secret)
         self.thief_client = GameMCPClient(f"{self.thief_url}/mcp", secret)
         self._events: list[dict] = []
-        self._cop_commits: dict[int, str] = {}
-        self._thief_commits: dict[int, str] = {}
-        self._cop_reveals: dict[int, dict] = {}
-        self._thief_reveals: dict[int, dict] = {}
-        self._game_dir: Path | None = None
-        self._game_id: str | None = None
+        self._cop_commits: dict[int, str] = {}; self._thief_commits: dict[int, str] = {}
+        self._cop_reveals: dict[int, dict] = {}; self._thief_reveals: dict[int, dict] = {}
+        self._game_dir: Path | None = None; self._game_id: str | None = None
 
     async def run_game(self, game_id: str | None = None) -> dict:
         """Run a complete game. Returns result dict."""
@@ -65,7 +62,6 @@ class GameRunner:
         self._game_dir.mkdir(parents=True, exist_ok=True)
         self._events, self._cop_commits, self._thief_commits = [], {}, {}
         self._cop_reveals, self._thief_reveals = {}, {}
-
         board = Board(cop_position=[0, 0], thief_position=[3, 3])
         rules = RulesEngine(board, max_turns=self.max_turns)
         game_state = {**self._board_to_state(board), "completed": False, "winner": None,
@@ -74,34 +70,25 @@ class GameRunner:
         self._log_event("game_start", "initiator", "handshake",
                         {"game_id": game_id, "max_turns": self.max_turns})
         logger.info(f"[GameRunner] Starting game {game_id}")
-
         if not await self._handshake(game_id):
             self._save_game_state({**game_state, "completed": True, "error": "Handshake failed"})
             self._write_events()
             return {"ok": False, "game_id": game_id, "error": "Handshake failed", "winner": None}
-
-        winner, abort_reason, final_step = await run_turn_loop(
-            self, game_id, board, rules, self.max_turns
-        )
+        winner, abort_reason, final_step = await run_turn_loop(self, game_id, board, rules, self.max_turns)
         audit_ok, audit_details = await final_audit(self, game_id, final_step)
         if not audit_ok:
-            winner = "TECHNICAL_LOSS"
-            abort_reason = "commitment_mismatch"
+            winner = "TECHNICAL_LOSS"; abort_reason = "commitment_mismatch"
             logger.warning(f"[GameRunner] Audit failed — forcing TECHNICAL_LOSS for {game_id}")
-        elif winner is None and abort_reason is None:
-            winner = "thief"
+        elif winner is None and abort_reason is None: winner = "thief"
         ended_at = _now_iso()
-        final_state = {
-            **self._board_to_state(board), "completed": True, "winner": winner,
-            "abort_reason": abort_reason, "created_at": game_state["created_at"],
-            "ended_at": ended_at, "final_step": final_step,
-            "audit_ok": audit_ok, "audit_details": audit_details,
-        }
+        final_state = {**self._board_to_state(board), "completed": True, "winner": winner,
+                       "abort_reason": abort_reason, "created_at": game_state["created_at"],
+                       "ended_at": ended_at, "final_step": final_step,
+                       "audit_ok": audit_ok, "audit_details": audit_details}
         self._save_game_state(final_state)
         self._write_events()
         await generate_output_files(self, game_id, final_state, board)
         await self._notify_game_end(game_id, final_step, winner or "unknown", audit_ok)
-
         result = {"ok": True, "game_id": game_id, "winner": winner,
                   "final_step": final_step, "abort_reason": abort_reason, "audit_ok": audit_ok}
         logger.info(f"[GameRunner] Game {game_id} complete: {result}")
@@ -117,24 +104,16 @@ class GameRunner:
         return ok
 
     def _copy_files_to_agent_dirs(self, game_id: str) -> None:
-        """Copy real output files from agent/memory into cop/games and thief/games."""
         src = self._game_dir
         for role in ("cop", "thief"):
             dst = Path(f"{role}/games/{game_id}")
             dst.mkdir(parents=True, exist_ok=True)
-            for pattern in (
-                f"declaration_{game_id}.json",
-                f"config_{game_id}_g*.json",
-                f"log_{game_id}_g*.json",
-                f"result_{game_id}.json",
-            ):
+            for pattern in (f"declaration_{game_id}.json", f"config_{game_id}_g*.json",
+                            f"log_{game_id}_g*.json", f"result_{game_id}.json"):
                 for f in src.glob(pattern):
                     shutil.copy2(f, dst / f.name)
-                    logger.debug(f"[GameRunner] Copied {f.name} → {role}/games/{game_id}/")
 
-    async def _notify_game_end(
-        self, game_id: str, step: int, winner: str, audit_ok: bool
-    ) -> None:
+    async def _notify_game_end(self, game_id: str, step: int, winner: str, audit_ok: bool) -> None:
         self._copy_files_to_agent_dirs(game_id)
         for client, role in [(self.cop_client, "cop"), (self.thief_client, "thief")]:
             msg = ActionMessage(
@@ -152,9 +131,7 @@ class GameRunner:
                 "thief_position": board.thief_position, "move_history": board.move_history}
 
     def _save_game_state(self, state: dict) -> None:
-        (self._game_dir / "game_state.json").write_text(
-            json.dumps(state, indent=2), encoding="utf-8"
-        )
+        (self._game_dir / "game_state.json").write_text(json.dumps(state, indent=2), encoding="utf-8")
 
     def _log_event(self, event_type: str, role: str, phase: str, details: dict) -> None:
         self._events.append({"timestamp": _now_iso(), "event_type": event_type,
@@ -166,7 +143,6 @@ class GameRunner:
             with open(events_file, "w", encoding="utf-8") as f:
                 for evt in self._events:
                     f.write(json.dumps(evt, separators=(",", ":")) + "\n")
-            logger.debug(f"Wrote {len(self._events)} events for {self._game_id}")
         except Exception as e:
             logger.error(f"Failed to write events: {e}")
 

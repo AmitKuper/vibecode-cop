@@ -143,9 +143,5 @@ class DQNAgent:
         self._steps = ckpt["steps"]
         self.eps = ckpt["eps"]
 
-    # ------------------------------------------------------------------
-    # Internal
-    # ------------------------------------------------------------------
-
     def _to_tensor(self, obs: list) -> torch.Tensor:
         return torch.tensor(obs, dtype=torch.float32).unsqueeze(0).to(self.device)

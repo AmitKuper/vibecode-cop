@@ -140,13 +140,6 @@ class Board:
             raise ValueError(f"Invalid role: {role}")
 
     def get_legal_moves(self, role: str) -> list[str]:
-        """Get legal moves for a role.
-
-        Args:
-            role: "cop" or "thief"
-
-        Returns:
-            List of legal move strings
-        """
+        """Return legal move strings for the given role."""
         position = self.get_position(role)
         return self.get_candidate_actions(position)

@@ -57,37 +57,7 @@ class StartGameMessage:
 
 @dataclass
 class ActionMessage:
-    """Action message for all protocol phases.
-
-    Phases and fields:
-
-    COMMIT (GameRunner -> Agent):
-        - game_id, step, role, config_sha256, timestamp
-        - phase: "commit"
-        - board_state: Current board state (optional, for agent observation)
-        Response: agent returns h_commit in the response dict.
-
-    ACK (GameRunner -> Agent):
-        - game_id, step, role, config_sha256, timestamp
-        - phase: "ack"
-        - h_commit_ack: Opponent's h_commit (proof of exchange)
-
-    REVEAL (GameRunner -> Agent):
-        - game_id, step, role, config_sha256, timestamp
-        - phase: "reveal"
-        Response: agent returns move, hint, intent, state_hash.
-
-    FINAL_AUDIT (GameRunner -> Agent):
-        - game_id, step, role, config_sha256, timestamp
-        - phase: "final_audit"
-        - nonces: {} empty dict (request) or {step: nonce} (exchange)
-        Response: agent returns all stored nonces.
-
-    ABORT:
-        - game_id, step, role, config_sha256, timestamp
-        - phase: "abort"
-        - reason: Explanation of abort reason
-    """
+    """Action message for all game protocol phases (commit/ack/reveal/final_audit/abort)."""
 
     game_id: str
     step: int
