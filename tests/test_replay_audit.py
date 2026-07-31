@@ -118,8 +118,9 @@ class TestAuditLogCommitments:
         assert result["skipped"] >= 1
         assert result["failed"] == 0
 
-    def test_empty_log_ok(self):
+    def test_empty_log_not_ok(self):
+        # An empty log has 0 verified entries; replay must verify at least one commitment.
         result = audit_log_commitments({"game_id": "empty", "game_number": "g01", "entries": []})
-        assert result["ok"] is True
+        assert result["ok"] is False
         assert result["verified"] == 0
         assert result["failed"] == 0

@@ -19,21 +19,27 @@ _REQUIRED_SECTIONS = frozenset([
     "rate_limiter_gatekeeper",
 ])
 
-# Fixed values that must not deviate
+# Fixed values that must not deviate (Appendix F mandatory table)
 _FIXED_VALUES = {
     ("movement_and_barriers", "diagonal_moves"): False,
     ("pheromones", "pheromone_center_intensity"): 0.9,
     ("pheromones", "pheromone_decay"): 0.10,
     ("pheromones", "pheromone_grid_size"): 5,
     ("scoring", "technical_loss"): 0,
+    ("scoring", "capture_cop"): 20,
+    ("scoring", "capture_thief"): 5,
+    ("scoring", "survival_cop"): 5,
+    ("scoring", "survival_thief"): 10,
+    ("scoring", "tie_score"): 2,
+    ("network_and_league", "num_gamelets"): 6,
 }
 
 # Minimum values that must not go below PDF floor
 _MIN_VALUES = {
+    ("board_and_agents", "grid_size"): 7,
     ("movement_and_barriers", "max_barriers"): 14,
     ("movement_and_barriers", "max_moves"): 35,
     ("movement_and_barriers", "survival_threshold"): 35,
-    ("network_and_league", "num_gamelets"): 1,
 }
 
 

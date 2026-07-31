@@ -22,13 +22,20 @@ _VALID_CONFIG = {
         "max_moves": 35,
         "survival_threshold": 35,
     },
-    "scoring": {"technical_loss": 0},
+    "scoring": {
+        "capture_cop": 20,
+        "capture_thief": 5,
+        "survival_cop": 5,
+        "survival_thief": 10,
+        "tie_score": 2,
+        "technical_loss": 0,
+    },
     "pheromones": {
         "pheromone_center_intensity": 0.9,
         "pheromone_decay": 0.10,
         "pheromone_grid_size": 5,
     },
-    "network_and_league": {"num_gamelets": 1},
+    "network_and_league": {"num_gamelets": 6},
     "rate_limiter_gatekeeper": {},
 }
 
@@ -107,9 +114,9 @@ class TestValidate:
         with pytest.raises(ValueError, match="max_moves"):
             _validate(cfg)
 
-    def test_num_gamelets_minimum(self):
+    def test_num_gamelets_fixed_at_six(self):
         cfg = json.loads(json.dumps(_VALID_CONFIG))
-        cfg["network_and_league"]["num_gamelets"] = 0
+        cfg["network_and_league"]["num_gamelets"] = 4
         with pytest.raises(ValueError, match="num_gamelets"):
             _validate(cfg)
 

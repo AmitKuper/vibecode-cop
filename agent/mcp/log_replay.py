@@ -135,7 +135,7 @@ def audit_log_commitments(log_data: dict) -> dict:
                 logger.warning(f"[Replay] Commitment mismatch: step={step} role={role}")
 
     return {
-        "ok": failed == 0,
+        "ok": failed == 0 and verified > 0,
         "verified": verified,
         "failed": failed,
         "skipped": skipped,

@@ -292,7 +292,10 @@ class TestRunPeerTurn:
         assert abort is None
 
     @pytest.mark.asyncio
-    async def test_tampered_reveal_causes_technical_loss(self, tmp_path):
+    async def test_tampered_reveal_stored_for_final_audit(self, tmp_path):
+        # Per protocol: nonces are withheld until final_audit, so per-turn reveal
+        # tampering cannot be detected during the turn itself. The tampered reveal
+        # data is stored; final_audit catches the mismatch when nonces are exchanged.
         rt = _make_runtime("cop", tmp_path)
         step = 1
         commit_resp, reveal_resp = self._build_valid_opponent_resp(rt.game_id, step, "thief")
@@ -304,9 +307,13 @@ class TestRunPeerTurn:
         rules = RulesEngine(rt.board, max_turns=5)
 
         winner, abort = await run_peer_turn(rt, step, rules)
-        # Commitment mismatch → technical_loss declared locally
-        assert winner == "technical_loss"
-        assert abort is not None
+        # Turn completes; tamper is detected at final_audit time (not per-turn)
+        assert winner is None
+        assert abort is None
+        # Tampered reveal is stored in opponent_reveals.json for later audit
+        import json
+        reveals = json.loads((rt.game_dir / "opponent_reveals.json").read_text())
+        assert reveals[str(step)]["move"] == "NORTH"
 
     @pytest.mark.asyncio
     async def test_missing_h_commit_in_commit_resp(self, tmp_path):

@@ -84,7 +84,7 @@ def cop_observation(
     channels = [
         _one_hot(n, cx, cy),
         _barrier_grid(board),
-        rules.compute_scent_field(),
+        rules.get_scent_field(),  # accumulated/decayed historical trail, not live GPS
         _turns_remaining_grid(board, max_steps),
     ]
     if barrier_quota > 0:
