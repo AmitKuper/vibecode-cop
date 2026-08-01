@@ -35,14 +35,17 @@ class CrewMixin:
 
     def _create_crew(self, game_id: str) -> "Crew":
         """Create a crewAI Crew for a game. Raises if LLM is not configured."""
-        if Crew is None:
-            raise RuntimeError("crewai is not installed. Install it with: pip install crewai")
-        from agent.agents import create_select_move_task, create_strategy_agent
         if self.llm is None:
             raise RuntimeError(
                 f"No LLM configured for {self.role}. "
                 "Set [llm] provider and model in your config file."
             )
+        if Crew is None:
+            raise RuntimeError("crewai is not installed. Install it with: pip install crewai")
+        try:
+            from agent.agents import create_select_move_task, create_strategy_agent
+        except ImportError as exc:
+            raise RuntimeError(f"crewai dependencies missing: {exc}") from exc
         logger.info(f"Creating crewAI crew for game {game_id}")
         strategy_agent = create_strategy_agent(llm=self.llm)
         task = create_select_move_task(strategy_agent)
