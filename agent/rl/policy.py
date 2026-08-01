@@ -51,7 +51,13 @@ class RLPolicy:
         config_sha256: str | None = None,
         max_steps: int = 35,
     ) -> RLPolicy:
-        """Load the best available model for a given role (first match wins)."""
+        """Load the best available model for a given role (first match wins).
+
+        Preference order (first existing file wins):
+          1. Caller-specified algo+sha256 or algo name
+          2. League best → league → ppo best → ppo (barrier-aware preferred)
+          3. Full sorted glob fallback
+        """
         from agent.rl.policy_loader import load_checkpoint
         models_dir = Path(models_dir)
         candidates: list[Path] = []
@@ -59,6 +65,14 @@ class RLPolicy:
             candidates.append(models_dir / f"{role}_{algo}_{config_sha256[:16]}.pt")
         if algo:
             candidates.append(models_dir / f"{role}_{algo}.pt")
+        # Prefer league (barrier-aware, 5 channels) over plain ppo/dqn
+        for preferred in (
+            f"{role}_ppo_league_best.pt",
+            f"{role}_ppo_league.pt",
+            f"{role}_ppo_best.pt",
+            f"{role}_ppo.pt",
+        ):
+            candidates.append(models_dir / preferred)
         candidates += sorted(models_dir.glob(f"{role}_*.pt"))
         path = next((p for p in candidates if p.exists()), None)
         if path is None:

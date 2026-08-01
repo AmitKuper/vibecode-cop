@@ -68,5 +68,19 @@ def load_checkpoint(path: Path, role: str, max_steps: int) -> "RLPolicy":  # noq
     net.eval()
 
     barrier_quota = ckpt.get("barrier_quota", 0)
+    # If the model has 5 channels for cop but barrier_quota wasn't saved, infer it from game config.
+    n_channels = ckpt.get("n_channels") or (
+        int(next(iter(ckpt["net"].values())).shape[1])
+        if next(iter(ckpt["net"].values())).ndim == 4
+        else None
+    )
+    if role == "cop" and barrier_quota == 0 and n_channels == 5:
+        try:
+            from agent.config.shared_config import load_shared_config
+            cfg = load_shared_config()
+            barrier_quota = int(cfg.get("movement_and_barriers", {}).get("max_barriers", 14))
+        except Exception:
+            barrier_quota = 14
+        logger.info(f"[RLPolicy] Inferred barrier_quota={barrier_quota} from 5-channel cop model")
     logger.info(f"[RLPolicy] Loaded {algo.upper()} {role} model from {path}")
     return RLPolicy(net, role=role, algo=algo, max_steps=max_steps, barrier_quota=barrier_quota)
