@@ -95,6 +95,15 @@ class CopThiefEnv(RewardsMixin):
                 self._board, cop_move, self.config.grid_size, self._cop_barriers_remaining
             )
             cop_move = "STAY"
+            if list(self._board.thief_position) in self._board.barriers:
+                self._board.turn += 1
+                cop_obs, thief_obs = self._observations()
+                info = {"outcome": GameOutcome.COP_WIN.value, "winner": "cop",
+                        "turn": self._board.turn, "cop_position": list(self._board.cop_position),
+                        "thief_position": list(self._board.thief_position)}
+                r = self._shaped_rewards(GameOutcome.COP_WIN) if self.config.use_shaped_rewards \
+                    else self._rewards(GameOutcome.COP_WIN)
+                return cop_obs, thief_obs, r[0], r[1], True, info
         if not self._rules.validate_move("cop", cop_move):  # illegal → STAY
             cop_move = "STAY"
         if not self._rules.validate_move("thief", thief_move):

@@ -89,8 +89,7 @@ def train_iterated(
             "thief", frozen_cop, cfg, steps_per_round, rollout_size,
             models_dir=models_dir, net_type=net_type, hidden=hidden, tag=tag,
         )
-        eval_cfg = RLGameConfig()
-        r = evaluate(frozen_cop, frozen_thief, eval_cfg, eval_games)
+        r = evaluate(frozen_cop, frozen_thief, cfg, eval_games)
         print_results(f"Round {rnd} evaluation", r)
 
     logger.info("[iterated] All rounds complete.")
