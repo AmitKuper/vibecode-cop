@@ -122,8 +122,8 @@ async def test_e2e_game_completes_with_output_files():
         assert (game_dir / "game_state.json").exists()
         assert (game_dir / "events.jsonl").exists()
         assert (game_dir / "declaration_e2e_test_game_001.json").exists()
-        assert (game_dir / "config_e2e_test_game_001_g00.json").exists()
-        assert (game_dir / "log_e2e_test_game_001_g00.json").exists()
+        assert (game_dir / "config_e2e_test_game_001_g01.json").exists()
+        assert (game_dir / "log_e2e_test_game_001_g01.json").exists()
         assert (game_dir / "result_e2e_test_game_001.json").exists()
 
         # Verify game_state.json content

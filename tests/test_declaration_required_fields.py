@@ -25,6 +25,7 @@ def _make_mock_runner(tmp_path):
     runner.max_turns = 35
     runner.llm_model = None
     runner.token_budget = None
+    runner._token_counter = None
     return runner
 
 

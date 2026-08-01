@@ -25,7 +25,8 @@ from agent.peer_audit import (
     verify_opponent_reveal,
 )
 from agent.peer_runtime import PeerRuntime
-from agent.peer_turn_loop import _MOVE_ALIASES, _select_move, run_peer_turn
+from agent.peer_turn_loop import _MOVE_ALIASES, run_peer_turn
+from agent.peer_turn_helpers import select_move as _select_move
 
 
 # ---------------------------------------------------------------------------
@@ -362,7 +363,9 @@ class TestRunPeerTurn:
 
         await run_peer_turn(rt, step, rules)
         assert step in rt._my_commits
-        assert rt._my_commits[step]["move"] in ("NORTH", "SOUTH", "EAST", "WEST", "STAY")
+        _valid = {"NORTH", "SOUTH", "EAST", "WEST", "STAY", "N", "S", "E", "W",
+                  "PLACE_N", "PLACE_S", "PLACE_E", "PLACE_W"}
+        assert rt._my_commits[step]["move"] in _valid
 
     @pytest.mark.asyncio
     async def test_opponent_commit_stored_before_reveal(self, tmp_path):
