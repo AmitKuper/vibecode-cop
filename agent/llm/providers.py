@@ -16,7 +16,11 @@ def create_ollama(config: LLMConfig) -> Any:
     base_url = (config.base_url or "http://localhost:11434").rstrip("/")
     model = f"ollama/{config.model}"
     logger.info(f"Initialising Ollama LLM: {model} at {base_url}")
-    return LLM(model=model, base_url=base_url, temperature=config.temperature)
+    max_tokens = getattr(config, "max_tokens", None)
+    kwargs = {"model": model, "base_url": base_url, "temperature": config.temperature}
+    if max_tokens:
+        kwargs["max_tokens"] = max_tokens
+    return LLM(**kwargs)
 
 
 def create_anthropic(config: LLMConfig) -> Any:

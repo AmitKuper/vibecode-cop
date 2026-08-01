@@ -66,6 +66,7 @@ async def run_series(
     games_dir: Path,
     n_gamelets: int,
     group_name: str,
+    llm_dict: dict | None = None,
 ) -> dict:
     """Run n_gamelets via cop PeerRuntime (P2P, no central judge)."""
     from agent.peer_runtime import PeerRuntime
@@ -102,6 +103,7 @@ async def run_series(
                 opponent_url=thief_url,
                 games_dir=games_dir,
                 group_name=group_name,
+                llm_dict=llm_dict,
             )
             result = await runtime.run_game(game_id=game_id)
             winner = result.get("winner", "unknown")
@@ -189,6 +191,8 @@ async def main() -> int:
     config_sha256 = _sha256_fn(game_cfg)
     group_name = game_cfg.get("network_and_league", {}).get("group_name", "unknown")
 
+    llm_dict = config.get("llm") or None
+
     result = await run_series(
         thief_url=thief_url,
         secret=secret,
@@ -196,6 +200,7 @@ async def main() -> int:
         games_dir=games_dir,
         n_gamelets=args.n_gamelets,
         group_name=group_name,
+        llm_dict=llm_dict,
     )
     print(json.dumps(result, indent=2))
     return 0
