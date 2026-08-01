@@ -69,8 +69,10 @@ class PeerRuntime(_CrewMixin):
         self.game_dir: Path = Path(".")
         self.board: Board = Board(cop_position=cop_start, thief_position=thief_start)
         self._my_commits: dict[int, dict] = {}
+        self._cop_barriers_remaining: int = 14  # reset per game in run_game()
         self.llm = self._init_llm(llm_dict)
         self.crews: dict = {}
+        self.protocol_adapter = None  # set after discovery in run_game()
 
     async def run_game(self, game_id: str) -> dict:
         """Drive this agent's side of the game to completion."""
@@ -80,10 +82,12 @@ class PeerRuntime(_CrewMixin):
         cop_start, thief_start = _load_start_positions()
         self.board = Board(cop_position=cop_start, thief_position=thief_start)
         self._my_commits = {}
+        self._cop_barriers_remaining = 14
         created_at = _now()
         save_game_state(self.game_dir, {"step": 0, "turn": 0, "completed": False,
                                         "winner": None, "created_at": created_at})
         logger.info(f"[PeerRuntime/{self.role}] Starting game {game_id}")
+        await self._init_protocol_adapter()
         rules = RulesEngine(self.board, max_turns=self.max_turns)
         winner, abort_reason, final_step = await run_peer_turn_loop(self, rules, self.max_turns)
 
@@ -125,6 +129,42 @@ class PeerRuntime(_CrewMixin):
     def _store_my_commit(self, step: int, payload: dict) -> None:
         self._my_commits[step] = payload
         store_commit(self.game_dir, self.role, step, payload)
+
+    # Tool names that are not per-turn game-action tools.
+    _UTILITY_TOOL_NAMES = frozenset({
+        "ping", "get_config", "get_protocol", "list_tools",
+        "health", "status", "info", "describe",
+        "start_game",  # initialisation only — never needed mid-game
+    })
+
+    async def _init_protocol_adapter(self) -> None:
+        """Discover opponent's MCP tools and build the protocol adapter crew."""
+        try:
+            from agent.mcp.discovery import ProtocolDiscovery
+            from agent.mcp.protocol_adapter import ProtocolAdapterCrew
+            discovery = ProtocolDiscovery(self.opponent_client.peer_url)
+            ok = await discovery.discover()
+            if ok and discovery.tools:
+                # Strip pure utility tools so the LLM only sees action-relevant ones.
+                action_tools = {
+                    name: schema
+                    for name, schema in discovery.tools.items()
+                    if name.lower() not in self._UTILITY_TOOL_NAMES
+                }
+                if not action_tools:
+                    action_tools = discovery.tools  # safety: keep all if nothing remains
+                self.protocol_adapter = ProtocolAdapterCrew(
+                    action_tools, self.opponent_client, self.llm
+                )
+                logger.info(
+                    f"[PeerRuntime/{self.role}] Protocol adapter ready "
+                    f"({len(action_tools)}/{len(discovery.tools)} tools after filtering)"
+                )
+            else:
+                logger.warning(f"[PeerRuntime/{self.role}] Discovery found no tools — direct MCP fallback")
+        except Exception as exc:
+            logger.warning(f"[PeerRuntime/{self.role}] Protocol adapter init failed: {exc}")
+            self.protocol_adapter = None
 
     def _init_llm(self, llm_dict: dict | None):
         try:
