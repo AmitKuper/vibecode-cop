@@ -83,10 +83,29 @@ class CrewMixin:
             return None
 
     def _select_move_llm(self, game_id: str, observation: dict) -> str:
-        """Select a move by invoking the crewAI strategy crew."""
+        """Select a move by invoking the crewAI strategy crew (sync, use outside async)."""
         crew = self._get_or_create_crew(game_id)
         candidates = observation.get("candidate_actions", list(_VALID_MOVES))
-        inputs = {
+        inputs = self._build_crew_inputs(observation, candidates)
+        result = crew.kickoff(inputs=inputs)
+        self._get_token_counter().record_from_crew_output(result)
+        move = parse_move(result.raw, candidates)
+        logger.info(f"[{self.role}] LLM selected move: {move} (raw={result.raw!r})")
+        return move
+
+    async def _select_move_llm_async(self, game_id: str, observation: dict) -> str:
+        """Select a move via crewAI using kickoff_async (safe inside async context)."""
+        crew = self._get_or_create_crew(game_id)
+        candidates = observation.get("candidate_actions", list(_VALID_MOVES))
+        inputs = self._build_crew_inputs(observation, candidates)
+        result = await crew.kickoff_async(inputs=inputs)
+        self._get_token_counter().record_from_crew_output(result)
+        move = parse_move(result.raw, candidates)
+        logger.info(f"[{self.role}] LLM selected move: {move} (raw={result.raw!r})")
+        return move
+
+    def _build_crew_inputs(self, observation: dict, candidates: list) -> dict:
+        return {
             "role": self.role,
             "own_position": observation.get("own_position", [0, 0]),
             "turn": observation.get("turn", 0),
@@ -95,13 +114,6 @@ class CrewMixin:
             "scent_field": observation.get("scent_field", []),
             "board_state": observation.get("grid_state", {}),
         }
-        logger.debug(f"[{self.role}] Asking LLM for move. Turn={inputs['turn']}, "
-                     f"pos={inputs['own_position']}, legal={candidates}")
-        result = crew.kickoff(inputs=inputs)
-        self._get_token_counter().record_from_crew_output(result)
-        move = parse_move(result.raw, candidates)
-        logger.info(f"[{self.role}] LLM selected move: {move} (raw={result.raw!r})")
-        return move
 
     def _build_observation(self, game_state: dict) -> dict:
         return build_observation(self.role, game_state)

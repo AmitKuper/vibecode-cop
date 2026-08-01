@@ -52,8 +52,8 @@ async def send_reveal(runtime: "PeerRuntime", step: int, reveal_payload: dict) -
         return None
 
 
-def select_move(runtime: "PeerRuntime", board_state: dict) -> str:
-    """Choose a move: RL policy → LLM crew → heuristic fallback."""
+async def select_move(runtime: "PeerRuntime", board_state: dict) -> str:
+    """Choose a move: RL policy → LLM crew (async) → heuristic fallback."""
     obs = runtime._build_observation(board_state)
     try:
         move = runtime._select_move_rl(obs)
@@ -61,9 +61,9 @@ def select_move(runtime: "PeerRuntime", board_state: dict) -> str:
             return move
     except Exception as exc:
         logger.warning(f"[PeerTurn] RL move selection failed: {exc}")
-    if hasattr(runtime, "_select_move_llm") and runtime.game_id:
+    if hasattr(runtime, "_select_move_llm_async") and runtime.game_id:
         try:
-            return runtime._select_move_llm(runtime.game_id, obs)
+            return await runtime._select_move_llm_async(runtime.game_id, obs)
         except Exception as exc:
             logger.warning(f"[PeerTurn] LLM move selection failed: {exc}")
     from agent.board import Board

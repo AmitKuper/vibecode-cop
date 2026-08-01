@@ -44,7 +44,7 @@ async def run_peer_turn(
     """
     board_state = build_board_state(runtime)
     state_hash = hash_game_state(board_state)
-    move = select_move(runtime, {**board_state, "scent_field": rules.get_scent_field()})
+    move = await select_move(runtime, {**board_state, "scent_field": rules.get_scent_field()})
     hint = f"Moving {move}"
     intent = "truth"
 
