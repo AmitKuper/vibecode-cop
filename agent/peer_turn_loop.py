@@ -24,6 +24,7 @@ from agent.peer_turn_helpers import (
     send_commit,
     send_reveal,
 )
+from agent.rl.env_helpers import apply_place_action
 from agent.rules_engine import GameOutcome, RulesEngine
 
 if TYPE_CHECKING:
@@ -86,6 +87,15 @@ async def run_peer_turn(
     my_move = _MOVE_ALIASES.get(move, move)
     opp_move = _MOVE_ALIASES.get(opp_move_short, opp_move_short)
     cop_move, thief_move = (my_move, opp_move) if runtime.role == "cop" else (opp_move, my_move)
+
+    # Handle barrier placement: PLACE_* places a barrier then cop stays.
+    if cop_move.startswith("PLACE_"):
+        barriers_remaining = getattr(runtime, "_cop_barriers_remaining", 14)
+        new_remaining = apply_place_action(
+            runtime.board, cop_move, runtime.board.grid_size, barriers_remaining
+        )
+        runtime._cop_barriers_remaining = new_remaining
+        cop_move = "STAY"
 
     if not rules.validate_move("cop", cop_move):
         logger.warning(f"[PeerTurn] Invalid cop move {cop_move!r} at step {step}, using STAY")

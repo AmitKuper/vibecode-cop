@@ -115,9 +115,14 @@ def validate_action_message(msg: ActionMessage) -> tuple[bool, str | None]:
     elif phase == MessagePhase.REVEAL:
         # REVEAL is also used as a request (GameRunner -> Agent); move/state_hash only
         # required when an agent is SENDING a reveal, not when receiving the request.
-        _valid_moves = {"N", "S", "E", "W", "STAY", "NORTH", "SOUTH", "EAST", "WEST"}
+        # PLACE_* moves encode cop barrier placement (e.g. PLACE_N = barrier north of cop).
+        _valid_moves = {
+            "N", "S", "E", "W", "STAY",
+            "NORTH", "SOUTH", "EAST", "WEST",
+            "PLACE_N", "PLACE_S", "PLACE_E", "PLACE_W",
+        }
         if msg.move is not None and msg.move not in _valid_moves:
-            return False, f"REVEAL phase move must be a valid direction, got {msg.move}"
+            return False, f"REVEAL phase move must be a valid direction or PLACE_*, got {msg.move}"
         if msg.intent is not None and msg.intent not in ["truth", "lie"]:
             return False, f"intent must be 'truth' or 'lie', got {msg.intent}"
         if msg.hint is not None and len(msg.hint.split()) > 15:
@@ -134,6 +139,9 @@ def validate_action_message(msg: ActionMessage) -> tuple[bool, str | None]:
     elif phase == MessagePhase.ABORT and not msg.reason:
         return False, "ABORT phase requires reason"
 
-    # GAME_END: reason is optional — handler defaults to "unknown" if absent
+    elif phase == MessagePhase.GAME_END and not msg.reason:
+        return False, "GAME_END phase requires reason"
+
+    # All phases validated above
 
     return True, None

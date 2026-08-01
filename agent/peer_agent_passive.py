@@ -26,6 +26,7 @@ def init_passive_game(rt: "PeerRuntime", game_id: str, rules_ref: list) -> None:
     rt.game_dir = rt.games_dir / game_id
     rt.game_dir.mkdir(parents=True, exist_ok=True)
     rt._my_commits = {}
+    rt._cop_barriers_remaining = 14  # track cop's barrier quota on passive side
     cop_start, thief_start = _load_start_positions()
     rt.board = Board(cop_position=cop_start, thief_position=thief_start)
     rules_ref.clear()
@@ -69,6 +70,7 @@ def handle_passive_commit(rt: "PeerRuntime", game_id: str, message, rules_ref: l
 def handle_passive_reveal(rt: "PeerRuntime", game_id: str, message, rules_ref: list) -> dict:
     """Return own reveal when cop sends its reveal; apply moves to local board."""
     from agent.peer_audit import append_opponent_reveal
+    from agent.rl.env_helpers import apply_place_action
     payload = rt._my_commits.get(message.step)
     if not payload:
         return {"ok": False, "error": f"No commit payload for step {message.step}"}
@@ -81,11 +83,22 @@ def handle_passive_reveal(rt: "PeerRuntime", game_id: str, message, rules_ref: l
     }
     append_opponent_reveal(rt.game_dir, message.step, opp_reveal)
 
-    opp_move = _MOVE_ALIASES.get(message.move or "STAY", message.move or "STAY")
+    raw_opp_move = message.move or "STAY"
+    opp_move = _MOVE_ALIASES.get(raw_opp_move, raw_opp_move)
     my_move = _MOVE_ALIASES.get(payload["move"], payload["move"])
     cop_move, thief_move = (opp_move, my_move) if rt.role == "thief" else (my_move, opp_move)
 
     rules = rules_ref[0] if rules_ref else RulesEngine(rt.board, max_turns=rt.max_turns)
+
+    # Handle cop barrier placement: PLACE_* places a barrier then cop stays.
+    if cop_move.startswith("PLACE_"):
+        barriers_remaining = getattr(rt, "_cop_barriers_remaining", 14)
+        new_remaining = apply_place_action(
+            rt.board, cop_move, rt.board.grid_size, barriers_remaining
+        )
+        rt._cop_barriers_remaining = new_remaining
+        cop_move = "STAY"
+
     if rules.validate_move("cop", cop_move) and rules.validate_move("thief", thief_move):
         rules.apply_moves(cop_move, thief_move)
 
