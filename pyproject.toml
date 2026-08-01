@@ -48,4 +48,30 @@ ignore = ["N999"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-testpaths = ["tests"]
+testpaths = ["tests", "agent/tests"]
+
+[tool.coverage.run]
+omit = [
+    "agent/rl/train*.py",
+    "agent/rl/trainer.py",
+    "agent/rl/league.py",
+    "agent/rl/ppo.py",
+    "agent/rl/ppo_update.py",
+    "agent/rl/dqn.py",
+    "agent/rl/rollout.py",
+    "agent/rl/replay_buffer.py",
+    "agent/rl/cross_train.py",
+    "agent/rl/eval_compare.py",
+    "agent/rl/evaluate.py",
+    "agent/rl/strategies*.py",
+    "agent/skills/game_*.py",
+    "agent/reports/gmail*.py",
+    "agent/reports/email_report.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]

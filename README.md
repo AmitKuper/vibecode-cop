@@ -6,18 +6,24 @@ an MCP client that connects to the thief agent.
 ## Quick Start
 
 ```bash
+# Install dependencies into the project's own venv
 uv sync
+
 # Create the role-specific config file (code looks for cop/config.toml first)
 mkdir -p cop
 cp config.toml.example cop/config.toml
 # Edit cop/config.toml: set peer_url to thief's MCP URL and crypto.shared_secret
-python -m cop
+
+# Always use the project venv — system Python may resolve to a different environment
+.venv\Scripts\python.exe -m cop        # Windows
+# or
+.venv/bin/python -m cop               # Linux/macOS
 ```
 
 Alternatively, pass the config path directly:
 
 ```bash
-python -m cop /path/to/config.toml
+.venv\Scripts\python.exe -m cop cop/config.toml
 ```
 
 ## Architecture
@@ -85,18 +91,26 @@ This satisfies the role-filtered hidden-info requirement (AC4).
 ## Running a Full Series
 
 ```bash
-# Terminal 1 — start thief (passive, responds to cop's calls)
-python -m thief thief/config.toml
+# Terminal 1 — inside vibecode-thief, start the thief (passive responder)
+cd ../vibecode-thief
+.venv\Scripts\python.exe -m thief thief/config.toml
 
-# Terminal 2 — cop drives 6 P2P gamelets via PeerRuntime (no central judge)
-python scripts/run_series.py --thief-url http://localhost:5001/mcp
+# Terminal 2 — inside vibecode-cop, drive N P2P gamelets
+cd ../vibecode-cop
+$env:PYTHONPATH = "."                          # PowerShell
+# export PYTHONPATH=.                          # bash
+.venv\Scripts\python.exe scripts/run_series.py --thief-url http://localhost:61223/mcp --n-gamelets 1
 ```
 
 Or start only the cop MCP server and wait for the thief to send start_game:
 
 ```bash
-python -m cop cop/config.toml
+.venv\Scripts\python.exe -m cop cop/config.toml
 ```
+
+> **Important:** Always use `.venv\Scripts\python.exe` (Windows) or `.venv/bin/python` (Linux/macOS)
+> instead of bare `python`. The system Python may resolve to a different virtual environment
+> (e.g. another project's venv) which may have an incompatible version of crewai.
 
 ## Auditing a Game Log
 

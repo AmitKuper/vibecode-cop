@@ -19,8 +19,9 @@ opponent_response_timeout_seconds = 30
 # LLM backend: "ollama" | "anthropic" | "openai" | "azure"
 provider = "ollama"
 model = "llama3.1:8b"
-temperature = 0.3
+temperature = 0.1
 base_url = "http://localhost:11434"
+max_tokens = 1024
 
 # To switch to Anthropic:
 # provider = "anthropic"
