@@ -81,7 +81,7 @@ class RulesEngine:
             for x in range(n):
                 dist = max(abs(x - tx), abs(y - ty))
                 if dist <= self.SCENT_FIELD_RADIUS:
-                    emitted = round(self.SCENT_CENTER - self.SCENT_DECAY * dist, 4)
+                    emitted = round(self.SCENT_CENTER * (self.SCENT_DECAY ** dist), 4)
                     self._scent_grid[y][x] = max(self._scent_grid[y][x], emitted)
 
     def get_scent_field(self) -> list[list[float]]:
@@ -105,7 +105,7 @@ class RulesEngine:
             for x in range(n):
                 dist = max(abs(x - tx), abs(y - ty))
                 if dist <= self.SCENT_FIELD_RADIUS:
-                    field[y][x] = round(self.SCENT_CENTER - self.SCENT_DECAY * dist, 4)
+                    field[y][x] = round(self.SCENT_CENTER * (self.SCENT_DECAY ** dist), 4)
         return field
 
     def apply_moves(self, cop_move: str, thief_move: str) -> bool:

@@ -96,6 +96,9 @@ async def run_peer_turn(
         )
         runtime._cop_barriers_remaining = new_remaining
         cop_move = "STAY"
+        if list(runtime.board.thief_position) in runtime.board.barriers:
+            runtime.board.turn += 1
+            return "cop", None
 
     if not rules.validate_move("cop", cop_move):
         logger.warning(f"[PeerTurn] Invalid cop move {cop_move!r} at step {step}, using STAY")

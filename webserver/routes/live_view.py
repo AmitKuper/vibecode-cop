@@ -24,7 +24,6 @@ async def live_cop_view(game_id: str) -> dict:
         "cop_position": state.get("cop_position"),
         "scent_field": state.get("scent_field", []),
         "turn": state.get("turn"),
-        "move_history": state.get("move_history", []),
     }
 
 
@@ -42,5 +41,4 @@ async def live_thief_view(game_id: str) -> dict:
         "thief_position": state.get("thief_position"),
         "last_revealed_cop_pos": state.get("last_revealed_cop_pos"),
         "turn": state.get("turn"),
-        "move_history": state.get("move_history", []),
     }

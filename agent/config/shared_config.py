@@ -95,7 +95,11 @@ def _validate(cfg: dict) -> None:
 
     for (section, key), minimum in _MIN_VALUES.items():
         actual = cfg.get(section, {}).get(key)
-        if actual is not None and actual < minimum:
+        if actual is None:
+            raise ValueError(
+                f"Mandatory key missing from shared config: [{section}].{key}"
+            )
+        if actual < minimum:
             raise ValueError(
                 f"Minimum value violated: [{section}].{key} must be >= {minimum}, got {actual}"
             )

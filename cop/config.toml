@@ -43,7 +43,7 @@ format = "markdown"
 [reports.gmail]
 enabled = true
 mode = "send"  # disabled | dry_run | draft | send
-recipient = "agentsorch@gmail.com"
+recipient = "rmisegal+uoh26finalgame@gmail.com"
 credentials_path = "secrets/gmail/credentials.json"
 token_path = "secrets/gmail/token.json"
 attach_required_files = true

@@ -3,6 +3,8 @@
 Autonomous AI cop agent for the Cop & Thief P2P game. Runs as an MCP server on port 5000 and
 an MCP client that connects to the thief agent.
 
+**Companion repository:** [vibecode-thief](https://github.com/amitKuper/vibecode-thief) — the passive thief agent that this cop plays against.
+
 ## Quick Start
 
 ```bash

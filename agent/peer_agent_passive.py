@@ -98,6 +98,14 @@ def handle_passive_reveal(rt: "PeerRuntime", game_id: str, message, rules_ref: l
         )
         rt._cop_barriers_remaining = new_remaining
         cop_move = "STAY"
+        if list(rt.board.thief_position) in rt.board.barriers:
+            rt.board.turn += 1
+            return {
+                "ok": True, "phase": "reveal",
+                "move": payload["move"], "hint": payload["hint"],
+                "intent": payload["intent"], "state_hash": payload["state_hash"],
+                "captured": True,
+            }
 
     if rules.validate_move("cop", cop_move) and rules.validate_move("thief", thief_move):
         rules.apply_moves(cop_move, thief_move)

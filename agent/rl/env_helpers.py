@@ -47,8 +47,6 @@ def apply_place_action(
     bx, by = cx + dx, cy + dy
     if not (0 <= bx < grid_size and 0 <= by < grid_size):
         return barriers_remaining
-    if [bx, by] == list(board.thief_position):
-        return barriers_remaining
     if board.place_barrier(bx, by):
         return barriers_remaining - 1
     return barriers_remaining

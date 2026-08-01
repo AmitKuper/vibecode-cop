@@ -35,9 +35,9 @@ def check_game_status(board, max_turns: int) -> GameOutcome:
         logger.debug("Game over: Max turns reached, thief wins")
         return GameOutcome.THIEF_WIN
 
-    thief_legal = board.get_candidate_actions(board.thief_position)
-    if not thief_legal:
-        logger.debug("Game over: Thief trapped, cop wins")
+    thief_escapes = [a for a in board.get_candidate_actions(board.thief_position) if a != "STAY"]
+    if not thief_escapes:
+        logger.debug("Game over: Thief trapped (no orthogonal escape), cop wins")
         return GameOutcome.COP_WIN
 
     return GameOutcome.ONGOING
