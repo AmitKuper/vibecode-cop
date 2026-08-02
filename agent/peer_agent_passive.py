@@ -7,7 +7,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from agent.board import Board
-from agent.peer_runtime import _load_start_positions
+from agent.language.hints import generate_hint as _generate_hint_fn
+from agent.peer_runtime_io import _load_start_positions
 from agent.rules_engine import RulesEngine
 
 if TYPE_CHECKING:
@@ -17,19 +18,9 @@ logger = logging.getLogger(__name__)
 
 _MOVE_ALIASES = {"N": "NORTH", "S": "SOUTH", "E": "EAST", "W": "WEST", "STAY": "STAY"}
 
-_HINT_TEMPLATES = {
-    "NORTH": ["heading north", "moving toward the top", "going up"],
-    "SOUTH": ["heading south", "moving toward the bottom", "going down"],
-    "EAST":  ["heading east", "moving right", "going east"],
-    "WEST":  ["heading west", "moving left", "going west"],
-    "STAY":  ["holding position", "staying put", "not moving"],
-}
 
-
-def _generate_hint(move: str, board) -> str:
-    import random
-    options = _HINT_TEMPLATES.get(move.upper(), [f"moving {move.lower()}"])
-    return random.choice(options)
+def _generate_hint(move: str, board=None) -> str:
+    return _generate_hint_fn(move)
 
 
 def init_passive_game(rt: "PeerRuntime", game_id: str, rules_ref: list) -> None:
