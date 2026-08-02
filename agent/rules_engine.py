@@ -23,8 +23,8 @@ class RulesEngine:
 
     # Fixed scent field parameters (mandatory, not negotiable)
     SCENT_CENTER = 0.9
-    SCENT_DECAY = 0.9          # per-turn global decay multiplier (new = 0.9 * old + emission)
-    SCENT_FIELD_RADIUS = 2     # 5×5 field = cells within Chebyshev radius 2
+    SCENT_DECAY = 0.9  # per-turn global decay multiplier (new = 0.9 * old + emission)
+    SCENT_FIELD_RADIUS = 2  # 5×5 field = cells within Chebyshev radius 2
 
     # Radial emission kernel keyed by squared Euclidean distance from the emitter.
     # Matches the mandatory 5×5 specification matrix exactly.
@@ -47,9 +47,7 @@ class RulesEngine:
         if action not in Board.DIRECTIONS:
             return False
 
-        position = (
-            self.board.cop_position if role == "cop" else self.board.thief_position
-        )
+        position = self.board.cop_position if role == "cop" else self.board.thief_position
         candidate_actions = self.board.get_candidate_actions(position)
 
         return action in candidate_actions

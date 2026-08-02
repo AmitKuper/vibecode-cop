@@ -68,8 +68,7 @@ class ReportGatekeeper:
         sends_today = sum(
             1
             for r in delivery_history
-            if r.get("status") == "sent"
-            and r.get("timestamp", "") > today_start
+            if r.get("status") == "sent" and r.get("timestamp", "") > today_start
         )
 
         if sends_today >= self.max_sends_per_day:
@@ -86,9 +85,7 @@ class ReportGatekeeper:
         )
 
         if recent_failures >= self.max_retries:
-            logger.warning(
-                f"Max retries reached for {game_id}/{plugin} ({recent_failures})"
-            )
+            logger.warning(f"Max retries reached for {game_id}/{plugin} ({recent_failures})")
             return (
                 False,
                 f"Max retries exceeded ({recent_failures}/{self.max_retries})",
@@ -132,9 +129,6 @@ class ReportGatekeeper:
             "error": error,
         }
 
-        logger.info(
-            f"Recording delivery: {game_id}/{plugin} -> {status} "
-            f"({destination or 'N/A'})"
-        )
+        logger.info(f"Recording delivery: {game_id}/{plugin} -> {status} ({destination or 'N/A'})")
 
         return record

@@ -62,7 +62,7 @@ class TestGmailRecipientConfigDriven:
             "gmail": {
                 "enabled": True,
                 "mode": "dry_run",
-                # No recipient key — tests that factory reads from config, not a hardcoded prod address
+                # No recipient key — tests that factory reads from config, not a hardcoded address
             },
         }
         plugins = await ReportPluginFactory.from_config(config)

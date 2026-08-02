@@ -76,9 +76,7 @@ class DeliveryStore:
         except Exception as e:
             logger.error(f"Failed to save delivery record to {path}: {e}")
 
-    async def has_successful_delivery(
-        self, game_id: str, plugin: str
-    ) -> bool:
+    async def has_successful_delivery(self, game_id: str, plugin: str) -> bool:
         """Check if report was already successfully sent.
 
         Args:
@@ -91,10 +89,7 @@ class DeliveryStore:
         history = self.load_history(game_id)
 
         for record in history:
-            if (
-                record.get("plugin") == plugin
-                and record.get("status") == "sent"
-            ):
+            if record.get("plugin") == plugin and record.get("status") == "sent":
                 logger.debug(f"Found previous successful delivery: {game_id}/{plugin}")
                 return True
 

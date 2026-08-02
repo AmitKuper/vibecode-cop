@@ -1,7 +1,8 @@
 """Tests that ReportBundleBuilder raises on missing files instead of creating stubs."""
 
+import contextlib
+
 import pytest
-from pathlib import Path
 
 from agent.reports.bundle import ReportBundleBuilder
 
@@ -20,14 +21,12 @@ class TestNoStubCreation:
     @pytest.mark.asyncio
     async def test_no_stub_files_created_on_missing(self, tmp_path):
         builder = ReportBundleBuilder(tmp_path)
-        try:
+        with contextlib.suppress(FileNotFoundError):
             await builder.build(
                 game_id="test_game_002",
                 role="cop",
                 game_state={"created_at": "2026-07-28T00:00:00"},
             )
-        except FileNotFoundError:
-            pass
         # Ensure no stubs were silently created
         stubs = list(tmp_path.glob("*.json"))
         assert len(stubs) == 0, f"Unexpected stub files created: {stubs}"

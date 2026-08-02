@@ -40,8 +40,13 @@ def verify_signature(message_dict: dict, signature: str, secret: str) -> bool:
 
 
 def create_commitment(
-    game_id: str, step: int, role: str,
-    state_hash: str, move: str, hint: str, intent: str,
+    game_id: str,
+    step: int,
+    role: str,
+    state_hash: str,
+    move: str,
+    hint: str,
+    intent: str,
     gamelet: int = 1,
 ) -> tuple[str, str]:
     """Create a commitment hash. Returns (h_commit, nonce).
@@ -52,9 +57,15 @@ def create_commitment(
     """
     nonce = secrets.token_hex(32)
     commit_payload = {
-        "game_id": game_id, "gamelet": gamelet, "step": step, "role": role,
-        "state_hash": state_hash, "move": move, "hint": hint,
-        "intent": intent, "nonce": nonce,
+        "game_id": game_id,
+        "gamelet": gamelet,
+        "step": step,
+        "role": role,
+        "state_hash": state_hash,
+        "move": move,
+        "hint": hint,
+        "intent": intent,
+        "nonce": nonce,
     }
     canonical = canonical_json(commit_payload)
     h_commit = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
@@ -64,23 +75,34 @@ def create_commitment(
 
 def verify_commitment(
     h_commit: str,
-    game_id: str, step: int, role: str,
-    state_hash: str, move: str, hint: str, intent: str, nonce: str,
+    game_id: str,
+    step: int,
+    role: str,
+    state_hash: str,
+    move: str,
+    hint: str,
+    intent: str,
+    nonce: str,
     gamelet: int = 1,
 ) -> bool:
     """Verify a commitment hash against revealed values. Returns True if valid."""
     commit_payload = {
-        "game_id": game_id, "gamelet": gamelet, "step": step, "role": role,
-        "state_hash": state_hash, "move": move, "hint": hint,
-        "intent": intent, "nonce": nonce,
+        "game_id": game_id,
+        "gamelet": gamelet,
+        "step": step,
+        "role": role,
+        "state_hash": state_hash,
+        "move": move,
+        "hint": hint,
+        "intent": intent,
+        "nonce": nonce,
     }
     canonical = canonical_json(commit_payload)
     computed_hash = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
     is_valid = computed_hash == h_commit
     if not is_valid:
         logger.warning(
-            f"Commitment mismatch: expected {h_commit[:16]}..., "
-            f"got {computed_hash[:16]}..."
+            f"Commitment mismatch: expected {h_commit[:16]}..., got {computed_hash[:16]}..."
         )
     return is_valid
 

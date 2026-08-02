@@ -29,7 +29,9 @@ def _chebyshev(ax: int, ay: int, bx: int, by: int) -> int:
     return max(abs(ax - bx), abs(ay - by))
 
 
-def _legal_from_obs(pos: tuple[int, int], barriers_ch: list[list[float]], grid_size: int) -> list[int]:
+def _legal_from_obs(
+    pos: tuple[int, int], barriers_ch: list[list[float]], grid_size: int
+) -> list[int]:
     """Return action indices legal from pos given a barrier channel."""
     x, y = pos
     legal = []

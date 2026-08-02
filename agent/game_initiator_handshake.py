@@ -44,9 +44,7 @@ async def wait_for_readiness(
         await asyncio.sleep(min(wait_time, 2.0))
         wait_time *= 1.5
 
-    logger.warning(
-        f"Timeout waiting for {role} agent to be ready (after {timeout_seconds}s)"
-    )
+    logger.warning(f"Timeout waiting for {role} agent to be ready (after {timeout_seconds}s)")
     return False
 
 

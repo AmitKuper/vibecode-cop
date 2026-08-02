@@ -25,7 +25,6 @@ Set COP_URL / THIEF_URL environment variables as an alternative to --cop-url / -
 
 import argparse
 import asyncio
-import json
 import os
 import sys
 
@@ -44,13 +43,12 @@ async def _check_sse(url: str, label: str, timeout: float) -> bool:
     """Return True if the agent's /sse endpoint responds with HTTP 200."""
     t = httpx.Timeout(connect=timeout, read=1.0, write=timeout, pool=timeout)
     try:
-        async with httpx.AsyncClient(timeout=t) as client:
-            async with client.stream("GET", f"{url}/sse") as r:
-                if r.status_code == 200:
-                    print(f"  [OK] {label} /sse → 200")
-                    return True
-                print(f"  [FAIL] {label} /sse → {r.status_code}")
-                return False
+        async with httpx.AsyncClient(timeout=t) as client, client.stream("GET", f"{url}/sse") as r:
+            if r.status_code == 200:
+                print(f"  [OK] {label} /sse → 200")
+                return True
+            print(f"  [FAIL] {label} /sse → {r.status_code}")
+            return False
     except (httpx.ConnectError, httpx.ReadTimeout, httpx.RemoteProtocolError) as exc:
         print(f"  [FAIL] {label} /sse → {exc}")
         return False
@@ -113,7 +111,7 @@ async def main() -> int:
 
     print("\nSMOKE TEST PASSED — tunnel connectivity and MCP tool presence verified.\n")
     print("To run a full game over the tunnel, use:")
-    print(f"  python run_live_game.py  (with thief config pointing to cop tunnel URL)\n")
+    print("  python run_live_game.py  (with thief config pointing to cop tunnel URL)\n")
     return 0
 
 

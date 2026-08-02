@@ -21,7 +21,9 @@ def main():
         from google_auth_oauthlib.flow import InstalledAppFlow
     except ImportError:
         print("ERROR: google-auth-oauthlib not installed.")
-        print("Run: .venv\\Scripts\\uv.exe pip install google-auth google-auth-oauthlib google-api-python-client")  # noqa: E501
+        print(
+            "Run: .venv\\Scripts\\uv.exe pip install google-auth google-auth-oauthlib google-api-python-client"  # noqa: E501
+        )
         sys.exit(1)
 
     if not CREDENTIALS_PATH.exists():

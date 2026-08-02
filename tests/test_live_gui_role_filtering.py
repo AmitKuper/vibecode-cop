@@ -1,7 +1,10 @@
 """Tests that role-filtered live endpoints exclude the opponent's position."""
 
-import pytest
 from unittest.mock import patch
+
+import pytest
+
+pytest.importorskip("fastapi")
 
 
 class TestLiveViewRoleFiltering:
@@ -45,8 +48,9 @@ class TestLiveViewRoleFiltering:
 
     @pytest.mark.asyncio
     async def test_cop_endpoint_returns_404_for_unknown_game(self):
-        from webserver.routes.live_view import live_cop_view
         from fastapi import HTTPException
+
+        from webserver.routes.live_view import live_cop_view
 
         with patch("webserver.routes.live_view.game_registry") as mock_reg:
             mock_reg.get.return_value = None
@@ -56,8 +60,9 @@ class TestLiveViewRoleFiltering:
 
     @pytest.mark.asyncio
     async def test_thief_endpoint_returns_404_for_unknown_game(self):
-        from webserver.routes.live_view import live_thief_view
         from fastapi import HTTPException
+
+        from webserver.routes.live_view import live_thief_view
 
         with patch("webserver.routes.live_view.game_registry") as mock_reg:
             mock_reg.get.return_value = None

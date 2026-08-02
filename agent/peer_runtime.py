@@ -28,16 +28,35 @@ try:
     from agent.orchestrator_crew import CrewMixin as _CrewMixin
 except Exception as _crew_import_err:
     logger.warning(f"CrewMixin unavailable ({_crew_import_err}); RL/LLM selection disabled")
+
     class _CrewMixin:  # type: ignore[no-redef]
-        def _select_move_rl(self, obs): return None
-        def _select_move_llm(self, game_id, obs): raise RuntimeError("crewai unavailable")
+        def _select_move_rl(self, obs):
+            return None
+
+        def _select_move_llm(self, game_id, obs):
+            raise RuntimeError("crewai unavailable")
+
         def _build_observation(self, gs):
             role = getattr(self, "role", "cop")
-            pos = gs.get("cop_position", [0, 0]) if role == "cop" else gs.get("thief_position", [3, 3])
-            return {"own_position": pos, "turn": gs.get("turn", 0),
-                    "scent_field": gs.get("scent_field", []), "candidate_actions": [], "grid_state": gs}
-        def _short_move(self, long): return {"NORTH":"N","SOUTH":"S","EAST":"E","WEST":"W","STAY":"STAY"}.get(long, long)
-        def _long_move(self, short): return {"N":"NORTH","S":"SOUTH","E":"EAST","W":"WEST","STAY":"STAY"}.get(short, short)
+            if role == "cop":
+                pos = gs.get("cop_position", [0, 0])
+            else:
+                pos = gs.get("thief_position", [3, 3])
+            return {
+                "own_position": pos,
+                "turn": gs.get("turn", 0),
+                "scent_field": gs.get("scent_field", []),
+                "candidate_actions": [],
+                "grid_state": gs,
+            }
+
+        def _short_move(self, long):
+            _map = {"NORTH": "N", "SOUTH": "S", "EAST": "E", "WEST": "W", "STAY": "STAY"}
+            return _map.get(long, long)
+
+        def _long_move(self, short):
+            _map = {"N": "NORTH", "S": "SOUTH", "E": "EAST", "W": "WEST", "STAY": "STAY"}
+            return _map.get(short, short)
 
 
 class PeerRuntime(_CrewMixin):
@@ -84,16 +103,25 @@ class PeerRuntime(_CrewMixin):
         self._my_commits = {}
         self._cop_barriers_remaining = 14
         created_at = _now()
-        save_game_state(self.game_dir, {"step": 0, "turn": 0, "completed": False,
-                                        "winner": None, "created_at": created_at})
+        save_game_state(
+            self.game_dir,
+            {"step": 0, "turn": 0, "completed": False, "winner": None, "created_at": created_at},
+        )
         logger.info(f"[PeerRuntime/{self.role}] Starting game {game_id}")
         await self._init_protocol_adapter()
         rules = RulesEngine(self.board, max_turns=self.max_turns)
         winner, abort_reason, final_step = await run_peer_turn_loop(self, rules, self.max_turns)
 
         audit_ok, audit_details = await do_final_audit(
-            self.opponent_client, game_id, self.role, self.config_sha256,
-            self._my_commits, self.game_dir, self.opponent_role, final_step, _now,
+            self.opponent_client,
+            game_id,
+            self.role,
+            self.config_sha256,
+            self._my_commits,
+            self.game_dir,
+            self.opponent_role,
+            final_step,
+            _now,
         )
         if not audit_ok:
             winner = "TECHNICAL_LOSS"
@@ -102,27 +130,52 @@ class PeerRuntime(_CrewMixin):
 
         ended_at = _now()
         final_state = {
-            "step": self.board.turn, "turn": self.board.turn,
+            "step": self.board.turn,
+            "turn": self.board.turn,
             "cop_position": self.board.cop_position,
             "thief_position": self.board.thief_position,
             "move_history": self.board.move_history,
-            "completed": True, "winner": winner, "abort_reason": abort_reason,
-            "created_at": created_at, "ended_at": ended_at, "final_step": final_step,
-            "audit_ok": audit_ok, "audit_details": audit_details,
+            "completed": True,
+            "winner": winner,
+            "abort_reason": abort_reason,
+            "created_at": created_at,
+            "ended_at": ended_at,
+            "final_step": final_step,
+            "audit_ok": audit_ok,
+            "audit_details": audit_details,
         }
         save_game_state(self.game_dir, final_state)
         write_result(
-            self.game_dir, game_id, self.role, self.config_sha256, self.group_name,
-            self.board, final_state, final_step, audit_ok,
-            self._my_commits, count_opponent_commits(self.game_dir),
+            self.game_dir,
+            game_id,
+            self.role,
+            self.config_sha256,
+            self.group_name,
+            self.board,
+            final_state,
+            final_step,
+            audit_ok,
+            self._my_commits,
+            count_opponent_commits(self.game_dir),
         )
         await notify_game_end(
-            self.opponent_client, game_id, self.role, self.config_sha256,
-            final_step, winner or "unknown", _now,
+            self.opponent_client,
+            game_id,
+            self.role,
+            self.config_sha256,
+            final_step,
+            winner or "unknown",
+            _now,
         )
-        result = {"ok": True, "game_id": game_id, "role": self.role,
-                  "winner": winner, "final_step": final_step,
-                  "abort_reason": abort_reason, "audit_ok": audit_ok}
+        result = {
+            "ok": True,
+            "game_id": game_id,
+            "role": self.role,
+            "winner": winner,
+            "final_step": final_step,
+            "abort_reason": abort_reason,
+            "audit_ok": audit_ok,
+        }
         logger.info(f"[PeerRuntime/{self.role}] Game {game_id} done: {result}")
         return result
 
@@ -131,17 +184,26 @@ class PeerRuntime(_CrewMixin):
         store_commit(self.game_dir, self.role, step, payload)
 
     # Tool names that are not per-turn game-action tools.
-    _UTILITY_TOOL_NAMES = frozenset({
-        "ping", "get_config", "get_protocol", "list_tools",
-        "health", "status", "info", "describe",
-        "start_game",  # initialisation only — never needed mid-game
-    })
+    _UTILITY_TOOL_NAMES = frozenset(
+        {
+            "ping",
+            "get_config",
+            "get_protocol",
+            "list_tools",
+            "health",
+            "status",
+            "info",
+            "describe",
+            "start_game",  # initialisation only — never needed mid-game
+        }
+    )
 
     async def _init_protocol_adapter(self) -> None:
         """Discover opponent's MCP tools and build the protocol adapter crew."""
         try:
             from agent.mcp.discovery import ProtocolDiscovery
             from agent.mcp.protocol_adapter import ProtocolAdapterCrew
+
             discovery = ProtocolDiscovery(self.opponent_client.peer_url)
             ok = await discovery.discover()
             if ok and discovery.tools:
@@ -161,7 +223,9 @@ class PeerRuntime(_CrewMixin):
                     f"({len(action_tools)}/{len(discovery.tools)} tools after filtering)"
                 )
             else:
-                logger.warning(f"[PeerRuntime/{self.role}] Discovery found no tools — direct MCP fallback")
+                logger.warning(
+                    f"[PeerRuntime/{self.role}] Discovery found no tools — direct MCP fallback"
+                )
         except Exception as exc:
             logger.warning(f"[PeerRuntime/{self.role}] Protocol adapter init failed: {exc}")
             self.protocol_adapter = None
@@ -169,7 +233,10 @@ class PeerRuntime(_CrewMixin):
     def _init_llm(self, llm_dict: dict | None):
         try:
             from agent.llm import LLMFactory
-            return LLMFactory.create_from_dict(llm_dict) if llm_dict else LLMFactory.create_from_env()
+
+            return (
+                LLMFactory.create_from_dict(llm_dict) if llm_dict else LLMFactory.create_from_env()
+            )
         except Exception as exc:
             logger.warning(f"[PeerRuntime/{self.role}] LLM init failed: {exc}")
             return None

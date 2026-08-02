@@ -50,14 +50,18 @@ class TestRLPolicyHiddenInfo:
     def test_select_move_from_dict_accepts_last_revealed_cop_pos(self):
         """RLPolicy.select_move_from_dict must accept last_revealed_cop_pos without error."""
         import inspect
+
         from agent.rl.policy import RLPolicy
+
         sig = inspect.signature(RLPolicy.select_move_from_dict)
         assert "last_revealed_cop_pos" in sig.parameters
 
     def test_build_obs_uses_last_revealed_for_thief(self):
         """_build_obs must route last_revealed_cop_pos to thief_observation."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
+
         import torch
+
         from agent.rl.policy import RLPolicy
 
         policy = RLPolicy.__new__(RLPolicy)
@@ -73,7 +77,8 @@ class TestRLPolicyHiddenInfo:
         rules = RulesEngine(board)
 
         with patch("agent.rl.policy.thief_observation") as mock_obs:
-            mock_obs.return_value = [[[[0.0] * 7 for _ in range(7)] for _ in range(7)] for _ in range(4)]
+            grid = [[0.0] * 7 for _ in range(7)]
+            mock_obs.return_value = [[grid for _ in range(7)] for _ in range(4)]
             policy._build_obs(board, rules, last_revealed_cop_pos=[2, 3])
             mock_obs.assert_called_once_with(board, 35, last_revealed_cop_pos=[2, 3])
 
@@ -84,7 +89,7 @@ crewai_missing = pytest.importorskip.__module__  # just to use pytest
 class TestOrchestratoreGameStateTracking:
     def test_last_revealed_cop_pos_in_observation(self):
         """_build_observation must include last_revealed_cop_pos for thief."""
-        crewai = pytest.importorskip("crewai", reason="crewai not installed")
+        pytest.importorskip("crewai", reason="crewai not installed")
         from agent.orchestrator_crew import CrewMixin  # noqa: F401
 
         mixin = CrewMixin.__new__(CrewMixin)

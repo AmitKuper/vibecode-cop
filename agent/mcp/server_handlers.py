@@ -52,18 +52,30 @@ def handle_start_game(
             )
         if msg.config_sha256 != config_sha256:
             return _err(
-                game_log, "start_game", actor, "handshake",
-                f"Config mismatch: {msg.config_sha256} != {config_sha256}", base,
+                game_log,
+                "start_game",
+                actor,
+                "handshake",
+                f"Config mismatch: {msg.config_sha256} != {config_sha256}",
+                base,
             )
         if msg.protocol_version != "1.0":
             return _err(
-                game_log, "start_game", actor, "handshake",
-                f"Protocol version mismatch: {msg.protocol_version}", base,
+                game_log,
+                "start_game",
+                actor,
+                "handshake",
+                f"Protocol version mismatch: {msg.protocol_version}",
+                base,
             )
         if role not in msg.roles:
             return _err(
-                game_log, "start_game", "unknown", "handshake",
-                f"My role '{role}' not in agreed roles", base,
+                game_log,
+                "start_game",
+                "unknown",
+                "handshake",
+                f"My role '{role}' not in agreed roles",
+                base,
             )
         game_log.append_message_received("start_game", role, "handshake", True)
 
@@ -106,21 +118,33 @@ def handle_action(
 
         if not verify_signature(msg.to_dict(), signature, secret):
             return _err(
-                game_log, f"action:{msg.phase}", msg.role, msg.phase,
-                "Signature verification failed", base,
+                game_log,
+                f"action:{msg.phase}",
+                msg.role,
+                msg.phase,
+                "Signature verification failed",
+                base,
             )
 
         if msg.config_sha256 != config_sha256:
             return _err(
-                game_log, f"action:{msg.phase}", msg.role, msg.phase,
-                f"Config mismatch: {msg.config_sha256} != {config_sha256}", base,
+                game_log,
+                f"action:{msg.phase}",
+                msg.role,
+                msg.phase,
+                f"Config mismatch: {msg.config_sha256} != {config_sha256}",
+                base,
             )
 
         is_valid, error = validate_action_message(msg)
         if not is_valid:
             return _err(
-                game_log, f"action:{msg.phase}", msg.role, msg.phase,
-                error or "Invalid message", base,
+                game_log,
+                f"action:{msg.phase}",
+                msg.role,
+                msg.phase,
+                error or "Invalid message",
+                base,
             )
 
         game_log.append_message_received("action", msg.role, msg.phase, True)
@@ -131,7 +155,10 @@ def handle_action(
             game_log.append_reveal(msg.role, msg.step, msg.move, msg.hint, msg.intent)
         elif msg.phase == "final_audit":
             game_log.append(
-                "final_audit", msg.role, "final_audit", "ok",
+                "final_audit",
+                msg.role,
+                "final_audit",
+                "ok",
                 {"step": msg.step, "nonce_count": len(msg.nonces) if msg.nonces else 0},
             )
 

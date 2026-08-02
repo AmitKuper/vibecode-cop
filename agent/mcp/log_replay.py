@@ -70,6 +70,7 @@ def verify_log_integrity(log_file: Path, expected_hash: str | None = None) -> di
 
 def hmac_equal(a: str, b: str) -> bool:
     import hmac as _hmac
+
     return _hmac.compare_digest(a.lower(), b.lower())
 
 

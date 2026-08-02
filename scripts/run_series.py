@@ -41,17 +41,26 @@ def _parse_args() -> argparse.Namespace:
     p.add_argument("--thief-url", default=os.getenv("THIEF_URL", "http://localhost:5001/mcp"))
     p.add_argument("--secret", default=os.getenv("SHARED_SECRET", ""))
     p.add_argument("--games-dir", default="cop/games")
-    p.add_argument("--n-gamelets", type=int, default=6,
-                   help="Number of gamelets (must be >= 6 per league rules; default: 6)")
+    p.add_argument(
+        "--n-gamelets",
+        type=int,
+        default=6,
+        help="Number of gamelets (must be >= 6 per league rules; default: 6)",
+    )
     p.add_argument("--config", default="")
     return p.parse_args()
 
 
 def _load_config(args: argparse.Namespace) -> dict:
     """Load config.toml for secret and games_dir if not set via CLI."""
-    config_path_candidates = [args.config] if args.config else [
-        "cop/config.toml", "config.toml",
-    ]
+    config_path_candidates = (
+        [args.config]
+        if args.config
+        else [
+            "cop/config.toml",
+            "config.toml",
+        ]
+    )
     for path_str in config_path_candidates:
         path = Path(path_str)
         if path.exists():
@@ -70,8 +79,8 @@ async def run_series(
     llm_dict: dict | None = None,
 ) -> dict:
     """Run n_gamelets via cop PeerRuntime (P2P, no central judge)."""
-    from agent.peer_runtime import PeerRuntime
     from agent.config.shared_config import load_shared_config
+    from agent.peer_runtime import PeerRuntime
 
     shared_cfg = load_shared_config()
     scoring = shared_cfg.get("scoring", {})
@@ -149,9 +158,7 @@ async def run_series(
         )
 
     series_winner = (
-        "cop" if cop_total > thief_total
-        else "thief" if thief_total > cop_total
-        else "tie"
+        "cop" if cop_total > thief_total else "thief" if thief_total > cop_total else "tie"
     )
     series_result = {
         "series_id": series_id,
@@ -179,15 +186,19 @@ async def main() -> int:
     args = _parse_args()
     config = _load_config(args)
 
-    secret = args.secret or os.environ.get("SHARED_SECRET") or (
-        config.get("crypto", {}).get("shared_secret", "dev-secret-change-me")
+    secret = (
+        args.secret
+        or os.environ.get("SHARED_SECRET")
+        or (config.get("crypto", {}).get("shared_secret", "dev-secret-change-me"))
     )
     games_dir = Path(args.games_dir)
     thief_url = args.thief_url
     if not thief_url.endswith("/mcp"):
         thief_url = thief_url.rstrip("/") + "/mcp"
 
-    from agent.config.shared_config import load_shared_config, config_sha256 as _sha256_fn
+    from agent.config.shared_config import config_sha256 as _sha256_fn
+    from agent.config.shared_config import load_shared_config
+
     game_cfg = load_shared_config()
     config_sha256 = _sha256_fn(game_cfg)
     group_name = game_cfg.get("network_and_league", {}).get("group_name", "unknown")

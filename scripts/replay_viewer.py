@@ -34,7 +34,7 @@ def audit_single(log_file: Path) -> bool:
         log_data = load_log_json(log_file)
     except Exception as exc:
         print(f"  Commitments: FAIL (could not parse log: {exc})")
-        print(f"=== TAMPERED: could not parse log ===")
+        print("=== TAMPERED: could not parse log ===")
         return False
 
     commit_result = audit_log_commitments(log_data)
@@ -47,7 +47,7 @@ def audit_single(log_file: Path) -> bool:
         return True
     else:
         print(f"  Commitments: FAIL ({failed} mismatches out of {total})")
-        print(f"=== TAMPERED: commitment mismatch ===")
+        print("=== TAMPERED: commitment mismatch ===")
         return False
 
 

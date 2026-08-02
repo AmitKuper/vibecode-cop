@@ -8,10 +8,10 @@ from agent.game_series import GameSeries
 
 # Mandatory fixed scoring values from config/game.json
 _SCORING = {
-    "capture_cop": 20,   # cop score when cop wins
+    "capture_cop": 20,  # cop score when cop wins
     "capture_thief": 5,  # thief consolation score when caught
-    "survival_cop": 5,   # cop score when thief survives
-    "survival_thief": 10, # thief score when thief survives
+    "survival_cop": 5,  # cop score when thief survives
+    "survival_thief": 10,  # thief score when thief survives
     "tie_score": 2,
     "technical_loss": 0,
 }
@@ -45,12 +45,14 @@ class TestGameSeriesSixGamelets:
             call_count += 1
             return _mock_game_result("cop")
 
-        with patch("agent.game_series._load_scoring", return_value=_SCORING):
-            with patch.object(series, "_make_runner") as mock_runner_factory:
-                mock_runner = AsyncMock()
-                mock_runner.run_game = mock_run_game
-                mock_runner_factory.return_value = mock_runner
-                result = await series.run_series(series_id="test_series_001")
+        with (
+            patch("agent.game_series._load_scoring", return_value=_SCORING),
+            patch.object(series, "_make_runner") as mock_runner_factory,
+        ):
+            mock_runner = AsyncMock()
+            mock_runner.run_game = mock_run_game
+            mock_runner_factory.return_value = mock_runner
+            result = await series.run_series(series_id="test_series_001")
 
         assert len(result["gamelets"]) == 6
         assert call_count == 6
@@ -62,12 +64,14 @@ class TestGameSeriesSixGamelets:
         async def mock_run_game(**kwargs):
             return _mock_game_result("thief")
 
-        with patch("agent.game_series._load_scoring", return_value=_SCORING):
-            with patch.object(series, "_make_runner") as mock_runner_factory:
-                mock_runner = AsyncMock()
-                mock_runner.run_game = mock_run_game
-                mock_runner_factory.return_value = mock_runner
-                result = await series.run_series(series_id="test_series_002")
+        with (
+            patch("agent.game_series._load_scoring", return_value=_SCORING),
+            patch.object(series, "_make_runner") as mock_runner_factory,
+        ):
+            mock_runner = AsyncMock()
+            mock_runner.run_game = mock_run_game
+            mock_runner_factory.return_value = mock_runner
+            result = await series.run_series(series_id="test_series_002")
 
         labels = [g["gamelet"] for g in result["gamelets"]]
         assert labels == ["g01", "g02", "g03", "g04", "g05", "g06"]
@@ -80,14 +84,16 @@ class TestGameSeriesSixGamelets:
         async def mock_run_game(**kwargs):
             return _mock_game_result("cop")
 
-        with patch("agent.game_series._load_scoring", return_value=_SCORING):
-            with patch.object(series, "_make_runner") as mock_runner_factory:
-                mock_runner = AsyncMock()
-                mock_runner.run_game = mock_run_game
-                mock_runner_factory.return_value = mock_runner
-                result = await series.run_series()
+        with (
+            patch("agent.game_series._load_scoring", return_value=_SCORING),
+            patch.object(series, "_make_runner") as mock_runner_factory,
+        ):
+            mock_runner = AsyncMock()
+            mock_runner.run_game = mock_run_game
+            mock_runner_factory.return_value = mock_runner
+            result = await series.run_series()
 
-        assert result["cop_total"] == 60   # 3 × 20
+        assert result["cop_total"] == 60  # 3 × 20
         assert result["thief_total"] == 15  # 3 × 5 consolation
         assert result["series_winner"] == "cop"
 
@@ -99,15 +105,17 @@ class TestGameSeriesSixGamelets:
         async def mock_run_game(**kwargs):
             return _mock_game_result("thief")
 
-        with patch("agent.game_series._load_scoring", return_value=_SCORING):
-            with patch.object(series, "_make_runner") as mock_runner_factory:
-                mock_runner = AsyncMock()
-                mock_runner.run_game = mock_run_game
-                mock_runner_factory.return_value = mock_runner
-                result = await series.run_series()
+        with (
+            patch("agent.game_series._load_scoring", return_value=_SCORING),
+            patch.object(series, "_make_runner") as mock_runner_factory,
+        ):
+            mock_runner = AsyncMock()
+            mock_runner.run_game = mock_run_game
+            mock_runner_factory.return_value = mock_runner
+            result = await series.run_series()
 
         assert result["thief_total"] == 30  # 3 × 10
-        assert result["cop_total"] == 15    # 3 × 5
+        assert result["cop_total"] == 15  # 3 × 5
         assert result["series_winner"] == "thief"
 
     @pytest.mark.asyncio
@@ -117,12 +125,14 @@ class TestGameSeriesSixGamelets:
         async def mock_run_game(**kwargs):
             return _mock_game_result("TECHNICAL_LOSS", audit_ok=False)
 
-        with patch("agent.game_series._load_scoring", return_value=_SCORING):
-            with patch.object(series, "_make_runner") as mock_runner_factory:
-                mock_runner = AsyncMock()
-                mock_runner.run_game = mock_run_game
-                mock_runner_factory.return_value = mock_runner
-                result = await series.run_series()
+        with (
+            patch("agent.game_series._load_scoring", return_value=_SCORING),
+            patch.object(series, "_make_runner") as mock_runner_factory,
+        ):
+            mock_runner = AsyncMock()
+            mock_runner.run_game = mock_run_game
+            mock_runner_factory.return_value = mock_runner
+            result = await series.run_series()
 
         for g in result["gamelets"]:
             assert g["cop_pts"] == 0
@@ -138,12 +148,14 @@ class TestGameSeriesSixGamelets:
         async def mock_run_game(**kwargs):
             return _mock_game_result(next(winners))
 
-        with patch("agent.game_series._load_scoring", return_value=_SCORING):
-            with patch.object(series, "_make_runner") as mock_runner_factory:
-                mock_runner = AsyncMock()
-                mock_runner.run_game = mock_run_game
-                mock_runner_factory.return_value = mock_runner
-                result = await series.run_series()
+        with (
+            patch("agent.game_series._load_scoring", return_value=_SCORING),
+            patch.object(series, "_make_runner") as mock_runner_factory,
+        ):
+            mock_runner = AsyncMock()
+            mock_runner.run_game = mock_run_game
+            mock_runner_factory.return_value = mock_runner
+            result = await series.run_series()
 
         assert result["cop_total"] == result["thief_total"]
         assert result["series_winner"] == "tie"
@@ -155,12 +167,14 @@ class TestGameSeriesSixGamelets:
         async def mock_run_game(**kwargs):
             return _mock_game_result("cop")
 
-        with patch("agent.game_series._load_scoring", return_value=_SCORING):
-            with patch.object(series, "_make_runner") as mock_runner_factory:
-                mock_runner = AsyncMock()
-                mock_runner.run_game = mock_run_game
-                mock_runner_factory.return_value = mock_runner
-                result = await series.run_series(series_id="file_test_series")
+        with (
+            patch("agent.game_series._load_scoring", return_value=_SCORING),
+            patch.object(series, "_make_runner") as mock_runner_factory,
+        ):
+            mock_runner = AsyncMock()
+            mock_runner.run_game = mock_run_game
+            mock_runner_factory.return_value = mock_runner
+            await series.run_series(series_id="file_test_series")
 
         result_files = list((tmp_path / "memory").glob("*series*.json"))
         assert len(result_files) == 1

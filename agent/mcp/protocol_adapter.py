@@ -13,7 +13,7 @@ from __future__ import annotations
 import json
 import logging
 import re
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ class ProtocolAdapterCrew:
     def __init__(
         self,
         discovered_tools: dict,
-        client: "GameMCPClient",
+        client: GameMCPClient,
         llm: object = None,
     ) -> None:
         self._client = client
@@ -59,11 +59,11 @@ class ProtocolAdapterCrew:
         props = (self._tool_schema.get("schema") or {}).get("properties", {})
         self._props_summary = (
             "\n".join(f"  {k}: {v.get('type', 'string')}" for k, v in props.items())
-            if props else "(no schema available)"
+            if props
+            else "(no schema available)"
         )
         logger.info(
-            f"[ProtocolAdapter] Using tool '{self._tool_name}' with "
-            f"{len(props)} known parameters"
+            f"[ProtocolAdapter] Using tool '{self._tool_name}' with {len(props)} known parameters"
         )
 
     def _build_mapping_prompt(self, action_description: str) -> str:
@@ -81,7 +81,13 @@ class ProtocolAdapterCrew:
         try:
             response = self._llm.call(
                 messages=[
-                    {"role": "system", "content": "You map game action values to JSON tool parameters. Output only valid JSON."},
+                    {
+                        "role": "system",
+                        "content": (
+                            "You map game action values to JSON tool parameters."
+                            " Output only valid JSON."
+                        ),
+                    },
                     {"role": "user", "content": prompt},
                 ]
             )
@@ -109,8 +115,7 @@ class ProtocolAdapterCrew:
         params = _extract_json(raw_response)
         if not params:
             raise RuntimeError(
-                f"LLM did not return valid JSON for tool mapping. "
-                f"Raw response: {raw_response!r}"
+                f"LLM did not return valid JSON for tool mapping. Raw response: {raw_response!r}"
             )
 
         if known_values:

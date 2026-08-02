@@ -25,8 +25,7 @@ from __future__ import annotations
 import json
 import sys
 import threading
-from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, Mock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -249,9 +248,12 @@ class TestLLMProviders:
         mock_crewai.LLM = mock_llm_cls
         with patch.dict("sys.modules", {"crewai": mock_crewai}):
             from importlib import reload
+
             import agent.llm.providers as prov
+
             reload(prov)
             from agent.llm.config import LLMConfigBuilder
+
             cfg = LLMConfigBuilder.ollama()
             prov.create_ollama(cfg)
         mock_llm_cls.assert_called_once()
@@ -262,11 +264,15 @@ class TestLLMProviders:
         mock_crewai.LLM = mock_llm_cls
         with patch.dict("sys.modules", {"crewai": mock_crewai}):
             from importlib import reload
+
             import agent.llm.providers as prov
+
             reload(prov)
             from agent.llm.config import LLMConfig, LLMProvider
+
             cfg = LLMConfig(provider=LLMProvider.ANTHROPIC, model="claude-3", api_key=None)
             import os
+
             os.environ.pop("ANTHROPIC_API_KEY", None)
             with pytest.raises(ValueError, match="Anthropic API key"):
                 prov.create_anthropic(cfg)
@@ -277,9 +283,12 @@ class TestLLMProviders:
         mock_crewai.LLM = mock_llm_cls
         with patch.dict("sys.modules", {"crewai": mock_crewai}):
             from importlib import reload
+
             import agent.llm.providers as prov
+
             reload(prov)
             from agent.llm.config import LLMConfig, LLMProvider
+
             cfg = LLMConfig(provider=LLMProvider.ANTHROPIC, model="claude-3", api_key="secret")
             prov.create_anthropic(cfg)
         mock_llm_cls.assert_called_once()
@@ -290,11 +299,15 @@ class TestLLMProviders:
         mock_crewai.LLM = mock_llm_cls
         with patch.dict("sys.modules", {"crewai": mock_crewai}):
             from importlib import reload
+
             import agent.llm.providers as prov
+
             reload(prov)
             from agent.llm.config import LLMConfig, LLMProvider
+
             cfg = LLMConfig(provider=LLMProvider.OPENAI, model="gpt-4", api_key=None)
             import os
+
             os.environ.pop("OPENAI_API_KEY", None)
             with pytest.raises(ValueError, match="OpenAI API key"):
                 prov.create_openai(cfg)
@@ -305,9 +318,12 @@ class TestLLMProviders:
         mock_crewai.LLM = mock_llm_cls
         with patch.dict("sys.modules", {"crewai": mock_crewai}):
             from importlib import reload
+
             import agent.llm.providers as prov
+
             reload(prov)
             from agent.llm.config import LLMConfig, LLMProvider
+
             cfg = LLMConfig(provider=LLMProvider.OPENAI, model="gpt-4", api_key="openai-key")
             prov.create_openai(cfg)
         mock_llm_cls.assert_called_once()
@@ -318,13 +334,17 @@ class TestLLMProviders:
         mock_crewai.LLM = mock_llm_cls
         with patch.dict("sys.modules", {"crewai": mock_crewai}):
             from importlib import reload
+
             import agent.llm.providers as prov
+
             reload(prov)
             from agent.llm.config import LLMConfig, LLMProvider
+
             cfg = LLMConfig(
                 provider=LLMProvider.AZURE, model="gpt-4", api_key=None, base_url="https://az"
             )
             import os
+
             os.environ.pop("AZURE_OPENAI_API_KEY", None)
             with pytest.raises(ValueError, match="Azure API key"):
                 prov.create_azure(cfg)
@@ -335,9 +355,12 @@ class TestLLMProviders:
         mock_crewai.LLM = mock_llm_cls
         with patch.dict("sys.modules", {"crewai": mock_crewai}):
             from importlib import reload
+
             import agent.llm.providers as prov
+
             reload(prov)
             from agent.llm.config import LLMConfig, LLMProvider
+
             cfg = LLMConfig(
                 provider=LLMProvider.AZURE, model="gpt-4", api_key="az-key", base_url=None
             )
@@ -350,9 +373,12 @@ class TestLLMProviders:
         mock_crewai.LLM = mock_llm_cls
         with patch.dict("sys.modules", {"crewai": mock_crewai}):
             from importlib import reload
+
             import agent.llm.providers as prov
+
             reload(prov)
             from agent.llm.config import LLMConfig, LLMProvider
+
             cfg = LLMConfig(
                 provider=LLMProvider.AZURE,
                 model="gpt-4",
@@ -423,8 +449,11 @@ class TestLLMFactory:
 
     def test_create_from_env_ollama(self):
         mock_create = MagicMock(return_value="env-llm")
-        with patch("agent.llm.factory.LLMFactory.create_llm", mock_create), patch.dict(
-            "os.environ", {"LLM_PROVIDER": "ollama", "LLM_MODEL": "llama2"}, clear=False
+        with (
+            patch("agent.llm.factory.LLMFactory.create_llm", mock_create),
+            patch.dict(
+                "os.environ", {"LLM_PROVIDER": "ollama", "LLM_MODEL": "llama2"}, clear=False
+            ),
         ):
             from agent.llm.factory import LLMFactory
 
@@ -433,10 +462,13 @@ class TestLLMFactory:
 
     def test_create_from_env_openai(self):
         mock_create = MagicMock(return_value="env-llm")
-        with patch("agent.llm.factory.LLMFactory.create_llm", mock_create), patch.dict(
-            "os.environ",
-            {"LLM_PROVIDER": "openai", "LLM_MODEL": "gpt-4", "OPENAI_API_KEY": "k"},
-            clear=False,
+        with (
+            patch("agent.llm.factory.LLMFactory.create_llm", mock_create),
+            patch.dict(
+                "os.environ",
+                {"LLM_PROVIDER": "openai", "LLM_MODEL": "gpt-4", "OPENAI_API_KEY": "k"},
+                clear=False,
+            ),
         ):
             from agent.llm.factory import LLMFactory
 
@@ -445,10 +477,13 @@ class TestLLMFactory:
 
     def test_create_from_env_anthropic(self):
         mock_create = MagicMock(return_value="env-llm")
-        with patch("agent.llm.factory.LLMFactory.create_llm", mock_create), patch.dict(
-            "os.environ",
-            {"LLM_PROVIDER": "anthropic", "LLM_MODEL": "claude-3", "ANTHROPIC_API_KEY": "k"},
-            clear=False,
+        with (
+            patch("agent.llm.factory.LLMFactory.create_llm", mock_create),
+            patch.dict(
+                "os.environ",
+                {"LLM_PROVIDER": "anthropic", "LLM_MODEL": "claude-3", "ANTHROPIC_API_KEY": "k"},
+                clear=False,
+            ),
         ):
             from agent.llm.factory import LLMFactory
 
@@ -457,15 +492,18 @@ class TestLLMFactory:
 
     def test_create_from_env_azure(self):
         mock_create = MagicMock(return_value="env-llm")
-        with patch("agent.llm.factory.LLMFactory.create_llm", mock_create), patch.dict(
-            "os.environ",
-            {
-                "LLM_PROVIDER": "azure",
-                "LLM_MODEL": "gpt-4",
-                "AZURE_OPENAI_API_KEY": "k",
-                "LLM_BASE_URL": "https://az",
-            },
-            clear=False,
+        with (
+            patch("agent.llm.factory.LLMFactory.create_llm", mock_create),
+            patch.dict(
+                "os.environ",
+                {
+                    "LLM_PROVIDER": "azure",
+                    "LLM_MODEL": "gpt-4",
+                    "AZURE_OPENAI_API_KEY": "k",
+                    "LLM_BASE_URL": "https://az",
+                },
+                clear=False,
+            ),
         ):
             from agent.llm.factory import LLMFactory
 
@@ -474,8 +512,9 @@ class TestLLMFactory:
 
     def test_create_from_env_unknown_falls_back(self):
         mock_create = MagicMock(return_value="fallback-llm")
-        with patch("agent.llm.factory.LLMFactory.create_llm", mock_create), patch.dict(
-            "os.environ", {"LLM_PROVIDER": "unknown_xyz"}, clear=False
+        with (
+            patch("agent.llm.factory.LLMFactory.create_llm", mock_create),
+            patch.dict("os.environ", {"LLM_PROVIDER": "unknown_xyz"}, clear=False),
         ):
             from agent.llm.factory import LLMFactory
 
@@ -750,7 +789,7 @@ class TestAuditMixin:
         obj.generate_reports = AsyncMock()
 
         msg = _make_action_msg("game_end", reason="thief")
-        result = obj._handle_game_end("g2", msg)
+        obj._handle_game_end("g2", msg)
         assert "g2" in cleanup_called
 
 
@@ -988,9 +1027,11 @@ class TestCrewMixin:
 
     def test_create_crew_no_crewai(self):
         mixin = self._make_mixin()
-        with patch("agent.orchestrator_crew.Crew", None):
-            with pytest.raises(RuntimeError, match="crewai is not installed"):
-                mixin._create_crew("g1")
+        with (
+            patch("agent.orchestrator_crew.Crew", None),
+            pytest.raises(RuntimeError, match="crewai is not installed"),
+        ):
+            mixin._create_crew("g1")
 
     def test_create_crew_no_llm(self):
         mixin = self._make_mixin()
@@ -1000,9 +1041,9 @@ class TestCrewMixin:
         with (
             patch("agent.orchestrator_crew.Crew", mock_crew_cls),
             patch.dict("sys.modules", {"agent.agents": mock_agents_module}),
+            pytest.raises(RuntimeError, match="No LLM configured"),
         ):
-            with pytest.raises(RuntimeError, match="No LLM configured"):
-                mixin._create_crew("g1")
+            mixin._create_crew("g1")
 
     def test_create_crew_success(self):
         mixin = self._make_mixin()
@@ -1116,9 +1157,7 @@ class TestDiscoveryValidate:
 
         skill = tmp_path / "skill.py"
         skill.write_text(
-            "async def start_game(d): pass\n"
-            "async def action(g, d): pass\n"
-            "async def ping(): pass\n"
+            "async def start_game(d): pass\nasync def action(g, d): pass\nasync def ping(): pass\n"
         )
         valid, issues = python_validate_skill(skill)
         assert valid
@@ -1154,9 +1193,7 @@ class TestDiscoveryValidate:
 
         skill = tmp_path / "skill.py"
         skill.write_text(
-            "async def start_game(d): pass\n"
-            "async def action(g, d): pass\n"
-            "async def ping(): pass\n"
+            "async def start_game(d): pass\nasync def action(g, d): pass\nasync def ping(): pass\n"
         )
         # Make crewai import fail — Crew is imported inside the try block
         with patch.dict("sys.modules", {"crewai": None}):
@@ -1168,9 +1205,7 @@ class TestDiscoveryValidate:
 
         skill = tmp_path / "skill.py"
         skill.write_text(
-            "async def start_game(d): pass\n"
-            "async def action(g, d): pass\n"
-            "async def ping(): pass\n"
+            "async def start_game(d): pass\nasync def action(g, d): pass\nasync def ping(): pass\n"
         )
 
         with patch(
@@ -1196,9 +1231,7 @@ class TestDiscoveryValidate:
             "agent.orchestrator_discovery_validate.run_validator_crew",
             side_effect=[(False, ["Missing action"]), (True, [])],
         ):
-            result = validate_skill_loop(
-                "cop", None, "g1", skill, "http://x", {}, "", None, _write
-            )
+            validate_skill_loop("cop", None, "g1", skill, "http://x", {}, "", None, _write)
         assert len(write_calls) == 1
 
 
@@ -1252,9 +1285,7 @@ class TestDiscoveryWrite:
 
         skill_path = tmp_path / "skill.py"
         schemas = {
-            "start_game": {
-                "input_schema": {"properties": {"message_json": {"type": "string"}}}
-            },
+            "start_game": {"input_schema": {"properties": {"message_json": {"type": "string"}}}},
             "action": {
                 "input_schema": {
                     "properties": {
@@ -1346,9 +1377,7 @@ class TestDiscoveryMixin:
                     "transport_url": "http://x/sse",
                 },
             ),
-            patch(
-                "agent.orchestrator_discovery_mixin._write_skill_from_mapping", mock_write
-            ),
+            patch("agent.orchestrator_discovery_mixin._write_skill_from_mapping", mock_write),
         ):
             mixin._write_skill(skill_path, "http://x/sse", {}, '{"some": "json"}', None)
         mock_write.assert_called_once()
@@ -1362,9 +1391,7 @@ class TestDiscoveryMixin:
                 "agent.orchestrator_discovery_mixin._parse_explorer_mapping",
                 side_effect=ValueError("bad"),
             ),
-            patch(
-                "agent.orchestrator_discovery_mixin._write_skill_from_schemas", mock_write
-            ),
+            patch("agent.orchestrator_discovery_mixin._write_skill_from_schemas", mock_write),
         ):
             mixin._write_skill(skill_path, "http://x/sse", {"ping": {}}, "bad json", None)
         mock_write.assert_called_once()
@@ -1373,9 +1400,7 @@ class TestDiscoveryMixin:
         mixin = self._make_mixin()
         skill_path = tmp_path / "skill.py"
         mock_write = MagicMock()
-        with patch(
-            "agent.orchestrator_discovery_mixin._write_skill_from_schemas", mock_write
-        ):
+        with patch("agent.orchestrator_discovery_mixin._write_skill_from_schemas", mock_write):
             mixin._write_skill(skill_path, "http://x/sse", {}, "", None)
         mock_write.assert_called_once()
 
@@ -1667,9 +1692,7 @@ class TestGameRunnerTurn:
         board = MagicMock()
         rules = MagicMock()
 
-        with patch(
-            "agent.game_runner_turn._run_single_turn", return_value=(None, "abort!")
-        ):
+        with patch("agent.game_runner_turn._run_single_turn", return_value=(None, "abort!")):
             winner, abort, step = await run_turn_loop(
                 runner, "g1", board, rules, max_turns=3, watchdog_timeout=60
             )
@@ -1682,9 +1705,7 @@ class TestGameRunnerTurn:
         board = MagicMock()
         rules = MagicMock()
 
-        with patch(
-            "agent.game_runner_turn._run_single_turn", return_value=("thief", None)
-        ):
+        with patch("agent.game_runner_turn._run_single_turn", return_value=("thief", None)):
             winner, abort, step = await run_turn_loop(
                 runner, "g1", board, rules, max_turns=5, watchdog_timeout=60
             )
@@ -1807,16 +1828,21 @@ class TestGameRunnerReports:
         mock_bundle = MagicMock()
         mock_manager = MagicMock()
         mock_factory = MagicMock()
-        return {
-            "agent.reports.bundle": mock_bundle,
-            "agent.reports.manager": mock_manager,
-            "agent.reports.plugin_factory": mock_factory,
-        }, mock_bundle, mock_manager, mock_factory
+        return (
+            {
+                "agent.reports.bundle": mock_bundle,
+                "agent.reports.manager": mock_manager,
+                "agent.reports.plugin_factory": mock_factory,
+            },
+            mock_bundle,
+            mock_manager,
+            mock_factory,
+        )
 
     def _get_generate_reports(self):
         """Import generate_reports, breaking circular import by pre-mocking game_runner_output."""
-        import importlib
-        # Break the circular import: game_runner_reports -> game_runner_output -> game_runner_reports
+        # Break the circular import:
+        # game_runner_reports -> game_runner_output -> game_runner_reports
         mock_output = MagicMock()
         mock_output.write_json = MagicMock()
         # Remove any stale cached modules to force a clean re-import
@@ -1847,12 +1873,15 @@ class TestGameRunnerReports:
         mock_reports_plugin_factory = MagicMock()
         mock_reports_plugin_factory.ReportPluginFactory = mock_factory_cls
 
-        with patch.dict("sys.modules", {
-            "agent.reports.bundle": mock_reports_bundle,
-            "agent.reports.plugin_factory": mock_reports_plugin_factory,
-            "agent.reports.manager": MagicMock(),
-            "tomllib": MagicMock(),
-        }):
+        with patch.dict(
+            "sys.modules",
+            {
+                "agent.reports.bundle": mock_reports_bundle,
+                "agent.reports.plugin_factory": mock_reports_plugin_factory,
+                "agent.reports.manager": MagicMock(),
+                "tomllib": MagicMock(),
+            },
+        ):
             await generate_reports(runner, "g1", {"winner": "cop", "final_step": 5})
 
     async def test_generate_reports_with_plugins(self, tmp_path):
@@ -1887,12 +1916,15 @@ class TestGameRunnerReports:
         mock_reports_plugin_factory = MagicMock()
         mock_reports_plugin_factory.ReportPluginFactory = mock_factory_cls
 
-        with patch.dict("sys.modules", {
-            "agent.reports.bundle": mock_reports_bundle,
-            "agent.reports.manager": mock_reports_manager,
-            "agent.reports.plugin_factory": mock_reports_plugin_factory,
-            "tomllib": MagicMock(),
-        }):
+        with patch.dict(
+            "sys.modules",
+            {
+                "agent.reports.bundle": mock_reports_bundle,
+                "agent.reports.manager": mock_reports_manager,
+                "agent.reports.plugin_factory": mock_reports_plugin_factory,
+                "tomllib": MagicMock(),
+            },
+        ):
             await generate_reports(runner, "g1", {"winner": "cop", "final_step": 3})
 
     async def test_generate_reports_failed_plugin(self, tmp_path):
@@ -1927,12 +1959,15 @@ class TestGameRunnerReports:
         mock_reports_plugin_factory = MagicMock()
         mock_reports_plugin_factory.ReportPluginFactory = mock_factory_cls
 
-        with patch.dict("sys.modules", {
-            "agent.reports.bundle": mock_reports_bundle,
-            "agent.reports.manager": mock_reports_manager,
-            "agent.reports.plugin_factory": mock_reports_plugin_factory,
-            "tomllib": MagicMock(),
-        }):
+        with patch.dict(
+            "sys.modules",
+            {
+                "agent.reports.bundle": mock_reports_bundle,
+                "agent.reports.manager": mock_reports_manager,
+                "agent.reports.plugin_factory": mock_reports_plugin_factory,
+                "tomllib": MagicMock(),
+            },
+        ):
             await generate_reports(runner, "g1", {"winner": "thief", "final_step": 10})
 
     async def test_generate_reports_exception_handled(self, tmp_path):

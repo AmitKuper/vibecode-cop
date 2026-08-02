@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from agent.board import Board
@@ -23,7 +22,7 @@ def _generate_hint(move: str, board=None) -> str:
     return _generate_hint_fn(move)
 
 
-def init_passive_game(rt: "PeerRuntime", game_id: str, rules_ref: list) -> None:
+def init_passive_game(rt: PeerRuntime, game_id: str, rules_ref: list) -> None:
     """Set up PeerRuntime state for a passive (thief) game. Idempotent per game_id."""
     if rt.game_id == game_id:
         return
@@ -39,9 +38,10 @@ def init_passive_game(rt: "PeerRuntime", game_id: str, rules_ref: list) -> None:
     logger.info(f"[PeerAgentRuntime/{rt.role}] Passive game {game_id} initialised")
 
 
-def handle_passive_commit(rt: "PeerRuntime", game_id: str, message, rules_ref: list) -> dict:
+def handle_passive_commit(rt: PeerRuntime, game_id: str, message, rules_ref: list) -> dict:
     """Generate own commitment when cop sends its commit (thief passive mode)."""
     from agent.mcp.crypto import create_commitment, hash_game_state
+
     if rt.game_id != game_id:
         init_passive_game(rt, game_id, rules_ref)
 
@@ -58,13 +58,25 @@ def handle_passive_commit(rt: "PeerRuntime", game_id: str, message, rules_ref: l
     hint = _generate_hint(move, rt.board)
     intent = "truth"
     h_commit, nonce = create_commitment(
-        game_id=game_id, step=message.step, role=rt.role,
-        state_hash=state_hash, move=move, hint=hint, intent=intent,
+        game_id=game_id,
+        step=message.step,
+        role=rt.role,
+        state_hash=state_hash,
+        move=move,
+        hint=hint,
+        intent=intent,
     )
-    rt._store_my_commit(message.step, {
-        "h_commit": h_commit, "nonce": nonce,
-        "move": move, "hint": hint, "intent": intent, "state_hash": state_hash,
-    })
+    rt._store_my_commit(
+        message.step,
+        {
+            "h_commit": h_commit,
+            "nonce": nonce,
+            "move": move,
+            "hint": hint,
+            "intent": intent,
+            "state_hash": state_hash,
+        },
+    )
     logger.info(
         f"[PeerAgentRuntime/{rt.role}] Committed step={message.step} "
         f"move={move} h={h_commit[:12]}..."
@@ -72,10 +84,11 @@ def handle_passive_commit(rt: "PeerRuntime", game_id: str, message, rules_ref: l
     return {"ok": True, "phase": "commit", "h_commit": h_commit}
 
 
-def handle_passive_reveal(rt: "PeerRuntime", game_id: str, message, rules_ref: list) -> dict:
+def handle_passive_reveal(rt: PeerRuntime, game_id: str, message, rules_ref: list) -> dict:
     """Return own reveal when cop sends its reveal; apply moves to local board."""
     from agent.peer_audit import append_opponent_reveal
     from agent.rl.env_helpers import apply_place_action
+
     payload = rt._my_commits.get(message.step)
     if not payload:
         return {"ok": False, "error": f"No commit payload for step {message.step}"}
@@ -106,9 +119,12 @@ def handle_passive_reveal(rt: "PeerRuntime", game_id: str, message, rules_ref: l
         if list(rt.board.thief_position) in rt.board.barriers:
             rt.board.turn += 1
             return {
-                "ok": True, "phase": "reveal",
-                "move": payload["move"], "hint": payload["hint"],
-                "intent": payload["intent"], "state_hash": payload["state_hash"],
+                "ok": True,
+                "phase": "reveal",
+                "move": payload["move"],
+                "hint": payload["hint"],
+                "intent": payload["intent"],
+                "state_hash": payload["state_hash"],
                 "captured": True,
             }
 
@@ -116,7 +132,10 @@ def handle_passive_reveal(rt: "PeerRuntime", game_id: str, message, rules_ref: l
         rules.apply_moves(cop_move, thief_move)
 
     return {
-        "ok": True, "phase": "reveal",
-        "move": payload["move"], "hint": payload["hint"],
-        "intent": payload["intent"], "state_hash": payload["state_hash"],
+        "ok": True,
+        "phase": "reveal",
+        "move": payload["move"],
+        "hint": payload["hint"],
+        "intent": payload["intent"],
+        "state_hash": payload["state_hash"],
     }

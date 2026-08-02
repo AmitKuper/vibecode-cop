@@ -51,13 +51,25 @@ async def run_peer_turn(
     intent = "truth"
 
     h_commit, nonce = create_commitment(
-        game_id=runtime.game_id, step=step, role=runtime.role,
-        state_hash=state_hash, move=move, hint=hint, intent=intent,
+        game_id=runtime.game_id,
+        step=step,
+        role=runtime.role,
+        state_hash=state_hash,
+        move=move,
+        hint=hint,
+        intent=intent,
     )
-    runtime._store_my_commit(step, {
-        "h_commit": h_commit, "nonce": nonce,
-        "move": move, "hint": hint, "intent": intent, "state_hash": state_hash,
-    })
+    runtime._store_my_commit(
+        step,
+        {
+            "h_commit": h_commit,
+            "nonce": nonce,
+            "move": move,
+            "hint": hint,
+            "intent": intent,
+            "state_hash": state_hash,
+        },
+    )
     logger.info(f"[PeerTurn] step={step} committed move={move} h={h_commit[:12]}...")
 
     opponent_resp = await send_commit(runtime, step, h_commit)
@@ -69,8 +81,13 @@ async def run_peer_turn(
     append_opponent_commit(runtime.game_dir, step, opp_h_commit)
     logger.debug(f"[PeerTurn] step={step} stored opponent h_commit={opp_h_commit[:12]}...")
 
-    reveal_payload = {"move": move, "hint": hint, "intent": intent,
-                      "state_hash": state_hash, "nonce": nonce}
+    reveal_payload = {
+        "move": move,
+        "hint": hint,
+        "intent": intent,
+        "state_hash": state_hash,
+        "nonce": nonce,
+    }
     opp_reveal_resp = await send_reveal(runtime, step, reveal_payload)
     if not opp_reveal_resp:
         return None, f"REVEAL exchange failed at step {step} (send error)"
@@ -79,7 +96,8 @@ async def run_peer_turn(
         return None, f"Opponent did not include move in REVEAL at step {step}"
 
     opp_reveal = {
-        "move": opp_move_short, "hint": opp_reveal_resp.get("hint", ""),
+        "move": opp_move_short,
+        "hint": opp_reveal_resp.get("hint", ""),
         "intent": opp_reveal_resp.get("intent", "truth"),
         "state_hash": opp_reveal_resp.get("state_hash", ""),
     }
@@ -139,9 +157,10 @@ async def run_peer_turn_loop(
             final_step = step
             try:
                 winner, abort_reason = await asyncio.wait_for(
-                    run_peer_turn(runtime, step, rules), timeout=watchdog_timeout,
+                    run_peer_turn(runtime, step, rules),
+                    timeout=watchdog_timeout,
                 )
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 abort_reason = f"Watchdog timeout at step {step}"
                 logger.error(f"[PeerTurnLoop] {abort_reason}")
                 break

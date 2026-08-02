@@ -18,7 +18,7 @@ from agent.rules_engine import RulesEngine
 logger = logging.getLogger(__name__)
 
 _THIEF_IDX_TO_MOVE = dict(enumerate(ACTIONS))
-_COP_IDX_TO_MOVE   = dict(enumerate(COP_ACTIONS))
+_COP_IDX_TO_MOVE = dict(enumerate(COP_ACTIONS))
 
 
 class RLPolicy:
@@ -41,7 +41,6 @@ class RLPolicy:
         self.barriers_remaining = barriers_remaining
         self.device = next(net.parameters()).device
         self.net.eval()
-        self._prev_cop_pos: list[int] | None = None  # velocity tracking for thief
 
     @classmethod
     def load(
@@ -60,6 +59,7 @@ class RLPolicy:
           3. Full sorted glob fallback
         """
         from agent.rl.policy_loader import load_checkpoint
+
         models_dir = Path(models_dir)
         candidates: list[Path] = []
         if algo and config_sha256:
@@ -87,6 +87,7 @@ class RLPolicy:
     def _load_checkpoint(cls, path: Path, role: str, max_steps: int) -> RLPolicy:
         """Backward-compatible classmethod delegating to policy_loader."""
         from agent.rl.policy_loader import load_checkpoint
+
         return load_checkpoint(path, role, max_steps)
 
     @staticmethod
@@ -95,6 +96,7 @@ class RLPolicy:
     ) -> torch.nn.Module:
         """Backward-compatible static method delegating to policy_loader."""
         from agent.rl.policy_loader import rebuild_net
+
         return rebuild_net(state_dict, ckpt, algo, device)
 
     def select_move(
@@ -104,10 +106,7 @@ class RLPolicy:
         last_revealed_cop_pos: list[int] | None = None,
     ) -> str:
         """Return the best move string for the current board state."""
-        curr_cop = last_revealed_cop_pos or list(board.cop_position)
-        obs = self._build_obs(board, rules, last_revealed_cop_pos=last_revealed_cop_pos,
-                              prev_cop_pos=self._prev_cop_pos)
-        self._prev_cop_pos = curr_cop
+        obs = self._build_obs(board, rules, last_revealed_cop_pos=last_revealed_cop_pos)
         obs_t = torch.tensor(obs, dtype=torch.float32).unsqueeze(0).to(self.device)
         with torch.no_grad():
             if self.algo == "dqn":
@@ -117,7 +116,11 @@ class RLPolicy:
                 logits, _ = self.net(obs_t)
                 action_idx = int(torch.distributions.Categorical(logits=logits).sample().item())
 
-        idx_map = _COP_IDX_TO_MOVE if (self.role == "cop" and self.barrier_quota > 0) else _THIEF_IDX_TO_MOVE  # noqa: E501
+        idx_map = (
+            _COP_IDX_TO_MOVE
+            if (self.role == "cop" and self.barrier_quota > 0)
+            else _THIEF_IDX_TO_MOVE
+        )  # noqa: E501
         move = idx_map.get(action_idx, "STAY")
         if move.startswith("PLACE_"):
             return move
@@ -157,14 +160,13 @@ class RLPolicy:
         board: Board,
         rules: RulesEngine,
         last_revealed_cop_pos: list[int] | None = None,
-        prev_cop_pos: list[int] | None = None,
     ) -> list:
         if self.role == "cop":
             return cop_observation(
-                board, rules, self.max_steps,
+                board,
+                rules,
+                self.max_steps,
                 barriers_remaining=self.barriers_remaining,
                 barrier_quota=self.barrier_quota,
             )
-        return thief_observation(board, self.max_steps,
-                                 last_revealed_cop_pos=last_revealed_cop_pos,
-                                 prev_cop_pos=prev_cop_pos)
+        return thief_observation(board, self.max_steps, last_revealed_cop_pos=last_revealed_cop_pos)

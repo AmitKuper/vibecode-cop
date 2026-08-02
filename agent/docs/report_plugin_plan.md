@@ -50,6 +50,7 @@ class ReportContext:
     required_files: list[Path]
     metadata: dict[str, Any]
 
+
 @dataclass
 class ReportResult:
     plugin: str
@@ -59,8 +60,10 @@ class ReportResult:
     error: str | None = None
     details: dict[str, Any] = field(default_factory=dict)
 
+
 class ReportPlugin(Protocol):
     name: str
+
     async def generate(self, context: ReportContext) -> ReportResult: ...
 ```
 

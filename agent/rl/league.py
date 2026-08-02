@@ -5,8 +5,8 @@ from __future__ import annotations
 import logging
 import random
 import time
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 from agent.rl.config import RLGameConfig
 from agent.rl.environment import CopThiefEnv
@@ -35,10 +35,13 @@ def _run_ppo_opponent_loop(
     """Shared rollout-and-update loop for fixed-opponent and league PPO training."""
     winners: list = []
     ep_lens: list = []
-    step = update_count = 0; best_wr = -1.0; t0 = time.time()
+    step = update_count = 0
+    best_wr = -1.0
+    t0 = time.time()
     cop_obs, thief_obs = env.reset()
     current_opp = opponent_sampler()
-    done = False; info: dict = {}
+    done = False
+    info: dict = {}
 
     while step < total_steps:
         for _ in range(rollout_size):
@@ -72,7 +75,8 @@ def _run_ppo_opponent_loop(
                 f"  avg_len={avg_len:.1f}  updates={update_count}  elapsed={elapsed:.0f}s"
             )
             if wr > best_wr:
-                best_wr = wr; agent.save(best_path)
+                best_wr = wr
+                agent.save(best_path)
 
     logger.info(f"[{log_tag}] Done. Best {role}_wr={best_wr:.2f} → {best_path}")
     agent.load(best_path)
@@ -91,20 +95,35 @@ def train_ppo_vs_frozen(
     hidden: int = 128,
     tag: str = "",
 ) -> PPOAgent:
-    """Train a PPO ``role`` agent against a single frozen opponent. ``tag`` is appended to filenames."""
+    """Train a PPO ``role`` agent against a single frozen opponent.
+
+    ``tag`` is appended to filenames.
+    """
     cfg = config or RLGameConfig()
     env = CopThiefEnv(cfg)
     n_actions = env.n_cop_actions if role == "cop" else env.n_thief_actions
     n_channels = env.n_cop_channels if role == "cop" else env.n_thief_channels
-    agent = PPOAgent(role, grid_size=cfg.grid_size, rollout_size=rollout_size,
-                     net_type=net_type, hidden=hidden, n_actions=n_actions, n_channels=n_channels)
+    agent = PPOAgent(
+        role,
+        grid_size=cfg.grid_size,
+        rollout_size=rollout_size,
+        net_type=net_type,
+        hidden=hidden,
+        n_actions=n_actions,
+        n_channels=n_channels,
+    )
     suffix = f"_{tag}" if tag else ""
     best_path = models_dir / f"{role}_ppo_frozen{suffix}_best.pt"
     models_dir.mkdir(parents=True, exist_ok=True)
     agent = _run_ppo_opponent_loop(
-        role=role, agent=agent, env=env, total_steps=total_steps,
-        rollout_size=rollout_size, log_interval=log_interval,
-        best_path=best_path, log_tag=f"PPO-frozen {role}",
+        role=role,
+        agent=agent,
+        env=env,
+        total_steps=total_steps,
+        rollout_size=rollout_size,
+        log_interval=log_interval,
+        best_path=best_path,
+        log_tag=f"PPO-frozen {role}",
         opponent_sampler=lambda: frozen_opponent,
     )
     agent.save(models_dir / f"{role}_ppo_frozen{suffix}.pt")
@@ -129,19 +148,32 @@ def train_ppo_league(
     env = CopThiefEnv(cfg)
     n_actions = env.n_cop_actions if role == "cop" else env.n_thief_actions
     n_channels = env.n_cop_channels if role == "cop" else env.n_thief_channels
-    agent = PPOAgent(role, grid_size=cfg.grid_size, rollout_size=rollout_size,
-                     net_type=net_type, hidden=hidden, n_actions=n_actions, n_channels=n_channels)
+    agent = PPOAgent(
+        role,
+        grid_size=cfg.grid_size,
+        rollout_size=rollout_size,
+        net_type=net_type,
+        hidden=hidden,
+        n_actions=n_actions,
+        n_channels=n_channels,
+    )
     weights = opponent_weights or [1.0] * len(opponent_pool)
     norm_weights = [w / sum(weights) for w in weights]
 
     def _sample_opponent():
         return random.choices(opponent_pool, weights=norm_weights)[0]
+
     best_path = models_dir / f"{role}_ppo_{tag}_best.pt"
     models_dir.mkdir(parents=True, exist_ok=True)
     agent = _run_ppo_opponent_loop(
-        role=role, agent=agent, env=env, total_steps=total_steps,
-        rollout_size=rollout_size, log_interval=log_interval,
-        best_path=best_path, log_tag=f"PPO-league {role}",
+        role=role,
+        agent=agent,
+        env=env,
+        total_steps=total_steps,
+        rollout_size=rollout_size,
+        log_interval=log_interval,
+        best_path=best_path,
+        log_tag=f"PPO-league {role}",
         opponent_sampler=_sample_opponent,
     )
     agent.save(models_dir / f"{role}_ppo_{tag}.pt")

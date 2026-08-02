@@ -52,8 +52,13 @@ class AgentMCPServer:
 
     def _register_tools(self) -> None:
         register_game_tools(
-            self.mcp, self.role, self.secret, self.config_sha256,
-            self.games_dir, self.game_logs, self.handler_callbacks,
+            self.mcp,
+            self.role,
+            self.secret,
+            self.config_sha256,
+            self.games_dir,
+            self.game_logs,
+            self.handler_callbacks,
         )
         register_info_tools(self.mcp, self.role, self.config_sha256)
 

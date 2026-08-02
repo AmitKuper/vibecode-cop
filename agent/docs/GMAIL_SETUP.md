@@ -93,9 +93,7 @@ def authorize():
 
     # Load credentials.json
     flow = InstalledAppFlow.from_client_secrets_file(
-        CREDENTIALS_FILE,
-        SCOPES,
-        redirect_uri="http://localhost:8080"
+        CREDENTIALS_FILE, SCOPES, redirect_uri="http://localhost:8080"
     )
 
     # Open browser for user authorization
@@ -173,14 +171,13 @@ from agent.reports.bundle import ReportBundleBuilder
 from agent.reports.plugin_factory import ReportPluginFactory
 from agent.reports.manager import ReportManager
 
+
 async def handle_game_end(self, game_id: str, game_state: dict):
     """Called when game ends."""
-    
+
     try:
         # Build report context
-        context = await ReportBundleBuilder(
-            self.games_dir / game_id
-        ).build(
+        context = await ReportBundleBuilder(self.games_dir / game_id).build(
             game_id=game_id,
             role=self.role,
             game_state=game_state,
@@ -188,18 +185,16 @@ async def handle_game_end(self, game_id: str, game_state: dict):
             config_hash=self.config_sha256,
             metadata={"group_id": self.group_id},
         )
-        
+
         # Create plugins from config
-        plugins = await ReportPluginFactory.from_config(
-            self.config.get("reports", {})
-        )
-        
+        plugins = await ReportPluginFactory.from_config(self.config.get("reports", {}))
+
         # Generate all reports
         results = await ReportManager(plugins).generate_all(context)
-        
+
         # Log results
         logger.info(f"Report generation complete: {results}")
-        
+
     except Exception as e:
         logger.error(f"Report generation failed: {e}", exc_info=True)
         # Don't crash — game is already saved

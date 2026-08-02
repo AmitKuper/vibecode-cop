@@ -61,7 +61,8 @@ def _probe_sync(peer_url: str) -> tuple[str, dict, dict | None]:
                                 )
                                 protocol_def = json.loads(text)
                                 logger.info(
-                                    f"[probe] get_protocol() → protocol={protocol_def.get('protocol')}, "
+                                    "[probe] get_protocol() → "
+                                    f"protocol={protocol_def.get('protocol')}, "
                                     f"fields={list(protocol_def.get('fields', {}))[:5]}..."
                                 )
                         except Exception as exc:

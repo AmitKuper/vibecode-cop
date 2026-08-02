@@ -125,10 +125,14 @@ Verifies SHA-256 integrity of every step in the log and re-checks all commitment
 ## Tests
 
 ```bash
-uv run pytest
+uv run python -m pytest tests/ -q
 ```
 
-121 tests, all passing (2 skipped for live network only). Coverage includes:
+569 passed, 1 skipped, 0 failed (Phase 0.5 baseline). Coverage: 87%. Ruff: all checks pass.
+
+The 1 skipped test requires a compatible 4-channel thief RL model (see docs/KNOWN_DEVIATIONS.md).
+
+Coverage includes:
 
 - `test_shared_config_contract.py` (19 tests) — SHA-256 config lock
 - `test_peer_runtime_no_central_judge.py` (32 tests) — P2P invariants

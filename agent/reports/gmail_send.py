@@ -55,8 +55,7 @@ def load_oauth_credentials(token_path: Path) -> Any:
             )
     elif not creds.valid and not creds.refresh_token:
         raise RuntimeError(
-            "Gmail token invalid and no refresh_token"
-            " — re-authorize with scripts/gmail_auth.py"
+            "Gmail token invalid and no refresh_token — re-authorize with scripts/gmail_auth.py"
         )
 
     return creds
@@ -76,7 +75,5 @@ def gmail_api_send(message: MIMEMultipart, credentials: Any) -> str:
 
     service = build("gmail", "v1", credentials=credentials)
     raw = urlsafe_b64encode(message.as_bytes()).decode("utf-8")
-    result = (
-        service.users().messages().send(userId="me", body={"raw": raw}).execute()
-    )
+    result = service.users().messages().send(userId="me", body={"raw": raw}).execute()
     return result.get("id", "unknown")

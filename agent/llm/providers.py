@@ -43,9 +43,7 @@ def create_openai(config: LLMConfig) -> Any:
 
     api_key = config.api_key or os.getenv("OPENAI_API_KEY")
     if not api_key:
-        raise ValueError(
-            "OpenAI API key required — set OPENAI_API_KEY or [llm] api_key in config"
-        )
+        raise ValueError("OpenAI API key required — set OPENAI_API_KEY or [llm] api_key in config")
     logger.info(f"Initialising OpenAI LLM: {config.model}")
     return LLM(model=config.model, api_key=api_key, temperature=config.temperature)
 

@@ -77,9 +77,9 @@ def evaluate(
 
 def print_results(label: str, results: dict) -> None:
     print(
-        f"\n{'='*50}\n"
+        f"\n{'=' * 50}\n"
         f"  {label}\n"
-        f"{'='*50}\n"
+        f"{'=' * 50}\n"
         f"  Games:           {results['n_games']}\n"
         f"  Cop  win rate:   {results['cop_win_rate']:.1%}  ({results['cop_wins']} wins)\n"
         f"  Thief win rate:  {results['thief_win_rate']:.1%}  ({results['thief_wins']} wins)\n"
@@ -92,6 +92,7 @@ def print_results(label: str, results: dict) -> None:
 # ------------------------------------------------------------------
 # Internal
 # ------------------------------------------------------------------
+
 
 def _get_action(agent, obs: list) -> int:
     """Unified action selection for DQN and PPO agents.

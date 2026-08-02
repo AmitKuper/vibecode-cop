@@ -92,6 +92,7 @@ def save_token(creds):
 
     # Set restrictive permissions (Unix-like systems only; Windows has no chmod)
     import contextlib
+
     with contextlib.suppress(Exception):
         TOKEN_FILE.chmod(0o600)
 

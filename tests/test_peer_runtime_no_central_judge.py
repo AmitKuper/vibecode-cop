@@ -10,9 +10,8 @@ Key design invariants tested:
 """
 
 import json
-import tempfile
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -25,13 +24,12 @@ from agent.peer_audit import (
     verify_opponent_reveal,
 )
 from agent.peer_runtime import PeerRuntime
-from agent.peer_turn_loop import _MOVE_ALIASES, run_peer_turn
-from agent.peer_turn_helpers import select_move as _select_move
-
+from agent.peer_turn_loop import run_peer_turn
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_runtime(role: str, tmp_path: Path) -> PeerRuntime:
     """Create a PeerRuntime wired to a fake opponent client."""
@@ -52,23 +50,26 @@ def _make_runtime(role: str, tmp_path: Path) -> PeerRuntime:
     return rt
 
 
-def _make_opponent_commit_response(
-    game_id: str, step: int, role: str
-) -> tuple[str, str, dict]:
+def _make_opponent_commit_response(game_id: str, step: int, role: str) -> tuple[str, str, dict]:
     """Create a valid commit+reveal payload for an opponent."""
     state_hash = hash_game_state({"cop_position": [0, 0], "thief_position": [6, 6], "turn": step})
     h_commit, nonce = create_commitment(
-        game_id=game_id, step=step, role=role,
-        state_hash=state_hash, move="STAY", hint="Moving STAY", intent="truth",
+        game_id=game_id,
+        step=step,
+        role=role,
+        state_hash=state_hash,
+        move="STAY",
+        hint="Moving STAY",
+        intent="truth",
     )
-    reveal = {"move": "STAY", "hint": "Moving STAY", "intent": "truth",
-              "state_hash": state_hash}
+    reveal = {"move": "STAY", "hint": "Moving STAY", "intent": "truth", "state_hash": state_hash}
     return h_commit, nonce, reveal
 
 
 # ---------------------------------------------------------------------------
 # peer_audit.py unit tests
 # ---------------------------------------------------------------------------
+
 
 class TestVerifyOpponentReveal:
     """verify_opponent_reveal uses crypto directly — no judge."""
@@ -79,11 +80,21 @@ class TestVerifyOpponentReveal:
         role = "thief"
         state_hash = hash_game_state({"cop_position": [0, 0], "thief_position": [3, 3], "turn": 1})
         h_commit, nonce = create_commitment(
-            game_id=game_id, step=step, role=role,
-            state_hash=state_hash, move="NORTH", hint="Moving NORTH", intent="truth",
+            game_id=game_id,
+            step=step,
+            role=role,
+            state_hash=state_hash,
+            move="NORTH",
+            hint="Moving NORTH",
+            intent="truth",
         )
-        reveal = {"move": "NORTH", "hint": "Moving NORTH", "intent": "truth",
-                  "state_hash": state_hash, "nonce": nonce}
+        reveal = {
+            "move": "NORTH",
+            "hint": "Moving NORTH",
+            "intent": "truth",
+            "state_hash": state_hash,
+            "nonce": nonce,
+        }
         assert verify_opponent_reveal(h_commit, reveal, game_id, step, role) is True
 
     def test_tampered_move_returns_false(self):
@@ -92,12 +103,22 @@ class TestVerifyOpponentReveal:
         role = "cop"
         state_hash = hash_game_state({"cop_position": [1, 1], "thief_position": [5, 5], "turn": 2})
         h_commit, nonce = create_commitment(
-            game_id=game_id, step=step, role=role,
-            state_hash=state_hash, move="EAST", hint="Moving EAST", intent="truth",
+            game_id=game_id,
+            step=step,
+            role=role,
+            state_hash=state_hash,
+            move="EAST",
+            hint="Moving EAST",
+            intent="truth",
         )
         # Opponent tampers: claims a different move
-        tampered_reveal = {"move": "WEST", "hint": "Moving EAST", "intent": "truth",
-                           "state_hash": state_hash, "nonce": nonce}
+        tampered_reveal = {
+            "move": "WEST",
+            "hint": "Moving EAST",
+            "intent": "truth",
+            "state_hash": state_hash,
+            "nonce": nonce,
+        }
         assert verify_opponent_reveal(h_commit, tampered_reveal, game_id, step, role) is False
 
     def test_wrong_nonce_returns_false(self):
@@ -106,11 +127,21 @@ class TestVerifyOpponentReveal:
         role = "thief"
         state_hash = hash_game_state({"cop_position": [0, 0], "thief_position": [4, 4], "turn": 1})
         h_commit, _ = create_commitment(
-            game_id=game_id, step=step, role=role,
-            state_hash=state_hash, move="SOUTH", hint="Moving SOUTH", intent="truth",
+            game_id=game_id,
+            step=step,
+            role=role,
+            state_hash=state_hash,
+            move="SOUTH",
+            hint="Moving SOUTH",
+            intent="truth",
         )
-        reveal = {"move": "SOUTH", "hint": "Moving SOUTH", "intent": "truth",
-                  "state_hash": state_hash, "nonce": "deadbeef" * 8}
+        reveal = {
+            "move": "SOUTH",
+            "hint": "Moving SOUTH",
+            "intent": "truth",
+            "state_hash": state_hash,
+            "nonce": "deadbeef" * 8,
+        }
         assert verify_opponent_reveal(h_commit, reveal, game_id, step, role) is False
 
 
@@ -152,15 +183,25 @@ class TestRunFinalAudit:
         game_dir.mkdir()
         nonces_map: dict[int, str] = {}
         for step in range(1, steps + 1):
-            state_hash = hash_game_state({"cop_position": [0, step], "thief_position": [6, 6],
-                                          "turn": step})
+            state_hash = hash_game_state(
+                {"cop_position": [0, step], "thief_position": [6, 6], "turn": step}
+            )
             h_commit, nonce = create_commitment(
-                game_id=game_id, step=step, role="thief",
-                state_hash=state_hash, move="STAY", hint="Moving STAY", intent="truth",
+                game_id=game_id,
+                step=step,
+                role="thief",
+                state_hash=state_hash,
+                move="STAY",
+                hint="Moving STAY",
+                intent="truth",
             )
             append_opponent_commit(game_dir, step, h_commit)
-            reveal = {"move": "STAY", "hint": "Moving STAY", "intent": "truth",
-                      "state_hash": state_hash}
+            reveal = {
+                "move": "STAY",
+                "hint": "Moving STAY",
+                "intent": "truth",
+                "state_hash": state_hash,
+            }
             append_opponent_reveal(game_dir, step, reveal)
             nonces_map[step] = nonce
         return game_dir, nonces_map
@@ -200,6 +241,7 @@ class TestRunFinalAudit:
 # PeerRuntime unit tests
 # ---------------------------------------------------------------------------
 
+
 class TestPeerRuntimeInit:
     def test_role_cop_sets_opponent_thief(self, tmp_path):
         rt = _make_runtime("cop", tmp_path)
@@ -215,7 +257,8 @@ class TestPeerRuntimeInit:
         with pytest.raises(ValueError):
             PeerRuntime(
                 role="judge",
-                secret="s", config_sha256="a" * 64,
+                secret="s",
+                config_sha256="a" * 64,
                 opponent_url="http://localhost:9/mcp",
                 games_dir=tmp_path,
             )
@@ -224,8 +267,14 @@ class TestPeerRuntimeInit:
 class TestPeerRuntimeStoreMyCommit:
     def test_commit_persisted_to_disk(self, tmp_path):
         rt = _make_runtime("cop", tmp_path)
-        payload = {"h_commit": "a" * 64, "nonce": "n" * 64, "move": "NORTH",
-                   "hint": "Moving NORTH", "intent": "truth", "state_hash": "s" * 64}
+        payload = {
+            "h_commit": "a" * 64,
+            "nonce": "n" * 64,
+            "move": "NORTH",
+            "hint": "Moving NORTH",
+            "intent": "truth",
+            "state_hash": "s" * 64,
+        }
         rt._store_my_commit(1, payload)
 
         path = rt.game_dir / "my_commitments_cop.json"
@@ -237,17 +286,33 @@ class TestPeerRuntimeStoreMyCommit:
     def test_multiple_commits_accumulate(self, tmp_path):
         rt = _make_runtime("thief", tmp_path)
         for step in range(1, 4):
-            rt._store_my_commit(step, {"h_commit": "a" * 64, "nonce": "n" * 64,
-                                       "move": "STAY", "hint": "h", "intent": "truth",
-                                       "state_hash": "s" * 64})
+            rt._store_my_commit(
+                step,
+                {
+                    "h_commit": "a" * 64,
+                    "nonce": "n" * 64,
+                    "move": "STAY",
+                    "hint": "h",
+                    "intent": "truth",
+                    "state_hash": "s" * 64,
+                },
+            )
         data = json.loads((rt.game_dir / "my_commitments_thief.json").read_text())
         assert len(data) == 3
 
     def test_in_memory_dict_updated(self, tmp_path):
         rt = _make_runtime("cop", tmp_path)
-        rt._store_my_commit(5, {"h_commit": "a" * 64, "nonce": "n" * 64,
-                                "move": "EAST", "hint": "h", "intent": "truth",
-                                "state_hash": "s" * 64})
+        rt._store_my_commit(
+            5,
+            {
+                "h_commit": "a" * 64,
+                "nonce": "n" * 64,
+                "move": "EAST",
+                "hint": "h",
+                "intent": "truth",
+                "state_hash": "s" * 64,
+            },
+        )
         assert 5 in rt._my_commits
         assert rt._my_commits[5]["move"] == "EAST"
 
@@ -255,6 +320,7 @@ class TestPeerRuntimeStoreMyCommit:
 # ---------------------------------------------------------------------------
 # peer_turn_loop unit tests (mocking MCP calls)
 # ---------------------------------------------------------------------------
+
 
 class TestRunPeerTurn:
     """run_peer_turn does local verification without any judge process."""
@@ -267,13 +333,21 @@ class TestRunPeerTurn:
             {"cop_position": [0, 0], "thief_position": [6, 6], "turn": step}
         )
         h_commit, nonce = create_commitment(
-            game_id=game_id, step=step, role=opp_role,
-            state_hash=state_hash, move="STAY", hint="Moving STAY", intent="truth",
+            game_id=game_id,
+            step=step,
+            role=opp_role,
+            state_hash=state_hash,
+            move="STAY",
+            hint="Moving STAY",
+            intent="truth",
         )
         commit_resp = {"ok": True, "h_commit": h_commit}
         reveal_resp = {
-            "ok": True, "move": "STAY", "hint": "Moving STAY",
-            "intent": "truth", "state_hash": state_hash,
+            "ok": True,
+            "move": "STAY",
+            "hint": "Moving STAY",
+            "intent": "truth",
+            "state_hash": state_hash,
             "nonces": {str(step): nonce},
         }
         return commit_resp, reveal_resp
@@ -286,6 +360,7 @@ class TestRunPeerTurn:
 
         rt.opponent_client.action = AsyncMock(side_effect=[commit_resp, reveal_resp])
         from agent.rules_engine import RulesEngine
+
         rules = RulesEngine(rt.board, max_turns=5)
 
         winner, abort = await run_peer_turn(rt, step, rules)
@@ -305,6 +380,7 @@ class TestRunPeerTurn:
 
         rt.opponent_client.action = AsyncMock(side_effect=[commit_resp, reveal_resp])
         from agent.rules_engine import RulesEngine
+
         rules = RulesEngine(rt.board, max_turns=5)
 
         winner, abort = await run_peer_turn(rt, step, rules)
@@ -313,6 +389,7 @@ class TestRunPeerTurn:
         assert abort is None
         # Tampered reveal is stored in opponent_reveals.json for later audit
         import json
+
         reveals = json.loads((rt.game_dir / "opponent_reveals.json").read_text())
         assert reveals[str(step)]["move"] == "NORTH"
 
@@ -324,6 +401,7 @@ class TestRunPeerTurn:
 
         rt.opponent_client.action = AsyncMock(side_effect=[bad_commit_resp])
         from agent.rules_engine import RulesEngine
+
         rules = RulesEngine(rt.board, max_turns=5)
 
         winner, abort = await run_peer_turn(rt, step, rules)
@@ -338,14 +416,20 @@ class TestRunPeerTurn:
             {"cop_position": [0, 0], "thief_position": [6, 6], "turn": step}
         )
         h_commit, nonce = create_commitment(
-            game_id=rt.game_id, step=step, role="thief",
-            state_hash=state_hash, move="STAY", hint="Moving STAY", intent="truth",
+            game_id=rt.game_id,
+            step=step,
+            role="thief",
+            state_hash=state_hash,
+            move="STAY",
+            hint="Moving STAY",
+            intent="truth",
         )
         commit_resp = {"ok": True, "h_commit": h_commit}
         reveal_resp = {"ok": True, "nonces": {str(step): nonce}}  # no move
 
         rt.opponent_client.action = AsyncMock(side_effect=[commit_resp, reveal_resp])
         from agent.rules_engine import RulesEngine
+
         rules = RulesEngine(rt.board, max_turns=5)
 
         winner, abort = await run_peer_turn(rt, step, rules)
@@ -359,12 +443,26 @@ class TestRunPeerTurn:
         commit_resp, reveal_resp = self._build_valid_opponent_resp(rt.game_id, step, "thief")
         rt.opponent_client.action = AsyncMock(side_effect=[commit_resp, reveal_resp])
         from agent.rules_engine import RulesEngine
+
         rules = RulesEngine(rt.board, max_turns=5)
 
         await run_peer_turn(rt, step, rules)
         assert step in rt._my_commits
-        _valid = {"NORTH", "SOUTH", "EAST", "WEST", "STAY", "N", "S", "E", "W",
-                  "PLACE_N", "PLACE_S", "PLACE_E", "PLACE_W"}
+        _valid = {
+            "NORTH",
+            "SOUTH",
+            "EAST",
+            "WEST",
+            "STAY",
+            "N",
+            "S",
+            "E",
+            "W",
+            "PLACE_N",
+            "PLACE_S",
+            "PLACE_E",
+            "PLACE_W",
+        }
         assert rt._my_commits[step]["move"] in _valid
 
     @pytest.mark.asyncio
@@ -375,6 +473,7 @@ class TestRunPeerTurn:
         commit_resp, reveal_resp = self._build_valid_opponent_resp(rt.game_id, step, "cop")
         rt.opponent_client.action = AsyncMock(side_effect=[commit_resp, reveal_resp])
         from agent.rules_engine import RulesEngine
+
         rules = RulesEngine(rt.board, max_turns=5)
 
         await run_peer_turn(rt, step, rules)
@@ -388,6 +487,7 @@ class TestRunPeerTurn:
 # Full game integration test (no central judge)
 # ---------------------------------------------------------------------------
 
+
 class TestPeerRuntimeFullGame:
     """Integration test: two-sided game with mocked MCP, no GameRunner or judge."""
 
@@ -398,8 +498,13 @@ class TestPeerRuntimeFullGame:
             {"cop_position": [0, 0], "thief_position": [6, 6], "turn": step}
         )
         return create_commitment(
-            game_id=game_id, step=step, role=opp_role,
-            state_hash=state_hash, move="STAY", hint="Moving STAY", intent="truth",
+            game_id=game_id,
+            step=step,
+            role=opp_role,
+            state_hash=state_hash,
+            move="STAY",
+            hint="Moving STAY",
+            intent="truth",
         )
 
     def _make_action_side_effect(self, game_id: str, opp_role: str, max_turns: int):
@@ -413,8 +518,13 @@ class TestPeerRuntimeFullGame:
                     {"cop_position": [0, 0], "thief_position": [6, 6], "turn": step}
                 )
                 h, nonce = create_commitment(
-                    game_id=game_id, step=step, role=opp_role,
-                    state_hash=state_hash, move="STAY", hint="Moving STAY", intent="truth",
+                    game_id=game_id,
+                    step=step,
+                    role=opp_role,
+                    state_hash=state_hash,
+                    move="STAY",
+                    hint="Moving STAY",
+                    intent="truth",
                 )
                 commits[step] = (h, nonce)
                 return {"ok": True, "h_commit": h}
@@ -426,8 +536,11 @@ class TestPeerRuntimeFullGame:
                     {"cop_position": [0, 0], "thief_position": [6, 6], "turn": step}
                 )
                 return {
-                    "ok": True, "move": "STAY", "hint": "Moving STAY",
-                    "intent": "truth", "state_hash": state_hash,
+                    "ok": True,
+                    "move": "STAY",
+                    "hint": "Moving STAY",
+                    "intent": "truth",
+                    "state_hash": state_hash,
                     "nonces": {str(step): nonce},
                 }
 
@@ -545,6 +658,7 @@ class TestPeerRuntimeFullGame:
 # No-central-judge invariant: both agents verify independently
 # ---------------------------------------------------------------------------
 
+
 class TestNoCentralJudgeInvariant:
     """Explicitly verify the no-central-judge design property."""
 
@@ -553,12 +667,28 @@ class TestNoCentralJudgeInvariant:
         cop_rt = _make_runtime("cop", tmp_path / "cop")
         thief_rt = _make_runtime("thief", tmp_path / "thief")
 
-        cop_rt._store_my_commit(1, {"h_commit": "a" * 64, "nonce": "n" * 64,
-                                    "move": "NORTH", "hint": "h", "intent": "truth",
-                                    "state_hash": "s" * 64})
-        thief_rt._store_my_commit(1, {"h_commit": "b" * 64, "nonce": "m" * 64,
-                                      "move": "SOUTH", "hint": "h", "intent": "truth",
-                                      "state_hash": "t" * 64})
+        cop_rt._store_my_commit(
+            1,
+            {
+                "h_commit": "a" * 64,
+                "nonce": "n" * 64,
+                "move": "NORTH",
+                "hint": "h",
+                "intent": "truth",
+                "state_hash": "s" * 64,
+            },
+        )
+        thief_rt._store_my_commit(
+            1,
+            {
+                "h_commit": "b" * 64,
+                "nonce": "m" * 64,
+                "move": "SOUTH",
+                "hint": "h",
+                "intent": "truth",
+                "state_hash": "t" * 64,
+            },
+        )
 
         # game_id is "game_test_001" as set by _make_runtime
         cop_path = cop_rt.game_dir / "my_commitments_cop.json"
@@ -579,14 +709,26 @@ class TestNoCentralJudgeInvariant:
         intent = "truth"
 
         h_commit, nonce = create_commitment(
-            game_id=game_id, step=step, role=role,
-            state_hash=state_hash, move=move, hint=hint, intent=intent,
+            game_id=game_id,
+            step=step,
+            role=role,
+            state_hash=state_hash,
+            move=move,
+            hint=hint,
+            intent=intent,
         )
 
         # verify_commitment is synchronous and pure — no network needed
         result = verify_commitment(
-            h_commit=h_commit, game_id=game_id, step=step, role=role,
-            state_hash=state_hash, move=move, hint=hint, intent=intent, nonce=nonce,
+            h_commit=h_commit,
+            game_id=game_id,
+            step=step,
+            role=role,
+            state_hash=state_hash,
+            move=move,
+            hint=hint,
+            intent=intent,
+            nonce=nonce,
         )
         assert result is True
 
@@ -598,12 +740,21 @@ class TestNoCentralJudgeInvariant:
 
         state_hash = hash_game_state({"cop_position": [1, 1], "thief_position": [5, 5], "turn": 1})
         h_commit, nonce = create_commitment(
-            game_id=game_id, step=1, role="thief",
-            state_hash=state_hash, move="WEST", hint="Moving WEST", intent="truth",
+            game_id=game_id,
+            step=1,
+            role="thief",
+            state_hash=state_hash,
+            move="WEST",
+            hint="Moving WEST",
+            intent="truth",
         )
         append_opponent_commit(game_dir, 1, h_commit)
-        reveal = {"move": "WEST", "hint": "Moving WEST", "intent": "truth",
-                  "state_hash": state_hash}
+        reveal = {
+            "move": "WEST",
+            "hint": "Moving WEST",
+            "intent": "truth",
+            "state_hash": state_hash,
+        }
         append_opponent_reveal(game_dir, 1, reveal)
 
         # No MCP call happens inside run_final_audit

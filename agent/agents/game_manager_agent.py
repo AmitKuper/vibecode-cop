@@ -2,10 +2,8 @@
 
 from typing import Any
 
-from crewai import Agent, Task
 
-
-def create_game_manager_agent(llm: Any) -> Agent:
+def create_game_manager_agent(llm: Any):
     """Create an agent for managing game state and verification.
 
     Responsibilities:
@@ -20,7 +18,9 @@ def create_game_manager_agent(llm: Any) -> Agent:
     Returns:
         Agent configured for game management
     """
-    agent = Agent(
+    import crewai  # lazy import so test stubs in sys.modules take effect
+
+    agent = crewai.Agent(
         role="Game Manager",
         goal="Manage game state, verify moves, and ensure fair play",
         backstory=(
@@ -45,7 +45,9 @@ def create_update_state_task(agent):
     Returns:
         Task for state update
     """
-    task = Task(
+    import crewai  # lazy import so test stubs in sys.modules take effect
+
+    task = crewai.Task(
         description=(
             "You will receive game_state, cop_move, and thief_move in the inputs. "
             "Use the apply_both_moves tool to apply both moves to the board. "
@@ -69,7 +71,9 @@ def create_verify_commitment_task(agent):
     Returns:
         Task for commitment verification
     """
-    task = Task(
+    import crewai  # lazy import so test stubs in sys.modules take effect
+
+    task = crewai.Task(
         description=(
             "You will receive a commitment hash (h_commit) and the revealed move+nonce. "
             "Your job is to verify that the revealed move's hash matches the commitment. "

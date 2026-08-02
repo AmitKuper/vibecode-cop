@@ -1,12 +1,12 @@
 """Tests that network timeout triggers TECHNICAL_LOSS via watchdog."""
 
 import asyncio
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agent.game_runner_turn import run_turn_loop
 from agent.board import Board
+from agent.game_runner_turn import run_turn_loop
 from agent.rules_engine import RulesEngine
 
 
@@ -18,9 +18,15 @@ def _make_mock_runner():
     runner._cop_reveals = {}
     runner._thief_reveals = {}
     runner._log_event = MagicMock()
-    runner._board_to_state = MagicMock(return_value={
-        "step": 0, "turn": 0, "cop_position": [0, 0], "thief_position": [3, 3], "move_history": [],
-    })
+    runner._board_to_state = MagicMock(
+        return_value={
+            "step": 0,
+            "turn": 0,
+            "cop_position": [0, 0],
+            "thief_position": [3, 3],
+            "move_history": [],
+        }
+    )
     return runner
 
 
@@ -38,7 +44,11 @@ class TestNetworkTimeoutTechnicalLoss:
 
         with patch("agent.game_runner_turn.request_commit", side_effect=slow_commit):
             winner, abort, step = await run_turn_loop(
-                runner, "timeout_game_001", board, rules, max_turns=5,
+                runner,
+                "timeout_game_001",
+                board,
+                rules,
+                max_turns=5,
                 watchdog_timeout=0.05,  # 50ms — will trigger
             )
 
@@ -55,12 +65,22 @@ class TestNetworkTimeoutTechnicalLoss:
         async def mock_call_tool(*args, **kwargs):
             await asyncio.sleep(999)
 
-        with patch.object(client, "_call_tool", side_effect=asyncio.TimeoutError):
-            with pytest.raises((asyncio.TimeoutError, Exception)):
-                await client.action("game1", MagicMock(
-                    game_id="g1", step=1, role="cop", config_sha256="a"*64,
-                    timestamp="", phase="commit", to_dict=lambda: {}
-                ))
+        with (
+            patch.object(client, "_call_tool", side_effect=asyncio.TimeoutError),
+            pytest.raises((asyncio.TimeoutError, Exception)),
+        ):
+            await client.action(
+                "game1",
+                MagicMock(
+                    game_id="g1",
+                    step=1,
+                    role="cop",
+                    config_sha256="a" * 64,
+                    timestamp="",
+                    phase="commit",
+                    to_dict=lambda: {},
+                ),
+            )
 
     @pytest.mark.asyncio
     async def test_normal_turn_completes_without_timeout(self):
@@ -72,14 +92,24 @@ class TestNetworkTimeoutTechnicalLoss:
             return "a" * 64
 
         async def fast_reveal(*args, **kwargs):
-            return {"move": "STAY", "h_commit": "a" * 64, "state_hash": "s", "hint": "", "intent": "truth"}
+            return {
+                "move": "STAY",
+                "h_commit": "a" * 64,
+                "state_hash": "s",
+                "hint": "",
+                "intent": "truth",
+            }
 
         with (
             patch("agent.game_runner_turn.request_commit", side_effect=fast_commit),
             patch("agent.game_runner_turn.request_reveal", side_effect=fast_reveal),
         ):
             winner, abort, step = await run_turn_loop(
-                runner, "normal_game", board, rules, max_turns=2,
+                runner,
+                "normal_game",
+                board,
+                rules,
+                max_turns=2,
                 watchdog_timeout=10.0,
             )
 

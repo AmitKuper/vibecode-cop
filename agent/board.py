@@ -75,8 +75,7 @@ class Board:
 
     def is_capture(self) -> bool:
         """Return True if cop occupies the thief's cell, or a placed barrier traps the thief."""
-        return (self.cop_position == self.thief_position
-                or self.thief_position in self.barriers)
+        return self.cop_position == self.thief_position or self.thief_position in self.barriers
 
     def place_barrier(self, x: int, y: int) -> bool:
         """Place a barrier at (x, y).

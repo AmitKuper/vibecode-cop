@@ -10,14 +10,16 @@ logger = logging.getLogger(__name__)
 _DEFAULT_PATH = Path("config/game.json")
 
 # Mandatory top-level sections
-_REQUIRED_SECTIONS = frozenset([
-    "board_and_agents",
-    "movement_and_barriers",
-    "scoring",
-    "pheromones",
-    "network_and_league",
-    "rate_limiter_gatekeeper",
-])
+_REQUIRED_SECTIONS = frozenset(
+    [
+        "board_and_agents",
+        "movement_and_barriers",
+        "scoring",
+        "pheromones",
+        "network_and_league",
+        "rate_limiter_gatekeeper",
+    ]
+)
 
 # Fixed values that must not deviate (Appendix F mandatory table)
 _FIXED_VALUES = {
@@ -63,8 +65,7 @@ def load_shared_config(path: Path | str = _DEFAULT_PATH) -> dict:
     path = Path(path)
     if not path.exists():
         raise FileNotFoundError(
-            f"Shared config not found: {path}. "
-            "Create config/game.json with all agreed parameters."
+            f"Shared config not found: {path}. Create config/game.json with all agreed parameters."
         )
     with open(path, encoding="utf-8") as fh:
         cfg = json.load(fh)
@@ -96,9 +97,7 @@ def _validate(cfg: dict) -> None:
     for (section, key), minimum in _MIN_VALUES.items():
         actual = cfg.get(section, {}).get(key)
         if actual is None:
-            raise ValueError(
-                f"Mandatory key missing from shared config: [{section}].{key}"
-            )
+            raise ValueError(f"Mandatory key missing from shared config: [{section}].{key}")
         if actual < minimum:
             raise ValueError(
                 f"Minimum value violated: [{section}].{key} must be >= {minimum}, got {actual}"

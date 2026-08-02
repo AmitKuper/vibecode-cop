@@ -25,9 +25,13 @@ async def do_final_audit(
     """Send FINAL_AUDIT to opponent, receive their nonces, verify locally."""
     my_nonces = {str(s): p["nonce"] for s, p in my_commits.items()}
     msg = ActionMessage(
-        game_id=game_id, step=last_step, role=role,
-        config_sha256=config_sha256, timestamp=now_fn(),
-        phase="final_audit", nonces=my_nonces,
+        game_id=game_id,
+        step=last_step,
+        role=role,
+        config_sha256=config_sha256,
+        timestamp=now_fn(),
+        phase="final_audit",
+        nonces=my_nonces,
     )
     try:
         resp = await opponent_client.action(game_id, msg)
@@ -53,9 +57,13 @@ async def notify_game_end(
 ) -> None:
     """Notify opponent that game has ended."""
     msg = ActionMessage(
-        game_id=game_id, step=step, role=role,
-        config_sha256=config_sha256, timestamp=now_fn(),
-        phase="game_end", reason=winner,
+        game_id=game_id,
+        step=step,
+        role=role,
+        config_sha256=config_sha256,
+        timestamp=now_fn(),
+        phase="game_end",
+        reason=winner,
     )
     try:
         await opponent_client.action(game_id, msg)

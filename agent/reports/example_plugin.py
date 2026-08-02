@@ -60,6 +60,7 @@ class ExampleCustomPlugin(ReportPlugin):
 
             # Write stats to file
             from pathlib import Path
+
             stats_file = Path(game_dir) / game_id / "stats.json"
 
             with open(stats_file, "w") as f:

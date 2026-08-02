@@ -39,9 +39,9 @@ class PPOUpdateMixin:
             return None
 
         advantages = self._compute_gae(last_obs, last_done)
-        returns = (
-            advantages + torch.tensor(self._rollout.values, dtype=torch.float32)
-        ).to(self.device)
+        returns = (advantages + torch.tensor(self._rollout.values, dtype=torch.float32)).to(
+            self.device
+        )
 
         obs_t = torch.tensor(self._rollout.obs, dtype=torch.float32).to(self.device)
         acts_t = torch.tensor(self._rollout.actions, dtype=torch.long).to(self.device)

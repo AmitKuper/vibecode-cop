@@ -11,9 +11,21 @@ _SECRET_PLACEHOLDER = "__SECRET__"
 _MAX_VALIDATION_ATTEMPTS = 3
 
 _CANONICAL_FIELDS = [
-    "game_id", "gamelet", "step", "role", "phase", "config_sha256",
-    "state_hash", "h_commit", "h_commit_ack", "move", "hint", "intent",
-    "nonce", "nonces", "timestamp",
+    "game_id",
+    "gamelet",
+    "step",
+    "role",
+    "phase",
+    "config_sha256",
+    "state_hash",
+    "h_commit",
+    "h_commit_ack",
+    "move",
+    "hint",
+    "intent",
+    "nonce",
+    "nonces",
+    "timestamp",
 ]
 
 
@@ -58,10 +70,7 @@ def _render_skill(
         payload_var = "_remap(msg_dict)"
     else:
         field_map_src = "FIELD_MAP = {}  # identity — no field renaming needed"
-        remap_src = (
-            "def _remap(msg: dict) -> dict:\n"
-            "    return msg"
-        )
+        remap_src = "def _remap(msg: dict) -> dict:\n    return msg"
         payload_var = "msg_dict"
 
     payload_expr = f"canonical_json({payload_var})" if payload_as_string else payload_var
@@ -70,17 +79,13 @@ def _render_skill(
     if start_sig:
         start_params += f",\n        {start_sig!r}: sign_message({payload_var}, SECRET)"
 
-    act_params = (
-        f"        {act_gid!r}: game_id,\n"
-        f"        {act_msg!r}: {payload_expr}"
-    )
+    act_params = f"        {act_gid!r}: game_id,\n        {act_msg!r}: {payload_expr}"
     if act_sig:
         act_params += f",\n        {act_sig!r}: sign_message({payload_var}, SECRET)"
 
     needs_crypto = payload_as_string or bool(start_sig or act_sig)
     crypto_import = (
-        "from agent.mcp.crypto import canonical_json, sign_message"
-        if needs_crypto else ""
+        "from agent.mcp.crypto import canonical_json, sign_message" if needs_crypto else ""
     )
 
     return f'''"""Auto-generated MCP skill — ephemeral, deleted at game end."""

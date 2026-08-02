@@ -17,12 +17,8 @@ def _now_iso() -> str:
 
 async def final_audit(runner: object, game_id: str, last_step: int) -> tuple[bool, dict]:
     """Collect nonces from both agents and verify all commitments."""
-    cop_nonces = await request_nonces(
-        runner, runner.cop_client, game_id, last_step, "cop"
-    )
-    thief_nonces = await request_nonces(
-        runner, runner.thief_client, game_id, last_step, "thief"
-    )
+    cop_nonces = await request_nonces(runner, runner.cop_client, game_id, last_step, "cop")
+    thief_nonces = await request_nonces(runner, runner.thief_client, game_id, last_step, "thief")
 
     verified = 0
     failed = 0
@@ -113,12 +109,8 @@ async def request_nonces(
     try:
         resp = await client.action(game_id, msg)
         nonces = resp.get("nonces", {})
-        runner._log_event(
-            "nonces_received", role, "final_audit", {"count": len(nonces)}
-        )
+        runner._log_event("nonces_received", role, "final_audit", {"count": len(nonces)})
         return nonces
     except Exception as e:
-        logger.error(
-            f"[GameRunner] Nonce request to {role} failed: {e}", exc_info=True
-        )
+        logger.error(f"[GameRunner] Nonce request to {role} failed: {e}", exc_info=True)
         return None

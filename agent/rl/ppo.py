@@ -20,8 +20,10 @@ import torch
 
 from agent.rl.networks import PPONet
 from agent.rl.ppo_update import PPOUpdateMixin
-from agent.rl.rollout import _Rollout  # noqa: F401 (re-exported for backward compat)
-from agent.rl.rollout import Rollout
+from agent.rl.rollout import (
+    Rollout,
+    _Rollout,  # noqa: F401 (re-exported for backward compat)
+)
 
 N_ACTIONS = 5
 N_COP_CHANNELS = 4  # default; 5 when barrier_quota > 0
@@ -64,9 +66,9 @@ class PPOAgent(PPOUpdateMixin):
         self._n_channels = n_channels
 
         self.device = _DEVICE
-        self.net = PPONet(
-            grid_size, n_actions, hidden, net_type, in_channels=n_channels
-        ).to(self.device)
+        self.net = PPONet(grid_size, n_actions, hidden, net_type, in_channels=n_channels).to(
+            self.device
+        )
         self.optimizer = torch.optim.Adam(self.net.parameters(), lr=lr, eps=1e-5)
         self._rollout = Rollout()
         self._updates = 0
@@ -75,9 +77,7 @@ class PPOAgent(PPOUpdateMixin):
     # Public interface
     # ------------------------------------------------------------------
 
-    def select_action(
-        self, obs: list, training: bool = True
-    ) -> tuple[int, float, float]:
+    def select_action(self, obs: list, training: bool = True) -> tuple[int, float, float]:
         """Return (action, log_prob, value).
 
         At inference (training=False) picks the greedy action; during training
@@ -131,9 +131,9 @@ class PPOAgent(PPOUpdateMixin):
             hidden = first_w.shape[0]
             self._n_actions = saved_n_actions
             self._n_channels = saved_n_channels
-            self.net = PPONet(
-                grid_size, saved_n_actions, hidden, in_channels=saved_n_channels
-            ).to(self.device)
+            self.net = PPONet(grid_size, saved_n_actions, hidden, in_channels=saved_n_channels).to(
+                self.device
+            )
             self.optimizer = torch.optim.Adam(self.net.parameters(), lr=3e-4, eps=1e-5)
         self.net.load_state_dict(ckpt["net"])
         self.optimizer.load_state_dict(ckpt["optimizer"])

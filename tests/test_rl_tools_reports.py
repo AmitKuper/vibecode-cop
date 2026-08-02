@@ -5,10 +5,8 @@ Covers uncovered lines identified in the coverage report.
 
 from __future__ import annotations
 
-import asyncio
 import json
 import sys
-import tempfile
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -36,26 +34,26 @@ class _ToolDecorator:
 _crewai_tools_mod = MagicMock()
 _crewai_tools_mod.tool = _ToolDecorator()
 
-# Install stubs before any project import
-sys.modules.setdefault("crewai", _crewai_mod)
-sys.modules.setdefault("crewai.tools", _crewai_tools_mod)
+# Install stubs before any project import (override even if real crewai is installed)
+sys.modules["crewai"] = _crewai_mod
+sys.modules["crewai.tools"] = _crewai_tools_mod
 
 # ---------------------------------------------------------------------------
 # Project imports (after stubs)
 # ---------------------------------------------------------------------------
 from agent.board import Board  # noqa: E402
-from agent.rules_engine import GameOutcome, RulesEngine  # noqa: E402
 from agent.rl.config import RLGameConfig  # noqa: E402
 from agent.rl.env_helpers import apply_place_action, manhattan_dist, random_starts  # noqa: E402
 from agent.rl.env_rewards import RewardsMixin  # noqa: E402
 from agent.rl.environment import CopThiefEnv  # noqa: E402
 from agent.rl.observation import cop_observation, observation_shape, thief_observation  # noqa: E402
+from agent.rules_engine import GameOutcome, RulesEngine  # noqa: E402
 from agent.rules_outcomes import check_game_status  # noqa: E402
-
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_board(cop=(0, 0), thief=(3, 3), grid=7, barriers=None):
     return Board(
@@ -74,6 +72,7 @@ def _make_env(barrier_quota=0, random_starts_flag=False):
 # ===========================================================================
 # 1. agent/board.py
 # ===========================================================================
+
 
 class TestBoardPlaceBarrier:
     def test_place_barrier_ok(self):
@@ -139,6 +138,7 @@ class TestBoardPlaceBarrier:
 # 2. agent/rules_outcomes.py
 # ===========================================================================
 
+
 class TestCheckGameStatus:
     def test_capture_returns_cop_win(self):
         b = _make_board(cop=(3, 3), thief=(3, 3))
@@ -164,6 +164,7 @@ class TestCheckGameStatus:
 # ===========================================================================
 # 3. agent/rl/env_helpers.py
 # ===========================================================================
+
 
 class TestEnvHelpers:
     def test_random_starts_different_positions(self):
@@ -212,6 +213,7 @@ class TestEnvHelpers:
 # ===========================================================================
 # 4. agent/rl/env_rewards.py
 # ===========================================================================
+
 
 class TestRewardsMixin:
     def _make_mixin(self, cfg=None, board=None, prev_dist=3):
@@ -262,6 +264,7 @@ class TestRewardsMixin:
 # ===========================================================================
 # 5. agent/rl/environment.py
 # ===========================================================================
+
 
 class TestCopThiefEnv:
     def test_n_cop_actions_no_barriers(self):
@@ -374,6 +377,7 @@ class TestCopThiefEnv:
 # 6. agent/rl/observation.py
 # ===========================================================================
 
+
 class TestObservation:
     def _board_and_rules(self):
         b = _make_board()
@@ -416,10 +420,12 @@ class TestObservation:
 # 7. agent/rl/networks.py
 # ===========================================================================
 
+
 class TestNetworks:
     def test_dqnnet_mlp_forward(self):
         torch = pytest.importorskip("torch")
         from agent.rl.networks import DQNNet
+
         net = DQNNet(grid_size=7, n_actions=5, hidden=64, net_type="mlp", in_channels=4)
         x = torch.zeros(1, 4, 7, 7)
         out = net(x)
@@ -428,6 +434,7 @@ class TestNetworks:
     def test_dqnnet_cnn_forward(self):
         torch = pytest.importorskip("torch")
         from agent.rl.networks import DQNNet
+
         net = DQNNet(grid_size=7, n_actions=5, hidden=64, net_type="cnn", in_channels=4)
         x = torch.zeros(1, 4, 7, 7)
         out = net(x)
@@ -436,6 +443,7 @@ class TestNetworks:
     def test_pponet_mlp_forward(self):
         torch = pytest.importorskip("torch")
         from agent.rl.networks import PPONet
+
         net = PPONet(grid_size=7, n_actions=5, hidden=64, net_type="mlp", in_channels=4)
         x = torch.zeros(1, 4, 7, 7)
         logits, value = net(x)
@@ -445,6 +453,7 @@ class TestNetworks:
     def test_pponet_cnn_forward(self):
         torch = pytest.importorskip("torch")
         from agent.rl.networks import PPONet
+
         net = PPONet(grid_size=7, n_actions=5, hidden=64, net_type="cnn", in_channels=4)
         x = torch.zeros(1, 4, 7, 7)
         logits, value = net(x)
@@ -453,6 +462,7 @@ class TestNetworks:
     def test_pponet_get_action_deterministic(self):
         torch = pytest.importorskip("torch")
         from agent.rl.networks import PPONet
+
         net = PPONet(grid_size=7, n_actions=5, hidden=64, net_type="mlp")
         x = torch.zeros(1, 4, 7, 7)
         action, log_prob, entropy, value = net.get_action(x, deterministic=True)
@@ -463,6 +473,7 @@ class TestNetworks:
     def test_pponet_get_action_stochastic(self):
         torch = pytest.importorskip("torch")
         from agent.rl.networks import PPONet
+
         net = PPONet(grid_size=7, n_actions=5, hidden=64, net_type="mlp")
         x = torch.zeros(1, 4, 7, 7)
         action, log_prob, entropy, value = net.get_action(x, deterministic=False)
@@ -471,6 +482,7 @@ class TestNetworks:
     def test_dqnnet_5channel(self):
         torch = pytest.importorskip("torch")
         from agent.rl.networks import DQNNet
+
         net = DQNNet(grid_size=7, n_actions=9, hidden=64, net_type="mlp", in_channels=5)
         x = torch.zeros(1, 5, 7, 7)
         out = net(x)
@@ -481,17 +493,18 @@ class TestNetworks:
 # 8. agent/rl/policy.py and policy_loader.py
 # ===========================================================================
 
+
 class TestRLPolicy:
     def _make_policy(self, role="thief", algo="dqn", barrier_quota=0):
-        torch = pytest.importorskip("torch")
+        pytest.importorskip("torch")
         from agent.rl.networks import DQNNet, PPONet
         from agent.rl.policy import RLPolicy
+
         if algo == "dqn":
             net = DQNNet(grid_size=7, n_actions=5, hidden=64)
         else:
             net = PPONet(grid_size=7, n_actions=5, hidden=64)
-        return RLPolicy(net, role=role, algo=algo, max_steps=35,
-                        barrier_quota=barrier_quota)
+        return RLPolicy(net, role=role, algo=algo, max_steps=35, barrier_quota=barrier_quota)
 
     def test_select_move_dqn_thief(self):
         policy = self._make_policy("thief", "dqn")
@@ -554,9 +567,10 @@ class TestRLPolicy:
         assert len(obs) == 4
 
     def test_select_move_cop_barrier_quota(self):
-        torch = pytest.importorskip("torch")
+        pytest.importorskip("torch")
         from agent.rl.networks import DQNNet
         from agent.rl.policy import RLPolicy
+
         net = DQNNet(grid_size=7, n_actions=9, hidden=64, in_channels=5)
         policy = RLPolicy(net, role="cop", algo="dqn", barrier_quota=5, barriers_remaining=3)
         b = _make_board()
@@ -577,6 +591,7 @@ class TestPolicyLoader:
         torch = pytest.importorskip("torch")
         from agent.rl.networks import DQNNet
         from agent.rl.policy_loader import rebuild_net
+
         net = DQNNet(grid_size=7, n_actions=5, hidden=64)
         sd = net.state_dict()
         ckpt = {"n_actions": 5, "n_channels": 4}
@@ -587,6 +602,7 @@ class TestPolicyLoader:
         torch = pytest.importorskip("torch")
         from agent.rl.networks import PPONet
         from agent.rl.policy_loader import rebuild_net
+
         net = PPONet(grid_size=7, n_actions=5, hidden=64)
         sd = net.state_dict()
         ckpt = {"n_actions": 5, "n_channels": 4}
@@ -597,6 +613,7 @@ class TestPolicyLoader:
         torch = pytest.importorskip("torch")
         from agent.rl.networks import DQNNet
         from agent.rl.policy_loader import rebuild_net
+
         net = DQNNet(grid_size=7, n_actions=5, hidden=64, in_channels=4)
         sd = net.state_dict()
         ckpt = {}  # no n_actions / n_channels → must infer
@@ -606,6 +623,7 @@ class TestPolicyLoader:
     def test_load_checkpoint_file_not_found(self):
         pytest.importorskip("torch")
         from agent.rl.policy import RLPolicy
+
         with pytest.raises(FileNotFoundError):
             RLPolicy.load("thief", models_dir=Path("/nonexistent_dir_xyz"))
 
@@ -613,6 +631,7 @@ class TestPolicyLoader:
         torch = pytest.importorskip("torch")
         from agent.rl.networks import DQNNet
         from agent.rl.policy_loader import load_checkpoint
+
         net = DQNNet(grid_size=7, n_actions=5, hidden=64)
         ckpt = {"net": net.state_dict(), "n_actions": 5, "n_channels": 4}
         path = tmp_path / "thief_dqn.pt"
@@ -625,6 +644,7 @@ class TestPolicyLoader:
         torch = pytest.importorskip("torch")
         from agent.rl.networks import PPONet
         from agent.rl.policy_loader import load_checkpoint
+
         net = PPONet(grid_size=7, n_actions=5, hidden=64)
         ckpt = {"net": net.state_dict(), "n_actions": 5, "n_channels": 4, "updates": 100}
         path = tmp_path / "thief_ppo.pt"
@@ -637,6 +657,7 @@ class TestPolicyLoader:
         torch = pytest.importorskip("torch")
         from agent.rl.networks import PPONet
         from agent.rl.policy_loader import load_checkpoint
+
         net = PPONet(grid_size=7, n_actions=9, hidden=256, net_type="cnn", in_channels=5)
         ckpt = {"net": net.state_dict(), "updates": 100, "barrier_quota": 14, "n_channels": 5}
         path = tmp_path / "cop_ppo.pt"
@@ -649,12 +670,14 @@ class TestPolicyLoader:
 # 9. agent/peer_turn_helpers.py
 # ===========================================================================
 
+
 class TestPeerTurnHelpers:
     def _make_runtime(self, role="thief"):
         rt = MagicMock()
         rt.role = role
         rt.game_id = "game123"
         rt.config_sha256 = "abc123"
+        rt.secret = "test-secret"
         rt.opponent_client = MagicMock()
         rt.board = _make_board()
         return rt
@@ -662,6 +685,7 @@ class TestPeerTurnHelpers:
     @pytest.mark.asyncio
     async def test_send_commit_success(self):
         from agent.peer_turn_helpers import send_commit
+
         rt = self._make_runtime()
         rt.opponent_client.action = AsyncMock(return_value={"h_commit": "abc"})
         result = await send_commit(rt, 1, "hashvalue")
@@ -670,6 +694,7 @@ class TestPeerTurnHelpers:
     @pytest.mark.asyncio
     async def test_send_commit_exception_returns_none(self):
         from agent.peer_turn_helpers import send_commit
+
         rt = self._make_runtime()
         rt.opponent_client.action = AsyncMock(side_effect=Exception("network error"))
         result = await send_commit(rt, 1, "hashvalue")
@@ -678,6 +703,7 @@ class TestPeerTurnHelpers:
     @pytest.mark.asyncio
     async def test_send_reveal_success(self):
         from agent.peer_turn_helpers import send_reveal
+
         rt = self._make_runtime()
         rt.opponent_client.action = AsyncMock(return_value={"move": "NORTH"})
         payload = {"move": "NORTH", "hint": "", "intent": "truth", "state_hash": "x"}
@@ -687,6 +713,7 @@ class TestPeerTurnHelpers:
     @pytest.mark.asyncio
     async def test_send_reveal_exception_returns_none(self):
         from agent.peer_turn_helpers import send_reveal
+
         rt = self._make_runtime()
         rt.opponent_client.action = AsyncMock(side_effect=Exception("timeout"))
         payload = {"move": "STAY", "hint": "", "intent": "truth", "state_hash": "x"}
@@ -696,6 +723,7 @@ class TestPeerTurnHelpers:
     @pytest.mark.asyncio
     async def test_select_move_rl_success(self):
         from agent.peer_turn_helpers import select_move
+
         rt = self._make_runtime()
         rt._build_observation = MagicMock(return_value=[])
         rt._select_move_rl = MagicMock(return_value="NORTH")
@@ -706,12 +734,17 @@ class TestPeerTurnHelpers:
     @pytest.mark.asyncio
     async def test_select_move_rl_failure_falls_back(self):
         from agent.peer_turn_helpers import select_move
+
         rt = self._make_runtime(role="thief")
         rt._build_observation = MagicMock(return_value=[])
         rt._select_move_rl = MagicMock(side_effect=Exception("RL failure"))
         board_state = {
-            "cop_position": [0, 0], "thief_position": [3, 3], "turn": 0,
-            "grid_size": 7, "barriers": [], "move_history": [],
+            "cop_position": [0, 0],
+            "thief_position": [3, 3],
+            "turn": 0,
+            "grid_size": 7,
+            "barriers": [],
+            "move_history": [],
         }
         move = await select_move(rt, board_state)
         assert isinstance(move, str)
@@ -719,28 +752,35 @@ class TestPeerTurnHelpers:
     @pytest.mark.asyncio
     async def test_select_move_rl_returns_none_falls_back(self):
         from agent.peer_turn_helpers import select_move
+
         rt = self._make_runtime(role="cop")
         rt._build_observation = MagicMock(return_value=[])
         rt._select_move_rl = MagicMock(return_value=None)
         board_state = {
-            "cop_position": [0, 0], "thief_position": [3, 3], "turn": 0,
-            "grid_size": 7, "barriers": [], "move_history": [],
+            "cop_position": [0, 0],
+            "thief_position": [3, 3],
+            "turn": 0,
+            "grid_size": 7,
+            "barriers": [],
+            "move_history": [],
         }
         move = await select_move(rt, board_state)
         assert isinstance(move, str)
 
     def test_get_watchdog_timeout_default(self):
-        with patch("agent.config.shared_config.load_shared_config",
-                   side_effect=Exception("no config")):
+        with patch(
+            "agent.config.shared_config.load_shared_config", side_effect=Exception("no config")
+        ):
             from agent.peer_turn_helpers import get_watchdog_timeout as gwt
+
             result = gwt()
         assert result == 60.0
 
     def test_get_watchdog_timeout_from_config(self):
         from agent.peer_turn_helpers import get_watchdog_timeout
+
         fake_cfg = {"network_and_league": {"watchdog_timeout_sec": 30}}
-        with patch("agent.config.shared_config.load_shared_config",
-                   return_value=fake_cfg):
+        with patch("agent.config.shared_config.load_shared_config", return_value=fake_cfg):
             result = get_watchdog_timeout()
         assert result == 30.0
 
@@ -748,6 +788,7 @@ class TestPeerTurnHelpers:
 # ===========================================================================
 # 10. agent/peer_turn_loop.py
 # ===========================================================================
+
 
 class TestPeerTurnLoop:
     def _make_runtime(self, role="thief"):
@@ -762,17 +803,18 @@ class TestPeerTurnLoop:
     @pytest.mark.asyncio
     async def test_run_peer_turn_commit_fails(self):
         from agent.peer_turn_loop import run_peer_turn
+
         rt = self._make_runtime()
         rules = RulesEngine(rt.board)
         with (
-            patch("agent.peer_turn_loop.build_board_state",
-                  return_value={"cop_position": [0, 0], "thief_position": [3, 3], "turn": 0}),
+            patch(
+                "agent.peer_turn_loop.build_board_state",
+                return_value={"cop_position": [0, 0], "thief_position": [3, 3], "turn": 0},
+            ),
             patch("agent.peer_turn_loop.hash_game_state", return_value="h"),
-            patch("agent.peer_turn_loop.select_move",
-                  new_callable=AsyncMock, return_value="STAY"),
+            patch("agent.peer_turn_loop.select_move", new_callable=AsyncMock, return_value="STAY"),
             patch("agent.peer_turn_loop.create_commitment", return_value=("hc", "n")),
-            patch("agent.peer_turn_loop.send_commit",
-                  new_callable=AsyncMock, return_value=None),
+            patch("agent.peer_turn_loop.send_commit", new_callable=AsyncMock, return_value=None),
             patch("agent.peer_turn_loop.append_opponent_commit"),
         ):
             winner, abort = await run_peer_turn(rt, 1, rules)
@@ -782,17 +824,18 @@ class TestPeerTurnLoop:
     @pytest.mark.asyncio
     async def test_run_peer_turn_no_h_commit_in_response(self):
         from agent.peer_turn_loop import run_peer_turn
+
         rt = self._make_runtime()
         rules = RulesEngine(rt.board)
         with (
-            patch("agent.peer_turn_loop.build_board_state",
-                  return_value={"cop_position": [0, 0], "thief_position": [3, 3], "turn": 0}),
+            patch(
+                "agent.peer_turn_loop.build_board_state",
+                return_value={"cop_position": [0, 0], "thief_position": [3, 3], "turn": 0},
+            ),
             patch("agent.peer_turn_loop.hash_game_state", return_value="h"),
-            patch("agent.peer_turn_loop.select_move",
-                  new_callable=AsyncMock, return_value="STAY"),
+            patch("agent.peer_turn_loop.select_move", new_callable=AsyncMock, return_value="STAY"),
             patch("agent.peer_turn_loop.create_commitment", return_value=("hc", "n")),
-            patch("agent.peer_turn_loop.send_commit",
-                  new_callable=AsyncMock, return_value={}),
+            patch("agent.peer_turn_loop.send_commit", new_callable=AsyncMock, return_value={}),
             patch("agent.peer_turn_loop.append_opponent_commit"),
         ):
             winner, abort = await run_peer_turn(rt, 1, rules)
@@ -801,20 +844,24 @@ class TestPeerTurnLoop:
     @pytest.mark.asyncio
     async def test_run_peer_turn_reveal_fails(self):
         from agent.peer_turn_loop import run_peer_turn
+
         rt = self._make_runtime()
         rules = RulesEngine(rt.board)
         with (
-            patch("agent.peer_turn_loop.build_board_state",
-                  return_value={"cop_position": [0, 0], "thief_position": [3, 3], "turn": 0}),
+            patch(
+                "agent.peer_turn_loop.build_board_state",
+                return_value={"cop_position": [0, 0], "thief_position": [3, 3], "turn": 0},
+            ),
             patch("agent.peer_turn_loop.hash_game_state", return_value="h"),
-            patch("agent.peer_turn_loop.select_move",
-                  new_callable=AsyncMock, return_value="STAY"),
+            patch("agent.peer_turn_loop.select_move", new_callable=AsyncMock, return_value="STAY"),
             patch("agent.peer_turn_loop.create_commitment", return_value=("hc", "n")),
-            patch("agent.peer_turn_loop.send_commit",
-                  new_callable=AsyncMock, return_value={"h_commit": "hc"}),
+            patch(
+                "agent.peer_turn_loop.send_commit",
+                new_callable=AsyncMock,
+                return_value={"h_commit": "hc"},
+            ),
             patch("agent.peer_turn_loop.append_opponent_commit"),
-            patch("agent.peer_turn_loop.send_reveal",
-                  new_callable=AsyncMock, return_value=None),
+            patch("agent.peer_turn_loop.send_reveal", new_callable=AsyncMock, return_value=None),
             patch("agent.peer_turn_loop.append_opponent_reveal"),
         ):
             winner, abort = await run_peer_turn(rt, 1, rules)
@@ -823,11 +870,12 @@ class TestPeerTurnLoop:
     @pytest.mark.asyncio
     async def test_run_peer_turn_loop_timeout(self):
         from agent.peer_turn_loop import run_peer_turn_loop
+
         rt = self._make_runtime()
         rules = RulesEngine(rt.board)
 
         async def _timeout(*a, **k):
-            raise asyncio.TimeoutError()
+            raise TimeoutError()
 
         with (
             patch("agent.peer_turn_loop.get_watchdog_timeout", return_value=0.001),
@@ -839,6 +887,7 @@ class TestPeerTurnLoop:
     @pytest.mark.asyncio
     async def test_run_peer_turn_loop_exception(self):
         from agent.peer_turn_loop import run_peer_turn_loop
+
         rt = self._make_runtime()
         rules = RulesEngine(rt.board)
 
@@ -855,6 +904,7 @@ class TestPeerTurnLoop:
     @pytest.mark.asyncio
     async def test_run_peer_turn_loop_no_winner_thief_wins(self):
         from agent.peer_turn_loop import run_peer_turn_loop
+
         rt = self._make_runtime()
         rules = RulesEngine(rt.board)
 
@@ -871,21 +921,29 @@ class TestPeerTurnLoop:
     @pytest.mark.asyncio
     async def test_run_peer_turn_barrier_placement(self):
         from agent.peer_turn_loop import run_peer_turn
+
         rt = self._make_runtime(role="cop")
         rt._cop_barriers_remaining = 5
         rules = RulesEngine(rt.board)
         with (
-            patch("agent.peer_turn_loop.build_board_state",
-                  return_value={"cop_position": [3, 3], "thief_position": [6, 6], "turn": 0}),
+            patch(
+                "agent.peer_turn_loop.build_board_state",
+                return_value={"cop_position": [3, 3], "thief_position": [6, 6], "turn": 0},
+            ),
             patch("agent.peer_turn_loop.hash_game_state", return_value="h"),
-            patch("agent.peer_turn_loop.select_move",
-                  new_callable=AsyncMock, return_value="STAY"),
+            patch("agent.peer_turn_loop.select_move", new_callable=AsyncMock, return_value="STAY"),
             patch("agent.peer_turn_loop.create_commitment", return_value=("hc", "n")),
-            patch("agent.peer_turn_loop.send_commit",
-                  new_callable=AsyncMock, return_value={"h_commit": "hc"}),
+            patch(
+                "agent.peer_turn_loop.send_commit",
+                new_callable=AsyncMock,
+                return_value={"h_commit": "hc"},
+            ),
             patch("agent.peer_turn_loop.append_opponent_commit"),
-            patch("agent.peer_turn_loop.send_reveal",
-                  new_callable=AsyncMock, return_value={"move": "PLACE_N"}),
+            patch(
+                "agent.peer_turn_loop.send_reveal",
+                new_callable=AsyncMock,
+                return_value={"move": "PLACE_N"},
+            ),
             patch("agent.peer_turn_loop.append_opponent_reveal"),
         ):
             winner, abort = await run_peer_turn(rt, 1, rules)
@@ -897,42 +955,78 @@ class TestPeerTurnLoop:
 # 11. agent/tools/board_tool.py
 # ===========================================================================
 
+
 class TestBoardTool:
     def test_apply_move_returns_updated_state(self):
         from agent.tools.board_tool import apply_move
-        state = {"cop_position": [0, 0], "thief_position": [3, 3],
-                 "grid_size": 7, "barriers": [], "turn": 0, "move_history": []}
+
+        state = {
+            "cop_position": [0, 0],
+            "thief_position": [3, 3],
+            "grid_size": 7,
+            "barriers": [],
+            "turn": 0,
+            "move_history": [],
+        }
         result = apply_move(state, "cop", "EAST")
         assert result["cop_position"] == [1, 0]
 
     def test_apply_move_invalid_role_returns_state(self):
         from agent.tools.board_tool import apply_move
-        state = {"cop_position": [0, 0], "thief_position": [3, 3],
-                 "grid_size": 7, "barriers": [], "turn": 0, "move_history": []}
+
+        state = {
+            "cop_position": [0, 0],
+            "thief_position": [3, 3],
+            "grid_size": 7,
+            "barriers": [],
+            "turn": 0,
+            "move_history": [],
+        }
         # invalid role raises inside apply_move → returns unchanged state
         result = apply_move(state, "ghost", "NORTH")
         assert result == state
 
     def test_apply_both_moves(self):
         from agent.tools.board_tool import apply_both_moves
-        state = {"cop_position": [0, 0], "thief_position": [3, 3],
-                 "grid_size": 7, "barriers": [], "turn": 0, "move_history": []}
+
+        state = {
+            "cop_position": [0, 0],
+            "thief_position": [3, 3],
+            "grid_size": 7,
+            "barriers": [],
+            "turn": 0,
+            "move_history": [],
+        }
         result = apply_both_moves(state, "EAST", "WEST")
         assert result["cop_position"] == [1, 0]
         assert result["thief_position"] == [2, 3]
 
     def test_get_legal_moves(self):
         from agent.tools.board_tool import get_legal_moves
-        state = {"cop_position": [0, 0], "thief_position": [3, 3],
-                 "grid_size": 7, "barriers": [], "turn": 0, "move_history": []}
+
+        state = {
+            "cop_position": [0, 0],
+            "thief_position": [3, 3],
+            "grid_size": 7,
+            "barriers": [],
+            "turn": 0,
+            "move_history": [],
+        }
         moves = get_legal_moves(state, "cop")
         assert "EAST" in moves
         assert "SOUTH" in moves
 
     def test_check_board_state(self):
         from agent.tools.board_tool import check_board_state
-        state = {"cop_position": [1, 1], "thief_position": [4, 4],
-                 "grid_size": 7, "barriers": [], "turn": 0, "move_history": []}
+
+        state = {
+            "cop_position": [1, 1],
+            "thief_position": [4, 4],
+            "grid_size": 7,
+            "barriers": [],
+            "turn": 0,
+            "move_history": [],
+        }
         result = check_board_state(state)
         assert result["cop_position"] == [1, 1]
         assert result["same_position"] is False
@@ -942,9 +1036,11 @@ class TestBoardTool:
 # 12. agent/tools/game_state_tool.py
 # ===========================================================================
 
+
 class TestGameStateTool:
     def test_get_observation_cop(self):
         from agent.tools.game_state_tool import get_observation
+
         state = {"cop_position": [3, 3], "thief_position": [6, 6], "turn": 5}
         obs = get_observation("g1", "cop", state)
         assert obs["own_position"] == [3, 3]
@@ -952,22 +1048,26 @@ class TestGameStateTool:
 
     def test_get_observation_thief(self):
         from agent.tools.game_state_tool import get_observation
+
         state = {"cop_position": [0, 0], "thief_position": [4, 4], "turn": 2}
         obs = get_observation("g1", "thief", state)
         assert obs["own_position"] == [4, 4]
 
     def test_get_observation_empty_state(self):
         from agent.tools.game_state_tool import get_observation
+
         obs = get_observation("g1", "cop", {})
         assert obs["own_position"] == [0, 0]
 
     def test_load_game_state_missing(self, tmp_path):
         from agent.tools.game_state_tool import load_game_state
+
         result = load_game_state("nosuchgame", memory_dir=tmp_path)
         assert result == {}
 
     def test_save_and_load_game_state(self, tmp_path):
         from agent.tools.game_state_tool import load_game_state, save_game_state
+
         state = {"cop_position": [1, 2], "turn": 3}
         ok = save_game_state("g2", state, memory_dir=tmp_path)
         assert ok is True
@@ -979,31 +1079,37 @@ class TestGameStateTool:
 # 13. agent/tools/protocol_tool.py
 # ===========================================================================
 
+
 class TestProtocolTool:
     def test_analyze_tool_names(self):
         from agent.tools.protocol_tool import analyze_tool_names
+
         result = analyze_tool_names(["start_game", "commit_move", "reveal", "ping"])
         assert "start_game" in result
         assert "commit" in result.lower()
 
     def test_infer_game_flow_commit_reveal(self):
         from agent.tools.protocol_tool import infer_game_flow
+
         result = infer_game_flow(["start_game", "action", "commit", "reveal"])
         assert "Commit-Reveal" in result
 
     def test_infer_game_flow_unknown(self):
         from agent.tools.protocol_tool import infer_game_flow
+
         result = infer_game_flow(["foo", "bar"])
         assert "Unknown" in result
 
     def test_summarize_protocol(self):
         from agent.tools.protocol_tool import summarize_protocol
+
         tools = ["start_game", "action", "ping"]
         result = summarize_protocol(tools)
         assert "Total tools: 3" in result
 
     def test_analyze_tool_names_health(self):
         from agent.tools.protocol_tool import analyze_tool_names
+
         result = analyze_tool_names(["health_check"])
         assert "health" in result.lower()
 
@@ -1012,19 +1118,20 @@ class TestProtocolTool:
 # 14. agent/tools/read_skill_tool.py
 # ===========================================================================
 
+
 class TestReadSkillTool:
     def test_read_skill_file_not_found(self):
         from agent.tools.read_skill_tool import read_skill_file
+
         result = json.loads(read_skill_file("/nonexistent/path/skill.py"))
         assert "error" in result
 
     def test_read_skill_file_valid(self, tmp_path):
         from agent.tools.read_skill_tool import read_skill_file
+
         f = tmp_path / "skill.py"
         f.write_text(
-            "async def start_game(): pass\n"
-            "async def action(): pass\n"
-            "async def ping(): pass\n"
+            "async def start_game(): pass\nasync def action(): pass\nasync def ping(): pass\n"
         )
         result = json.loads(read_skill_file(str(f)))
         assert result["syntax_ok"] is True
@@ -1034,6 +1141,7 @@ class TestReadSkillTool:
 
     def test_read_skill_file_syntax_error(self, tmp_path):
         from agent.tools.read_skill_tool import read_skill_file
+
         f = tmp_path / "bad.py"
         f.write_text("def broken(\n")
         result = json.loads(read_skill_file(str(f)))
@@ -1045,9 +1153,11 @@ class TestReadSkillTool:
 # 15. agent/tools/strategy_tool.py
 # ===========================================================================
 
+
 class TestStrategyTool:
     def test_call_strategy_no_model(self):
         from agent.tools import strategy_tool as st
+
         st._rl_policies = {}
         # No model file exists → should raise RuntimeError
         with pytest.raises(RuntimeError, match="No trained RL model"):
@@ -1055,14 +1165,17 @@ class TestStrategyTool:
 
     def test_call_strategy_no_board_state(self):
         from agent.tools import strategy_tool as st
+
         st._rl_policies["cop"] = None
         with pytest.raises(RuntimeError):
             st.call_strategy({"role": "cop"})
 
     def test_load_rl_policy_caches_none(self):
-        from agent.tools import strategy_tool as st
-        from unittest.mock import patch
         import pathlib
+        from unittest.mock import patch
+
+        from agent.tools import strategy_tool as st
+
         st._rl_policies = {}
         # Make no model path exist so the function caches None
         with patch.object(pathlib.Path, "exists", return_value=False):
@@ -1075,72 +1188,86 @@ class TestStrategyTool:
 # 16. agent/agents/__init__.py and agent factories
 # ===========================================================================
 
+
 class TestAgentFactories:
     def _mock_llm(self):
         return MagicMock()
 
     def test_create_strategy_agent(self):
         from agent.agents.strategy_agent import create_strategy_agent
+
         agent = create_strategy_agent(self._mock_llm())
         assert agent is not None
 
     def test_create_select_move_task(self):
         from agent.agents.strategy_agent import create_select_move_task
+
         task = create_select_move_task(MagicMock())
         assert task is not None
 
     def test_create_game_manager_agent(self):
         from agent.agents.game_manager_agent import create_game_manager_agent
+
         agent = create_game_manager_agent(self._mock_llm())
         assert agent is not None
 
     def test_create_update_state_task(self):
         from agent.agents.game_manager_agent import create_update_state_task
+
         task = create_update_state_task(MagicMock())
         assert task is not None
 
     def test_create_verify_commitment_task(self):
         from agent.agents.game_manager_agent import create_verify_commitment_task
+
         task = create_verify_commitment_task(MagicMock())
         assert task is not None
 
     def test_create_protocol_discovery_agent(self):
         from agent.agents.protocol_discovery_agent import create_protocol_discovery_agent
+
         agent = create_protocol_discovery_agent(self._mock_llm())
         assert agent is not None
 
     def test_create_analyze_protocol_task(self):
         from agent.agents.protocol_discovery_agent import create_analyze_protocol_task
+
         task = create_analyze_protocol_task(MagicMock())
         assert task is not None
 
     def test_create_verify_protocol_task(self):
         from agent.agents.protocol_discovery_agent import create_verify_protocol_task
+
         task = create_verify_protocol_task(MagicMock())
         assert task is not None
 
     def test_create_mcp_explorer_agent(self):
         from agent.agents.mcp_explorer_agent import create_mcp_explorer_agent
+
         agent = create_mcp_explorer_agent(self._mock_llm())
         assert agent is not None
 
     def test_create_mcp_explorer_task(self):
         from agent.agents.mcp_explorer_agent import create_mcp_explorer_task
+
         task = create_mcp_explorer_task(MagicMock())
         assert task is not None
 
     def test_create_skill_validator_agent(self):
         from agent.agents.mcp_skill_validator import create_skill_validator_agent
+
         agent = create_skill_validator_agent(self._mock_llm())
         assert agent is not None
 
     def test_create_skill_validator_task(self):
         from agent.agents.mcp_skill_validator import create_skill_validator_task
+
         task = create_skill_validator_task(MagicMock())
         assert task is not None
 
     def test_agents_init_exports(self):
         from agent import agents
+
         assert hasattr(agents, "create_strategy_agent")
         assert hasattr(agents, "create_mcp_explorer_agent")
         assert hasattr(agents, "create_game_manager_agent")
@@ -1151,10 +1278,12 @@ class TestAgentFactories:
 # 17. agent/reports/delivery_store.py
 # ===========================================================================
 
+
 class TestDeliveryStore:
     @pytest.mark.asyncio
     async def test_load_history_missing_file(self, tmp_path):
         from agent.reports.delivery_store import DeliveryStore
+
         store = DeliveryStore(tmp_path)
         history = store.load_history("g1")
         assert history == []
@@ -1162,6 +1291,7 @@ class TestDeliveryStore:
     @pytest.mark.asyncio
     async def test_record_and_load(self, tmp_path):
         from agent.reports.delivery_store import DeliveryStore
+
         store = DeliveryStore(tmp_path)
         await store.record_delivery("g1", {"plugin": "file", "status": "sent"})
         history = store.load_history("g1")
@@ -1171,6 +1301,7 @@ class TestDeliveryStore:
     @pytest.mark.asyncio
     async def test_has_successful_delivery_true(self, tmp_path):
         from agent.reports.delivery_store import DeliveryStore
+
         store = DeliveryStore(tmp_path)
         await store.record_delivery("g1", {"plugin": "file", "status": "sent"})
         result = await store.has_successful_delivery("g1", "file")
@@ -1179,12 +1310,14 @@ class TestDeliveryStore:
     @pytest.mark.asyncio
     async def test_has_successful_delivery_false(self, tmp_path):
         from agent.reports.delivery_store import DeliveryStore
+
         store = DeliveryStore(tmp_path)
         result = await store.has_successful_delivery("g1", "file")
         assert result is False
 
     def test_get_delivery_path(self, tmp_path):
         from agent.reports.delivery_store import DeliveryStore
+
         store = DeliveryStore(tmp_path)
         path = store.get_delivery_path("g1")
         assert path == tmp_path / "g1" / "report_delivery.json"
@@ -1192,6 +1325,7 @@ class TestDeliveryStore:
     @pytest.mark.asyncio
     async def test_load_history_bad_json(self, tmp_path):
         from agent.reports.delivery_store import DeliveryStore
+
         store = DeliveryStore(tmp_path)
         bad_path = tmp_path / "g1" / "report_delivery.json"
         bad_path.parent.mkdir(parents=True)
@@ -1204,10 +1338,12 @@ class TestDeliveryStore:
 # 18. agent/reports/example_plugin.py
 # ===========================================================================
 
+
 class TestExamplePlugin:
     @pytest.mark.asyncio
     async def test_generate_success(self, tmp_path):
         from agent.reports.example_plugin import ExampleCustomPlugin
+
         plugin = ExampleCustomPlugin()
         game_state = {
             "winner": "cop",
@@ -1224,6 +1360,7 @@ class TestExamplePlugin:
     @pytest.mark.asyncio
     async def test_generate_failure(self, tmp_path):
         from agent.reports.example_plugin import ExampleCustomPlugin
+
         plugin = ExampleCustomPlugin()
         # Passing bad game_dir that can't create files
         result = await plugin.generate("g", {}, "/nonexistent_dir_xyz/abc")
@@ -1234,9 +1371,11 @@ class TestExamplePlugin:
 # 19. agent/reports/file_report.py
 # ===========================================================================
 
+
 class TestFileReportPlugin:
     def _make_context(self, game_dir: Path, fmt="json"):
         from agent.reports.base import ReportContext
+
         return ReportContext(
             game_id="testgame",
             role="cop",
@@ -1260,6 +1399,7 @@ class TestFileReportPlugin:
     @pytest.mark.asyncio
     async def test_generate_json(self, tmp_path):
         from agent.reports.file_report import FileReportPlugin
+
         plugin = FileReportPlugin("test_json", "json")
         ctx = self._make_context(tmp_path)
         result = await plugin.generate(ctx)
@@ -1269,6 +1409,7 @@ class TestFileReportPlugin:
     @pytest.mark.asyncio
     async def test_generate_markdown(self, tmp_path):
         from agent.reports.file_report import FileReportPlugin
+
         plugin = FileReportPlugin("test_md", "markdown")
         ctx = self._make_context(tmp_path)
         result = await plugin.generate(ctx)
@@ -1278,6 +1419,7 @@ class TestFileReportPlugin:
     @pytest.mark.asyncio
     async def test_generate_json_content(self, tmp_path):
         from agent.reports.file_report import FileReportPlugin
+
         plugin = FileReportPlugin("test_json", "json")
         ctx = self._make_context(tmp_path)
         await plugin.generate(ctx)
@@ -1289,6 +1431,7 @@ class TestFileReportPlugin:
     @pytest.mark.asyncio
     async def test_generate_markdown_content(self, tmp_path):
         from agent.reports.file_report import FileReportPlugin
+
         plugin = FileReportPlugin("test_md", "markdown")
         ctx = self._make_context(tmp_path)
         await plugin.generate(ctx)
@@ -1299,6 +1442,7 @@ class TestFileReportPlugin:
     @pytest.mark.asyncio
     async def test_generate_exception_returns_failed_result(self, tmp_path):
         from agent.reports.file_report import FileReportPlugin
+
         plugin = FileReportPlugin("test_json", "json")
         ctx = self._make_context(tmp_path)
         # Force an exception during file write
@@ -1312,10 +1456,12 @@ class TestFileReportPlugin:
 # 20. agent/reports/gatekeeper.py
 # ===========================================================================
 
+
 class TestReportGatekeeper:
     @pytest.mark.asyncio
     async def test_can_send_dry_run(self):
         from agent.reports.gatekeeper import ReportGatekeeper
+
         gk = ReportGatekeeper()
         ok, reason = await gk.can_send("g1", "file", [], mode="dry_run")
         assert ok is True
@@ -1323,6 +1469,7 @@ class TestReportGatekeeper:
     @pytest.mark.asyncio
     async def test_can_send_already_sent(self):
         from agent.reports.gatekeeper import ReportGatekeeper
+
         gk = ReportGatekeeper()
         history = [{"plugin": "file", "status": "sent", "game_id": "g1", "timestamp": "2024-01-01"}]
         ok, reason = await gk.can_send("g1", "file", history, mode="send")
@@ -1331,15 +1478,15 @@ class TestReportGatekeeper:
 
     @pytest.mark.asyncio
     async def test_can_send_daily_limit(self):
+        from datetime import datetime
+
         from agent.reports.gatekeeper import ReportGatekeeper
-        from datetime import datetime, timedelta
+
         gk = ReportGatekeeper(max_sends_per_day=2)
         now = datetime.now()
         history = [
-            {"plugin": "other", "status": "sent", "game_id": "g2",
-             "timestamp": now.isoformat()},
-            {"plugin": "other2", "status": "sent", "game_id": "g3",
-             "timestamp": now.isoformat()},
+            {"plugin": "other", "status": "sent", "game_id": "g2", "timestamp": now.isoformat()},
+            {"plugin": "other2", "status": "sent", "game_id": "g3", "timestamp": now.isoformat()},
         ]
         ok, reason = await gk.can_send("g1", "file", history, mode="send")
         assert ok is False
@@ -1348,6 +1495,7 @@ class TestReportGatekeeper:
     @pytest.mark.asyncio
     async def test_can_send_max_retries(self):
         from agent.reports.gatekeeper import ReportGatekeeper
+
         gk = ReportGatekeeper(max_retries=2)
         history = [
             {"plugin": "file", "status": "failed", "game_id": "g1", "timestamp": "2024-01-01"},
@@ -1360,6 +1508,7 @@ class TestReportGatekeeper:
     @pytest.mark.asyncio
     async def test_can_send_ok(self):
         from agent.reports.gatekeeper import ReportGatekeeper
+
         gk = ReportGatekeeper()
         ok, reason = await gk.can_send("g1", "file", [], mode="send")
         assert ok is True
@@ -1367,6 +1516,7 @@ class TestReportGatekeeper:
 
     def test_record_send(self):
         from agent.reports.gatekeeper import ReportGatekeeper
+
         gk = ReportGatekeeper()
         record = gk.record_send("g1", "file", "send", "sent", destination="/tmp/report.json")
         assert record["status"] == "sent"

@@ -74,18 +74,10 @@ class ReportPluginFactory:
                         credentials_path=plugin_config.get(
                             "credentials_path", "secrets/gmail/credentials.json"
                         ),
-                        token_path=plugin_config.get(
-                            "token_path", "secrets/gmail/token.json"
-                        ),
-                        attach_required_files=plugin_config.get(
-                            "attach_required_files", True
-                        ),
-                        attach_markdown_summary=plugin_config.get(
-                            "attach_markdown_summary", True
-                        ),
-                        max_attachments_mb=plugin_config.get(
-                            "max_attachments_mb", 20
-                        ),
+                        token_path=plugin_config.get("token_path", "secrets/gmail/token.json"),
+                        attach_required_files=plugin_config.get("attach_required_files", True),
+                        attach_markdown_summary=plugin_config.get("attach_markdown_summary", True),
+                        max_attachments_mb=plugin_config.get("max_attachments_mb", 20),
                     )
                     plugins.append(plugin)
                     logger.info(f"Loaded gmail plugin (mode={plugin.mode})")

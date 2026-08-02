@@ -2,16 +2,15 @@
 
 import hashlib
 import json
-import tempfile
 from pathlib import Path
 
 import pytest
 
 from agent.config.shared_config import (
+    _validate,
     canonical_json,
     config_sha256,
     load_shared_config,
-    _validate,
 )
 
 _VALID_CONFIG = {

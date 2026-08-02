@@ -2,12 +2,8 @@
 
 from typing import Any
 
-from crewai import Agent, Task
 
-from agent.tools.strategy_tool import call_strategy
-
-
-def create_strategy_agent(llm: Any) -> Agent:
+def create_strategy_agent(llm: Any):
     """Create the move-selection agent.
 
     The agent calls the `call_strategy` tool, which loads the trained RL model
@@ -19,7 +15,11 @@ def create_strategy_agent(llm: Any) -> Agent:
     Args:
         llm: crewai.LLM instance (Ollama, Anthropic, etc.)
     """
-    return Agent(
+    import crewai  # lazy import so test stubs in sys.modules take effect
+
+    from agent.tools.strategy_tool import call_strategy
+
+    return crewai.Agent(
         role="Game Strategist",
         goal=(
             "Call the call_strategy tool with the current observation to get the "
@@ -39,9 +39,11 @@ def create_strategy_agent(llm: Any) -> Agent:
     )
 
 
-def create_select_move_task(agent: Agent) -> Task:
+def create_select_move_task(agent):
     """Create the per-turn move-selection task."""
-    return Task(
+    import crewai  # lazy import so test stubs in sys.modules take effect
+
+    return crewai.Task(
         description=(
             "Select the next move for role={role}.\n"
             "Board state:\n"

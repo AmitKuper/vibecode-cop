@@ -30,16 +30,22 @@ class AuditMixin:
             my_file = self.games_dir / game_id / f"my_commitments_{self.role}.json"
             if not my_file.exists():
                 return {
-                    "ok": True, "game_id": game_id,
-                    "phase": "final_audit", "nonces": {}, "verified": True,
+                    "ok": True,
+                    "game_id": game_id,
+                    "phase": "final_audit",
+                    "nonces": {},
+                    "verified": True,
                 }
             with open(my_file) as f:
                 all_payloads = json.load(f)
             nonces = {step: p["nonce"] for step, p in all_payloads.items()}
             logger.info(f"Returning {len(nonces)} nonces for {game_id} final audit")
             return {
-                "ok": True, "game_id": game_id,
-                "phase": "final_audit", "nonces": nonces, "verified": True,
+                "ok": True,
+                "game_id": game_id,
+                "phase": "final_audit",
+                "nonces": nonces,
+                "verified": True,
             }
         except Exception as e:
             logger.error(f"Error in final audit: {e}", exc_info=True)
@@ -67,13 +73,18 @@ class AuditMixin:
                 loop = asyncio.get_running_loop()
                 loop.create_task(self.generate_reports(game_id, game_state))
             except RuntimeError:
+
                 def _run_reports() -> None:
                     asyncio.run(self.generate_reports(game_id, game_state))
+
                 threading.Thread(target=_run_reports, daemon=True).start()
             logger.info(f"Game {game_id} marked complete. Winner: {winner}")
             return {
-                "ok": True, "game_id": game_id,
-                "phase": "game_end", "winner": winner, "completed": True,
+                "ok": True,
+                "game_id": game_id,
+                "phase": "game_end",
+                "winner": winner,
+                "completed": True,
             }
         except Exception as e:
             logger.error(f"Error in game_end phase: {e}", exc_info=True)
@@ -100,9 +111,8 @@ class AuditMixin:
             )
             try:
                 import tomllib
-                config_path = Path(
-                    "cop/config.toml" if self.role == "cop" else "thief/config.toml"
-                )
+
+                config_path = Path("cop/config.toml" if self.role == "cop" else "thief/config.toml")
                 reports_config = {}
                 if config_path.exists():
                     with open(config_path, "rb") as f:

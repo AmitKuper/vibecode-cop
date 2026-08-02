@@ -117,6 +117,7 @@ class GameMCPClient:
                 # Each content item has .text for TextContent
                 if result.content:
                     import json
+
                     item = result.content[0]
                     text = item.text if hasattr(item, "text") else str(item)
                     try:

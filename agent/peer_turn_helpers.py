@@ -22,12 +22,16 @@ def _now() -> str:
     return datetime.now(UTC).isoformat()
 
 
-def _commit_action_description(runtime: "PeerRuntime", step: int, h_commit: str) -> str:
+def _commit_action_description(runtime: PeerRuntime, step: int, h_commit: str) -> str:
     """Build a natural-language description of the COMMIT action for the adapter LLM."""
     msg_dict = ActionMessage(
-        game_id=runtime.game_id, step=step, role=runtime.role,
-        config_sha256=runtime.config_sha256, timestamp=_now(),
-        phase="commit", h_commit=h_commit,
+        game_id=runtime.game_id,
+        step=step,
+        role=runtime.role,
+        config_sha256=runtime.config_sha256,
+        timestamp=_now(),
+        phase="commit",
+        h_commit=h_commit,
     ).to_dict()
     canonical = canonical_json(msg_dict)
     signature = sign_message(msg_dict, runtime.secret)
@@ -42,13 +46,19 @@ def _commit_action_description(runtime: "PeerRuntime", step: int, h_commit: str)
     )
 
 
-def _reveal_action_description(runtime: "PeerRuntime", step: int, payload: dict) -> str:
+def _reveal_action_description(runtime: PeerRuntime, step: int, payload: dict) -> str:
     """Build a natural-language description of the REVEAL action for the adapter LLM."""
     msg_dict = ActionMessage(
-        game_id=runtime.game_id, step=step, role=runtime.role,
-        config_sha256=runtime.config_sha256, timestamp=_now(),
-        phase="reveal", move=payload["move"], hint=payload["hint"],
-        intent=payload["intent"], state_hash=payload["state_hash"],
+        game_id=runtime.game_id,
+        step=step,
+        role=runtime.role,
+        config_sha256=runtime.config_sha256,
+        timestamp=_now(),
+        phase="reveal",
+        move=payload["move"],
+        hint=payload["hint"],
+        intent=payload["intent"],
+        state_hash=payload["state_hash"],
     ).to_dict()
     canonical = canonical_json(msg_dict)
     signature = sign_message(msg_dict, runtime.secret)
@@ -64,15 +74,19 @@ def _reveal_action_description(runtime: "PeerRuntime", step: int, payload: dict)
     )
 
 
-async def send_commit(runtime: "PeerRuntime", step: int, h_commit: str) -> dict | None:
+async def send_commit(runtime: PeerRuntime, step: int, h_commit: str) -> dict | None:
     """Send our COMMIT to opponent — via LLM protocol adapter if available, else direct."""
     adapter = getattr(runtime, "protocol_adapter", None)
     if adapter is not None:
         adapter_timeout = getattr(runtime, "adapter_timeout_sec", 45.0)
         msg_dict = ActionMessage(
-            game_id=runtime.game_id, step=step, role=runtime.role,
-            config_sha256=runtime.config_sha256, timestamp=_now(),
-            phase="commit", h_commit=h_commit,
+            game_id=runtime.game_id,
+            step=step,
+            role=runtime.role,
+            config_sha256=runtime.config_sha256,
+            timestamp=_now(),
+            phase="commit",
+            h_commit=h_commit,
         ).to_dict()
         known = {
             "game_id": runtime.game_id,
@@ -81,19 +95,30 @@ async def send_commit(runtime: "PeerRuntime", step: int, h_commit: str) -> dict 
         }
         try:
             return await asyncio.wait_for(
-                adapter.execute(_commit_action_description(runtime, step, h_commit), known_values=known),
+                adapter.execute(
+                    _commit_action_description(runtime, step, h_commit), known_values=known
+                ),
                 timeout=adapter_timeout,
             )
-        except asyncio.TimeoutError:
-            logger.warning(f"[PeerTurn] Adapter COMMIT timed out at step {step} ({adapter_timeout}s) — disabling adapter")
+        except TimeoutError:
+            logger.warning(
+                f"[PeerTurn] Adapter COMMIT timed out at step {step} ({adapter_timeout}s)"
+                " — disabling adapter"
+            )
             runtime.protocol_adapter = None
         except Exception as exc:
-            logger.warning(f"[PeerTurn] Adapter COMMIT failed at step {step}: {exc} — disabling adapter")
+            logger.warning(
+                f"[PeerTurn] Adapter COMMIT failed at step {step}: {exc} — disabling adapter"
+            )
             runtime.protocol_adapter = None
     msg = ActionMessage(
-        game_id=runtime.game_id, step=step, role=runtime.role,
-        config_sha256=runtime.config_sha256, timestamp=_now(),
-        phase="commit", h_commit=h_commit,
+        game_id=runtime.game_id,
+        step=step,
+        role=runtime.role,
+        config_sha256=runtime.config_sha256,
+        timestamp=_now(),
+        phase="commit",
+        h_commit=h_commit,
     )
     try:
         return await runtime.opponent_client.action(runtime.game_id, msg)
@@ -102,16 +127,22 @@ async def send_commit(runtime: "PeerRuntime", step: int, h_commit: str) -> dict 
         return None
 
 
-async def send_reveal(runtime: "PeerRuntime", step: int, reveal_payload: dict) -> dict | None:
+async def send_reveal(runtime: PeerRuntime, step: int, reveal_payload: dict) -> dict | None:
     """Send our REVEAL — via LLM protocol adapter if available, else direct."""
     adapter = getattr(runtime, "protocol_adapter", None)
     if adapter is not None:
         adapter_timeout = getattr(runtime, "adapter_timeout_sec", 45.0)
         msg_dict = ActionMessage(
-            game_id=runtime.game_id, step=step, role=runtime.role,
-            config_sha256=runtime.config_sha256, timestamp=_now(),
-            phase="reveal", move=reveal_payload["move"], hint=reveal_payload["hint"],
-            intent=reveal_payload["intent"], state_hash=reveal_payload["state_hash"],
+            game_id=runtime.game_id,
+            step=step,
+            role=runtime.role,
+            config_sha256=runtime.config_sha256,
+            timestamp=_now(),
+            phase="reveal",
+            move=reveal_payload["move"],
+            hint=reveal_payload["hint"],
+            intent=reveal_payload["intent"],
+            state_hash=reveal_payload["state_hash"],
         ).to_dict()
         known = {
             "game_id": runtime.game_id,
@@ -120,18 +151,28 @@ async def send_reveal(runtime: "PeerRuntime", step: int, reveal_payload: dict) -
         }
         try:
             return await asyncio.wait_for(
-                adapter.execute(_reveal_action_description(runtime, step, reveal_payload), known_values=known),
+                adapter.execute(
+                    _reveal_action_description(runtime, step, reveal_payload), known_values=known
+                ),
                 timeout=adapter_timeout,
             )
-        except asyncio.TimeoutError:
-            logger.warning(f"[PeerTurn] Adapter REVEAL timed out at step {step} ({adapter_timeout}s) — disabling adapter")
+        except TimeoutError:
+            logger.warning(
+                f"[PeerTurn] Adapter REVEAL timed out at step {step} ({adapter_timeout}s)"
+                " — disabling adapter"
+            )
             runtime.protocol_adapter = None
         except Exception as exc:
-            logger.warning(f"[PeerTurn] Adapter REVEAL failed at step {step}: {exc} — disabling adapter")
+            logger.warning(
+                f"[PeerTurn] Adapter REVEAL failed at step {step}: {exc} — disabling adapter"
+            )
             runtime.protocol_adapter = None
     msg = ActionMessage(
-        game_id=runtime.game_id, step=step, role=runtime.role,
-        config_sha256=runtime.config_sha256, timestamp=_now(),
+        game_id=runtime.game_id,
+        step=step,
+        role=runtime.role,
+        config_sha256=runtime.config_sha256,
+        timestamp=_now(),
         phase="reveal",
         move=reveal_payload["move"],
         hint=reveal_payload["hint"],
@@ -145,7 +186,7 @@ async def send_reveal(runtime: "PeerRuntime", step: int, reveal_payload: dict) -
         return None
 
 
-async def select_move(runtime: "PeerRuntime", board_state: dict) -> str:
+async def select_move(runtime: PeerRuntime, board_state: dict) -> str:
     """Choose a move: RL policy → crewAI LLM crew → heuristic fallback.
 
     every_n_steps (on runtime, default 999): use LLM every N steps.
@@ -170,15 +211,26 @@ async def select_move(runtime: "PeerRuntime", board_state: dict) -> str:
     except Exception as exc:
         logger.warning(f"[PeerTurn] RL move selection failed: {exc}")
 
-    # Deterministic heuristic fallback — LLM is reserved for the language/deception layer,
-    # not movement. Use it on a cadence only when RL model IS available (see above).
+    # LLM fallback when RL is unavailable
+    llm_fn = getattr(runtime, "_select_move_llm_async", None)
+    if llm_fn is not None:
+        obs = runtime._build_observation(board_state)
+        try:
+            move = await llm_fn(runtime.game_id, obs)
+            if move:
+                return move
+        except Exception as exc:
+            logger.warning(f"[PeerTurn] LLM fallback also failed: {exc}")
+
+    # Deterministic heuristic fallback
     from agent.board import Board
+
     moves = Board.from_dict(board_state).get_legal_moves(runtime.role)
     logger.debug(f"[PeerTurn] heuristic fallback move: {moves[0] if moves else 'STAY'}")
     return moves[0] if moves else "STAY"
 
 
-def build_board_state(runtime: "PeerRuntime") -> dict:
+def build_board_state(runtime: PeerRuntime) -> dict:
     """Snapshot current board as a plain dict for hashing."""
     b = runtime.board
     return {"cop_position": b.cop_position, "thief_position": b.thief_position, "turn": b.turn}
@@ -188,6 +240,7 @@ def get_watchdog_timeout() -> float:
     """Load watchdog timeout from shared config, defaulting to 60s."""
     try:
         from agent.config.shared_config import load_shared_config
+
         cfg = load_shared_config()
         return float(cfg.get("network_and_league", {}).get("watchdog_timeout_sec", 60))
     except Exception:

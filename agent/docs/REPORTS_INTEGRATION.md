@@ -8,11 +8,12 @@ After a game ends and game state is finalized, call the report system:
 # agent/orchestrator.py
 # In the method that handles game completion
 
+
 async def finalize_game(self, game_id: str, game_state: dict):
     """Finalize game and generate reports."""
-    
+
     # ... existing game-end logic ...
-    
+
     # NOW: Generate reports
     await self.generate_reports(game_id, game_state)
 
@@ -22,10 +23,10 @@ async def generate_reports(self, game_id: str, game_state: dict):
     from agent.reports.bundle import ReportBundleBuilder
     from agent.reports.plugin_factory import ReportPluginFactory
     from agent.reports.manager import ReportManager
-    
+
     try:
         logger.info(f"Generating reports for {game_id}...")
-        
+
         # Build report context
         context = await ReportBundleBuilder(
             self.games_dir / game_id  # Path to game's memory directory
@@ -44,31 +45,27 @@ async def generate_reports(self, game_id: str, game_state: dict):
                 "opponent_group_id": getattr(self, "opponent_group_id", None),
             },
         )
-        
+
         # Load plugins from config
         reports_config = self.config.get("reports", {})
         plugins = await ReportPluginFactory.from_config(reports_config)
-        
+
         if not plugins:
             logger.warning(f"No report plugins configured")
             return
-        
+
         # Execute all plugins (isolated failures)
         results = await ReportManager(plugins).generate_all(context)
-        
+
         # Log results
         for plugin_name, result in results.items():
             if result.ok:
-                logger.info(
-                    f"Report [{plugin_name}] {result.status}: {result.destination}"
-                )
+                logger.info(f"Report [{plugin_name}] {result.status}: {result.destination}")
             else:
-                logger.error(
-                    f"Report [{plugin_name}] FAILED: {result.error_code} — {result.error}"
-                )
-        
+                logger.error(f"Report [{plugin_name}] FAILED: {result.error_code} — {result.error}")
+
         logger.info(f"Report generation complete for {game_id}")
-        
+
     except Exception as e:
         logger.error(f"Report generation failed: {e}", exc_info=True)
         # Don't crash — game state is already saved
@@ -86,12 +83,14 @@ Make sure the orchestrator loads the reports config:
 import tomllib
 from pathlib import Path
 
+
 def load_config(config_path: str | Path):
     """Load agent config."""
-    with open(config_path, 'rb') as f:
+    with open(config_path, "rb") as f:
         config = tomllib.load(f)
-    
+
     return config
+
 
 # In __init__:
 self.config = load_config("cop/config.toml")  # or "thief/config.toml"
@@ -129,20 +128,19 @@ The `ReportBundleBuilder` will create any missing required files as stubs.
 ```python
 # Minimal code to add to orchestrator
 
+
 async def handle_game_end(self):
     """Called when game loop exits."""
-    
+
     # Save game state (already done elsewhere)
     # ...
-    
+
     # Generate reports
     from agent.reports.bundle import ReportBundleBuilder
     from agent.reports.plugin_factory import ReportPluginFactory
     from agent.reports.manager import ReportManager
-    
-    context = await ReportBundleBuilder(
-        Path("agent/memory") / self.game_id
-    ).build(
+
+    context = await ReportBundleBuilder(Path("agent/memory") / self.game_id).build(
         game_id=self.game_id,
         role=self.role,
         game_state=self.game_state,
@@ -150,11 +148,9 @@ async def handle_game_end(self):
         config_hash=self.config_sha256,
         metadata={"group_id": self.group_id},
     )
-    
-    plugins = await ReportPluginFactory.from_config(
-        self.config.get("reports", {})
-    )
-    
+
+    plugins = await ReportPluginFactory.from_config(self.config.get("reports", {}))
+
     results = await ReportManager(plugins).generate_all(context)
     logger.info(f"Reports: {results}")
 ```
@@ -173,13 +169,14 @@ from agent.reports.bundle import ReportBundleBuilder
 from agent.reports.plugin_factory import ReportPluginFactory
 from agent.reports.manager import ReportManager
 
+
 async def test_report_generation():
     """Test report generation in isolation."""
-    
+
     # Create test game directory
     game_dir = Path("agent/memory/test_game_001")
     game_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Fake game state
     game_state = {
         "game_id": "test_game_001",
@@ -191,7 +188,7 @@ async def test_report_generation():
         "ended_at": "2026-07-20T00:05:00",
         "move_history": [],
     }
-    
+
     # Build context
     context = await ReportBundleBuilder(game_dir).build(
         game_id="test_game_001",
@@ -201,28 +198,31 @@ async def test_report_generation():
         config_hash="test_hash",
         metadata={"group_id": "test_group"},
     )
-    
+
     # Load plugins (with default test config)
-    plugins = await ReportPluginFactory.from_config({
-        "enabled": True,
-        "plugins": ["file_json", "file_markdown"],
-        "file_json": {"enabled": True},
-        "file_markdown": {"enabled": True},
-        "gmail": {"enabled": False},  # Skip Gmail for testing
-    })
-    
+    plugins = await ReportPluginFactory.from_config(
+        {
+            "enabled": True,
+            "plugins": ["file_json", "file_markdown"],
+            "file_json": {"enabled": True},
+            "file_markdown": {"enabled": True},
+            "gmail": {"enabled": False},  # Skip Gmail for testing
+        }
+    )
+
     # Generate reports
     results = await ReportManager(plugins).generate_all(context)
-    
+
     # Check results
     print(f"✓ Generated {len(results)} reports:")
     for name, result in results.items():
         print(f"  - {name}: {result.status} → {result.destination}")
-    
+
     # Verify files exist
     assert (game_dir / "report.json").exists()
     assert (game_dir / "report.md").exists()
     print("\n✓ All report files created successfully")
+
 
 if __name__ == "__main__":
     asyncio.run(test_report_generation())

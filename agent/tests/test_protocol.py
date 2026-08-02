@@ -26,6 +26,7 @@ _GAME_ID = "test_game_001"
 # StartGameMessage validation
 # ---------------------------------------------------------------------------
 
+
 def test_start_game_accepts_matching_config():
     msg = StartGameMessage(
         game_id=_GAME_ID,
@@ -71,6 +72,7 @@ def test_start_game_rejects_short_config_sha():
 # ---------------------------------------------------------------------------
 # ActionMessage validation
 # ---------------------------------------------------------------------------
+
 
 def _base_action(**kwargs) -> ActionMessage:
     defaults = {
@@ -165,6 +167,7 @@ def test_game_end_requires_reason():
 # HMAC signature tests
 # ---------------------------------------------------------------------------
 
+
 def test_action_rejects_invalid_signature():
     msg = _base_action(phase="commit")
     sig = sign_message(msg.to_dict(), _SECRET)
@@ -190,6 +193,7 @@ def test_action_rejects_bad_json():
 # Commit / reveal verification
 # ---------------------------------------------------------------------------
 
+
 def _sample_state_hash() -> str:
     return hash_game_state({"cop_position": [0, 0], "thief_position": [6, 6], "turn": 1})
 
@@ -197,14 +201,25 @@ def _sample_state_hash() -> str:
 def test_commit_then_reveal_success():
     state_hash = _sample_state_hash()
     h_commit, nonce = create_commitment(
-        game_id=_GAME_ID, step=1, role="cop",
-        state_hash=state_hash, move="N", hint="going north", intent="truth",
+        game_id=_GAME_ID,
+        step=1,
+        role="cop",
+        state_hash=state_hash,
+        move="N",
+        hint="going north",
+        intent="truth",
     )
     assert len(h_commit) == 64
 
     ok = verify_commitment(
-        h_commit=h_commit, game_id=_GAME_ID, step=1, role="cop",
-        state_hash=state_hash, move="N", hint="going north", intent="truth",
+        h_commit=h_commit,
+        game_id=_GAME_ID,
+        step=1,
+        role="cop",
+        state_hash=state_hash,
+        move="N",
+        hint="going north",
+        intent="truth",
         nonce=nonce,
     )
     assert ok
@@ -213,13 +228,24 @@ def test_commit_then_reveal_success():
 def test_wrong_move_fails_commit_verification():
     state_hash = _sample_state_hash()
     h_commit, nonce = create_commitment(
-        game_id=_GAME_ID, step=1, role="cop",
-        state_hash=state_hash, move="N", hint="going north", intent="truth",
+        game_id=_GAME_ID,
+        step=1,
+        role="cop",
+        state_hash=state_hash,
+        move="N",
+        hint="going north",
+        intent="truth",
     )
     ok = verify_commitment(
-        h_commit=h_commit, game_id=_GAME_ID, step=1, role="cop",
-        state_hash=state_hash, move="S",  # tampered
-        hint="going north", intent="truth", nonce=nonce,
+        h_commit=h_commit,
+        game_id=_GAME_ID,
+        step=1,
+        role="cop",
+        state_hash=state_hash,
+        move="S",  # tampered
+        hint="going north",
+        intent="truth",
+        nonce=nonce,
     )
     assert not ok
 
@@ -227,14 +253,24 @@ def test_wrong_move_fails_commit_verification():
 def test_wrong_hint_fails_commit_verification():
     state_hash = _sample_state_hash()
     h_commit, nonce = create_commitment(
-        game_id=_GAME_ID, step=1, role="cop",
-        state_hash=state_hash, move="N", hint="going north", intent="truth",
+        game_id=_GAME_ID,
+        step=1,
+        role="cop",
+        state_hash=state_hash,
+        move="N",
+        hint="going north",
+        intent="truth",
     )
     ok = verify_commitment(
-        h_commit=h_commit, game_id=_GAME_ID, step=1, role="cop",
-        state_hash=state_hash, move="N",
+        h_commit=h_commit,
+        game_id=_GAME_ID,
+        step=1,
+        role="cop",
+        state_hash=state_hash,
+        move="N",
         hint="going south",  # tampered
-        intent="truth", nonce=nonce,
+        intent="truth",
+        nonce=nonce,
     )
     assert not ok
 
@@ -242,12 +278,23 @@ def test_wrong_hint_fails_commit_verification():
 def test_wrong_nonce_fails_final_audit():
     state_hash = _sample_state_hash()
     h_commit, _ = create_commitment(
-        game_id=_GAME_ID, step=1, role="thief",
-        state_hash=state_hash, move="STAY", hint="hiding", intent="lie",
+        game_id=_GAME_ID,
+        step=1,
+        role="thief",
+        state_hash=state_hash,
+        move="STAY",
+        hint="hiding",
+        intent="lie",
     )
     ok = verify_commitment(
-        h_commit=h_commit, game_id=_GAME_ID, step=1, role="thief",
-        state_hash=state_hash, move="STAY", hint="hiding", intent="lie",
+        h_commit=h_commit,
+        game_id=_GAME_ID,
+        step=1,
+        role="thief",
+        state_hash=state_hash,
+        move="STAY",
+        hint="hiding",
+        intent="lie",
         nonce="wrong-nonce",
     )
     assert not ok

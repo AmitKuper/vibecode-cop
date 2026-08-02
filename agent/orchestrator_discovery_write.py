@@ -51,8 +51,8 @@ def _write_skill_from_mapping(skill_path: Path, transport_url: str, mapping: dic
         f"Skill written from explorer mapping → {skill_path.name} "
         f"(start={mapping['start_game_tool']}, action={mapping['action_tool']}, "
         f"ping={mapping.get('ping_tool', 'ping')}, signing={signing_required}, "
-        f"payload_type={mapping.get('payload_type', 'string')}, transport={transport_url}, "
-        f"remapped_fields={list(effective_remap) or 'none'})"
+        f"payload_type={mapping.get('payload_type', 'string')}, "
+        f"transport={transport_url}, remapped_fields={list(effective_remap) or 'none'})"
     )
 
 
@@ -68,9 +68,9 @@ def _write_skill_from_schemas(
     def _tool(hints: list[str], default: str) -> str:
         return next((n for n in tool_names if any(h in n.lower() for h in hints)), default)
 
-    start_tool  = _tool(["start", "init", "begin", "new"], "start_game")
+    start_tool = _tool(["start", "init", "begin", "new"], "start_game")
     action_tool = _tool(["action", "move", "commit", "reveal", "submit", "turn"], "action")
-    ping_tool   = _tool(["ping", "health", "status", "alive", "check"], "ping")
+    ping_tool = _tool(["ping", "health", "status", "alive", "check"], "ping")
 
     def _param_props(tool_name: str) -> dict:
         return probe_schemas.get(tool_name, {}).get("input_schema", {}).get("properties", {})
@@ -83,10 +83,11 @@ def _write_skill_from_schemas(
 
     sp = _param_props(start_tool)
     ap = _param_props(action_tool)
-    start_msg_name = _find(sp, ["message", "msg", "payload", "json", "data", "body"], "message_json")
-    act_msg_name   = _find(ap, ["message", "msg", "payload", "json", "data", "body"], "message_json")
+    _msg_keys = ["message", "msg", "payload", "json", "data", "body"]
+    start_msg_name = _find(sp, _msg_keys, "message_json")
+    act_msg_name = _find(ap, _msg_keys, "message_json")
     start_sig_name = _find(sp, ["sig", "signature", "hmac", "auth", "token", "mac"], "")
-    act_sig_name   = _find(ap, ["sig", "signature", "hmac", "auth", "token", "mac"], "")
+    act_sig_name = _find(ap, ["sig", "signature", "hmac", "auth", "token", "mac"], "")
     signing_required = bool(start_sig_name or act_sig_name)
     payload_as_string = _param_type(sp, start_msg_name) != "object"
     field_map = (protocol_def or {}).get("fields", {})

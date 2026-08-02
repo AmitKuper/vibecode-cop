@@ -36,8 +36,14 @@ class DiscoveryMixin:
         skill_path_val = _skill_path(game_id)
         self._write_skill(skill_path_val, transport_url, probe_schemas, explorer_raw, protocol_def)
         skill_path_val = validate_skill_loop(
-            self.role, self.llm, game_id, skill_path_val,
-            transport_url, probe_schemas, explorer_raw, protocol_def,
+            self.role,
+            self.llm,
+            game_id,
+            skill_path_val,
+            transport_url,
+            probe_schemas,
+            explorer_raw,
+            protocol_def,
             self._write_skill,
         )
         skill_module = self._load_skill(game_id, skill_path_val)
@@ -55,6 +61,7 @@ class DiscoveryMixin:
 
     def _probe_full(self, peer_url: str) -> tuple[str, dict, dict | None]:
         from agent.tools.mcp_probe_tool import _probe_sync
+
         base = peer_url.rstrip("/")
         transport_url, result, protocol_def = _probe_sync(base)
         has_proto = protocol_def is not None
@@ -69,10 +76,12 @@ class DiscoveryMixin:
             return ""
         try:
             from crewai import Crew
+
             from agent.agents.mcp_explorer_agent import (
                 create_mcp_explorer_agent,
                 create_mcp_explorer_task,
             )
+
             explorer = create_mcp_explorer_agent(llm=self.llm)
             e_task = create_mcp_explorer_task(explorer)
             crew = Crew(agents=[explorer], tasks=[e_task], verbose=False)

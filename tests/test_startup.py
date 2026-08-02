@@ -35,10 +35,12 @@ def test_cop_main_import():
 
 
 def test_combined_entry_point_import():
-    result = _run([
-        "-c",
-        "import agent.peer_agent_runtime; import cop.__main__; print('cop imports OK')",
-    ])
+    result = _run(
+        [
+            "-c",
+            "import agent.peer_agent_runtime; import cop.__main__; print('cop imports OK')",
+        ]
+    )
     assert result.returncode == 0, result.stderr
     assert "cop imports OK" in result.stdout
 
@@ -50,6 +52,11 @@ def test_run_series_help():
 
 
 def test_language_hints_import():
-    result = _run(["-c", "from agent.language.hints import generate_hint; print(generate_hint('NORTH'))"])
+    result = _run(
+        [
+            "-c",
+            "from agent.language.hints import generate_hint; print(generate_hint('NORTH'))",
+        ]
+    )
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip()

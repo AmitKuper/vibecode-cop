@@ -20,6 +20,7 @@ def get_rl_policy(role: str):
         return _rl_policies[role]
     try:
         from agent.rl.policy import RLPolicy
+
         policy = RLPolicy.load(role, models_dir=Path("models"))
         _rl_policies[role] = policy
         logger.info(f"[CrewMixin] Loaded RL policy for {role}")
@@ -60,21 +61,29 @@ def build_observation(role: str, game_state: dict) -> dict:
 
     if role == "cop":
         own_pos = cop_pos
-        role_state = {"own_position": own_pos,
-                      "scent_field": game_state.get("scent_field", []),
-                      "turn": turn}
+        role_state = {
+            "own_position": own_pos,
+            "scent_field": game_state.get("scent_field", []),
+            "turn": turn,
+        }
     else:
         own_pos = thief_pos
-        role_state = {"own_position": own_pos,
-                      "last_revealed_cop_pos": game_state.get("last_revealed_cop_pos"),
-                      "turn": turn}
+        role_state = {
+            "own_position": own_pos,
+            "last_revealed_cop_pos": game_state.get("last_revealed_cop_pos"),
+            "turn": turn,
+        }
 
     x, y = own_pos
     candidates = []
-    if x > 0: candidates.append("W")
-    if x < grid_size: candidates.append("E")
-    if y > 0: candidates.append("N")
-    if y < grid_size: candidates.append("S")
+    if x > 0:
+        candidates.append("W")
+    if x < grid_size:
+        candidates.append("E")
+    if y > 0:
+        candidates.append("N")
+    if y < grid_size:
+        candidates.append("S")
     candidates.append("STAY")
 
     return {**role_state, "candidate_actions": candidates, "grid_state": role_state}

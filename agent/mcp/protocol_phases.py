@@ -37,10 +37,7 @@ class StepPhaseTracker:
             return False
 
         phases = self.step_phases[step]
-        return (
-            phases.get("cop") == phase.value
-            and phases.get("thief") == phase.value
-        )
+        return phases.get("cop") == phase.value and phases.get("thief") == phase.value
 
     def to_dict(self) -> dict:
         """Serialize for logging."""

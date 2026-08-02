@@ -7,8 +7,10 @@ from pathlib import Path
 try:
     from crewai.tools import tool
 except ImportError:
+
     def tool(func):
         return func
+
 
 logger = logging.getLogger(__name__)
 

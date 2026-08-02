@@ -2,10 +2,8 @@
 
 from typing import Any
 
-from crewai import Agent, Task
 
-
-def create_protocol_discovery_agent(llm: Any) -> Agent:
+def create_protocol_discovery_agent(llm: Any):
     """Create an agent for discovering MCP game protocols.
 
     This agent:
@@ -20,7 +18,9 @@ def create_protocol_discovery_agent(llm: Any) -> Agent:
     Returns:
         Agent configured for protocol exploration
     """
-    agent = Agent(
+    import crewai  # lazy import so test stubs in sys.modules take effect
+
+    agent = crewai.Agent(
         role="Protocol Analyst",
         goal=(
             "Understand the opponent's MCP game protocol by analyzing available tools "
@@ -50,7 +50,9 @@ def create_analyze_protocol_task(agent):
     Returns:
         Task for protocol analysis
     """
-    task = Task(
+    import crewai  # lazy import so test stubs in sys.modules take effect
+
+    task = crewai.Task(
         description=(
             "Analyze the discovered MCP tools and build a model of the game protocol. "
             "You will receive: "
@@ -90,7 +92,9 @@ def create_verify_protocol_task(agent):
     Returns:
         Task for protocol verification
     """
-    task = Task(
+    import crewai  # lazy import so test stubs in sys.modules take effect
+
+    task = crewai.Task(
         description=(
             "Verify your understanding of the game protocol by checking consistency "
             "and completeness. Protocol model to verify: {protocol_model} "

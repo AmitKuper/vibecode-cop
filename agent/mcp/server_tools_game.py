@@ -58,8 +58,14 @@ def register_game_tools(
             {"ok": true/false, "error": str, "game_id": str}
         """
         return handle_start_game(
-            role, secret, config_sha256, games_dir, game_logs,
-            handler_callbacks, message_json, signature,
+            role,
+            secret,
+            config_sha256,
+            games_dir,
+            game_logs,
+            handler_callbacks,
+            message_json,
+            signature,
         )
 
     @mcp.tool()
@@ -101,6 +107,13 @@ def register_game_tools(
             {"ok": true/false, "error": str, "phase": str}
         """
         return handle_action(
-            role, secret, config_sha256, games_dir, game_logs,
-            handler_callbacks, game_id, message_json, signature,
+            role,
+            secret,
+            config_sha256,
+            games_dir,
+            game_logs,
+            handler_callbacks,
+            game_id,
+            message_json,
+            signature,
         )

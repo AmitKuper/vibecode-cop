@@ -52,7 +52,7 @@ Final State:
 - Thief Position: {thief_pos}
 - Total Turns: {turns}
 
-Game completed at: {game_state.get('ended_at', 'N/A')}
+Game completed at: {game_state.get("ended_at", "N/A")}
 """
 
             # Try to send email

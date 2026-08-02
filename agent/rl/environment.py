@@ -50,7 +50,7 @@ class CopThiefEnv(RewardsMixin):
 
     @property
     def n_thief_channels(self) -> int:
-        return 5  # added cop-velocity channel
+        return 4  # thief: position, cop_last_revealed, barriers, turns_remaining
 
     # --- Gym interface ---
 
@@ -103,11 +103,18 @@ class CopThiefEnv(RewardsMixin):
             if list(self._board.thief_position) in self._board.barriers:
                 self._board.turn += 1
                 cop_obs, thief_obs = self._observations()
-                info = {"outcome": GameOutcome.COP_WIN.value, "winner": "cop",
-                        "turn": self._board.turn, "cop_position": list(self._board.cop_position),
-                        "thief_position": list(self._board.thief_position)}
-                r = self._shaped_rewards(GameOutcome.COP_WIN) if self.config.use_shaped_rewards \
+                info = {
+                    "outcome": GameOutcome.COP_WIN.value,
+                    "winner": "cop",
+                    "turn": self._board.turn,
+                    "cop_position": list(self._board.cop_position),
+                    "thief_position": list(self._board.thief_position),
+                }
+                r = (
+                    self._shaped_rewards(GameOutcome.COP_WIN)
+                    if self.config.use_shaped_rewards
                     else self._rewards(GameOutcome.COP_WIN)
+                )
                 return cop_obs, thief_obs, r[0], r[1], True, info
         if not self._rules.validate_move("cop", cop_move):  # illegal → STAY
             cop_move = "STAY"
@@ -156,12 +163,14 @@ class CopThiefEnv(RewardsMixin):
     def _observations(self) -> tuple[list, list]:
         cfg = self.config
         cop_obs = cop_observation(
-            self._board, self._rules, cfg.max_steps,
+            self._board,
+            self._rules,
+            cfg.max_steps,
             barriers_remaining=self._cop_barriers_remaining,
             barrier_quota=cfg.cop_barrier_quota,
         )
         thief_obs = thief_observation(
-            self._board, cfg.max_steps,
-            prev_cop_pos=self._prev_cop_pos,
+            self._board,
+            cfg.max_steps,
         )
         return cop_obs, thief_obs

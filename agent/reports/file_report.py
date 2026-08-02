@@ -76,9 +76,7 @@ class FileReportPlugin:
         report_file = context.game_dir / "report.md"
 
         winner = (
-            (context.result.get("winner") or "unknown").upper()
-            if context.result
-            else "UNKNOWN"
+            (context.result.get("winner") or "unknown").upper() if context.result else "UNKNOWN"
         )
         cop_pos = context.game_state.get("cop_position", [0, 0])
         thief_pos = context.game_state.get("thief_position", [6, 6])

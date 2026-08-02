@@ -66,7 +66,11 @@ class DQNNet(nn.Module):
     """Q-network: obs → Q(s, a) for each action."""
 
     def __init__(
-        self, grid_size: int = 7, n_actions: int = 5, hidden: int = 256, net_type: str = "mlp",
+        self,
+        grid_size: int = 7,
+        n_actions: int = 5,
+        hidden: int = 256,
+        net_type: str = "mlp",
         in_channels: int = 4,
     ):
         super().__init__()
@@ -81,7 +85,11 @@ class PPONet(nn.Module):
     """Actor-critic network: obs → (policy logits, state value)."""
 
     def __init__(
-        self, grid_size: int = 7, n_actions: int = 5, hidden: int = 256, net_type: str = "mlp",
+        self,
+        grid_size: int = 7,
+        n_actions: int = 5,
+        hidden: int = 256,
+        net_type: str = "mlp",
         in_channels: int = 4,
     ):
         super().__init__()

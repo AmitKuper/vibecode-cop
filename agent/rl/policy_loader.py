@@ -13,9 +13,7 @@ import torch
 logger = logging.getLogger(__name__)
 
 
-def rebuild_net(
-    state_dict: dict, ckpt: dict, algo: str, device: torch.device
-) -> torch.nn.Module:
+def rebuild_net(state_dict: dict, ckpt: dict, algo: str, device: torch.device) -> torch.nn.Module:
     """Infer architecture from checkpoint metadata and state dict shapes."""
     from agent.rl.networks import DQNNet, PPONet
 
@@ -50,12 +48,17 @@ def rebuild_net(
     hidden = first_w.shape[0] if not is_cnn else 256
 
     NetCls = PPONet if algo == "ppo" else DQNNet  # noqa: N806
-    net = NetCls(grid_size=grid_size, n_actions=n_actions, hidden=hidden,
-                 net_type=net_type, in_channels=n_channels)
+    net = NetCls(
+        grid_size=grid_size,
+        n_actions=n_actions,
+        hidden=hidden,
+        net_type=net_type,
+        in_channels=n_channels,
+    )
     return net.to(device)
 
 
-def load_checkpoint(path: Path, role: str, max_steps: int) -> "RLPolicy":  # noqa: F821
+def load_checkpoint(path: Path, role: str, max_steps: int) -> RLPolicy:  # noqa: F821
     """Load a DQN or PPO checkpoint from disk and return an RLPolicy."""
     from agent.rl.policy import RLPolicy  # local import avoids circular dependency
 
@@ -77,10 +80,22 @@ def load_checkpoint(path: Path, role: str, max_steps: int) -> "RLPolicy":  # noq
     if role == "cop" and barrier_quota == 0 and n_channels == 5:
         try:
             from agent.config.shared_config import load_shared_config
+
             cfg = load_shared_config()
             barrier_quota = int(cfg.get("movement_and_barriers", {}).get("max_barriers", 14))
         except Exception:
             barrier_quota = 14
         logger.info(f"[RLPolicy] Inferred barrier_quota={barrier_quota} from 5-channel cop model")
+    # Validate channel count against the current observation definition
+    from agent.rl.observation import observation_shape as _obs_shape
+
+    n_channels_ckpt = ckpt.get("n_channels") or n_channels
+    expected_channels = _obs_shape(7, role, barrier_quota)[0]
+    if n_channels_ckpt is not None and n_channels_ckpt != expected_channels:
+        raise ValueError(
+            f"Checkpoint channel mismatch for role='{role}': "
+            f"model has {n_channels_ckpt} channels but current observation produces "
+            f"{expected_channels} channels. Retrain or use a compatible checkpoint."
+        )
     logger.info(f"[RLPolicy] Loaded {algo.upper()} {role} model from {path}")
     return RLPolicy(net, role=role, algo=algo, max_steps=max_steps, barrier_quota=barrier_quota)

@@ -92,7 +92,9 @@ class GameLog:
             details={"step": step, "h_commit": preview},
         )
 
-    def append_reveal(self, role: str, step: int, move: str, hint: str | None = None, intent: str | None = None) -> None:
+    def append_reveal(
+        self, role: str, step: int, move: str, hint: str | None = None, intent: str | None = None
+    ) -> None:
         """Log a reveal phase."""
         self.append(
             event_type="reveal",

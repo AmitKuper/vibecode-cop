@@ -80,5 +80,6 @@ def verify():
 
 if __name__ == "__main__":
     import sys
+
     success = verify()
     sys.exit(0 if success else 1)

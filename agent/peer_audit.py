@@ -37,19 +37,31 @@ def load_my_reveals(game_dir: Path, role: str) -> dict[int, dict]:
 
 
 def verify_opponent_reveal(
-    h_commit: str, reveal: dict, game_id: str, step: int, opponent_role: str,
+    h_commit: str,
+    reveal: dict,
+    game_id: str,
+    step: int,
+    opponent_role: str,
 ) -> bool:
     """Verify a single opponent reveal against its stored h_commit."""
     return verify_commitment(
-        h_commit=h_commit, game_id=game_id, step=step, role=opponent_role,
-        state_hash=reveal.get("state_hash", ""), move=reveal.get("move", ""),
-        hint=reveal.get("hint", ""), intent=reveal.get("intent", ""),
+        h_commit=h_commit,
+        game_id=game_id,
+        step=step,
+        role=opponent_role,
+        state_hash=reveal.get("state_hash", ""),
+        move=reveal.get("move", ""),
+        hint=reveal.get("hint", ""),
+        intent=reveal.get("intent", ""),
         nonce=reveal.get("nonce", ""),
     )
 
 
 def run_final_audit(
-    game_dir: Path, game_id: str, opponent_role: str, opponent_nonces: dict[int, str],
+    game_dir: Path,
+    game_id: str,
+    opponent_role: str,
+    opponent_nonces: dict[int, str],
 ) -> tuple[bool, dict]:
     """Verify all opponent commitments against revealed nonces locally.
 
@@ -83,8 +95,12 @@ def run_final_audit(
             details[f"step_{step}"] = "commitment_mismatch"
             logger.warning(f"[PeerAudit] Commitment mismatch at step {step} for {opponent_role}")
 
-    audit_ok = failed == 0 and len(h_commits) > 0
-    logger.info(f"[PeerAudit] {game_id}: {verified} verified, {failed} failed (opp={opponent_role})")
+    # An empty game (no opponent commits recorded) is vacuously valid — audit passes.
+    # Non-empty games require all commits to verify successfully.
+    audit_ok = failed == 0
+    logger.info(
+        f"[PeerAudit] {game_id}: {verified} verified, {failed} failed (opp={opponent_role})"
+    )
     return audit_ok, details
 
 

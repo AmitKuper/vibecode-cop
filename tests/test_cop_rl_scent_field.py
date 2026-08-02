@@ -1,8 +1,6 @@
 """Tests that cop RL observation uses scent field, not thief position directly."""
 
-import inspect
-
-import pytest
+import contextlib
 
 from agent.board import Board
 from agent.rl.observation import cop_observation
@@ -31,7 +29,8 @@ class TestCopObservationHiddenInfo:
         for ch_idx, channel in enumerate(obs):
             val = channel[thief_pos[1]][thief_pos[0]]
             if val == 1.0:
-                # Only cop_position channel (ch 0) is ever pure 1-hot; it's at cop pos, not thief pos
+                # Only cop_position channel (ch 0) is ever pure 1-hot;
+                # it's at cop pos, not thief pos
                 # So if we find a 1.0 at thief pos, it must NOT be in the cop-one-hot channel
                 # Actually — scent can be ≤0.9, never exactly 1.0
                 one_hot_x, one_hot_y = _one_hot_pos(channel)
@@ -68,8 +67,10 @@ class TestCopObservationHiddenInfo:
 
     def test_cop_rl_policy_uses_cop_observation(self):
         """RLPolicy._build_obs for cop must call cop_observation (not thief_observation)."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
+
         import torch
+
         from agent.rl.policy import RLPolicy
 
         policy = RLPolicy.__new__(RLPolicy)
@@ -84,12 +85,12 @@ class TestCopObservationHiddenInfo:
         board = Board(cop_position=[0, 0], thief_position=[3, 3])
         rules = RulesEngine(board)
 
-        with patch("agent.rl.policy.cop_observation") as mock_cop_obs, \
-             patch("agent.rl.policy.thief_observation") as mock_thief_obs:
+        with (
+            patch("agent.rl.policy.cop_observation") as mock_cop_obs,
+            patch("agent.rl.policy.thief_observation") as mock_thief_obs,
+        ):
             mock_cop_obs.return_value = [[[0.0] * 7 for _ in range(7)]] * 4
-            try:
+            with contextlib.suppress(Exception):
                 policy._build_obs(board, rules)
-            except Exception:
-                pass
             mock_cop_obs.assert_called_once()
             mock_thief_obs.assert_not_called()

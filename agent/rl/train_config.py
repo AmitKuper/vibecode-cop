@@ -16,42 +16,76 @@ logger = logging.getLogger(__name__)
 def build_parser() -> argparse.ArgumentParser:
     """Return the ArgumentParser for the training CLI."""
     p = argparse.ArgumentParser(description="Train / evaluate cop-and-thief RL agents")
-    p.add_argument("--algo", choices=["dqn", "ppo", "both"], default="ppo",
-                   help="Algorithm(s) to train")
-    p.add_argument("--mode", choices=["selfplay", "cross", "iterated", "league"], default="selfplay",
-                   help="selfplay | cross | iterated | league (train vs pool of checkpoints)")
-    p.add_argument("--episodes", type=int, default=30_000,
-                   help="DQN: number of training episodes")
-    p.add_argument("--steps", type=int, default=500_000,
-                   help="PPO: total environment steps (or per-round for iterated)")
-    p.add_argument("--rollout", type=int, default=256,
-                   help="PPO: rollout size before each update")
-    p.add_argument("--rounds", type=int, default=3,
-                   help="iterated mode: number of freeze-and-train rounds")
-    p.add_argument("--eval-games", type=int, default=200,
-                   help="Games per evaluation matchup")
-    p.add_argument("--models-dir", type=Path, default=Path("models"),
-                   help="Directory for saved model checkpoints")
-    p.add_argument("--eval-only", action="store_true",
-                   help="Skip training; just evaluate saved models")
-    p.add_argument("--cop-model", type=Path,
-                   help="Frozen cop checkpoint for --mode cross/iterated (default: models/cop_ppo_best.pt)")  # noqa: E501
-    p.add_argument("--thief-model", type=Path,
-                   help="Frozen thief checkpoint (default: models/thief_ppo_best.pt)")
+    p.add_argument(
+        "--algo", choices=["dqn", "ppo", "both"], default="ppo", help="Algorithm(s) to train"
+    )
+    p.add_argument(
+        "--mode",
+        choices=["selfplay", "cross", "iterated", "league"],
+        default="selfplay",
+        help="selfplay | cross | iterated | league (train vs pool of checkpoints)",
+    )
+    p.add_argument("--episodes", type=int, default=30_000, help="DQN: number of training episodes")
+    p.add_argument(
+        "--steps",
+        type=int,
+        default=500_000,
+        help="PPO: total environment steps (or per-round for iterated)",
+    )
+    p.add_argument("--rollout", type=int, default=256, help="PPO: rollout size before each update")
+    p.add_argument(
+        "--rounds", type=int, default=3, help="iterated mode: number of freeze-and-train rounds"
+    )
+    p.add_argument("--eval-games", type=int, default=200, help="Games per evaluation matchup")
+    p.add_argument(
+        "--models-dir",
+        type=Path,
+        default=Path("models"),
+        help="Directory for saved model checkpoints",
+    )
+    p.add_argument(
+        "--eval-only", action="store_true", help="Skip training; just evaluate saved models"
+    )
+    p.add_argument(
+        "--cop-model",
+        type=Path,
+        help="Frozen cop checkpoint for --mode cross/iterated (default: models/cop_ppo_best.pt)",
+    )  # noqa: E501
+    p.add_argument(
+        "--thief-model",
+        type=Path,
+        help="Frozen thief checkpoint (default: models/thief_ppo_best.pt)",
+    )
     p.add_argument("--grid-size", type=int, default=7)
     p.add_argument("--max-steps", type=int, default=35)
-    p.add_argument("--net-type", choices=["mlp", "cnn"], default="mlp",
-                   help="Network backbone: mlp=fast (CPU), cnn=better for large boards")
-    p.add_argument("--hidden", type=int, default=128,
-                   help="Hidden layer width (128 is plenty for 7x7)")
-    p.add_argument("--shaped-rewards", action="store_true",
-                   help="Add distance-delta shaping to intermediate rewards")
-    p.add_argument("--random-starts", action="store_true",
-                   help="Randomize cop/thief starting positions each episode")
-    p.add_argument("--barriers", action="store_true",
-                   help="Enable cop barrier placement during training")
-    p.add_argument("--barrier-quota", type=int, default=5,
-                   help="Barriers the cop may place per game (default: 5)")
+    p.add_argument(
+        "--net-type",
+        choices=["mlp", "cnn"],
+        default="mlp",
+        help="Network backbone: mlp=fast (CPU), cnn=better for large boards",
+    )
+    p.add_argument(
+        "--hidden", type=int, default=128, help="Hidden layer width (128 is plenty for 7x7)"
+    )
+    p.add_argument(
+        "--shaped-rewards",
+        action="store_true",
+        help="Add distance-delta shaping to intermediate rewards",
+    )
+    p.add_argument(
+        "--random-starts",
+        action="store_true",
+        help="Randomize cop/thief starting positions each episode",
+    )
+    p.add_argument(
+        "--barriers", action="store_true", help="Enable cop barrier placement during training"
+    )
+    p.add_argument(
+        "--barrier-quota",
+        type=int,
+        default=5,
+        help="Barriers the cop may place per game (default: 5)",
+    )
     return p
 
 
@@ -92,13 +126,16 @@ def run_league(args: argparse.Namespace, config: RLGameConfig) -> None:
                     logger.info(f"[league] Skipping {path} (channels={ch}, need {required_ch})")
                     return
                 policy = RLPolicy._load_checkpoint(Path(path), role, max_steps=config.max_steps)
-                pool.append(policy); weights.append(weight)
+                pool.append(policy)
+                weights.append(weight)
                 logger.info(f"[league] Added {path} (weight={weight})")
             except Exception as e:
                 logger.warning(f"[league] Skipping {path}: {e}")
 
-        for p, w in [(models_dir / f"{role}_ppo_league_best.pt", 3.0),
-                     (models_dir / f"{role}_ppo_best.pt", 2.0)]:
+        for p, w in [
+            (models_dir / f"{role}_ppo_league_best.pt", 3.0),
+            (models_dir / f"{role}_ppo_best.pt", 2.0),
+        ]:
             if p.exists():
                 _load_one(p, w)
         for p in sorted(_glob.glob(str(models_dir / f"{role}_ppo_frozen_iter_r*_best.pt"))):
@@ -116,15 +153,25 @@ def run_league(args: argparse.Namespace, config: RLGameConfig) -> None:
 
     logger.info(f"=== League training: COP vs {len(thief_pool)} thieves ===")
     new_cop = train_ppo_league(
-        "cop", thief_pool, thief_weights, config,
-        total_steps=args.steps, rollout_size=args.rollout,
-        models_dir=models_dir, tag="league",
+        "cop",
+        thief_pool,
+        thief_weights,
+        config,
+        total_steps=args.steps,
+        rollout_size=args.rollout,
+        models_dir=models_dir,
+        tag="league",
     )
     logger.info(f"=== League training: THIEF vs {len(cop_pool)} cops ===")
     new_thief = train_ppo_league(
-        "thief", cop_pool, cop_weights, config,
-        total_steps=args.steps, rollout_size=args.rollout,
-        models_dir=models_dir, tag="league",
+        "thief",
+        cop_pool,
+        cop_weights,
+        config,
+        total_steps=args.steps,
+        rollout_size=args.rollout,
+        models_dir=models_dir,
+        tag="league",
     )
 
     eval_cfg = RLGameConfig(cop_barrier_quota=config.cop_barrier_quota)

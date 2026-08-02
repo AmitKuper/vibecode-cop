@@ -9,24 +9,23 @@ Flow (runs once at game start):
 
 from typing import Any
 
-from crewai import Agent, Task
-
-from agent.tools.mcp_probe_tool import probe_mcp_server
-
 # Re-export validator for backwards compatibility
 from agent.agents.mcp_skill_validator import (  # noqa: F401
     create_skill_validator_agent,
     create_skill_validator_task,
 )
-
+from agent.tools.mcp_probe_tool import probe_mcp_server
 
 # ---------------------------------------------------------------------------
 # Explorer agent — probes + analyses full schemas
 # ---------------------------------------------------------------------------
 
-def create_mcp_explorer_agent(llm: Any) -> Agent:
+
+def create_mcp_explorer_agent(llm: Any):
     """Agent that probes a remote MCP server and maps its full protocol."""
-    return Agent(
+    import crewai  # lazy import so test stubs in sys.modules take effect
+
+    return crewai.Agent(
         role="MCP Protocol Analyst",
         goal=(
             "Probe a remote MCP server with probe_mcp_server, carefully read each "
@@ -49,9 +48,11 @@ def create_mcp_explorer_agent(llm: Any) -> Agent:
     )
 
 
-def create_mcp_explorer_task(agent: Agent) -> Task:
+def create_mcp_explorer_task(agent):
     """Task: probe the peer and produce a rich protocol mapping with param names."""
-    return Task(
+    import crewai  # lazy import so test stubs in sys.modules take effect
+
+    return crewai.Task(
         description=(
             "Probe the MCP server at {peer_url} using the probe_mcp_server tool.\n\n"
             "The tool returns: transport_url (auto-detected SSE endpoint), tools "
@@ -88,7 +89,7 @@ def create_mcp_explorer_task(agent: Agent) -> Task:
             "action/move/commit/reveal/submit/turn (action), ping/health/status (ping)\n\n"
             "=== OUTPUT FORMAT ===\n\n"
             "Produce a JSON mapping with this structure:\n"
-            '{{\n'
+            "{{\n"
             '  "peer_url": "<peer_url>",\n'
             '  "transport_url": "<transport_url from probe output>",\n'
             '  "all_tools": ["<tool1>", "<tool2>", ...],\n'
@@ -99,14 +100,14 @@ def create_mcp_explorer_task(agent: Agent) -> Task:
             '    "message_param": "<exact param name for JSON payload>",\n'
             '    "message_type": "string",\n'
             '    "signature_param": "<exact param name for HMAC, or null>"\n'
-            '  }},\n'
+            "  }},\n"
             '  "action_tool": "<exact tool name>",\n'
             '  "action_params": {{\n'
             '    "game_id_param": "<exact param name for game identifier>",\n'
             '    "message_param": "<exact param name for JSON payload>",\n'
             '    "message_type": "string",\n'
             '    "signature_param": "<exact param name for HMAC, or null>"\n'
-            '  }},\n'
+            "  }},\n"
             '  "ping_tool": "<exact tool name>",\n'
             '  "field_map": {{}}\n'
             "}}\n\n"

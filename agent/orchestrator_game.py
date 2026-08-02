@@ -49,12 +49,17 @@ class GameStateMixin:
             game_dir = self.games_dir / game_id
             game_dir.mkdir(parents=True, exist_ok=True)
             with open(game_dir / "moves.jsonl", "a") as f:
-                f.write(json.dumps({
-                    "step": step,
-                    "cop_move": cop_move,
-                    "thief_move": thief_move,
-                    "timestamp": __import__("datetime").datetime.utcnow().isoformat(),
-                }) + "\n")
+                f.write(
+                    json.dumps(
+                        {
+                            "step": step,
+                            "cop_move": cop_move,
+                            "thief_move": thief_move,
+                            "timestamp": __import__("datetime").datetime.utcnow().isoformat(),
+                        }
+                    )
+                    + "\n"
+                )
             logger.debug(f"Appended move to {game_id}")
         except Exception as e:
             logger.error(f"Error appending move: {e}", exc_info=True)

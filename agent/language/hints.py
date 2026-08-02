@@ -11,9 +11,9 @@ import random
 _HINT_TEMPLATES: dict[str, list[str]] = {
     "NORTH": ["heading north", "moving toward the top", "going up"],
     "SOUTH": ["heading south", "moving toward the bottom", "going down"],
-    "EAST":  ["heading east", "moving right", "going east"],
-    "WEST":  ["heading west", "moving left", "going west"],
-    "STAY":  ["holding position", "staying put", "not moving"],
+    "EAST": ["heading east", "moving right", "going east"],
+    "WEST": ["heading west", "moving left", "going west"],
+    "STAY": ["holding position", "staying put", "not moving"],
 }
 
 

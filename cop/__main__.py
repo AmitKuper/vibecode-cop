@@ -59,7 +59,9 @@ async def main() -> int:
             config.get("crypto", {}).get("shared_secret", "dev-secret-change-me"),
         )
 
-        from agent.config.shared_config import load_shared_config, config_sha256 as _sha256_fn
+        from agent.config.shared_config import config_sha256 as _sha256_fn
+        from agent.config.shared_config import load_shared_config
+
         game_cfg = load_shared_config()
         config_sha256 = _sha256_fn(game_cfg)
         group_name = game_cfg.get("network_and_league", {}).get("group_name", "unknown")

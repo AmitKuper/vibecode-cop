@@ -26,23 +26,38 @@ def train_cross(
     """Cross-train cop vs frozen best-thief AND thief vs frozen best-cop."""
     cfg = config or RLGameConfig()
     models_dir = Path(models_dir)
-    cop_path   = cop_checkpoint   or models_dir / "cop_ppo_best.pt"
+    cop_path = cop_checkpoint or models_dir / "cop_ppo_best.pt"
     thief_path = thief_checkpoint or models_dir / "thief_ppo_best.pt"
 
     from agent.rl.policy import RLPolicy
-    frozen_cop   = RLPolicy._load_checkpoint(Path(cop_path),   "cop",   max_steps=cfg.max_steps)
+
+    frozen_cop = RLPolicy._load_checkpoint(Path(cop_path), "cop", max_steps=cfg.max_steps)
     frozen_thief = RLPolicy._load_checkpoint(Path(thief_path), "thief", max_steps=cfg.max_steps)
     logger.info(f"[cross] Frozen cop={cop_path}, thief={thief_path}")
 
     logger.info("=== Cross-training: COP vs frozen best THIEF ===")
     new_cop = train_ppo_vs_frozen(
-        "cop", frozen_thief, cfg, total_steps, rollout_size,
-        models_dir=models_dir, net_type=net_type, hidden=hidden, tag="v2",
+        "cop",
+        frozen_thief,
+        cfg,
+        total_steps,
+        rollout_size,
+        models_dir=models_dir,
+        net_type=net_type,
+        hidden=hidden,
+        tag="v2",
     )
     logger.info("=== Cross-training: THIEF vs frozen best COP ===")
     new_thief = train_ppo_vs_frozen(
-        "thief", frozen_cop, cfg, total_steps, rollout_size,
-        models_dir=models_dir, net_type=net_type, hidden=hidden, tag="v2",
+        "thief",
+        frozen_cop,
+        cfg,
+        total_steps,
+        rollout_size,
+        models_dir=models_dir,
+        net_type=net_type,
+        hidden=hidden,
+        tag="v2",
     )
 
     r = evaluate(new_cop, new_thief, cfg, eval_games)
@@ -68,26 +83,41 @@ def train_iterated(
     models_dir = Path(models_dir)
     models_dir.mkdir(parents=True, exist_ok=True)
 
-    cop_path   = cop_checkpoint   or models_dir / "cop_ppo_best.pt"
+    cop_path = cop_checkpoint or models_dir / "cop_ppo_best.pt"
     thief_path = thief_checkpoint or models_dir / "thief_ppo_best.pt"
 
     from agent.rl.policy import RLPolicy
-    frozen_cop   = RLPolicy._load_checkpoint(Path(cop_path),   "cop",   max_steps=cfg.max_steps)
+
+    frozen_cop = RLPolicy._load_checkpoint(Path(cop_path), "cop", max_steps=cfg.max_steps)
     frozen_thief = RLPolicy._load_checkpoint(Path(thief_path), "thief", max_steps=cfg.max_steps)
     logger.info(f"[iterated] Bootstrapping from {cop_path} and {thief_path}")
 
     for rnd in range(1, rounds + 1):
-        logger.info(f"\n{'='*60}\n  ITERATED ROUND {rnd}/{rounds}\n{'='*60}")
+        logger.info(f"\n{'=' * 60}\n  ITERATED ROUND {rnd}/{rounds}\n{'=' * 60}")
         tag = f"iter_r{rnd}"
         logger.info(f"[round {rnd}] Training COP vs frozen thief ...")
         frozen_cop = train_ppo_vs_frozen(
-            "cop", frozen_thief, cfg, steps_per_round, rollout_size,
-            models_dir=models_dir, net_type=net_type, hidden=hidden, tag=tag,
+            "cop",
+            frozen_thief,
+            cfg,
+            steps_per_round,
+            rollout_size,
+            models_dir=models_dir,
+            net_type=net_type,
+            hidden=hidden,
+            tag=tag,
         )
         logger.info(f"[round {rnd}] Training THIEF vs new frozen cop ...")
         frozen_thief = train_ppo_vs_frozen(
-            "thief", frozen_cop, cfg, steps_per_round, rollout_size,
-            models_dir=models_dir, net_type=net_type, hidden=hidden, tag=tag,
+            "thief",
+            frozen_cop,
+            cfg,
+            steps_per_round,
+            rollout_size,
+            models_dir=models_dir,
+            net_type=net_type,
+            hidden=hidden,
+            tag=tag,
         )
         r = evaluate(frozen_cop, frozen_thief, cfg, eval_games)
         print_results(f"Round {rnd} evaluation", r)

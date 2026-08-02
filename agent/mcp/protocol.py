@@ -59,8 +59,10 @@ class ProtocolStateMachine:
             return False, f"Unknown state: {self.state}"
         legal_phases = _LEGAL_TRANSITIONS[self.state].get(self.current_phase)
         if legal_phases is None:
-            return (False,
-                    f"No transitions defined for state={self.state}, phase={self.current_phase}")
+            return (
+                False,
+                f"No transitions defined for state={self.state}, phase={self.current_phase}",
+            )
         if to_phase not in legal_phases:
             cur = self.current_phase.value if self.current_phase else "None"
             return False, f"Illegal transition: {self.state.value}/{cur} → {to_phase.value}"
@@ -111,9 +113,7 @@ class ProtocolStateMachine:
     def from_dict(cls, data: dict) -> "ProtocolStateMachine":
         sm = cls()
         sm.state = ProtocolState(data["state"])
-        sm.current_phase = (
-            ProtocolPhase(data["phase"]) if data.get("phase") else None
-        )
+        sm.current_phase = ProtocolPhase(data["phase"]) if data.get("phase") else None
         sm.step = data.get("step", 0)
         return sm
 

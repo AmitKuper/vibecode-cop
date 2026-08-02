@@ -30,6 +30,7 @@ class CrewMixin:
     def _get_token_counter(self):
         if not hasattr(self, "_token_counter"):
             from agent.llm.token_counter import TokenCounter
+
             self._token_counter = TokenCounter()
         return self._token_counter
 
@@ -123,8 +124,10 @@ class CrewMixin:
 
     def _long_move(self, short: str) -> str:
         return {"N": "NORTH", "S": "SOUTH", "E": "EAST", "W": "WEST", "STAY": "STAY"}.get(
-            short, short)
+            short, short
+        )
 
     def _short_move(self, long: str) -> str:
         return {"NORTH": "N", "SOUTH": "S", "EAST": "E", "WEST": "W", "STAY": "STAY"}.get(
-            long, long)
+            long, long
+        )

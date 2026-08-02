@@ -15,6 +15,7 @@ def _load_start_positions() -> tuple[list[int], list[int]]:
     """Load cop_start and thief_start from shared config."""
     try:
         from agent.config.shared_config import load_shared_config
+
         cfg = load_shared_config()
         ba = cfg.get("board_and_agents", {})
         return ba.get("cop_start", [0, 0]), ba.get("thief_start", [3, 3])
@@ -66,8 +67,10 @@ def write_result(
 ) -> None:
     """Write the agent-local result file for this game."""
     result = {
-        "game_id": game_id, "role": role,
-        "config_sha256": config_sha256, "group_name": group_name,
+        "game_id": game_id,
+        "role": role,
+        "config_sha256": config_sha256,
+        "group_name": group_name,
         "git_commit": _git_commit(),
         "winner": state.get("winner"),
         "final_step": final_step,

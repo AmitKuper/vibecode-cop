@@ -50,8 +50,7 @@ Every report plugin must implement a common interface similar to:
 class ReportPlugin:
     name: str
 
-    async def generate(self, context: ReportContext) -> ReportResult:
-        ...
+    async def generate(self, context: ReportContext) -> ReportResult: ...
 ```
 
 The interface must be async-compatible because some plugins perform I/O, such as Gmail API calls.

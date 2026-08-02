@@ -25,10 +25,17 @@ class StartGameMessage:
     timestamp: str
     peer_url: str | None = None  # URL of the OTHER player (not the initiator)
 
-    _KNOWN_FIELDS = frozenset({
-        "game_id", "roles", "config_sha256", "protocol_version",
-        "endpoint", "timestamp", "peer_url",
-    })
+    _KNOWN_FIELDS = frozenset(
+        {
+            "game_id",
+            "roles",
+            "config_sha256",
+            "protocol_version",
+            "endpoint",
+            "timestamp",
+            "peer_url",
+        }
+    )
 
     @staticmethod
     def from_json(json_str: str) -> "StartGameMessage":
@@ -82,9 +89,22 @@ class ActionMessage:
         try:
             obj = json.loads(json_str)
             known = {
-                "game_id", "step", "role", "config_sha256", "timestamp", "phase",
-                "h_commit", "h_commit_ack", "move", "hint", "intent", "state_hash",
-                "nonces", "game_log", "reason", "board_state",
+                "game_id",
+                "step",
+                "role",
+                "config_sha256",
+                "timestamp",
+                "phase",
+                "h_commit",
+                "h_commit_ack",
+                "move",
+                "hint",
+                "intent",
+                "state_hash",
+                "nonces",
+                "game_log",
+                "reason",
+                "board_state",
             }
             filtered = {k: v for k, v in obj.items() if k in known}
             return ActionMessage(**filtered)

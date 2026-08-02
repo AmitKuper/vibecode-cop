@@ -53,7 +53,8 @@ class ReportBundleBuilder:
         )
 
         logger.info(
-            f"Built report context for {game_id}: {len(required)} required, {len(optional)} optional files"  # noqa: E501
+            f"Built report context for {game_id}: "
+            f"{len(required)} required, {len(optional)} optional files"
         )
 
         return context
@@ -67,8 +68,14 @@ class ReportBundleBuilder:
 
         required = {
             "declaration": self.game_dir / f"declaration_{game_id}.json",
-            "config": config_candidates[0] if config_candidates else self.game_dir / f"config_{game_id}_g01.json",
-            "log": log_candidates[0] if log_candidates else self.game_dir / f"log_{game_id}_g01.json",
+            "config": (
+                config_candidates[0]
+                if config_candidates
+                else self.game_dir / f"config_{game_id}_g01.json"
+            ),
+            "log": (
+                log_candidates[0] if log_candidates else self.game_dir / f"log_{game_id}_g01.json"
+            ),
             "result": self.game_dir / f"result_{game_id}.json",
         }
 

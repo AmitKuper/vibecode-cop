@@ -5,8 +5,10 @@ import logging
 try:
     from crewai.tools import tool
 except ImportError:
+
     def tool(func):
         return func
+
 
 from agent.board import Board
 

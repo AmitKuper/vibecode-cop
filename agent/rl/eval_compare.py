@@ -14,8 +14,10 @@ logger = logging.getLogger(__name__)
 
 
 def compare(
-    dqn_cop, dqn_thief,
-    ppo_cop, ppo_thief,
+    dqn_cop,
+    dqn_thief,
+    ppo_cop,
+    ppo_thief,
     config: RLGameConfig | None = None,
     n_games: int = 200,
 ) -> dict:
@@ -41,27 +43,39 @@ def compare(
         print_results(label, r)
 
     cop_rates = {
-        "DQN": (results["DQN cop vs DQN thief"]["cop_win_rate"]
-                + results["DQN cop vs PPO thief"]["cop_win_rate"]) / 2,
-        "PPO": (results["PPO cop vs PPO thief"]["cop_win_rate"]
-                + results["PPO cop vs DQN thief"]["cop_win_rate"]) / 2,
+        "DQN": (
+            results["DQN cop vs DQN thief"]["cop_win_rate"]
+            + results["DQN cop vs PPO thief"]["cop_win_rate"]
+        )
+        / 2,
+        "PPO": (
+            results["PPO cop vs PPO thief"]["cop_win_rate"]
+            + results["PPO cop vs DQN thief"]["cop_win_rate"]
+        )
+        / 2,
     }
     thief_rates = {
-        "DQN": (results["DQN cop vs DQN thief"]["thief_win_rate"]
-                + results["PPO cop vs DQN thief"]["thief_win_rate"]) / 2,
-        "PPO": (results["PPO cop vs PPO thief"]["thief_win_rate"]
-                + results["DQN cop vs PPO thief"]["thief_win_rate"]) / 2,
+        "DQN": (
+            results["DQN cop vs DQN thief"]["thief_win_rate"]
+            + results["PPO cop vs DQN thief"]["thief_win_rate"]
+        )
+        / 2,
+        "PPO": (
+            results["PPO cop vs PPO thief"]["thief_win_rate"]
+            + results["DQN cop vs PPO thief"]["thief_win_rate"]
+        )
+        / 2,
     }
     best_cop = max(cop_rates, key=cop_rates.get)
     best_thief = max(thief_rates, key=thief_rates.get)
 
     print(
-        f"\n{'='*50}\n"
+        f"\n{'=' * 50}\n"
         f"  COMPARISON SUMMARY\n"
-        f"{'='*50}\n"
+        f"{'=' * 50}\n"
         f"  Best cop   algorithm: {best_cop} (avg win rate {cop_rates[best_cop]:.1%})\n"
         f"  Best thief algorithm: {best_thief} (avg win rate {thief_rates[best_thief]:.1%})\n"
-        f"{'='*50}\n"
+        f"{'=' * 50}\n"
     )
     results["_summary"] = {
         "best_cop_algo": best_cop,

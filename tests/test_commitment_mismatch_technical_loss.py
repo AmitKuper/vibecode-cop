@@ -1,6 +1,6 @@
 """Tests that audit failure triggers TECHNICAL_LOSS in GameRunner."""
 
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
@@ -26,9 +26,12 @@ class TestTechnicalLossOnAuditFailure:
         runner._game_dir.mkdir(parents=True, exist_ok=True)
 
         with (
-            patch("agent.game_runner.final_audit", new=AsyncMock(return_value=(False, {"cop_step_1": "mismatch"}))),
+            patch(
+                "agent.game_runner.final_audit",
+                new=AsyncMock(return_value=(False, {"cop_step_1": "mismatch"})),
+            ),
             patch("agent.game_runner.run_turn_loop", new=AsyncMock(return_value=("cop", None, 5))),
-            patch("agent.game_runner.GameInitiator") as mock_initiator,
+            patch("agent.game_runner.GameInitiator"),
             patch("agent.game_runner.generate_output_files", new=AsyncMock()),
             patch.object(runner, "_notify_game_end", new=AsyncMock()),
             patch.object(runner, "_save_game_state"),
@@ -48,7 +51,9 @@ class TestTechnicalLossOnAuditFailure:
 
         with (
             patch("agent.game_runner.final_audit", new=AsyncMock(return_value=(True, {}))),
-            patch("agent.game_runner.run_turn_loop", new=AsyncMock(return_value=("thief", None, 10))),
+            patch(
+                "agent.game_runner.run_turn_loop", new=AsyncMock(return_value=("thief", None, 10))
+            ),
             patch.object(runner, "_handshake", new=AsyncMock(return_value=True)),
             patch("agent.game_runner.generate_output_files", new=AsyncMock()),
             patch.object(runner, "_notify_game_end", new=AsyncMock()),

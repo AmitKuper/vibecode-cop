@@ -24,8 +24,10 @@ try:
     from agent.orchestrator_discovery import DiscoveryMixin as _DiscoveryMixin
 except Exception as _disc_import_err:
     logger.warning(f"DiscoveryMixin unavailable ({_disc_import_err}); MCP discovery disabled")
+
     class _DiscoveryMixin:  # type: ignore[no-redef]
-        def discover_protocol(self, game_id, peer_url): pass
+        def discover_protocol(self, game_id, peer_url):
+            pass
 
 
 class PeerAgentRuntime(_DiscoveryMixin):
@@ -53,8 +55,12 @@ class PeerAgentRuntime(_DiscoveryMixin):
         self.role = role
         self.secret = secret
         self._peer_runtime = PeerRuntime(
-            role=role, secret=secret, config_sha256=config_sha256,
-            opponent_url=opponent_url, games_dir=Path(games_dir), group_name=group_name,
+            role=role,
+            secret=secret,
+            config_sha256=config_sha256,
+            opponent_url=opponent_url,
+            games_dir=Path(games_dir),
+            group_name=group_name,
             llm_dict=llm_dict,
         )
         self.llm = self._peer_runtime.llm
@@ -64,7 +70,9 @@ class PeerAgentRuntime(_DiscoveryMixin):
         self._rules_ref: list = []
         self._loop: asyncio.AbstractEventLoop | None = None
         self._mcp_server = AgentMCPServer(
-            role=role, secret=secret, config_sha256=config_sha256,
+            role=role,
+            secret=secret,
+            config_sha256=config_sha256,
             games_dir=Path(games_dir),
             handler_callbacks={
                 "on_start_game": self._on_start_game,

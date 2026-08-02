@@ -25,6 +25,7 @@ def _now_iso() -> str:
 def _load_scoring() -> dict:
     try:
         from agent.config.shared_config import load_shared_config
+
         return load_shared_config().get("scoring", {})
     except Exception:
         return {}
@@ -55,9 +56,13 @@ class GameSeries:
 
     def _make_runner(self) -> GameRunner:
         return GameRunner(
-            cop_url=self.cop_url, thief_url=self.thief_url, secret=self.secret,
-            config_sha256=self.config_sha256, games_dir=self.games_dir,
-            max_turns=self.max_turns, group_name=self.group_name,
+            cop_url=self.cop_url,
+            thief_url=self.thief_url,
+            secret=self.secret,
+            config_sha256=self.config_sha256,
+            games_dir=self.games_dir,
+            max_turns=self.max_turns,
+            group_name=self.group_name,
         )
 
     async def run_series(self, series_id: str | None = None) -> dict:
@@ -88,17 +93,33 @@ class GameSeries:
                     cop_pts, thief_pts = pts_matrix[winner]
                 else:
                     cop_pts = thief_pts = tie_pts
-                cop_total += cop_pts; thief_total += thief_pts
-                rec = {"gamelet": lbl, "game_id": game_id, "winner": winner,
-                       "audit_ok": audit_ok, "cop_pts": cop_pts, "thief_pts": thief_pts,
-                       "final_step": result.get("final_step")}
+                cop_total += cop_pts
+                thief_total += thief_pts
+                rec = {
+                    "gamelet": lbl,
+                    "game_id": game_id,
+                    "winner": winner,
+                    "audit_ok": audit_ok,
+                    "cop_pts": cop_pts,
+                    "thief_pts": thief_pts,
+                    "final_step": result.get("final_step"),
+                }
             except Exception as exc:
                 logger.error(f"[GameSeries] Gamelet {lbl} failed: {exc}", exc_info=True)
-                rec = {"gamelet": lbl, "game_id": game_id, "winner": "error",
-                       "audit_ok": False, "cop_pts": 0, "thief_pts": 0, "error": str(exc)}
+                rec = {
+                    "gamelet": lbl,
+                    "game_id": game_id,
+                    "winner": "error",
+                    "audit_ok": False,
+                    "cop_pts": 0,
+                    "thief_pts": 0,
+                    "error": str(exc),
+                }
             gamelets.append(rec)
-            logger.info(f"[GameSeries] Gamelet {lbl}: winner={rec['winner']} "
-                        f"cop+={rec['cop_pts']} thief+={rec['thief_pts']}")
+            logger.info(
+                f"[GameSeries] Gamelet {lbl}: winner={rec['winner']} "
+                f"cop+={rec['cop_pts']} thief+={rec['thief_pts']}"
+            )
 
         if cop_total > thief_total:
             series_winner = "cop"
@@ -107,14 +128,21 @@ class GameSeries:
         else:
             series_winner = "tie"
         series_result = {
-            "series_id": series_id, "config_sha256": self.config_sha256,
-            "n_gamelets": self.n_gamelets, "gamelets": gamelets,
-            "cop_total": cop_total, "thief_total": thief_total,
-            "series_winner": series_winner, "started_at": started_at, "ended_at": _now_iso(),
+            "series_id": series_id,
+            "config_sha256": self.config_sha256,
+            "n_gamelets": self.n_gamelets,
+            "gamelets": gamelets,
+            "cop_total": cop_total,
+            "thief_total": thief_total,
+            "series_winner": series_winner,
+            "started_at": started_at,
+            "ended_at": _now_iso(),
         }
         out_path = self.games_dir / f"result_{series_id}_series.json"
         out_path.parent.mkdir(parents=True, exist_ok=True)
         out_path.write_text(json.dumps(series_result, indent=2), encoding="utf-8")
-        logger.info(f"[GameSeries] Series {series_id} complete: {series_winner} wins "
-                    f"(cop {cop_total} – thief {thief_total})")
+        logger.info(
+            f"[GameSeries] Series {series_id} complete: {series_winner} wins "
+            f"(cop {cop_total} – thief {thief_total})"
+        )
         return series_result

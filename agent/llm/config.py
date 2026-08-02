@@ -29,8 +29,10 @@ class LLMConfig:
 
     def to_dict(self) -> dict:
         return {
-            "provider": self.provider.value, "model": self.model,
-            "temperature": self.temperature, "max_tokens": self.max_tokens,
+            "provider": self.provider.value,
+            "model": self.model,
+            "temperature": self.temperature,
+            "max_tokens": self.max_tokens,
             "base_url": self.base_url,
         }
 
@@ -64,7 +66,9 @@ class LLMConfigBuilder:
     ) -> LLMConfig:
         """Create Ollama LLM config."""
         return LLMConfig(
-            provider=LLMProvider.OLLAMA, model=model, base_url=base_url,
+            provider=LLMProvider.OLLAMA,
+            model=model,
+            base_url=base_url,
             temperature=kwargs.get("temperature", 0.7),
             max_tokens=kwargs.get("max_tokens", 2048),
         )
@@ -73,7 +77,9 @@ class LLMConfigBuilder:
     def openai(model: str = "gpt-4", api_key: str = "", **kwargs) -> LLMConfig:
         """Create OpenAI LLM config."""
         return LLMConfig(
-            provider=LLMProvider.OPENAI, model=model, api_key=api_key,
+            provider=LLMProvider.OPENAI,
+            model=model,
+            api_key=api_key,
             temperature=kwargs.get("temperature", 0.7),
             max_tokens=kwargs.get("max_tokens", 2048),
         )
@@ -82,20 +88,30 @@ class LLMConfigBuilder:
     def anthropic(model: str = "claude-3-sonnet", api_key: str = "", **kwargs) -> LLMConfig:
         """Create Anthropic LLM config."""
         return LLMConfig(
-            provider=LLMProvider.ANTHROPIC, model=model, api_key=api_key,
+            provider=LLMProvider.ANTHROPIC,
+            model=model,
+            api_key=api_key,
             temperature=kwargs.get("temperature", 0.7),
             max_tokens=kwargs.get("max_tokens", 2048),
         )
 
     @staticmethod
     def azure(
-        model: str, api_key: str, base_url: str,
-        api_version: str = "2024-02-15-preview", deployment_id: str = "", **kwargs,
+        model: str,
+        api_key: str,
+        base_url: str,
+        api_version: str = "2024-02-15-preview",
+        deployment_id: str = "",
+        **kwargs,
     ) -> LLMConfig:
         """Create Azure OpenAI LLM config."""
         return LLMConfig(
-            provider=LLMProvider.AZURE, model=model, api_key=api_key,
-            base_url=base_url, api_version=api_version, deployment_id=deployment_id,
+            provider=LLMProvider.AZURE,
+            model=model,
+            api_key=api_key,
+            base_url=base_url,
+            api_version=api_version,
+            deployment_id=deployment_id,
             temperature=kwargs.get("temperature", 0.7),
             max_tokens=kwargs.get("max_tokens", 2048),
         )

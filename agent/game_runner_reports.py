@@ -18,9 +18,12 @@ async def generate_reports(runner: object, game_id: str, game_state: dict) -> No
         from agent.reports.plugin_factory import ReportPluginFactory
 
         context = await ReportBundleBuilder(runner._game_dir).build(
-            game_id=game_id, role="initiator", game_state=game_state,
+            game_id=game_id,
+            role="initiator",
+            game_state=game_state,
             result={"winner": game_state.get("winner"), "step": game_state.get("final_step", 0)},
-            config_hash=runner.config_sha256, metadata={},
+            config_hash=runner.config_sha256,
+            metadata={},
         )
         reports_config: dict = {}
         try:
@@ -37,15 +40,22 @@ async def generate_reports(runner: object, game_id: str, game_state: dict) -> No
         results = await ReportManager(plugins).generate_all(context)
         plugin_results_list = []
         for pname, pr in results.items():
-            plugin_results_list.append({
-                "plugin": pname, "ok": pr.ok, "status": pr.status,
-                "destination": pr.destination, "error": pr.error,
-            })
+            plugin_results_list.append(
+                {
+                    "plugin": pname,
+                    "ok": pr.ok,
+                    "status": pr.status,
+                    "destination": pr.destination,
+                    "error": pr.error,
+                }
+            )
             if pr.ok:
                 logger.info(f"[GameRunner] Report [{pname}] {pr.status}: {pr.destination}")
             else:
                 logger.error(f"[GameRunner] Report [{pname}] FAILED: {pr.error}")
-        write_json(runner._game_dir / "report_plugin_results.json",
-                   {"game_id": game_id, "plugins": plugin_results_list})
+        write_json(
+            runner._game_dir / "report_plugin_results.json",
+            {"game_id": game_id, "plugins": plugin_results_list},
+        )
     except Exception as e:
         logger.error(f"[GameRunner] Report pipeline failed: {e}", exc_info=True)

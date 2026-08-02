@@ -55,6 +55,7 @@ def train_qtable(
 ) -> tuple[QTableAgent, QTableAgent, dict]:
     """Train cop and thief Q-table agents via simultaneous self-play."""
     from collections import defaultdict as _dd
+
     from agent.rl.config import RLGameConfig
     from agent.rl.environment import CopThiefEnv
 

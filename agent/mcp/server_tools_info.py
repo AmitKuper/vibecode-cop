@@ -3,21 +3,21 @@
 from __future__ import annotations
 
 _PROTOCOL_FIELDS = {
-    "game_id":       "game_id",
-    "gamelet":       "gamelet",
-    "step":          "step",
-    "role":          "role",
-    "phase":         "phase",
+    "game_id": "game_id",
+    "gamelet": "gamelet",
+    "step": "step",
+    "role": "role",
+    "phase": "phase",
     "config_sha256": "config_sha256",
-    "state_hash":    "state_hash",
-    "h_commit":      "h_commit",
-    "h_commit_ack":  "h_commit_ack",
-    "move":          "move",
-    "hint":          "hint",
-    "intent":        "intent",
-    "nonce":         "nonce",
-    "nonces":        "nonces",
-    "timestamp":     "timestamp",
+    "state_hash": "state_hash",
+    "h_commit": "h_commit",
+    "h_commit_ack": "h_commit_ack",
+    "move": "move",
+    "hint": "hint",
+    "intent": "intent",
+    "nonce": "nonce",
+    "nonces": "nonces",
+    "timestamp": "timestamp",
 }
 
 

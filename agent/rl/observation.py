@@ -96,43 +96,36 @@ def thief_observation(
     board: Board,
     max_steps: int,
     last_revealed_cop_pos: list[int] | None = None,
-    prev_cop_pos: list[int] | None = None,
 ) -> list[list[list[float]]]:
-    """Build 5-channel observation for the thief agent.
+    """Build 4-channel observation for the thief agent.
 
     Args:
         board: Current board state.
         max_steps: Total step budget (for normalizing turns_remaining).
         last_revealed_cop_pos: Cop position as of the last completed reveal step.
-        prev_cop_pos: Cop position one step before last_revealed_cop_pos — encodes
-            cop velocity so the thief can infer the cop's direction of travel.
+            Falls back to live board cop_position if not provided (training mode).
 
     Returns:
-        List of 5 channels, each a grid_size×grid_size float grid.
+        List of 4 channels, each a grid_size×grid_size float grid.
           0  thief position       1-hot
-          1  cop position         1-hot (last revealed)
+          1  cop position         1-hot (last revealed, or live in training)
           2  barriers             1 where blocked
           3  turns remaining      scalar broadcast, normalized 0–1
-          4  cop previous pos     1-hot (velocity signal; same as ch1 if unknown)
     """
     n = board.grid_size
     tx, ty = board.thief_position
     cx, cy = last_revealed_cop_pos if last_revealed_cop_pos is not None else board.cop_position
-    # Velocity channel: where was the cop one step earlier?
-    pcx, pcy = prev_cop_pos if prev_cop_pos is not None else (cx, cy)
     return [
         _one_hot(n, tx, ty),
         _one_hot(n, cx, cy),
         _barrier_grid(board),
         _turns_remaining_grid(board, max_steps),
-        _one_hot(n, pcx, pcy),
     ]
 
 
-def observation_shape(grid_size: int, role: str = "thief", barrier_quota: int = 0) -> tuple[int, int, int]:  # noqa: E501
+def observation_shape(
+    grid_size: int, role: str = "thief", barrier_quota: int = 0
+) -> tuple[int, int, int]:  # noqa: E501
     """Return (channels, height, width) — useful when building network input layers."""
-    if role == "cop":
-        n_channels = 5 if barrier_quota > 0 else 4
-    else:
-        n_channels = 5  # thief always has 5 channels (cop velocity added)
+    n_channels = (5 if barrier_quota > 0 else 4) if role == "cop" else 4
     return (n_channels, grid_size, grid_size)

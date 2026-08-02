@@ -41,40 +41,58 @@ class GameInitiator:
         await wait_for_readiness(self.thief_client, "thief", timeout_seconds=10.0)
         logger.info("Both agents ready, initiating game...")
         try:
-            cop_base  = self.cop_url.rstrip("/").replace("/mcp", "")
+            cop_base = self.cop_url.rstrip("/").replace("/mcp", "")
             thief_base = self.thief_url.rstrip("/").replace("/mcp", "")
             cop_response = await call_start_game(
                 self.cop_client,
                 StartGameMessage(
-                    game_id=game_id, roles={"cop": "cop", "thief": "thief"},
-                    config_sha256=self.config_sha256, protocol_version="1.0",
-                    endpoint=cop_base, timestamp=datetime.now().isoformat(),
+                    game_id=game_id,
+                    roles={"cop": "cop", "thief": "thief"},
+                    config_sha256=self.config_sha256,
+                    protocol_version="1.0",
+                    endpoint=cop_base,
+                    timestamp=datetime.now().isoformat(),
                     peer_url=thief_base,
                 ),
-                "cop", self.secret,
+                "cop",
+                self.secret,
             )
             if not cop_response.get("ok"):
                 logger.error(f"Cop rejected game: {cop_response}")
-                return {"ok": False, "game_id": game_id,
-                        "error": f"Cop rejected: {cop_response.get('error')}"}
+                return {
+                    "ok": False,
+                    "game_id": game_id,
+                    "error": f"Cop rejected: {cop_response.get('error')}",
+                }
             logger.info("Cop accepted game")
             thief_response = await call_start_game(
                 self.thief_client,
                 StartGameMessage(
-                    game_id=game_id, roles={"cop": "cop", "thief": "thief"},
-                    config_sha256=self.config_sha256, protocol_version="1.0",
-                    endpoint=thief_base, timestamp=datetime.now().isoformat(),
+                    game_id=game_id,
+                    roles={"cop": "cop", "thief": "thief"},
+                    config_sha256=self.config_sha256,
+                    protocol_version="1.0",
+                    endpoint=thief_base,
+                    timestamp=datetime.now().isoformat(),
                     peer_url=cop_base,
                 ),
-                "thief", self.secret,
+                "thief",
+                self.secret,
             )
             if not thief_response.get("ok"):
                 logger.error(f"Thief rejected game: {thief_response}")
-                return {"ok": False, "game_id": game_id,
-                        "error": f"Thief rejected: {thief_response.get('error')}"}
+                return {
+                    "ok": False,
+                    "game_id": game_id,
+                    "error": f"Thief rejected: {thief_response.get('error')}",
+                }
             logger.info(f"Game {game_id} started successfully!")
-            return {"ok": True, "game_id": game_id,
-                    "cop_response": cop_response, "thief_response": thief_response}
+            return {
+                "ok": True,
+                "game_id": game_id,
+                "cop_response": cop_response,
+                "thief_response": thief_response,
+            }
         except TimeoutError:
             logger.error("Game initiation timeout")
             return {"ok": False, "game_id": game_id, "error": "Handshake timeout"}
@@ -95,5 +113,7 @@ class GameInitiator:
 
 if __name__ == "__main__":
     import sys
+
     from agent.game_initiator_handshake import main
+
     sys.exit(asyncio.run(main()))

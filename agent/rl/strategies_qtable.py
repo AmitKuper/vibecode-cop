@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import random
 from collections import defaultdict
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 from agent.rl.environment import N_ACTIONS
 from agent.rl.strategies_base import _argmax2d, _decode_1hot
@@ -71,6 +71,7 @@ class QTableAgent:
 
     def save(self, path: Path) -> None:
         import json
+
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         data = {"role": self.role, "eps": self.eps, "q": {str(k): v for k, v in self.q.items()}}
@@ -79,6 +80,7 @@ class QTableAgent:
     @classmethod
     def load(cls, path: Path, role: str) -> QTableAgent:
         import json
+
         data = json.loads(Path(path).read_text())
         agent = cls(role)
         agent.eps = data.get("eps", agent.eps_end)

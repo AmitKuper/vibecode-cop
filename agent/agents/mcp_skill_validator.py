@@ -2,14 +2,14 @@
 
 from typing import Any
 
-from crewai import Agent, Task
-
 from agent.tools.read_skill_tool import read_skill_file
 
 
-def create_skill_validator_agent(llm: Any) -> Agent:
+def create_skill_validator_agent(llm: Any):
     """Agent that validates the generated skill file."""
-    return Agent(
+    import crewai  # lazy import so test stubs in sys.modules take effect
+
+    return crewai.Agent(
         role="MCP Skill Validator",
         goal=(
             "Read the generated skill file using read_skill_file, verify it is "
@@ -28,9 +28,11 @@ def create_skill_validator_agent(llm: Any) -> Agent:
     )
 
 
-def create_skill_validator_task(agent: Agent) -> Task:
+def create_skill_validator_task(agent):
     """Task: validate the skill file and return structured feedback."""
-    return Task(
+    import crewai  # lazy import so test stubs in sys.modules take effect
+
+    return crewai.Task(
         description=(
             "Use read_skill_file to read the skill at {skill_path}.\n"
             "Check all of:\n"

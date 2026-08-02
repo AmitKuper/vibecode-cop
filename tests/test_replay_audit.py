@@ -1,17 +1,12 @@
 """Tests that the replay auditor verifies real logs and detects tampering."""
 
-import hashlib
 import json
 from pathlib import Path
-
-import pytest
 
 from agent.mcp.crypto import create_commitment
 from agent.mcp.log_replay import (
     audit_log_commitments,
-    load_log_json,
     sha256_of_file,
-    sha256_of_json,
     verify_log_integrity,
 )
 
@@ -23,16 +18,30 @@ def _make_log(tmp_path: Path, game_id: str, entries: list[dict]) -> Path:
     return p
 
 
-def _make_entry(step: int, cop_h: str, thief_h: str, cop_move="N", thief_move="S",
-                cop_nonce="cn", thief_nonce="tn", state_hash="sh") -> dict:
+def _make_entry(
+    step: int,
+    cop_h: str,
+    thief_h: str,
+    cop_move="N",
+    thief_move="S",
+    cop_nonce="cn",
+    thief_nonce="tn",
+    state_hash="sh",
+) -> dict:
     return {
         "step": step,
-        "cop_h_commit": cop_h, "thief_h_commit": thief_h,
-        "cop_move": cop_move, "thief_move": thief_move,
-        "cop_state_hash": state_hash, "thief_state_hash": state_hash,
-        "cop_nonce": cop_nonce, "thief_nonce": thief_nonce,
-        "cop_hint": "hint", "cop_intent": "truth",
-        "thief_hint": "hint", "thief_intent": "truth",
+        "cop_h_commit": cop_h,
+        "thief_h_commit": thief_h,
+        "cop_move": cop_move,
+        "thief_move": thief_move,
+        "cop_state_hash": state_hash,
+        "thief_state_hash": state_hash,
+        "cop_nonce": cop_nonce,
+        "thief_nonce": thief_nonce,
+        "cop_hint": "hint",
+        "cop_intent": "truth",
+        "thief_hint": "hint",
+        "thief_intent": "truth",
     }
 
 
@@ -66,12 +75,18 @@ class TestLogIntegrity:
 
 
 class TestAuditLogCommitments:
-    def _make_real_commit(self, game_id, step, role, move, state_hash="sh",
-                           hint="hint", intent="truth", gamelet=1):
+    def _make_real_commit(
+        self, game_id, step, role, move, state_hash="sh", hint="hint", intent="truth", gamelet=1
+    ):
         h, nonce = create_commitment(
-            game_id=game_id, step=step, role=role,
-            state_hash=state_hash, move=move,
-            hint=hint, intent=intent, gamelet=gamelet,
+            game_id=game_id,
+            step=step,
+            role=role,
+            state_hash=state_hash,
+            move=move,
+            hint=hint,
+            intent=intent,
+            gamelet=gamelet,
         )
         return h, nonce
 
@@ -80,9 +95,15 @@ class TestAuditLogCommitments:
         cop_h, cop_nonce = self._make_real_commit(game_id, 1, "cop", "N")
         thief_h, thief_nonce = self._make_real_commit(game_id, 1, "thief", "S")
 
-        entry = _make_entry(1, cop_h, thief_h,
-                             cop_move="N", thief_move="S",
-                             cop_nonce=cop_nonce, thief_nonce=thief_nonce)
+        entry = _make_entry(
+            1,
+            cop_h,
+            thief_h,
+            cop_move="N",
+            thief_move="S",
+            cop_nonce=cop_nonce,
+            thief_nonce=thief_nonce,
+        )
         log_data = {"game_id": game_id, "game_number": "g01", "entries": [entry]}
 
         result = audit_log_commitments(log_data)
@@ -95,10 +116,15 @@ class TestAuditLogCommitments:
         cop_h, cop_nonce = self._make_real_commit(game_id, 1, "cop", "N")
         thief_h, thief_nonce = self._make_real_commit(game_id, 1, "thief", "S")
 
-        entry = _make_entry(1, cop_h, thief_h,
-                             cop_move="W",  # tampered: committed N but reveals W
-                             thief_move="S",
-                             cop_nonce=cop_nonce, thief_nonce=thief_nonce)
+        entry = _make_entry(
+            1,
+            cop_h,
+            thief_h,
+            cop_move="W",  # tampered: committed N but reveals W
+            thief_move="S",
+            cop_nonce=cop_nonce,
+            thief_nonce=thief_nonce,
+        )
         log_data = {"game_id": game_id, "game_number": "g01", "entries": [entry]}
 
         result = audit_log_commitments(log_data)
@@ -110,7 +136,9 @@ class TestAuditLogCommitments:
         cop_h, cop_nonce = self._make_real_commit(game_id, 1, "cop", "N")
         entry = {
             "step": 1,
-            "cop_h_commit": cop_h, "cop_move": "N", "cop_state_hash": "sh",
+            "cop_h_commit": cop_h,
+            "cop_move": "N",
+            "cop_state_hash": "sh",
             # cop_nonce missing → skipped
         }
         log_data = {"game_id": game_id, "game_number": "g01", "entries": [entry]}

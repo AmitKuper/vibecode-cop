@@ -30,25 +30,40 @@ def _make_agent_stub(role: str):
         if phase == "commit":
             step = msg.step
             board = msg.board_state or {}
-            state_hash = hash_game_state({
-                "cop_position": board.get("cop_position", [0, 0]),
-                "thief_position": board.get("thief_position", [6, 6]),
-                "turn": board.get("turn", step - 1),
-            })
+            state_hash = hash_game_state(
+                {
+                    "cop_position": board.get("cop_position", [0, 0]),
+                    "thief_position": board.get("thief_position", [6, 6]),
+                    "turn": board.get("turn", step - 1),
+                }
+            )
             move = "STAY"  # deterministic for testing
             hint = "testing"
             intent = "truth"
             h_commit, nonce = create_commitment(
-                game_id=game_id, step=step, role=role,
-                state_hash=state_hash, move=move, hint=hint, intent=intent,
+                game_id=game_id,
+                step=step,
+                role=role,
+                state_hash=state_hash,
+                move=move,
+                hint=hint,
+                intent=intent,
             )
             my_commitments[step] = {
-                "h_commit": h_commit, "nonce": nonce,
-                "move": move, "hint": hint, "intent": intent,
+                "h_commit": h_commit,
+                "nonce": nonce,
+                "move": move,
+                "hint": hint,
+                "intent": intent,
                 "state_hash": state_hash,
             }
-            return {"ok": True, "game_id": game_id, "phase": "commit",
-                    "step": step, "h_commit": h_commit}
+            return {
+                "ok": True,
+                "game_id": game_id,
+                "phase": "commit",
+                "step": step,
+                "h_commit": h_commit,
+            }
 
         elif phase == "reveal":
             step = msg.step
@@ -56,20 +71,29 @@ def _make_agent_stub(role: str):
             if not payload:
                 return {"ok": False, "error": "no stored commitment"}
             return {
-                "ok": True, "game_id": game_id, "phase": "reveal",
-                "step": step, "move": payload["move"],
-                "hint": payload["hint"], "intent": payload["intent"],
-                "state_hash": payload["state_hash"], "h_commit": payload["h_commit"],
+                "ok": True,
+                "game_id": game_id,
+                "phase": "reveal",
+                "step": step,
+                "move": payload["move"],
+                "hint": payload["hint"],
+                "intent": payload["intent"],
+                "state_hash": payload["state_hash"],
+                "h_commit": payload["h_commit"],
             }
 
         elif phase == "final_audit":
             nonces = {str(s): p["nonce"] for s, p in my_commitments.items()}
-            return {"ok": True, "game_id": game_id, "phase": "final_audit",
-                    "nonces": nonces, "verified": True}
+            return {
+                "ok": True,
+                "game_id": game_id,
+                "phase": "final_audit",
+                "nonces": nonces,
+                "verified": True,
+            }
 
         elif phase == "game_end":
-            return {"ok": True, "game_id": game_id, "phase": "game_end",
-                    "winner": msg.reason}
+            return {"ok": True, "game_id": game_id, "phase": "game_end", "winner": msg.reason}
 
         elif phase == "ack":
             return {"ok": True, "game_id": game_id, "phase": "ack"}

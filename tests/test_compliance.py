@@ -1,16 +1,17 @@
 """Compliance tests verifying mandatory project rules from skill definitions."""
 
-import pytest
 from pathlib import Path
 
-from agent.board import Board
-from agent.rules_engine import RulesEngine
-from agent.orchestrator import GameOrchestrator
+import pytest
 
+from agent.board import Board
+from agent.orchestrator import GameOrchestrator
+from agent.rules_engine import RulesEngine
 
 # ---------------------------------------------------------------------------
 # Hidden-information: no opponent_position in observations
 # ---------------------------------------------------------------------------
+
 
 def _make_rules() -> tuple[Board, RulesEngine]:
     board = Board(cop_position=[0, 0], thief_position=[3, 3])
@@ -49,6 +50,7 @@ def test_orchestrator_observation_thief_has_no_opponent_position():
 # Scent: accumulated and decaying over turns
 # ---------------------------------------------------------------------------
 
+
 def test_scent_accumulates_after_moves():
     """Scent must persist across turns, not reset to zero each call."""
     board, rules = _make_rules()
@@ -61,8 +63,9 @@ def test_scent_accumulates_after_moves():
     after_one = rules.get_scent_field()
     tx, ty = board.thief_position
     # Center of scent field should be at thief's new position
-    assert after_one[ty][tx] == pytest.approx(0.9, abs=0.01), \
+    assert after_one[ty][tx] == pytest.approx(0.9, abs=0.01), (
         "Scent center must equal SCENT_CENTER at thief's position"
+    )
 
 
 def test_scent_decays_when_thief_moves_away():
@@ -74,11 +77,14 @@ def test_scent_decays_when_thief_moves_away():
     scent_at_old = rules.get_scent_field()[old_ty][old_tx]
     assert scent_at_old == pytest.approx(0.9, abs=0.01)
 
-    # Thief moves away — old cell should decay
+    # Thief moves NORTH to [3,2]; old position [3,3] is now at distance 1 from new position.
+    # Additive update: 0.9 * 0.9 + 0.62 = 1.43 (kernel[dist_sq=1] = 0.62)
     rules.apply_moves("STAY", "NORTH")
     scent_after = rules.get_scent_field()[old_ty][old_tx]
-    assert scent_after < scent_at_old, \
-        "Scent at old thief position must decay after thief moves away"
+    assert scent_after == pytest.approx(0.9 * 0.9 + 0.62, abs=0.01), (
+        "Scent must follow additive model: 0.9 * old + emission"
+    )
+    assert scent_after < 1.5, "Scent value must remain bounded"
 
 
 def test_fresh_snapshot_unchanged_for_rl():
@@ -86,8 +92,9 @@ def test_fresh_snapshot_unchanged_for_rl():
     board, rules = _make_rules()
     tx, ty = board.thief_position
     snap = rules.compute_scent_field()
-    assert snap[ty][tx] == pytest.approx(0.9, abs=0.01), \
+    assert snap[ty][tx] == pytest.approx(0.9, abs=0.01), (
         "Fresh snapshot must peak at current thief position"
+    )
     # Confirm it does NOT use accumulated history by checking before any apply_moves
     accum = rules.get_scent_field()
     assert accum[ty][tx] == 0.0, "Accumulated scent must be zero before any moves"
@@ -97,6 +104,7 @@ def test_fresh_snapshot_unchanged_for_rl():
 # Config: max_turns from constructor, minimum enforced
 # ---------------------------------------------------------------------------
 
+
 def test_rules_engine_respects_max_turns_param():
     """When max_turns > 35 is negotiated, game should not end at 35."""
     board = Board(cop_position=[0, 0], thief_position=[6, 6])
@@ -104,8 +112,10 @@ def test_rules_engine_respects_max_turns_param():
     assert rules.max_turns == 50
     board.turn = 35  # Should still be ONGOING since max_turns=50
     from agent.rules_engine import GameOutcome
-    assert rules.check_game_status() == GameOutcome.ONGOING, \
+
+    assert rules.check_game_status() == GameOutcome.ONGOING, (
         "Game must not end at turn 35 when max_turns=50"
+    )
     board.turn = 50
     assert rules.check_game_status() == GameOutcome.THIEF_WIN
 
@@ -121,9 +131,11 @@ def test_rules_engine_enforces_minimum_35_turns():
 # Config: shared config has required physics sections
 # ---------------------------------------------------------------------------
 
+
 def test_shared_config_has_required_sections():
     """game_config.toml must contain all mandatory shared-physics sections."""
     import tomllib
+
     config_path = Path("game_config.toml")
     assert config_path.exists(), "game_config.toml must exist"
     with open(config_path, "rb") as f:
@@ -140,6 +152,7 @@ def test_shared_config_has_required_sections():
 def test_shared_config_no_private_sections():
     """game_config.toml must NOT contain private sections like [reports]."""
     import tomllib
+
     with open("game_config.toml", "rb") as f:
         cfg = tomllib.load(f)
     assert "reports" not in cfg, "[reports] must be in private config, not shared"
@@ -147,6 +160,7 @@ def test_shared_config_no_private_sections():
 
 def test_shared_config_barrier_quota_minimum():
     import tomllib
+
     with open("game_config.toml", "rb") as f:
         cfg = tomllib.load(f)
     bq = cfg.get("movement_and_barriers", {}).get("barrier_quota", 0)
@@ -155,6 +169,7 @@ def test_shared_config_barrier_quota_minimum():
 
 def test_shared_config_max_turns_minimum():
     import tomllib
+
     with open("game_config.toml", "rb") as f:
         cfg = tomllib.load(f)
     mt = cfg.get("movement_and_barriers", {}).get("max_turns", 0)
@@ -163,13 +178,16 @@ def test_shared_config_max_turns_minimum():
 
 def test_shared_config_scent_fixed_values():
     import tomllib
+
     with open("game_config.toml", "rb") as f:
         cfg = tomllib.load(f)
     ph = cfg.get("pheromones", {})
-    assert ph.get("scent_center_intensity") == pytest.approx(0.9), \
+    assert ph.get("scent_center_intensity") == pytest.approx(0.9), (
         "scent_center_intensity must be fixed at 0.9"
-    assert ph.get("scent_decay_rate") == pytest.approx(0.10), \
+    )
+    assert ph.get("scent_decay_rate") == pytest.approx(0.10), (
         "scent_decay_rate must be fixed at 0.10"
+    )
     assert ph.get("scent_field_size") == 5, "scent_field_size must be fixed at 5"
 
 
@@ -177,11 +195,10 @@ def test_shared_config_scent_fixed_values():
 # Gmail: send-only scope
 # ---------------------------------------------------------------------------
 
+
 def test_gmail_auth_scope_send_only():
     """gmail_auth.py must request only gmail.send, not gmail.compose."""
     auth_path = Path("scripts/gmail_auth.py")
     content = auth_path.read_text(encoding="utf-8")
-    assert "gmail.compose" not in content, \
-        "gmail_auth.py must not request gmail.compose scope"
-    assert "gmail.send" in content, \
-        "gmail_auth.py must request gmail.send scope"
+    assert "gmail.compose" not in content, "gmail_auth.py must not request gmail.compose scope"
+    assert "gmail.send" in content, "gmail_auth.py must request gmail.send scope"

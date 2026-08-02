@@ -35,8 +35,10 @@ from agent.rules_engine import GameOutcome, RulesEngine
 def __getattr__(name):
     if name == "GameOrchestrator":
         from agent.orchestrator import GameOrchestrator
+
         return GameOrchestrator
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
 
 __all__ = [
     # Board & Rules

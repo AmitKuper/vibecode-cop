@@ -30,7 +30,8 @@ def train_dqn(
     thief = DQNAgent("thief", grid_size=cfg.grid_size, net_type=net_type, hidden=hidden)
     metrics: dict = defaultdict(list)
     best_cop_wr = best_thief_wr = -1.0
-    t0 = time.time(); models_dir.mkdir(parents=True, exist_ok=True)
+    t0 = time.time()
+    models_dir.mkdir(parents=True, exist_ok=True)
 
     for ep in range(1, n_episodes + 1):
         cop_obs, thief_obs = env.reset()
@@ -71,7 +72,9 @@ def train_dqn(
 
     cop.save(models_dir / "cop_dqn.pt")
     thief.save(models_dir / "thief_dqn.pt")
-    logger.info(f"[DQN] Saved to {models_dir}/  (best cop={best_cop_wr:.2f}, thief={best_thief_wr:.2f})")  # noqa: E501
+    logger.info(
+        f"[DQN] Saved to {models_dir}/  (best cop={best_cop_wr:.2f}, thief={best_thief_wr:.2f})"
+    )  # noqa: E501
     cop.load(models_dir / "cop_dqn_best.pt")
     thief.load(models_dir / "thief_dqn_best.pt")
     return cop, thief, dict(metrics)
@@ -89,19 +92,32 @@ def train_ppo(
     """Train cop and thief PPO agents via simultaneous self-play."""
     cfg = config or RLGameConfig()
     env = CopThiefEnv(cfg)
-    cop = PPOAgent("cop", grid_size=cfg.grid_size, rollout_size=rollout_size,
-                   net_type=net_type, hidden=hidden,
-                   n_actions=env.n_cop_actions, n_channels=env.n_cop_channels)
-    thief = PPOAgent("thief", grid_size=cfg.grid_size, rollout_size=rollout_size,
-                     net_type=net_type, hidden=hidden,
-                     n_actions=env.n_thief_actions, n_channels=env.n_thief_channels)
+    cop = PPOAgent(
+        "cop",
+        grid_size=cfg.grid_size,
+        rollout_size=rollout_size,
+        net_type=net_type,
+        hidden=hidden,
+        n_actions=env.n_cop_actions,
+        n_channels=env.n_cop_channels,
+    )
+    thief = PPOAgent(
+        "thief",
+        grid_size=cfg.grid_size,
+        rollout_size=rollout_size,
+        net_type=net_type,
+        hidden=hidden,
+        n_actions=env.n_thief_actions,
+        n_channels=env.n_thief_channels,
+    )
     cop_obs, thief_obs = env.reset()
     done = False
     info: dict = {}
     metrics: dict = defaultdict(list)
     ep_cop_r = ep_thief_r = step = update_count = 0
     best_cop_wr = best_thief_wr = -1.0
-    t0 = time.time(); models_dir.mkdir(parents=True, exist_ok=True)
+    t0 = time.time()
+    models_dir.mkdir(parents=True, exist_ok=True)
 
     while step < total_steps:
         for _ in range(rollout_size):
@@ -144,7 +160,9 @@ def train_ppo(
 
     cop.save(models_dir / "cop_ppo.pt")
     thief.save(models_dir / "thief_ppo.pt")
-    logger.info(f"[PPO] Saved to {models_dir}/  (best cop={best_cop_wr:.2f}, thief={best_thief_wr:.2f})")  # noqa: E501
+    logger.info(
+        f"[PPO] Saved to {models_dir}/  (best cop={best_cop_wr:.2f}, thief={best_thief_wr:.2f})"
+    )  # noqa: E501
     cop.load(models_dir / "cop_ppo_best.pt")
     thief.load(models_dir / "thief_ppo_best.pt")
     return cop, thief, dict(metrics)
