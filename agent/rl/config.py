@@ -32,7 +32,7 @@ class RLGameConfig:
 
     # Training enhancements (not part of the game rules)
     use_shaped_rewards: bool = False   # add distance-delta bonus to intermediate rewards
-    shaped_reward_scale: float = 0.05  # scale factor for distance-based shaping
+    shaped_reward_scale: float = 0.15  # scale factor for distance-based shaping
     random_starts: bool = False        # randomize cop/thief start positions each episode
 
     @classmethod

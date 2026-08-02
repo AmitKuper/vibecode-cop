@@ -34,6 +34,7 @@ class CopThiefEnv(RewardsMixin):
         self._rules: RulesEngine | None = None
         self._prev_dist: int = 0
         self._cop_barriers_remaining: int = 0
+        self._prev_cop_pos: list[int] = [0, 0]
 
     @property
     def n_cop_actions(self) -> int:
@@ -49,7 +50,7 @@ class CopThiefEnv(RewardsMixin):
 
     @property
     def n_thief_channels(self) -> int:
-        return 4
+        return 5  # added cop-velocity channel
 
     # --- Gym interface ---
 
@@ -72,6 +73,7 @@ class CopThiefEnv(RewardsMixin):
         self._rules = RulesEngine(self._board)
         self._prev_dist = self._manhattan_dist()
         self._cop_barriers_remaining = cfg.cop_barrier_quota
+        self._prev_cop_pos = list(self._board.cop_position)
         return self._observations()
 
     def _random_starts(self) -> tuple[list[int], list[int]]:
@@ -89,6 +91,9 @@ class CopThiefEnv(RewardsMixin):
         cop_actions = COP_ACTIONS if self.config.cop_barrier_quota > 0 else ACTIONS
         cop_move = cop_actions[cop_action]
         thief_move = ACTIONS[thief_action]
+
+        # Capture cop position before moves so thief can observe cop velocity next step
+        self._prev_cop_pos = list(self._board.cop_position)
 
         if cop_move in _PLACE_DELTAS:  # barrier placement; then stay
             self._cop_barriers_remaining = apply_place_action(
@@ -155,5 +160,8 @@ class CopThiefEnv(RewardsMixin):
             barriers_remaining=self._cop_barriers_remaining,
             barrier_quota=cfg.cop_barrier_quota,
         )
-        thief_obs = thief_observation(self._board, cfg.max_steps)
+        thief_obs = thief_observation(
+            self._board, cfg.max_steps,
+            prev_cop_pos=self._prev_cop_pos,
+        )
         return cop_obs, thief_obs
