@@ -89,8 +89,17 @@ class ProtocolAdapterCrew:
         except Exception as exc:
             raise RuntimeError(f"LLM call failed: {exc}") from exc
 
-    async def execute(self, action_description: str) -> dict:
-        """Map action to opponent tool parameters via one LLM call, then call the tool."""
+    async def execute(
+        self,
+        action_description: str,
+        known_values: dict | None = None,
+    ) -> dict:
+        """Map action to opponent tool parameters via one LLM call, then call the tool.
+
+        known_values: byte-exact values the LLM must not corrupt (e.g. message_json,
+        signature, game_id).  Any key present in both the LLM output and known_values
+        is verified and restored before the tool is called.
+        """
         logger.info(f"[ProtocolAdapter] → {action_description[:120]}...")
 
         prompt = self._build_mapping_prompt(action_description)
@@ -103,6 +112,14 @@ class ProtocolAdapterCrew:
                 f"LLM did not return valid JSON for tool mapping. "
                 f"Raw response: {raw_response!r}"
             )
+
+        if known_values:
+            corrupted = [k for k in known_values if k in params and params[k] != known_values[k]]
+            if corrupted:
+                logger.warning(
+                    f"[ProtocolAdapter] LLM corrupted {corrupted} — restoring correct values"
+                )
+                params.update(known_values)
 
         logger.info(f"[ProtocolAdapter] calling {self._tool_name} with {list(params.keys())}")
         return await self._client._call_tool(self._tool_name, params)

@@ -69,9 +69,19 @@ async def send_commit(runtime: "PeerRuntime", step: int, h_commit: str) -> dict 
     adapter = getattr(runtime, "protocol_adapter", None)
     if adapter is not None:
         adapter_timeout = getattr(runtime, "adapter_timeout_sec", 45.0)
+        msg_dict = ActionMessage(
+            game_id=runtime.game_id, step=step, role=runtime.role,
+            config_sha256=runtime.config_sha256, timestamp=_now(),
+            phase="commit", h_commit=h_commit,
+        ).to_dict()
+        known = {
+            "game_id": runtime.game_id,
+            "message_json": canonical_json(msg_dict),
+            "signature": sign_message(msg_dict, runtime.secret),
+        }
         try:
             return await asyncio.wait_for(
-                adapter.execute(_commit_action_description(runtime, step, h_commit)),
+                adapter.execute(_commit_action_description(runtime, step, h_commit), known_values=known),
                 timeout=adapter_timeout,
             )
         except asyncio.TimeoutError:
@@ -97,9 +107,20 @@ async def send_reveal(runtime: "PeerRuntime", step: int, reveal_payload: dict) -
     adapter = getattr(runtime, "protocol_adapter", None)
     if adapter is not None:
         adapter_timeout = getattr(runtime, "adapter_timeout_sec", 45.0)
+        msg_dict = ActionMessage(
+            game_id=runtime.game_id, step=step, role=runtime.role,
+            config_sha256=runtime.config_sha256, timestamp=_now(),
+            phase="reveal", move=reveal_payload["move"], hint=reveal_payload["hint"],
+            intent=reveal_payload["intent"], state_hash=reveal_payload["state_hash"],
+        ).to_dict()
+        known = {
+            "game_id": runtime.game_id,
+            "message_json": canonical_json(msg_dict),
+            "signature": sign_message(msg_dict, runtime.secret),
+        }
         try:
             return await asyncio.wait_for(
-                adapter.execute(_reveal_action_description(runtime, step, reveal_payload)),
+                adapter.execute(_reveal_action_description(runtime, step, reveal_payload), known_values=known),
                 timeout=adapter_timeout,
             )
         except asyncio.TimeoutError:
