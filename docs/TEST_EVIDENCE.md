@@ -9,7 +9,8 @@
 | Python | 3.13.14 |
 | Platform | Windows 11 Pro 10.0.26200 |
 | pytest | 9.1.1 |
-| Repo SHA | 0fd1c208d0955a0eb915153ec6336734a674684a (baseline) |
+| Baseline SHA | 0fd1c208d0955a0eb915153ec6336734a674684a |
+| Phase-0 SHA | e77d23a (fix: circular import + startup tests) |
 
 ### Startup smoke tests (Phase 0)
 
