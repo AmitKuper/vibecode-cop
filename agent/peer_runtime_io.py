@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -23,6 +24,16 @@ def _load_start_positions() -> tuple[list[int], list[int]]:
 
 def _now() -> str:
     return datetime.now(UTC).isoformat()
+
+
+def _git_commit() -> str:
+    """Resolve the current HEAD commit SHA for provenance tracking."""
+    try:
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], text=True, stderr=subprocess.DEVNULL
+        ).strip()
+    except Exception:
+        return "unknown"
 
 
 def save_game_state(game_dir: Path, state: dict) -> None:
@@ -57,6 +68,7 @@ def write_result(
     result = {
         "game_id": game_id, "role": role,
         "config_sha256": config_sha256, "group_name": group_name,
+        "git_commit": _git_commit(),
         "winner": state.get("winner"),
         "final_step": final_step,
         "abort_reason": state.get("abort_reason"),

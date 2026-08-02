@@ -115,10 +115,16 @@ class ProtocolAdapterCrew:
 
         if known_values:
             corrupted = [k for k in known_values if k in params and params[k] != known_values[k]]
+            missing = [k for k in known_values if k not in params]
             if corrupted:
                 logger.warning(
                     f"[ProtocolAdapter] LLM corrupted {corrupted} — restoring correct values"
                 )
+            if missing:
+                logger.warning(
+                    f"[ProtocolAdapter] LLM omitted {missing} — inserting correct values"
+                )
+            if corrupted or missing:
                 params.update(known_values)
 
         logger.info(f"[ProtocolAdapter] calling {self._tool_name} with {list(params.keys())}")

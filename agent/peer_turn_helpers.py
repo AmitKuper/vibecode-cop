@@ -170,17 +170,11 @@ async def select_move(runtime: "PeerRuntime", board_state: dict) -> str:
     except Exception as exc:
         logger.warning(f"[PeerTurn] RL move selection failed: {exc}")
 
-    # crewAI LLM fallback when RL unavailable
-    try:
-        move = await runtime._select_move_llm_async(runtime.game_id, obs)
-        logger.info(f"[PeerTurn] crewAI crew move: {move}")
-        return move
-    except Exception as exc:
-        logger.warning(f"[PeerTurn] crewAI fallback failed: {exc}")
-
-    # Final heuristic fallback
+    # Deterministic heuristic fallback — LLM is reserved for the language/deception layer,
+    # not movement. Use it on a cadence only when RL model IS available (see above).
     from agent.board import Board
     moves = Board.from_dict(board_state).get_legal_moves(runtime.role)
+    logger.debug(f"[PeerTurn] heuristic fallback move: {moves[0] if moves else 'STAY'}")
     return moves[0] if moves else "STAY"
 
 

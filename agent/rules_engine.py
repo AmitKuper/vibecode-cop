@@ -23,8 +23,12 @@ class RulesEngine:
 
     # Fixed scent field parameters (mandatory, not negotiable)
     SCENT_CENTER = 0.9
-    SCENT_DECAY = 0.10
-    SCENT_FIELD_RADIUS = 2  # 5×5 field = Chebyshev radius 2
+    SCENT_DECAY = 0.9          # per-turn global decay multiplier (new = 0.9 * old + emission)
+    SCENT_FIELD_RADIUS = 2     # 5×5 field = cells within Chebyshev radius 2
+
+    # Radial emission kernel keyed by squared Euclidean distance from the emitter.
+    # Matches the mandatory 5×5 specification matrix exactly.
+    _SCENT_KERNEL: dict[int, float] = {0: 0.90, 1: 0.62, 2: 0.42, 4: 0.20, 5: 0.14, 8: 0.04}
 
     def __init__(self, board: Board, max_turns: int = 35):
         """Initialize rules engine for a game.
@@ -59,53 +63,38 @@ class RulesEngine:
         return check_game_status(self.board, self.max_turns)
 
     def update_scent(self) -> None:
-        """Decay existing scent and emit new scent at thief's current position.
+        """Decay existing scent and additively emit new scent at thief's position.
 
-        Call this after apply_moves() each turn. Produces an accumulated,
-        decaying trail — the cop sees WHERE the thief has been, not WHERE
-        it is right now as a pixel-perfect coordinate.
+        Implements the specification: new_scent = 0.9 × old_scent + emission,
+        where emission is drawn from the mandatory 5×5 radial kernel.
         """
         n = self.board.grid_size
         tx, ty = self.board.thief_position
-
-        # 1. Decay all existing scent by one turn
         for y in range(n):
             for x in range(n):
+                dist_sq = (x - tx) ** 2 + (y - ty) ** 2
+                emission = self._SCENT_KERNEL.get(dist_sq, 0.0)
                 self._scent_grid[y][x] = round(
-                    self._scent_grid[y][x] * (1.0 - self.SCENT_DECAY), 4
+                    self.SCENT_DECAY * self._scent_grid[y][x] + emission, 4
                 )
-
-        # 2. Emit fresh scent at current thief position (take max to prevent
-        #    decaying below the just-emitted intensity within the same turn)
-        for y in range(n):
-            for x in range(n):
-                dist = max(abs(x - tx), abs(y - ty))
-                if dist <= self.SCENT_FIELD_RADIUS:
-                    emitted = round(self.SCENT_CENTER * (self.SCENT_DECAY ** dist), 4)
-                    self._scent_grid[y][x] = max(self._scent_grid[y][x], emitted)
 
     def get_scent_field(self) -> list[list[float]]:
         """Return a copy of the accumulated scent field for use in game protocol."""
         return [row[:] for row in self._scent_grid]
 
     def compute_scent_field(self) -> list[list[float]]:
-        """Compute the 5×5 scent field on the full board grid.
+        """Compute the instantaneous 5×5 radial emission at the thief's position.
 
-        The scent is centered on the thief's position. Intensity decays by
-        SCENT_DECAY per Chebyshev distance unit; cells outside SCENT_FIELD_RADIUS
-        have zero scent. This is the cop's primary sensing mechanism.
-
-        Returns:
-            grid_size × grid_size nested list, indexed [row][col] = [y][x].
+        Returns the kernel values without accumulation — useful for inspection
+        and conformance testing. The live accumulated field is in get_scent_field().
         """
         tx, ty = self.board.thief_position
         n = self.board.grid_size
         field = [[0.0] * n for _ in range(n)]
         for y in range(n):
             for x in range(n):
-                dist = max(abs(x - tx), abs(y - ty))
-                if dist <= self.SCENT_FIELD_RADIUS:
-                    field[y][x] = round(self.SCENT_CENTER * (self.SCENT_DECAY ** dist), 4)
+                dist_sq = (x - tx) ** 2 + (y - ty) ** 2
+                field[y][x] = self._SCENT_KERNEL.get(dist_sq, 0.0)
         return field
 
     def apply_moves(self, cop_move: str, thief_move: str) -> bool:

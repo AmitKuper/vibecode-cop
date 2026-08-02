@@ -83,7 +83,7 @@ def run_final_audit(
             details[f"step_{step}"] = "commitment_mismatch"
             logger.warning(f"[PeerAudit] Commitment mismatch at step {step} for {opponent_role}")
 
-    audit_ok = failed == 0
+    audit_ok = failed == 0 and len(h_commits) > 0
     logger.info(f"[PeerAudit] {game_id}: {verified} verified, {failed} failed (opp={opponent_role})")
     return audit_ok, details
 

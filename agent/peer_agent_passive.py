@@ -17,6 +17,20 @@ logger = logging.getLogger(__name__)
 
 _MOVE_ALIASES = {"N": "NORTH", "S": "SOUTH", "E": "EAST", "W": "WEST", "STAY": "STAY"}
 
+_HINT_TEMPLATES = {
+    "NORTH": ["heading north", "moving toward the top", "going up"],
+    "SOUTH": ["heading south", "moving toward the bottom", "going down"],
+    "EAST":  ["heading east", "moving right", "going east"],
+    "WEST":  ["heading west", "moving left", "going west"],
+    "STAY":  ["holding position", "staying put", "not moving"],
+}
+
+
+def _generate_hint(move: str, board) -> str:
+    import random
+    options = _HINT_TEMPLATES.get(move.upper(), [f"moving {move.lower()}"])
+    return random.choice(options)
+
 
 def init_passive_game(rt: "PeerRuntime", game_id: str, rules_ref: list) -> None:
     """Set up PeerRuntime state for a passive (thief) game. Idempotent per game_id."""
@@ -37,7 +51,7 @@ def init_passive_game(rt: "PeerRuntime", game_id: str, rules_ref: list) -> None:
 def handle_passive_commit(rt: "PeerRuntime", game_id: str, message, rules_ref: list) -> dict:
     """Generate own commitment when cop sends its commit (thief passive mode)."""
     from agent.mcp.crypto import create_commitment, hash_game_state
-    if not rt.game_id:
+    if rt.game_id != game_id:
         init_passive_game(rt, game_id, rules_ref)
 
     board_state = {
@@ -50,7 +64,7 @@ def handle_passive_commit(rt: "PeerRuntime", game_id: str, message, rules_ref: l
     if not move:
         legal = rt.board.get_legal_moves(rt.role)
         move = legal[0] if legal else "STAY"
-    hint = f"Moving {move}"
+    hint = _generate_hint(move, rt.board)
     intent = "truth"
     h_commit, nonce = create_commitment(
         game_id=game_id, step=message.step, role=rt.role,

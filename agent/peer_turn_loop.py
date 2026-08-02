@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING
 
 from agent.mcp.crypto import create_commitment, hash_game_state
 from agent.peer_audit import append_opponent_commit, append_opponent_reveal
+from agent.peer_agent_passive import _generate_hint
 from agent.peer_turn_helpers import (
     _MOVE_ALIASES,
     build_board_state,
@@ -46,7 +47,7 @@ async def run_peer_turn(
     board_state = build_board_state(runtime)
     state_hash = hash_game_state(board_state)
     move = await select_move(runtime, {**board_state, "scent_field": rules.get_scent_field()})
-    hint = f"Moving {move}"
+    hint = _generate_hint(move, runtime.board)
     intent = "truth"
 
     h_commit, nonce = create_commitment(

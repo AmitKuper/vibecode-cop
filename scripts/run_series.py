@@ -41,7 +41,8 @@ def _parse_args() -> argparse.Namespace:
     p.add_argument("--thief-url", default=os.getenv("THIEF_URL", "http://localhost:5001/mcp"))
     p.add_argument("--secret", default=os.getenv("SHARED_SECRET", ""))
     p.add_argument("--games-dir", default="cop/games")
-    p.add_argument("--n-gamelets", type=int, default=6)
+    p.add_argument("--n-gamelets", type=int, default=6,
+                   help="Number of gamelets (must be >= 6 per league rules; default: 6)")
     p.add_argument("--config", default="")
     return p.parse_args()
 
@@ -193,12 +194,15 @@ async def main() -> int:
 
     llm_dict = config.get("llm") or None
 
+    n_gamelets = max(args.n_gamelets, 6)  # league minimum is 6
+    if n_gamelets != args.n_gamelets:
+        logger.warning(f"[run_series] --n-gamelets {args.n_gamelets} is below minimum 6; using 6")
     result = await run_series(
         thief_url=thief_url,
         secret=secret,
         config_sha256=config_sha256,
         games_dir=games_dir,
-        n_gamelets=args.n_gamelets,
+        n_gamelets=n_gamelets,
         group_name=group_name,
         llm_dict=llm_dict,
     )
