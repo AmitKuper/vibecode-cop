@@ -418,7 +418,7 @@ class TestStartGameMessageDataclass:
 
 
 # ===========================================================================
-# 4. protocol.py — ProtocolStateMachine
+# 4. protocol.py — ProtocolStateMachine (16-state machine)
 # ===========================================================================
 
 
@@ -428,58 +428,55 @@ class TestProtocolStateMachine:
 
         sm = ProtocolStateMachine()
         assert sm.state == ProtocolState.IDLE
-        assert sm.current_phase is None
         assert sm.step == 0
 
-    def test_transition_idle_to_commit(self):
-        from agent.mcp.protocol import ProtocolPhase, ProtocolState, ProtocolStateMachine
+    def test_transition_idle_to_step0_negotiating(self):
+        from agent.mcp.protocol import ProtocolState, ProtocolStateMachine
 
         sm = ProtocolStateMachine()
-        sm.transition(ProtocolPhase.COMMIT)
-        assert sm.state == ProtocolState.HANDSHAKE
-        assert sm.current_phase == ProtocolPhase.COMMIT
+        sm.transition(ProtocolState.STEP0_NEGOTIATING)
+        assert sm.state == ProtocolState.STEP0_NEGOTIATING
 
     def test_can_transition_true(self):
-        from agent.mcp.protocol import ProtocolPhase, ProtocolStateMachine
+        from agent.mcp.protocol import ProtocolState, ProtocolStateMachine
 
         sm = ProtocolStateMachine()
-        ok, err = sm.can_transition(ProtocolPhase.COMMIT)
+        ok, err = sm.can_transition(ProtocolState.STEP0_NEGOTIATING)
         assert ok is True
         assert err is None
 
     def test_can_transition_false_illegal(self):
-        from agent.mcp.protocol import ProtocolPhase, ProtocolStateMachine
+        from agent.mcp.protocol import ProtocolState, ProtocolStateMachine
 
         sm = ProtocolStateMachine()
-        ok, err = sm.can_transition(ProtocolPhase.REVEAL)
+        ok, err = sm.can_transition(ProtocolState.REVEAL_SENT)
         assert ok is False
         assert err is not None
 
     def test_transition_raises_on_illegal(self):
-        from agent.mcp.protocol import ProtocolPhase, ProtocolStateMachine
+        from agent.mcp.protocol import ProtocolState, ProtocolStateMachine
 
         sm = ProtocolStateMachine()
         with pytest.raises(ValueError):
-            sm.transition(ProtocolPhase.REVEAL)
+            sm.transition(ProtocolState.REVEAL_SENT)
 
-    def test_transition_commit_to_ack_moves_to_playing(self):
-        from agent.mcp.protocol import ProtocolPhase, ProtocolState, ProtocolStateMachine
+    def test_transition_to_ready(self):
+        from agent.mcp.protocol import ProtocolState, ProtocolStateMachine
 
         sm = ProtocolStateMachine()
-        sm.transition(ProtocolPhase.COMMIT)  # IDLE -> HANDSHAKE
-        sm.transition(ProtocolPhase.ACK)  # HANDSHAKE -> PLAYING
-        assert sm.state == ProtocolState.PLAYING
+        sm.transition(ProtocolState.STEP0_NEGOTIATING)
+        sm.transition(ProtocolState.READY)
+        assert sm.state == ProtocolState.READY
         assert sm.step == 0
 
     def test_advance_step(self):
-        from agent.mcp.protocol import ProtocolPhase, ProtocolStateMachine
+        from agent.mcp.protocol import ProtocolState, ProtocolStateMachine
 
         sm = ProtocolStateMachine()
-        sm.transition(ProtocolPhase.COMMIT)
-        sm.transition(ProtocolPhase.ACK)
+        sm.transition(ProtocolState.STEP0_NEGOTIATING)
+        sm.transition(ProtocolState.READY)
         sm.advance_step()
         assert sm.step == 1
-        assert sm.current_phase is None
 
     def test_to_dict(self):
         from agent.mcp.protocol import ProtocolStateMachine
@@ -487,33 +484,29 @@ class TestProtocolStateMachine:
         sm = ProtocolStateMachine()
         d = sm.to_dict()
         assert d["state"] == "idle"
-        assert d["phase"] is None
         assert d["step"] == 0
 
     def test_from_dict(self):
-        from agent.mcp.protocol import ProtocolPhase, ProtocolState, ProtocolStateMachine
+        from agent.mcp.protocol import ProtocolState, ProtocolStateMachine
 
-        data = {"state": "playing", "phase": "commit", "step": 3}
+        data = {"state": "computing_move", "step": 3}
         sm = ProtocolStateMachine.from_dict(data)
-        assert sm.state == ProtocolState.PLAYING
-        assert sm.current_phase == ProtocolPhase.COMMIT
+        assert sm.state == ProtocolState.COMPUTING_MOVE
         assert sm.step == 3
 
     def test_from_dict_no_phase(self):
-        from agent.mcp.protocol import ProtocolStateMachine
+        from agent.mcp.protocol import ProtocolState, ProtocolStateMachine
 
-        data = {"state": "idle", "phase": None, "step": 0}
+        data = {"state": "idle", "step": 0}
         sm = ProtocolStateMachine.from_dict(data)
-        assert sm.current_phase is None
+        assert sm.state == ProtocolState.IDLE
 
-    def test_transition_to_final_audit(self):
-        from agent.mcp.protocol import ProtocolPhase, ProtocolState, ProtocolStateMachine
+    def test_transition_to_auditing(self):
+        from agent.mcp.protocol import ProtocolState, ProtocolStateMachine
 
         sm = ProtocolStateMachine()
-        # Set up auditing state directly
-        sm.state = ProtocolState.AUDITING
-        sm.current_phase = ProtocolPhase.REVEAL
-        sm.transition(ProtocolPhase.FINAL_AUDIT)
+        sm.state = ProtocolState.STEP_VERIFIED
+        sm.transition(ProtocolState.AUDITING)
         assert sm.state == ProtocolState.AUDITING
 
 
@@ -926,31 +919,43 @@ class TestAgentMCPServer:
 
 
 class TestServerHandlers:
-    """Test handle_start_game and handle_action directly."""
+    """Test handle_start_game and handle_action directly.
 
-    def _signed_start_game_json(self, secret, config_sha256):
+    Each test uses a unique game_id (prefixed with the test name) to avoid
+    session-registry state leaking between tests.
+    """
+
+    def _signed_start_game_json(self, secret, config_sha256, game_id="g1"):
         from agent.mcp.crypto import canonical_json, sign_message
 
-        msg = _make_start_game_msg(config_sha256=config_sha256)
+        msg = _make_start_game_msg(config_sha256=config_sha256, game_id=game_id)
         msg_dict = msg.to_dict()
         message_json = canonical_json(msg_dict)
         signature = sign_message(msg_dict, secret)
         return message_json, signature, msg.game_id
 
-    def _signed_action_json(self, secret, config_sha256, phase="commit", **kwargs):
+    def _signed_action_json(self, secret, config_sha256, phase="commit", game_id="g1", **kwargs):
         from agent.mcp.crypto import canonical_json, sign_message
 
-        msg = _make_action_msg(config_sha256=config_sha256, phase=phase, **kwargs)
+        msg = _make_action_msg(config_sha256=config_sha256, phase=phase, game_id=game_id, **kwargs)
         msg_dict = msg.to_dict()
         message_json = canonical_json(msg_dict)
         signature = sign_message(msg_dict, secret)
         return message_json, signature
 
+    def _seed_session(self, game_id: str, state):
+        """Pre-seed session registry to a given state (bypasses normal transitions)."""
+        from agent.mcp.session_registry import get_registry
+
+        entry = get_registry().get_or_create(game_id, 0, "cop")
+        entry.sm.state = state
+
     def test_handle_start_game_success(self, tmp_path):
         from agent.mcp.server_handlers import handle_start_game
 
         secret = "test-secret"
-        message_json, signature, game_id = self._signed_start_game_json(secret, SHA256)
+        gid = "sg_success"
+        message_json, signature, game_id = self._signed_start_game_json(secret, SHA256, gid)
         result = handle_start_game("cop", secret, SHA256, tmp_path, {}, {}, message_json, signature)
         assert result["ok"] is True
         assert result["game_id"] == game_id
@@ -959,7 +964,8 @@ class TestServerHandlers:
         from agent.mcp.server_handlers import handle_start_game
 
         secret = "test-secret"
-        message_json, _, game_id = self._signed_start_game_json(secret, SHA256)
+        gid = "sg_badsig"
+        message_json, _, game_id = self._signed_start_game_json(secret, SHA256, gid)
         result = handle_start_game("cop", secret, SHA256, tmp_path, {}, {}, message_json, "badsig")
         assert result["ok"] is False
         assert "Signature" in result["error"]
@@ -969,7 +975,8 @@ class TestServerHandlers:
 
         secret = "test-secret"
         other_sha = "b" * 64
-        message_json, signature, game_id = self._signed_start_game_json(secret, SHA256)
+        gid = "sg_cfgmismatch"
+        message_json, signature, game_id = self._signed_start_game_json(secret, SHA256, gid)
         result = handle_start_game(
             "cop", secret, other_sha, tmp_path, {}, {}, message_json, signature
         )
@@ -980,7 +987,8 @@ class TestServerHandlers:
         from agent.mcp.server_handlers import handle_start_game
 
         secret = "test-secret"
-        message_json, signature, game_id = self._signed_start_game_json(secret, SHA256)
+        gid = "sg_callback"
+        message_json, signature, game_id = self._signed_start_game_json(secret, SHA256, gid)
         cb_result = {"ok": True, "game_id": game_id, "custom": "value"}
         callbacks = {"on_start_game": lambda msg: cb_result}
         result = handle_start_game(
@@ -995,13 +1003,16 @@ class TestServerHandlers:
         assert result["ok"] is False
 
     def test_handle_action_success(self, tmp_path):
+        from agent.mcp.protocol import ProtocolState
         from agent.mcp.server_handlers import handle_action
 
         secret = "test-secret"
+        gid = "ha_success"
+        self._seed_session(gid, ProtocolState.COMPUTING_MOVE)
         game_logs = {}
-        message_json, signature = self._signed_action_json(secret, SHA256)
+        message_json, signature = self._signed_action_json(secret, SHA256, game_id=gid)
         result = handle_action(
-            "cop", secret, SHA256, tmp_path, game_logs, {}, "g1", message_json, signature
+            "cop", secret, SHA256, tmp_path, game_logs, {}, gid, message_json, signature
         )
         assert result["ok"] is True
         assert result["phase"] == "commit"
@@ -1010,72 +1021,89 @@ class TestServerHandlers:
         from agent.mcp.server_handlers import handle_action
 
         secret = "test-secret"
-        message_json, _ = self._signed_action_json(secret, SHA256)
-        result = handle_action(
-            "cop", secret, SHA256, tmp_path, {}, {}, "g1", message_json, "badsig"
-        )
+        gid = "ha_badsig"
+        message_json, _ = self._signed_action_json(secret, SHA256, game_id=gid)
+        result = handle_action("cop", secret, SHA256, tmp_path, {}, {}, gid, message_json, "badsig")
         assert result["ok"] is False
 
     def test_handle_action_config_mismatch(self, tmp_path):
         from agent.mcp.server_handlers import handle_action
 
         secret = "test-secret"
-        message_json, signature = self._signed_action_json(secret, SHA256)
+        gid = "ha_cfgmismatch"
+        message_json, signature = self._signed_action_json(secret, SHA256, game_id=gid)
         result = handle_action(
-            "cop", secret, "b" * 64, tmp_path, {}, {}, "g1", message_json, signature
+            "cop", secret, "b" * 64, tmp_path, {}, {}, gid, message_json, signature
         )
         assert result["ok"] is False
         assert "mismatch" in result["error"].lower()
 
     def test_handle_action_with_on_action_callback(self, tmp_path):
+        from agent.mcp.protocol import ProtocolState
         from agent.mcp.server_handlers import handle_action
 
         secret = "test-secret"
-        message_json, signature = self._signed_action_json(secret, SHA256)
+        gid = "ha_callback"
+        self._seed_session(gid, ProtocolState.COMPUTING_MOVE)
+        message_json, signature = self._signed_action_json(secret, SHA256, game_id=gid)
         cb_result = {"ok": True, "custom": "cb_value"}
-        callbacks = {"on_action": lambda gid, msg: cb_result}
+        callbacks = {"on_action": lambda gid2, msg: cb_result}
         result = handle_action(
-            "cop", secret, SHA256, tmp_path, {}, callbacks, "g1", message_json, signature
+            "cop", secret, SHA256, tmp_path, {}, callbacks, gid, message_json, signature
         )
         assert result.get("custom") == "cb_value"
 
     def test_handle_action_reveal_phase(self, tmp_path):
+        from agent.mcp.protocol import ProtocolState
         from agent.mcp.server_handlers import handle_action
 
         secret = "test-secret"
-        message_json, signature = self._signed_action_json(secret, SHA256, phase="reveal", move="N")
+        gid = "ha_reveal"
+        self._seed_session(gid, ProtocolState.BOTH_COMMITTED)
+        message_json, signature = self._signed_action_json(
+            secret, SHA256, phase="reveal", move="N", game_id=gid
+        )
         result = handle_action(
-            "cop", secret, SHA256, tmp_path, {}, {}, "g1", message_json, signature
+            "cop", secret, SHA256, tmp_path, {}, {}, gid, message_json, signature
         )
         assert result["ok"] is True
         assert result["phase"] == "reveal"
 
     def test_handle_action_final_audit_phase(self, tmp_path):
+        from agent.mcp.protocol import ProtocolState
         from agent.mcp.server_handlers import handle_action
 
         secret = "test-secret"
+        gid = "ha_finalaudit"
+        self._seed_session(gid, ProtocolState.AUDITING)
         message_json, signature = self._signed_action_json(
-            secret, SHA256, phase="final_audit", nonces={"0": "abc"}
+            secret, SHA256, phase="final_audit", nonces={"0": "abc"}, game_id=gid
         )
         result = handle_action(
-            "cop", secret, SHA256, tmp_path, {}, {}, "g1", message_json, signature
+            "cop", secret, SHA256, tmp_path, {}, {}, gid, message_json, signature
         )
         assert result["ok"] is True
 
     def test_handle_action_creates_gamelog_if_missing(self, tmp_path):
+        from agent.mcp.protocol import ProtocolState
         from agent.mcp.server_handlers import handle_action
 
         secret = "test-secret"
+        gid = "ha_gamelog"
+        self._seed_session(gid, ProtocolState.COMPUTING_MOVE)
         game_logs = {}
-        message_json, signature = self._signed_action_json(secret, SHA256)
-        handle_action("cop", secret, SHA256, tmp_path, game_logs, {}, "g1", message_json, signature)
-        assert "g1" in game_logs
+        message_json, signature = self._signed_action_json(secret, SHA256, game_id=gid)
+        handle_action("cop", secret, SHA256, tmp_path, game_logs, {}, gid, message_json, signature)
+        assert gid in game_logs
 
     def test_handle_start_game_role_not_in_roles(self, tmp_path):
         from agent.mcp.crypto import canonical_json, sign_message
         from agent.mcp.server_handlers import handle_start_game
 
-        msg = _make_start_game_msg(config_sha256=SHA256, roles={"cop": "Alice", "thief": "Bob"})
+        gid = "sg_badrole"
+        msg = _make_start_game_msg(
+            config_sha256=SHA256, roles={"cop": "Alice", "thief": "Bob"}, game_id=gid
+        )
         msg_dict = msg.to_dict()
         message_json = canonical_json(msg_dict)
         signature = sign_message(msg_dict, "sec")

@@ -1,4 +1,6 @@
-"""Protocol state machine and phase management."""
+"""Protocol state machine — 16-state per-step lifecycle."""
+
+from __future__ import annotations
 
 import logging
 from enum import Enum
@@ -8,11 +10,141 @@ logger = logging.getLogger(__name__)
 
 class ProtocolState(Enum):
     IDLE = "idle"
-    HANDSHAKE = "handshake"
-    PLAYING = "playing"
+    STEP0_NEGOTIATING = "step0_negotiating"
+    READY = "ready"
+    COMPUTING_MOVE = "computing_move"
+    COMMIT_SENT = "commit_sent"
+    COMMIT_RECEIVED = "commit_received"
+    BOTH_COMMITTED = "both_committed"
+    REVEAL_SENT = "reveal_sent"
+    REVEAL_RECEIVED = "reveal_received"
+    STEP_VERIFIED = "step_verified"
     AUDITING = "auditing"
+    RESULT_AGREEMENT = "result_agreement"
+    REPORTING = "reporting"
     DONE = "done"
+    TECHNICAL_LOSS = "technical_loss"
     ABORTED = "aborted"
+
+
+# Terminal states that reject all further transitions.
+_TERMINAL = frozenset({ProtocolState.DONE, ProtocolState.TECHNICAL_LOSS, ProtocolState.ABORTED})
+
+# Legal (from_state, to_state) pairs.
+# ABORTED and TECHNICAL_LOSS are reachable from any non-terminal state (handled separately).
+_LEGAL: frozenset[tuple[ProtocolState, ProtocolState]] = frozenset(
+    {
+        # Session setup
+        (ProtocolState.IDLE, ProtocolState.STEP0_NEGOTIATING),
+        (ProtocolState.STEP0_NEGOTIATING, ProtocolState.READY),
+        # Step start
+        (ProtocolState.READY, ProtocolState.COMPUTING_MOVE),
+        (ProtocolState.STEP_VERIFIED, ProtocolState.COMPUTING_MOVE),  # next step
+        # Commit phase — either side may commit first
+        (ProtocolState.COMPUTING_MOVE, ProtocolState.COMMIT_SENT),
+        (ProtocolState.COMPUTING_MOVE, ProtocolState.COMMIT_RECEIVED),
+        (ProtocolState.COMMIT_SENT, ProtocolState.BOTH_COMMITTED),
+        (ProtocolState.COMMIT_RECEIVED, ProtocolState.BOTH_COMMITTED),
+        # Reveal phase — either side may reveal first
+        (ProtocolState.BOTH_COMMITTED, ProtocolState.REVEAL_SENT),
+        (ProtocolState.BOTH_COMMITTED, ProtocolState.REVEAL_RECEIVED),
+        (ProtocolState.REVEAL_SENT, ProtocolState.STEP_VERIFIED),
+        (ProtocolState.REVEAL_RECEIVED, ProtocolState.STEP_VERIFIED),
+        # Final audit flow
+        (ProtocolState.STEP_VERIFIED, ProtocolState.AUDITING),
+        (ProtocolState.AUDITING, ProtocolState.RESULT_AGREEMENT),
+        (ProtocolState.RESULT_AGREEMENT, ProtocolState.REPORTING),
+        (ProtocolState.REPORTING, ProtocolState.DONE),
+    }
+)
+
+
+class ProtocolStateMachine:
+    """Per-session protocol state machine.
+
+    Guards that actions arrive in the correct order within one gamelet.
+    Thread-safe when callers hold the accompanying session lock.
+    """
+
+    def __init__(self) -> None:
+        self.state = ProtocolState.IDLE
+        self.step = 0
+
+    # ------------------------------------------------------------------
+    # Transition API
+    # ------------------------------------------------------------------
+
+    def can_transition(self, to_state: ProtocolState) -> tuple[bool, str | None]:
+        """Return (ok, error) without mutating state."""
+        if self.state in _TERMINAL:
+            return False, f"State {self.state.value} is terminal — no further transitions"
+        if to_state in (ProtocolState.ABORTED, ProtocolState.TECHNICAL_LOSS):
+            return True, None
+        if (self.state, to_state) not in _LEGAL:
+            return (
+                False,
+                f"Illegal transition: {self.state.value} → {to_state.value}",
+            )
+        return True, None
+
+    def transition(self, to_state: ProtocolState) -> None:
+        """Mutate state. Raises ValueError if transition is illegal."""
+        ok, err = self.can_transition(to_state)
+        if not ok:
+            raise ValueError(err)
+        prev = self.state
+        self.state = to_state
+        logger.info("Protocol: %s → %s (step=%d)", prev.value, to_state.value, self.step)
+
+    def advance_step(self) -> None:
+        """Increment step counter after STEP_VERIFIED → COMPUTING_MOVE."""
+        self.step += 1
+        logger.debug("Step advanced to %d", self.step)
+
+    # ------------------------------------------------------------------
+    # Convenience guards for server_handlers
+    # ------------------------------------------------------------------
+
+    def guard_commit_received(self) -> tuple[bool, str | None]:
+        """Check whether receiving a peer commit is legal now."""
+        if self.state == ProtocolState.COMPUTING_MOVE:
+            return True, None
+        if self.state == ProtocolState.COMMIT_SENT:
+            return True, None
+        return False, f"Received commit in unexpected state {self.state.value}"
+
+    def guard_reveal_received(self) -> tuple[bool, str | None]:
+        """Check whether receiving a peer reveal is legal now."""
+        if self.state == ProtocolState.BOTH_COMMITTED:
+            return True, None
+        if self.state == ProtocolState.REVEAL_SENT:
+            return True, None
+        return False, f"Received reveal in unexpected state {self.state.value}"
+
+    def guard_final_audit_received(self) -> tuple[bool, str | None]:
+        if self.state == ProtocolState.AUDITING:
+            return True, None
+        return False, f"Received final_audit in unexpected state {self.state.value}"
+
+    # ------------------------------------------------------------------
+    # Serialization
+    # ------------------------------------------------------------------
+
+    def to_dict(self) -> dict:
+        return {"state": self.state.value, "step": self.step}
+
+    @classmethod
+    def from_dict(cls, data: dict) -> ProtocolStateMachine:
+        sm = cls()
+        sm.state = ProtocolState(data["state"])
+        sm.step = data.get("step", 0)
+        return sm
+
+
+# ---------------------------------------------------------------------------
+# Backwards-compatibility shims — old callers used ProtocolPhase and
+# StepPhaseTracker.  Keep them importable so existing tests don't break.
+# ---------------------------------------------------------------------------
 
 
 class ProtocolPhase(Enum):
@@ -23,102 +155,6 @@ class ProtocolPhase(Enum):
     ABORT = "abort"
 
 
-# Legal phase transitions (from state, from phase → to_phase)
-_LEGAL_TRANSITIONS = {
-    ProtocolState.IDLE: {
-        None: [ProtocolPhase.COMMIT],
-    },
-    ProtocolState.HANDSHAKE: {
-        ProtocolPhase.COMMIT: [ProtocolPhase.ACK],
-    },
-    ProtocolState.PLAYING: {
-        ProtocolPhase.ACK: [ProtocolPhase.COMMIT, ProtocolPhase.REVEAL],
-        ProtocolPhase.COMMIT: [ProtocolPhase.ACK],
-        ProtocolPhase.REVEAL: [ProtocolPhase.ACK],
-    },
-    ProtocolState.AUDITING: {
-        ProtocolPhase.REVEAL: [ProtocolPhase.FINAL_AUDIT],
-        ProtocolPhase.FINAL_AUDIT: [ProtocolPhase.ACK],
-    },
-    ProtocolState.DONE: {None: []},
-    ProtocolState.ABORTED: {None: []},
-}
-
-
-class ProtocolStateMachine:
-    """Manages protocol state and phase transitions."""
-
-    def __init__(self):
-        self.state = ProtocolState.IDLE
-        self.current_phase: ProtocolPhase | None = None
-        self.step = 0
-
-    def can_transition(self, to_phase: ProtocolPhase) -> tuple[bool, str | None]:
-        """Check if transition to to_phase is legal. Returns (is_legal, error_message)."""
-        if self.state not in _LEGAL_TRANSITIONS:
-            return False, f"Unknown state: {self.state}"
-        legal_phases = _LEGAL_TRANSITIONS[self.state].get(self.current_phase)
-        if legal_phases is None:
-            return (
-                False,
-                f"No transitions defined for state={self.state}, phase={self.current_phase}",
-            )
-        if to_phase not in legal_phases:
-            cur = self.current_phase.value if self.current_phase else "None"
-            return False, f"Illegal transition: {self.state.value}/{cur} → {to_phase.value}"
-        return True, None
-
-    def transition(self, to_phase: ProtocolPhase) -> None:
-        """Transition to new phase. Raises ValueError if illegal."""
-        is_legal, error = self.can_transition(to_phase)
-        if not is_legal:
-            raise ValueError(error)
-        old_phase = self.current_phase
-        old_state = self.state
-        self.current_phase = to_phase
-
-        if to_phase == ProtocolPhase.COMMIT:
-            if self.state == ProtocolState.IDLE:
-                self.state = ProtocolState.HANDSHAKE
-            elif self.state == ProtocolState.HANDSHAKE:
-                self.state = ProtocolState.PLAYING
-                self.step = 0
-        elif to_phase == ProtocolPhase.ACK:
-            if self.state == ProtocolState.HANDSHAKE:
-                self.state = ProtocolState.PLAYING
-                self.step = 0
-        elif to_phase == ProtocolPhase.FINAL_AUDIT:
-            self.state = ProtocolState.AUDITING
-        elif to_phase == ProtocolPhase.ABORT:
-            self.state = ProtocolState.ABORTED
-
-        logger.info(
-            f"Protocol transition: {old_state.value}/{old_phase.value if old_phase else 'None'} → "
-            f"{self.state.value}/{to_phase.value}"
-        )
-
-    def advance_step(self) -> None:
-        self.step += 1
-        self.current_phase = None
-        logger.debug(f"Advanced to step {self.step}")
-
-    def to_dict(self) -> dict:
-        return {
-            "state": self.state.value,
-            "phase": self.current_phase.value if self.current_phase else None,
-            "step": self.step,
-        }
-
-    @classmethod
-    def from_dict(cls, data: dict) -> "ProtocolStateMachine":
-        sm = cls()
-        sm.state = ProtocolState(data["state"])
-        sm.current_phase = ProtocolPhase(data["phase"]) if data.get("phase") else None
-        sm.step = data.get("step", 0)
-        return sm
-
-
-# Re-export StepPhaseTracker for backwards compatibility
 from agent.mcp.protocol_phases import StepPhaseTracker  # noqa: E402
 
 __all__ = [
