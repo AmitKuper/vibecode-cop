@@ -14,7 +14,7 @@ import asyncio
 import logging
 from typing import TYPE_CHECKING
 
-from agent.language.hints import generate_hint as _generate_hint
+from agent.mcp.coordinator import gamelet_from_game_id, get_coordinator
 from agent.mcp.crypto import create_commitment, hash_game_state
 from agent.peer_audit import append_opponent_commit, append_opponent_reveal
 from agent.peer_turn_helpers import (
@@ -25,7 +25,6 @@ from agent.peer_turn_helpers import (
     send_commit,
     send_reveal,
 )
-from agent.rl.env_helpers import apply_place_action
 from agent.rules_engine import GameOutcome, RulesEngine
 
 if TYPE_CHECKING:
@@ -44,10 +43,17 @@ async def run_peer_turn(
     Returns:
         (winner_or_None, abort_reason_or_None) — non-None means game over.
     """
+    gamelet = gamelet_from_game_id(runtime.game_id)
+    coord = get_coordinator()
+
     board_state = build_board_state(runtime)
     state_hash = hash_game_state(board_state)
+
+    # Advance SM: READY/STEP_VERIFIED → COMPUTING_MOVE
+    coord.begin_step(runtime.game_id, gamelet, runtime.role, step)
+
     move = await select_move(runtime, {**board_state, "scent_field": rules.get_scent_field()})
-    hint = _generate_hint(move)
+    hint = f"Moving {move}"
     intent = "truth"
 
     h_commit, nonce = create_commitment(
@@ -74,12 +80,21 @@ async def run_peer_turn(
 
     opponent_resp = await send_commit(runtime, step, h_commit)
     if not opponent_resp:
+        coord.on_technical_loss(
+            runtime.game_id, gamelet, runtime.role, reason=f"COMMIT send failed at step {step}"
+        )
         return None, f"COMMIT exchange failed at step {step} (send error)"
     opp_h_commit = opponent_resp.get("h_commit")
     if not opp_h_commit:
+        coord.on_technical_loss(
+            runtime.game_id, gamelet, runtime.role, reason=f"No h_commit in response at step {step}"
+        )
         return None, f"Opponent did not return h_commit at step {step}"
     append_opponent_commit(runtime.game_dir, step, opp_h_commit)
     logger.debug(f"[PeerTurn] step={step} stored opponent h_commit={opp_h_commit[:12]}...")
+
+    # Advance SM: COMPUTING_MOVE → COMMIT_SENT → BOTH_COMMITTED
+    coord.on_commit_exchange_complete(runtime.game_id, gamelet, runtime.role, step)
 
     reveal_payload = {
         "move": move,
@@ -90,10 +105,22 @@ async def run_peer_turn(
     }
     opp_reveal_resp = await send_reveal(runtime, step, reveal_payload)
     if not opp_reveal_resp:
+        coord.on_technical_loss(
+            runtime.game_id, gamelet, runtime.role, reason=f"REVEAL send failed at step {step}"
+        )
         return None, f"REVEAL exchange failed at step {step} (send error)"
     opp_move_short = opp_reveal_resp.get("move")
     if not opp_move_short:
+        coord.on_technical_loss(
+            runtime.game_id,
+            gamelet,
+            runtime.role,
+            reason=f"No move in REVEAL response at step {step}",
+        )
         return None, f"Opponent did not include move in REVEAL at step {step}"
+
+    # Advance SM: BOTH_COMMITTED → REVEAL_SENT → STEP_VERIFIED
+    coord.on_reveal_exchange_complete(runtime.game_id, gamelet, runtime.role, step)
 
     opp_reveal = {
         "move": opp_move_short,
@@ -106,18 +133,6 @@ async def run_peer_turn(
     my_move = _MOVE_ALIASES.get(move, move)
     opp_move = _MOVE_ALIASES.get(opp_move_short, opp_move_short)
     cop_move, thief_move = (my_move, opp_move) if runtime.role == "cop" else (opp_move, my_move)
-
-    # Handle barrier placement: PLACE_* places a barrier then cop stays.
-    if cop_move.startswith("PLACE_"):
-        barriers_remaining = getattr(runtime, "_cop_barriers_remaining", 14)
-        new_remaining = apply_place_action(
-            runtime.board, cop_move, runtime.board.grid_size, barriers_remaining
-        )
-        runtime._cop_barriers_remaining = new_remaining
-        cop_move = "STAY"
-        if list(runtime.board.thief_position) in runtime.board.barriers:
-            runtime.board.turn += 1
-            return "cop", None
 
     if not rules.validate_move("cop", cop_move):
         logger.warning(f"[PeerTurn] Invalid cop move {cop_move!r} at step {step}, using STAY")

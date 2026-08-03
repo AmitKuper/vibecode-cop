@@ -81,6 +81,8 @@ def handle_passive_commit(rt: PeerRuntime, game_id: str, message, rules_ref: lis
         f"[PeerAgentRuntime/{rt.role}] Committed step={message.step} "
         f"move={move} h={h_commit[:12]}..."
     )
+    # NOTE: coordinator advance (COMMIT_RECEIVED → BOTH_COMMITTED) is handled
+    # in server_handlers.handle_action() after this callback returns h_commit.
     return {"ok": True, "phase": "commit", "h_commit": h_commit}
 
 

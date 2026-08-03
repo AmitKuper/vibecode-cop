@@ -11,6 +11,7 @@ from pathlib import Path
 
 from agent.board import Board
 from agent.mcp.client import GameMCPClient
+from agent.mcp.coordinator import gamelet_from_game_id, get_coordinator
 from agent.peer_runtime_audit import count_opponent_commits, do_final_audit, notify_game_end
 from agent.peer_runtime_io import (
     _load_start_positions,
@@ -38,10 +39,11 @@ except Exception as _crew_import_err:
 
         def _build_observation(self, gs):
             role = getattr(self, "role", "cop")
-            if role == "cop":
-                pos = gs.get("cop_position", [0, 0])
-            else:
-                pos = gs.get("thief_position", [3, 3])
+            pos = (
+                gs.get("cop_position", [0, 0])
+                if role == "cop"
+                else gs.get("thief_position", [3, 3])
+            )
             return {
                 "own_position": pos,
                 "turn": gs.get("turn", 0),
@@ -51,12 +53,14 @@ except Exception as _crew_import_err:
             }
 
         def _short_move(self, long):
-            _map = {"NORTH": "N", "SOUTH": "S", "EAST": "E", "WEST": "W", "STAY": "STAY"}
-            return _map.get(long, long)
+            return {"NORTH": "N", "SOUTH": "S", "EAST": "E", "WEST": "W", "STAY": "STAY"}.get(
+                long, long
+            )
 
         def _long_move(self, short):
-            _map = {"N": "NORTH", "S": "SOUTH", "E": "EAST", "W": "WEST", "STAY": "STAY"}
-            return _map.get(short, short)
+            return {"N": "NORTH", "S": "SOUTH", "E": "EAST", "W": "WEST", "STAY": "STAY"}.get(
+                short, short
+            )
 
 
 class PeerRuntime(_CrewMixin):
@@ -72,6 +76,7 @@ class PeerRuntime(_CrewMixin):
         max_turns: int = 35,
         group_name: str = "unknown",
         llm_dict: dict | None = None,
+        my_endpoint: str = "",
     ):
         if role not in ("cop", "thief"):
             raise ValueError(f"role must be 'cop' or 'thief', got {role!r}")
@@ -82,6 +87,7 @@ class PeerRuntime(_CrewMixin):
         self.max_turns = max_turns
         self.group_name = group_name
         self.games_dir = Path(games_dir)
+        self.my_endpoint = my_endpoint or "http://localhost:5000/mcp"
         self.opponent_client = GameMCPClient(opponent_url, secret)
         cop_start, thief_start = _load_start_positions()
         self.game_id: str = ""
@@ -109,6 +115,7 @@ class PeerRuntime(_CrewMixin):
         )
         logger.info(f"[PeerRuntime/{self.role}] Starting game {game_id}")
         await self._init_protocol_adapter()
+        await self._send_start_game(game_id)
         rules = RulesEngine(self.board, max_turns=self.max_turns)
         winner, abort_reason, final_step = await run_peer_turn_loop(self, rules, self.max_turns)
 
@@ -178,6 +185,39 @@ class PeerRuntime(_CrewMixin):
         }
         logger.info(f"[PeerRuntime/{self.role}] Game {game_id} done: {result}")
         return result
+
+    async def _send_start_game(self, game_id: str) -> None:
+        """Send start_game handshake to opponent and advance local SM to READY.
+
+        This is mandatory before the first COMMIT.  If the opponent rejects or
+        the call fails, we log a warning but do NOT abort — the turn loop will
+        fail cleanly at the first COMMIT with a protocol violation.
+        """
+        from agent.mcp.messages import StartGameMessage
+
+        gamelet = gamelet_from_game_id(game_id)
+        msg = StartGameMessage(
+            game_id=game_id,
+            roles={"cop": self.group_name, "thief": "opponent"},
+            config_sha256=self.config_sha256,
+            protocol_version="1.0",
+            endpoint=self.my_endpoint,
+            timestamp=_now(),
+        )
+        try:
+            resp = await self.opponent_client.start_game(msg)
+            if resp.get("ok"):
+                get_coordinator().on_handshake_complete(game_id, gamelet, self.role)
+                logger.info(
+                    f"[PeerRuntime/{self.role}] start_game handshake complete for {game_id}"
+                )
+            else:
+                logger.warning(f"[PeerRuntime/{self.role}] start_game rejected by opponent: {resp}")
+        except Exception as exc:
+            logger.warning(
+                f"[PeerRuntime/{self.role}] start_game send failed: {exc} "
+                "— proceeding without confirmed handshake"
+            )
 
     def _store_my_commit(self, step: int, payload: dict) -> None:
         self._my_commits[step] = payload
