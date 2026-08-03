@@ -21,8 +21,22 @@ async def do_final_audit(
     opponent_role: str,
     last_step: int,
     now_fn,
+    *,
+    gamelet: int = 0,
 ) -> tuple[bool, dict]:
-    """Send FINAL_AUDIT to opponent, receive their nonces, verify locally."""
+    """Send FINAL_AUDIT to opponent, receive their nonces, verify locally.
+
+    On the active (cop) side, advance the ProtocolCoordinator through
+    on_audit_begin → on_final_audit_complete → on_done so that the SM
+    reaches DONE rather than staying in STEP_VERIFIED indefinitely.
+    """
+    from agent.mcp.coordinator import get_coordinator
+
+    coord = get_coordinator()
+
+    # Advance SM: STEP_VERIFIED → AUDITING (active side)
+    coord.on_audit_begin(game_id, gamelet, role)
+
     my_nonces = {str(s): p["nonce"] for s, p in my_commits.items()}
     msg = ActionMessage(
         game_id=game_id,
@@ -43,6 +57,14 @@ async def do_final_audit(
     opp_nonces = {int(k): v for k, v in opp_nonces_raw.items()}
     audit_ok, details = run_final_audit(game_dir, game_id, opponent_role, opp_nonces)
     logger.info(f"[PeerRuntime/{role}] Final audit: ok={audit_ok} details={details}")
+
+    if audit_ok:
+        # Advance SM: AUDITING → RESULT_AGREEMENT → DONE
+        coord.on_final_audit_complete(game_id, gamelet, role)
+        coord.on_done(game_id, gamelet, role)
+    else:
+        coord.on_technical_loss(game_id, gamelet, role, reason="audit_failed")
+
     return audit_ok, details
 
 

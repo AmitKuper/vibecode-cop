@@ -27,6 +27,12 @@ class SessionEntry:
     commit_sent_step: int = -1
     reveal_sent_step: int = -1
 
+    # Fix 5: Track the last accepted inbound step number for commit and reveal.
+    # Initialized to -1 (no steps accepted yet). Any commit/reveal with
+    # step <= last_accepted_* is rejected as an out-of-order or replay message.
+    last_accepted_commit_step: int = -1
+    last_accepted_reveal_step: int = -1
+
 
 class SessionRegistry:
     """Thread-safe registry of per-session state machines."""

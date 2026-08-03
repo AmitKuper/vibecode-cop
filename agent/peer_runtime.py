@@ -77,6 +77,7 @@ class PeerRuntime(_CrewMixin):
         group_name: str = "unknown",
         llm_dict: dict | None = None,
         my_endpoint: str = "",
+        counted_mode: bool = False,
     ):
         if role not in ("cop", "thief"):
             raise ValueError(f"role must be 'cop' or 'thief', got {role!r}")
@@ -88,6 +89,7 @@ class PeerRuntime(_CrewMixin):
         self.group_name = group_name
         self.games_dir = Path(games_dir)
         self.my_endpoint = my_endpoint or "http://localhost:5000/mcp"
+        self.counted_mode = counted_mode
         self.opponent_client = GameMCPClient(opponent_url, secret)
         cop_start, thief_start = _load_start_positions()
         self.game_id: str = ""
@@ -99,8 +101,15 @@ class PeerRuntime(_CrewMixin):
         self.crews: dict = {}
         self.protocol_adapter = None  # set after discovery in run_game()
 
-    async def run_game(self, game_id: str) -> dict:
-        """Drive this agent's side of the game to completion."""
+    async def run_game(self, game_id: str, counted_mode: bool | None = None) -> dict:
+        """Drive this agent's side of the game to completion.
+
+        Args:
+            game_id: Unique game identifier in '<uuid>_g<N>' format.
+            counted_mode: If True, a failed handshake raises RuntimeError instead of
+                continuing.  Defaults to self.counted_mode set at construction time.
+        """
+        effective_counted_mode = counted_mode if counted_mode is not None else self.counted_mode
         self.game_id = game_id
         self.game_dir = self.games_dir / game_id
         self.game_dir.mkdir(parents=True, exist_ok=True)
@@ -115,10 +124,11 @@ class PeerRuntime(_CrewMixin):
         )
         logger.info(f"[PeerRuntime/{self.role}] Starting game {game_id}")
         await self._init_protocol_adapter()
-        await self._send_start_game(game_id)
+        await self._send_start_game(game_id, counted_mode=effective_counted_mode)
         rules = RulesEngine(self.board, max_turns=self.max_turns)
         winner, abort_reason, final_step = await run_peer_turn_loop(self, rules, self.max_turns)
 
+        gamelet = gamelet_from_game_id(game_id)
         audit_ok, audit_details = await do_final_audit(
             self.opponent_client,
             game_id,
@@ -129,6 +139,7 @@ class PeerRuntime(_CrewMixin):
             self.opponent_role,
             final_step,
             _now,
+            gamelet=gamelet,
         )
         if not audit_ok:
             winner = "TECHNICAL_LOSS"
@@ -174,6 +185,9 @@ class PeerRuntime(_CrewMixin):
             winner or "unknown",
             _now,
         )
+        # Fix 3: Cleanup session from registry after terminal state
+        get_coordinator().cleanup_session(game_id, gamelet, self.role)
+
         result = {
             "ok": True,
             "game_id": game_id,
@@ -186,12 +200,14 @@ class PeerRuntime(_CrewMixin):
         logger.info(f"[PeerRuntime/{self.role}] Game {game_id} done: {result}")
         return result
 
-    async def _send_start_game(self, game_id: str) -> None:
+    async def _send_start_game(self, game_id: str, *, counted_mode: bool = False) -> None:
         """Send start_game handshake to opponent and advance local SM to READY.
 
-        This is mandatory before the first COMMIT.  If the opponent rejects or
-        the call fails, we log a warning but do NOT abort — the turn loop will
-        fail cleanly at the first COMMIT with a protocol violation.
+        This is mandatory before the first COMMIT.  In counted_mode the method
+        raises RuntimeError on rejection or network failure so the caller can
+        abort the game cleanly.  In non-counted mode the failure is logged as a
+        warning and gameplay continues (the turn loop will detect the ordering
+        violation at the first COMMIT).
         """
         from agent.mcp.messages import StartGameMessage
 
@@ -212,12 +228,25 @@ class PeerRuntime(_CrewMixin):
                     f"[PeerRuntime/{self.role}] start_game handshake complete for {game_id}"
                 )
             else:
-                logger.warning(f"[PeerRuntime/{self.role}] start_game rejected by opponent: {resp}")
-        except Exception as exc:
+                msg_text = f"[PeerRuntime/{self.role}] start_game rejected by opponent: {resp}"
+                if counted_mode:
+                    raise RuntimeError(msg_text)
+                logger.warning(msg_text)
+        except RuntimeError as exc:
+            if counted_mode:
+                raise
             logger.warning(
+                f"[PeerRuntime/{self.role}] start_game failed: {exc} "
+                "— proceeding without confirmed handshake"
+            )
+        except Exception as exc:
+            msg_text = (
                 f"[PeerRuntime/{self.role}] start_game send failed: {exc} "
                 "— proceeding without confirmed handshake"
             )
+            if counted_mode:
+                raise RuntimeError(msg_text) from exc
+            logger.warning(msg_text)
 
     def _store_my_commit(self, step: int, payload: dict) -> None:
         self._my_commits[step] = payload
