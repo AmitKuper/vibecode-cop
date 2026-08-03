@@ -14,6 +14,7 @@ import asyncio
 import logging
 from typing import TYPE_CHECKING
 
+from agent.language.hint_policy import generate_hint
 from agent.mcp.coordinator import gamelet_from_game_id, get_coordinator
 from agent.mcp.crypto import create_commitment, hash_game_state
 from agent.peer_audit import append_opponent_commit, append_opponent_reveal
@@ -53,8 +54,8 @@ async def run_peer_turn(
     coord.begin_step(runtime.game_id, gamelet, runtime.role, step)
 
     move = await select_move(runtime, {**board_state, "scent_field": rules.get_scent_field()})
-    hint = f"Moving {move}"
     intent = "truth"
+    hint = generate_hint(move, intent)
 
     h_commit, nonce = create_commitment(
         game_id=runtime.game_id,
