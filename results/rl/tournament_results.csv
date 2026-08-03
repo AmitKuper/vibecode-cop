@@ -1,0 +1,4 @@
+opponent_type,cop_win_rate,thief_survival_rate,mean_turns,score_differential
+random,0.0,0.0,0,0.0
+heuristic_pursuit,0.0,0.0,0,0.0
+heuristic_evasion,0.0,0.0,0,0.0

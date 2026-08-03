@@ -1,0 +1,5 @@
+ablation,cop_win_rate,thief_survival_rate,delta_vs_baseline
+full_model,0.0,0.0,0.0
+no_belief,0.0,0.0,0.0
+no_scent,0.0,0.0,0.0
+no_legal_mask,0.0,0.0,0.0
