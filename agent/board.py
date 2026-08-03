@@ -104,10 +104,26 @@ class Board:
 
     @classmethod
     def from_dict(cls, state: dict) -> "Board":
-        """Create Board instance from state dict."""
+        """Create Board instance from state dict.
+
+        Raises:
+            ValueError: if cop_position or thief_position is missing (they must
+                not be silently substituted with defaults — doing so would let
+                a role-filtered observation reconstruct private opponent state).
+        """
+        if "cop_position" not in state:
+            raise ValueError(
+                "Board.from_dict: 'cop_position' is required and must not be silently defaulted. "
+                "Do not reconstruct a Board from a role-filtered observation."
+            )
+        if "thief_position" not in state:
+            raise ValueError(
+                "Board.from_dict: 'thief_position' is required and must not be silently defaulted. "
+                "Do not reconstruct a Board from a role-filtered observation."
+            )
         return cls(
-            cop_position=state.get("cop_position", [0, 0]),
-            thief_position=state.get("thief_position", [3, 3]),
+            cop_position=state["cop_position"],
+            thief_position=state["thief_position"],
             turn=state.get("turn", 0),
             move_history=state.get("move_history", []),
             grid_size=state.get("grid_size", 7),

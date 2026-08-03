@@ -127,8 +127,18 @@ class TestBoardPlaceBarrier:
         b2 = Board.from_state(s)
         assert b2.cop_position == [2, 3]
 
-    def test_from_dict_defaults(self):
-        b = Board.from_dict({})
+    def test_from_dict_requires_both_positions(self):
+        """Board.from_dict must not silently default cop/thief positions (Phase 1 fix).
+
+        Silent defaults would let a role-filtered observation reconstruct private
+        opponent state. Both positions are required.
+        """
+        with pytest.raises(ValueError, match="cop_position"):
+            Board.from_dict({})
+        with pytest.raises(ValueError, match="thief_position"):
+            Board.from_dict({"cop_position": [0, 0]})
+        # Full state succeeds and returns correct optional defaults
+        b = Board.from_dict({"cop_position": [0, 0], "thief_position": [3, 3]})
         assert b.cop_position == [0, 0]
         assert b.thief_position == [3, 3]
         assert b.grid_size == 7

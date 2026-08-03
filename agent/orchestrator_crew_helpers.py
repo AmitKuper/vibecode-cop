@@ -86,4 +86,14 @@ def build_observation(role: str, game_state: dict) -> dict:
         candidates.append("S")
     candidates.append("STAY")
 
-    return {**role_state, "candidate_actions": candidates, "grid_state": role_state}
+    # grid_state carries the full local board state for RL policy inference.
+    # The RL policy runs inside this process and legitimately has access to both
+    # positions. LLM/crew receives only role_state (no opponent coordinates).
+    grid_state = {
+        "cop_position": list(cop_pos),
+        "thief_position": list(thief_pos),
+        "turn": turn,
+        "barriers": game_state.get("barriers", []),
+        "grid_size": game_state.get("grid_size", 7),
+    }
+    return {**role_state, "candidate_actions": candidates, "grid_state": grid_state}
