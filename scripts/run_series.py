@@ -77,8 +77,23 @@ async def run_series(
     n_gamelets: int,
     group_name: str,
     llm_dict: dict | None = None,
+    counted_mode: bool = False,
 ) -> dict:
-    """Run n_gamelets via cop PeerRuntime (P2P, no central judge)."""
+    """Run n_gamelets via cop PeerRuntime (P2P, no central judge).
+
+    Args:
+        thief_url: MCP endpoint of the thief agent.
+        secret: Shared HMAC secret.
+        config_sha256: SHA-256 of the agreed canonical game config.
+        games_dir: Directory to write gamelet results.
+        n_gamelets: Number of gamelets to play.
+        group_name: League group name.
+        llm_dict: Optional LLM configuration dict.
+        counted_mode: If True, enforce exactly 6 gamelets (league rule).
+            Raises ValueError if n_gamelets != 6.
+    """
+    if counted_mode and n_gamelets != 6:
+        raise ValueError(f"Counted mode requires exactly 6 gamelets, got {n_gamelets}")
     from agent.config.shared_config import load_shared_config
     from agent.peer_runtime import PeerRuntime
 

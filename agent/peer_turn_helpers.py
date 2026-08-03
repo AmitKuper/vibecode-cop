@@ -211,9 +211,25 @@ async def select_move(runtime: PeerRuntime, board_state: dict) -> str:
 
 
 def build_board_state(runtime: PeerRuntime) -> dict:
-    """Snapshot current board as a plain dict for hashing."""
+    """Snapshot current board as a plain dict for hashing.
+
+    Includes all state that affects game progression to prevent hidden-state
+    leakage. barriers is sorted for determinism.
+    """
     b = runtime.board
-    return {"cop_position": b.cop_position, "thief_position": b.thief_position, "turn": b.turn}
+    from agent.mcp.coordinator import gamelet_from_game_id
+
+    gamelet = gamelet_from_game_id(runtime.game_id) if runtime.game_id else 0
+    # private_local_state_commitment — this dict is hashed via create_commitment()
+    return {
+        "cop_position": b.cop_position,
+        "thief_position": b.thief_position,
+        "turn": b.turn,
+        "barriers": sorted(b.barriers),
+        "cop_barriers_remaining": runtime._cop_barriers_remaining,
+        "gamelet": gamelet,
+        "config_sha256": runtime.config_sha256,
+    }
 
 
 def get_watchdog_timeout() -> float:

@@ -111,3 +111,42 @@ def hash_game_state(board_state: dict) -> str:
     """Hash game state for commitment. Returns SHA-256 hex of canonical JSON."""
     canonical = canonical_json(board_state)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def public_transition_hash(
+    game_id: str,
+    gamelet: int,
+    step: int,
+    config_sha256: str,
+    barriers: list,
+    cop_barriers_remaining: int,
+    previous_transcript_root: str,
+) -> str:
+    """Hash public (non-private) transition data for cross-peer verification.
+
+    This hash covers only information that BOTH peers can independently verify
+    without revealing private position knowledge. It is included in audit logs
+    and can be exchanged between peers to confirm they share the same game history.
+
+    Args:
+        game_id: Unique game identifier.
+        gamelet: Gamelet number within the series.
+        step: Turn number.
+        config_sha256: SHA-256 of the agreed canonical config.
+        barriers: List of barrier positions (will be sorted for determinism).
+        cop_barriers_remaining: Remaining barrier budget for cop.
+        previous_transcript_root: Hash of the previous step's public state (or '' for step 0).
+
+    Returns:
+        64-char hex SHA-256 string.
+    """
+    payload = {
+        "game_id": game_id,
+        "gamelet": gamelet,
+        "step": step,
+        "config_sha256": config_sha256,
+        "barriers": sorted(barriers),
+        "cop_barriers_remaining": cop_barriers_remaining,
+        "previous_transcript_root": previous_transcript_root,
+    }
+    return hashlib.sha256(canonical_json(payload).encode("utf-8")).hexdigest()
