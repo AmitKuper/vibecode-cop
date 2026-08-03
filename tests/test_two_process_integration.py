@@ -1413,3 +1413,462 @@ class TestFix8IsReady:
         coord.on_reveal_exchange_complete(game_id, gamelet, role, 1)
         assert coord.get_state(game_id, gamelet, role) == ProtocolState.STEP_VERIFIED
         assert coord.is_ready(game_id, gamelet, role) is True
+
+
+# ---------------------------------------------------------------------------
+# Phase 1 coverage gap tests — server_handlers uncovered branches
+# ---------------------------------------------------------------------------
+
+
+class TestServerHandlerCoverageBranches:
+    """Targeted tests to cover uncovered branches in server_handlers.py."""
+
+    def test_start_game_violation_in_non_idle_state(self, tmp_path):
+        """start_game rejected when session is past READY (e.g. COMPUTING_MOVE)."""
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        game_logs: dict = {}
+
+        # Advance to READY then to COMPUTING_MOVE
+        gamelet = gamelet_from_game_id(game_id)
+        role = "thief"
+        coord.on_handshake_complete(game_id, gamelet, role)
+        coord.begin_step(game_id, gamelet, role, 1)
+
+        # Now send another start_game — should be rejected
+        result = _call_start_game(game_id, role, tmp_path, game_logs, coordinator=coord)
+        assert result.get("ok") is False
+        assert "protocol violation" in result.get("error", "").lower()
+
+    def test_start_game_bad_signature(self, tmp_path):
+        """start_game rejected when signature does not verify."""
+        _, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        game_logs: dict = {}
+
+        msg = _make_start_game_msg(game_id)
+        msg_json = canonical_json(msg.to_dict())
+        bad_sig = "bad" * 30  # Invalid signature
+
+        result = handle_start_game(
+            role="thief",
+            secret=SECRET,
+            config_sha256=CONFIG_SHA256,
+            games_dir=tmp_path,
+            game_logs=game_logs,
+            handler_callbacks={},
+            message_json=msg_json,
+            signature=bad_sig,
+            coordinator=coord,
+        )
+        assert result.get("ok") is False
+        assert "signature" in result.get("error", "").lower()
+
+    def test_start_game_invalid_message(self, tmp_path):
+        """start_game rejected when JSON is malformed."""
+        _, coord = _fresh_registry_and_coordinator()
+        game_logs: dict = {}
+
+        result = handle_start_game(
+            role="thief",
+            secret=SECRET,
+            config_sha256=CONFIG_SHA256,
+            games_dir=tmp_path,
+            game_logs=game_logs,
+            handler_callbacks={},
+            message_json='{"bad": "json_missing_fields"}',
+            signature="any",
+            coordinator=coord,
+        )
+        assert result.get("ok") is False
+
+    def test_start_game_config_mismatch(self, tmp_path):
+        """start_game rejected when config_sha256 does not match."""
+        _, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        game_logs: dict = {}
+
+        # Build a valid start_game message but with wrong config hash
+        msg = StartGameMessage(
+            game_id=game_id,
+            roles={"cop": "group-cop", "thief": "group-thief"},
+            config_sha256="wrong" + "0" * 59,
+            protocol_version=PROTOCOL_VERSION,
+            endpoint="http://localhost:5000/mcp",
+            timestamp=_now(),
+        )
+        msg_json = canonical_json(msg.to_dict())
+        sig = sign_message(msg.to_dict(), SECRET)
+
+        result = handle_start_game(
+            role="thief",
+            secret=SECRET,
+            config_sha256=CONFIG_SHA256,
+            games_dir=tmp_path,
+            game_logs=game_logs,
+            handler_callbacks={},
+            message_json=msg_json,
+            signature=sig,
+            coordinator=coord,
+        )
+        assert result.get("ok") is False
+        assert "mismatch" in result.get("error", "").lower()
+
+    def test_action_config_mismatch_rejected(self, tmp_path):
+        """action rejected when config_sha256 does not match."""
+        _, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        game_logs: dict = {}
+        role = "thief"
+
+        # Handshake first
+        _call_start_game(game_id, role, tmp_path, game_logs, coordinator=coord)
+
+        # Build action with wrong config_sha256
+        msg = ActionMessage(
+            game_id=game_id,
+            step=1,
+            role="cop",
+            config_sha256="wrong" + "0" * 59,
+            timestamp=_now(),
+            phase="commit",
+            h_commit="b" * 64,
+        )
+        msg_json = canonical_json(msg.to_dict())
+        sig = sign_message(msg.to_dict(), SECRET)
+
+        result = handle_action(
+            role=role,
+            secret=SECRET,
+            config_sha256=CONFIG_SHA256,
+            games_dir=tmp_path,
+            game_logs=game_logs,
+            handler_callbacks={},
+            game_id=game_id,
+            message_json=msg_json,
+            signature=sig,
+            coordinator=coord,
+        )
+        assert result.get("ok") is False
+        assert "mismatch" in result.get("error", "").lower()
+
+    def test_commit_callback_failure_triggers_rollback(self, tmp_path):
+        """If on_action callback raises, SM is rolled back to pre-commit state."""
+        _, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        game_logs: dict = {}
+        role = "thief"
+
+        _call_start_game(game_id, role, tmp_path, game_logs, coordinator=coord)
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.READY
+
+        def failing_callback(gid, msg):
+            raise RuntimeError("callback failure")
+
+        callbacks = {"on_action": failing_callback}
+        result = _call_commit(
+            game_id, role, tmp_path, game_logs, step=1, callbacks=callbacks, coordinator=coord
+        )
+        # Callback failure returns error response
+        assert result.get("ok") is False
+        # SM should have been rolled back
+        state = coord.get_state(game_id, gamelet, role)
+        assert state in (ProtocolState.READY, ProtocolState.COMMIT_RECEIVED)
+
+    def test_reveal_callback_failure_triggers_rollback(self, tmp_path):
+        """If on_action callback raises during reveal, SM is rolled back."""
+        _, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        game_logs: dict = {}
+        role = "thief"
+
+        _call_start_game(game_id, role, tmp_path, game_logs, coordinator=coord)
+        # Need to advance to BOTH_COMMITTED for reveal to be valid
+        # First commit from opponent (passive side receives it → COMMIT_RECEIVED)
+        _call_commit(game_id, role, tmp_path, game_logs, step=1, coordinator=coord)
+        # Mark that we sent ours too → BOTH_COMMITTED
+        coord.on_commit_exchange_complete(game_id, gamelet, role, 1)
+
+        def failing_reveal_callback(gid, msg):
+            raise RuntimeError("reveal callback failure")
+
+        callbacks = {"on_action": failing_reveal_callback}
+        result = _call_reveal(
+            game_id, role, tmp_path, game_logs, step=1, callbacks=callbacks, coordinator=coord
+        )
+        assert result.get("ok") is False
+        # SM should be rolled back
+        state = coord.get_state(game_id, gamelet, role)
+        assert state is not None
+
+    def test_final_audit_guard_blocks_in_idle(self, tmp_path):
+        """final_audit rejected when session is in IDLE (no handshake)."""
+        _, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        game_logs: dict = {}
+        role = "thief"
+
+        msg = ActionMessage(
+            game_id=game_id,
+            step=1,
+            role="cop",
+            config_sha256=CONFIG_SHA256,
+            timestamp=_now(),
+            phase="final_audit",
+            nonces=None,
+        )
+        msg_json = canonical_json(msg.to_dict())
+        sig = sign_message(msg.to_dict(), SECRET)
+
+        result = handle_action(
+            role=role,
+            secret=SECRET,
+            config_sha256=CONFIG_SHA256,
+            games_dir=tmp_path,
+            game_logs=game_logs,
+            handler_callbacks={},
+            game_id=game_id,
+            message_json=msg_json,
+            signature=sig,
+            coordinator=coord,
+        )
+        assert result.get("ok") is False
+        assert "protocol violation" in result.get("error", "").lower()
+
+    def test_unknown_phase_returns_error(self, tmp_path):
+        """Unknown action phase returns error without crashing."""
+        _, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        game_logs: dict = {}
+        role = "thief"
+
+        _call_start_game(game_id, role, tmp_path, game_logs, coordinator=coord)
+
+        # Craft a message with unknown phase — use JSON to bypass ActionMessage validation
+        msg_dict = {
+            "game_id": game_id,
+            "step": 1,
+            "role": "cop",
+            "config_sha256": CONFIG_SHA256,
+            "timestamp": _now(),
+            "phase": "unknown_phase_xyz",
+        }
+        msg_json = canonical_json(msg_dict)
+        sig = sign_message(msg_dict, SECRET)
+
+        result = handle_action(
+            role=role,
+            secret=SECRET,
+            config_sha256=CONFIG_SHA256,
+            games_dir=tmp_path,
+            game_logs=game_logs,
+            handler_callbacks={},
+            game_id=game_id,
+            message_json=msg_json,
+            signature=sig,
+            coordinator=coord,
+        )
+        assert result.get("ok") is False
+
+    def test_abort_transitions_to_technical_loss(self, tmp_path):
+        """abort message drives SM to TECHNICAL_LOSS via coordinator."""
+        _, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        game_logs: dict = {}
+        role = "thief"
+
+        _call_start_game(game_id, role, tmp_path, game_logs, coordinator=coord)
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.READY
+
+        msg = ActionMessage(
+            game_id=game_id,
+            step=0,
+            role="cop",
+            config_sha256=CONFIG_SHA256,
+            timestamp=_now(),
+            phase="abort",
+            reason="opponent_abort",
+        )
+        msg_json = canonical_json(msg.to_dict())
+        sig = sign_message(msg.to_dict(), SECRET)
+
+        result = handle_action(
+            role=role,
+            secret=SECRET,
+            config_sha256=CONFIG_SHA256,
+            games_dir=tmp_path,
+            game_logs=game_logs,
+            handler_callbacks={},
+            game_id=game_id,
+            message_json=msg_json,
+            signature=sig,
+            coordinator=coord,
+        )
+        assert result.get("ok") is True
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.TECHNICAL_LOSS
+
+
+# ---------------------------------------------------------------------------
+# Coordinator and notify-helper coverage tests
+# ---------------------------------------------------------------------------
+
+
+class TestCoordinatorCoverageBranches:
+    """Targeted tests for uncovered coordinator and notify-helper branches."""
+
+    def test_notify_helpers_invoke_coordinator(self):
+        """Verify the notify helper functions in server_handlers delegate correctly."""
+        from agent.mcp.server_handlers import (
+            notify_audit_begin,
+            notify_commit_sent,
+            notify_done,
+            notify_reveal_sent,
+            notify_step_begin,
+        )
+
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        role = "cop"
+
+        # Wire up our local coordinator
+        from unittest.mock import patch
+
+        with patch("agent.mcp.server_handlers.get_coordinator", return_value=coord):
+            coord.on_handshake_complete(game_id, gamelet, role)
+            assert coord.get_state(game_id, gamelet, role) == ProtocolState.READY
+
+            notify_step_begin(game_id, gamelet, role, 1)
+            assert coord.get_state(game_id, gamelet, role) == ProtocolState.COMPUTING_MOVE
+
+            # Force to BOTH_COMMITTED for reveal test
+            entry = coord._registry.get_or_create(game_id, gamelet, role)
+            entry.sm.state = ProtocolState.BOTH_COMMITTED
+
+            notify_reveal_sent(game_id, gamelet, role, 1)
+            state = coord.get_state(game_id, gamelet, role)
+            assert state in (ProtocolState.REVEAL_SENT, ProtocolState.STEP_VERIFIED)
+
+            # Force to STEP_VERIFIED for audit test
+            entry.sm.state = ProtocolState.STEP_VERIFIED
+
+            notify_audit_begin(game_id, gamelet, role)
+            assert coord.get_state(game_id, gamelet, role) == ProtocolState.AUDITING
+
+            # Advance to RESULT_AGREEMENT then DONE
+            coord.on_final_audit_complete(game_id, gamelet, role)
+            assert coord.get_state(game_id, gamelet, role) == ProtocolState.RESULT_AGREEMENT
+
+            notify_done(game_id, gamelet, role)
+            assert coord.get_state(game_id, gamelet, role) == ProtocolState.DONE
+
+            # Also exercise notify_commit_sent in isolation
+            reg2, coord2 = _fresh_registry_and_coordinator()
+            game_id2 = _fresh_game_id()
+            gamelet2 = gamelet_from_game_id(game_id2)
+            coord2.on_handshake_complete(game_id2, gamelet2, role)
+            coord2.begin_step(game_id2, gamelet2, role, 1)
+
+        with patch("agent.mcp.server_handlers.get_coordinator", return_value=coord2):
+            notify_commit_sent(game_id2, gamelet2, role, 1)
+            state2 = coord2.get_state(game_id2, gamelet2, role)
+            assert state2 in (ProtocolState.COMMIT_SENT, ProtocolState.BOTH_COMMITTED)
+
+    def test_notify_technical_loss_no_reason(self):
+        """notify_technical_loss with empty reason covers the else-branch."""
+        from unittest.mock import patch
+
+        from agent.mcp.server_handlers import notify_technical_loss
+
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        role = "cop"
+
+        coord.on_handshake_complete(game_id, gamelet, role)
+        with patch("agent.mcp.server_handlers.get_coordinator", return_value=coord):
+            notify_technical_loss(game_id, gamelet, role)  # no reason
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.TECHNICAL_LOSS
+
+    def test_on_handshake_complete_in_wrong_state_is_noop(self):
+        """on_handshake_complete in COMPUTING_MOVE logs warning and returns."""
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        role = "cop"
+
+        coord.on_handshake_complete(game_id, gamelet, role)
+        coord.begin_step(game_id, gamelet, role, 1)
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.COMPUTING_MOVE
+
+        # Call again — should be a no-op / warning (not READY)
+        coord.on_handshake_complete(game_id, gamelet, role)
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.COMPUTING_MOVE
+
+    def test_rollback_inbound_commit_missing_session_is_noop(self):
+        """rollback_inbound_commit on non-existent session is safe."""
+        reg, coord = _fresh_registry_and_coordinator()
+        # Should not raise
+        coord.rollback_inbound_commit("no-such-game_g1", 1, "cop", ProtocolState.READY)
+
+    def test_rollback_inbound_reveal_missing_session_is_noop(self):
+        """rollback_inbound_reveal on non-existent session is safe."""
+        reg, coord = _fresh_registry_and_coordinator()
+        coord.rollback_inbound_reveal("no-such-game_g1", 1, "cop", ProtocolState.BOTH_COMMITTED)
+
+    def test_cleanup_session_nonexistent_is_noop(self):
+        """cleanup_session on nonexistent session does not raise."""
+        reg, coord = _fresh_registry_and_coordinator()
+        coord.cleanup_session("no-such-game_g1", 1, "cop")  # state is None — should silently pass
+
+    def test_on_passive_commit_sent_in_wrong_state_is_noop(self):
+        """on_passive_commit_sent in READY (not COMMIT_RECEIVED) is silently ignored."""
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        role = "cop"
+
+        coord.on_handshake_complete(game_id, gamelet, role)
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.READY
+
+        # Should be ignored — state stays READY
+        coord.on_passive_commit_sent(game_id, gamelet, role, 1, "b" * 64)
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.READY
+
+    def test_on_passive_reveal_sent_in_wrong_state_is_noop(self):
+        """on_passive_reveal_sent in READY is silently ignored."""
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        role = "cop"
+
+        coord.on_handshake_complete(game_id, gamelet, role)
+        coord.on_passive_reveal_sent(game_id, gamelet, role, 1, "N")
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.READY
+
+    def test_gamelet_from_game_id_strict_raises_on_bare_id(self):
+        """gamelet_from_game_id(strict=True) raises ValueError for game IDs without _gN."""
+        from agent.mcp.coordinator import gamelet_from_game_id
+
+        with pytest.raises(ValueError, match="strict"):
+            gamelet_from_game_id("bare-game-id", strict=True)
+
+    def test_reveal_exchange_idempotent_in_step_verified(self):
+        """on_reveal_exchange_complete in STEP_VERIFIED is a no-op (idempotent)."""
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        role = "cop"
+
+        coord.on_handshake_complete(game_id, gamelet, role)
+        coord.begin_step(game_id, gamelet, role, 1)
+        coord.on_commit_exchange_complete(game_id, gamelet, role, 1)
+        coord.on_reveal_exchange_complete(game_id, gamelet, role, 1)
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.STEP_VERIFIED
+
+        # Call again — should be a no-op
+        coord.on_reveal_exchange_complete(game_id, gamelet, role, 1)
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.STEP_VERIFIED
