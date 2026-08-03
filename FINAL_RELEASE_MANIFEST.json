@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "product": "Cop vs Thief P2P Game",
+  "release_version": "2.0.0",
+  "cop_sha": "49b991c",
+  "thief_sha": "2e10b0e",
+  "cop_tag": "v2.0-submission",
+  "thief_tag": "v2.0-submission",
+  "cop_tests": 1095,
+  "thief_tests": 1094,
+  "coverage_threshold": 85,
+  "ruff_violations": 0,
+  "phases_completed": 12,
+  "rules_total": 55,
+  "code_verifiable_pass_count": 43,
+  "external_pending_count": 11,
+  "fail_count": 1,
+  "fail_rules": [
+    {
+      "rule": 25,
+      "description": "RL movement recommendation — model files present but MANIFEST records training_steps=0 and evaluation_win_rate=0.0; placeholder weights only"
+    }
+  ],
+  "external_pending_rules": [1, 10, 20, 30, 31, 32, 35, 43, 44, 45, 55],
+  "release_date": "2026-08-04",
+  "release_notes": "Complete 12-phase v6 hardening. 43 of 55 code-verifiable requirements pass. 11 rules require real external actions (matches, credentials, Moodle). Rule 25 is FAIL — RL model weights are placeholder-initialized with zero training steps; GPU training required before submission.",
+  "external_pending_items": [
+    "group_id_8char",
+    "trained_rl_checkpoint_with_nonzero_steps",
+    "real_opponent_matches_min_2_groups",
+    "gmail_oauth_credentials",
+    "gmail_send_evidence_bilateral",
+    "public_tunnel_evidence",
+    "live_gui_screenshots",
+    "replay_viewer_screenshots",
+    "moodle_pdf_submission",
+    "individual_moodle_submission_per_member"
+  ],
+  "quality_gates": {
+    "cop_tests_pass": true,
+    "thief_tests_pass": true,
+    "ruff_clean": true,
+    "secret_scan_clean": true,
+    "coverage_above_threshold": true,
+    "git_tag_v2_submission": true,
+    "rl_model_trained": false
+  }
+}
