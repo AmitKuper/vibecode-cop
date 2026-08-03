@@ -47,9 +47,7 @@ def apply_place_action(board: Board, action: str, grid_size: int, barriers_remai
     bx, by = cx + dx, cy + dy
     if not (0 <= bx < grid_size and 0 <= by < grid_size):
         return barriers_remaining
-    # Do not place a barrier on the thief's current position
-    if [bx, by] == list(board.thief_position):
-        return barriers_remaining
+    # Placing a barrier on the thief's cell is legal capture — do not skip it.
     if board.place_barrier(bx, by):
         return barriers_remaining - 1
     return barriers_remaining

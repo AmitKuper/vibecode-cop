@@ -205,9 +205,14 @@ async def main() -> int:
 
     llm_dict = config.get("llm") or None
 
-    n_gamelets = max(args.n_gamelets, 6)  # league minimum is 6
-    if n_gamelets != args.n_gamelets:
-        logger.warning(f"[run_series] --n-gamelets {args.n_gamelets} is below minimum 6; using 6")
+    # Counted series must be exactly 6 gamelets (binding league rule).
+    if args.n_gamelets != 6:
+        logger.error(
+            f"[run_series] --n-gamelets {args.n_gamelets} rejected. "
+            "Counted series requires exactly 6 gamelets."
+        )
+        return 1
+    n_gamelets = 6
     result = await run_series(
         thief_url=thief_url,
         secret=secret,

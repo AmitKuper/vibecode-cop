@@ -69,6 +69,15 @@ def run_final_audit(
     """
     h_commits = load_opponent_commits(game_dir)
     reveals = load_my_reveals(game_dir, opponent_role)
+
+    # A zero-turn abort produced no commitments — NOT_APPLICABLE, never a counted result.
+    if not h_commits:
+        logger.warning(f"[PeerAudit] {game_id}: no opponent commits — NOT_APPLICABLE")
+        return False, {
+            "audit_status": "NOT_APPLICABLE",
+            "note": "zero-turn abort; not a counted match",
+        }
+
     verified = failed = 0
     details: dict[str, str] = {}
 
@@ -95,9 +104,8 @@ def run_final_audit(
             details[f"step_{step}"] = "commitment_mismatch"
             logger.warning(f"[PeerAudit] Commitment mismatch at step {step} for {opponent_role}")
 
-    # An empty game (no opponent commits recorded) is vacuously valid — audit passes.
-    # Non-empty games require all commits to verify successfully.
     audit_ok = failed == 0
+    details["audit_status"] = "PASSED" if audit_ok else "FAILED"
     logger.info(
         f"[PeerAudit] {game_id}: {verified} verified, {failed} failed (opp={opponent_role})"
     )

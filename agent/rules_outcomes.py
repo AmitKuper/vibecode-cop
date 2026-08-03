@@ -35,12 +35,10 @@ def check_game_status(board, max_turns: int) -> GameOutcome:
         logger.debug("Game over: Max turns reached, thief wins")
         return GameOutcome.THIEF_WIN
 
-    # STAY is always a legal action — trapped detection only applies when the thief
-    # has NO legal moves at all (barriers surround all cells AND out-of-bounds).
-    # Since STAY is always valid, the thief can never be truly "trapped".
-    thief_legal = board.get_legal_moves("thief")
-    if not thief_legal:
-        logger.debug("Game over: Thief has no legal moves (including STAY), cop wins")
+    # Trapping: thief has no orthogonal escape to a different cell. STAY does not
+    # count as an escape — a surrounded thief is captured even if it can stay.
+    if not board.has_orthogonal_escape("thief"):
+        logger.debug("Game over: Thief trapped (no orthogonal escape), cop wins")
         return GameOutcome.COP_WIN
 
     return GameOutcome.ONGOING

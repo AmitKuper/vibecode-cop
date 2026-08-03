@@ -17,7 +17,7 @@ _SCORING = {
 }
 
 
-def _make_series(tmp_path, n_gamelets=6):
+def _make_series(tmp_path, n_gamelets=6, uncounted=False):
     return GameSeries(
         cop_url="http://localhost:5000",
         thief_url="http://localhost:5001",
@@ -27,6 +27,7 @@ def _make_series(tmp_path, n_gamelets=6):
         max_turns=35,
         group_name="test",
         n_gamelets=n_gamelets,
+        uncounted=uncounted,
     )
 
 
@@ -78,8 +79,8 @@ class TestGameSeriesSixGamelets:
 
     @pytest.mark.asyncio
     async def test_cop_win_scores_accumulate(self, tmp_path):
-        # 3 cop wins: cop gets capture_cop=20 each, thief gets capture_thief=5 each
-        series = _make_series(tmp_path, n_gamelets=3)
+        # uncounted dev run with 3 gamelets; scoring logic is independent of count
+        series = _make_series(tmp_path, n_gamelets=3, uncounted=True)
 
         async def mock_run_game(**kwargs):
             return _mock_game_result("cop")
@@ -99,8 +100,7 @@ class TestGameSeriesSixGamelets:
 
     @pytest.mark.asyncio
     async def test_thief_win_scores_accumulate(self, tmp_path):
-        # 3 thief wins: thief gets survival_thief=10 each, cop gets survival_cop=5 each
-        series = _make_series(tmp_path, n_gamelets=3)
+        series = _make_series(tmp_path, n_gamelets=3, uncounted=True)
 
         async def mock_run_game(**kwargs):
             return _mock_game_result("thief")
@@ -120,7 +120,7 @@ class TestGameSeriesSixGamelets:
 
     @pytest.mark.asyncio
     async def test_technical_loss_gives_zero_pts(self, tmp_path):
-        series = _make_series(tmp_path, n_gamelets=2)
+        series = _make_series(tmp_path, n_gamelets=2, uncounted=True)
 
         async def mock_run_game(**kwargs):
             return _mock_game_result("TECHNICAL_LOSS", audit_ok=False)
@@ -140,9 +140,8 @@ class TestGameSeriesSixGamelets:
 
     @pytest.mark.asyncio
     async def test_series_tie_when_scores_equal(self, tmp_path):
-        # With mandatory scoring, a tie requires 1 cop win + 3 thief wins:
-        # cop:   20 + 3×5  = 35   thief: 5 + 3×10 = 35
-        series = _make_series(tmp_path, n_gamelets=4)
+        # tie: 1 cop win + 3 thief wins → cop 35, thief 35
+        series = _make_series(tmp_path, n_gamelets=4, uncounted=True)
         winners = iter(["cop", "thief", "thief", "thief"])
 
         async def mock_run_game(**kwargs):
@@ -162,7 +161,7 @@ class TestGameSeriesSixGamelets:
 
     @pytest.mark.asyncio
     async def test_series_result_file_written(self, tmp_path):
-        series = _make_series(tmp_path, n_gamelets=2)
+        series = _make_series(tmp_path, n_gamelets=2, uncounted=True)
 
         async def mock_run_game(**kwargs):
             return _mock_game_result("cop")

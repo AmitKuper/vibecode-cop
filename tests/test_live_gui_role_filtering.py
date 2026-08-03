@@ -4,8 +4,6 @@ from unittest.mock import patch
 
 import pytest
 
-pytest.importorskip("fastapi")
-
 
 class TestLiveViewRoleFiltering:
     @pytest.mark.asyncio

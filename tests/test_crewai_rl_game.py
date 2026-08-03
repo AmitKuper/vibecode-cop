@@ -262,27 +262,36 @@ class TestSelectMove:
         logger.info(f"select_move (RL) → {move}")
 
     @pytest.mark.asyncio
-    async def test_select_move_llm_fallback_on_rl_failure(self, tmp_path):
-        """When RL raises, select_move falls through to LLM then heuristic."""
+    async def test_select_move_heuristic_fallback_on_rl_failure(self, tmp_path):
+        """When RL raises, select_move uses heuristic — LLM is never called (§0.5)."""
         from agent.peer_turn_helpers import select_move
 
         rt = _make_runtime("cop", tmp_path)
         rt.game_id = "sm_llm_fallback"
 
-        # Patch RL to fail, LLM to return a known move
+        llm_called = []
+
+        async def spy_llm(game_id, obs):
+            llm_called.append(True)
+            return "N"
+
         with (
             patch.object(rt, "_select_move_rl", side_effect=RuntimeError("RL broke")),
-            patch.object(rt, "_select_move_llm_async", new=AsyncMock(return_value="N")),
+            patch.object(rt, "_select_move_llm_async", new=spy_llm),
         ):
             board_state = {
                 "cop_position": [0, 0],
                 "thief_position": [3, 3],
                 "turn": 1,
                 "scent_field": [],
+                "grid_size": 7,
+                "barriers": [],
+                "move_history": [],
             }
             move = await select_move(rt, board_state)
-        assert move == "N"
-        logger.info("select_move fell back to LLM crew correctly")
+        assert llm_called == [], "LLM must not be called when RL fails"
+        assert move in {"NORTH", "SOUTH", "EAST", "WEST", "STAY"}
+        logger.info(f"select_move fell back to heuristic (not LLM): {move}")
 
     @pytest.mark.asyncio
     async def test_select_move_heuristic_fallback(self, tmp_path):
@@ -309,32 +318,34 @@ class TestSelectMove:
         logger.info(f"select_move heuristic fallback → {move}")
 
     @pytest.mark.asyncio
-    async def test_select_move_llm_called_on_cadence(self, tmp_path):
-        """When every_n_steps=2, LLM is invoked at even turns."""
+    async def test_select_move_llm_not_called_regardless_of_cadence(self, tmp_path):
+        """LLM must never be called for movement — cadence param has no effect (§0.5)."""
         from agent.peer_turn_helpers import select_move
 
-        rt = _make_runtime("cop", tmp_path, llm_every_n=2)
+        rt = _make_runtime("cop", tmp_path, llm_every_n=1)  # aggressive cadence, still no LLM
         rt.game_id = "cadence_test"
 
         llm_calls = []
 
-        async def mock_llm(game_id, obs):
+        async def spy_llm(game_id, obs):
             llm_calls.append(obs)
             return "S"
 
-        with patch.object(rt, "_select_move_llm_async", new=mock_llm):
-            # turn=2 → step % 2 == 0 → LLM should fire
+        with patch.object(rt, "_select_move_llm_async", new=spy_llm):
             board_state = {
                 "cop_position": [1, 1],
                 "thief_position": [5, 5],
                 "turn": 2,
                 "scent_field": [],
+                "grid_size": 7,
+                "barriers": [],
+                "move_history": [],
             }
             move = await select_move(rt, board_state)
 
-        assert len(llm_calls) == 1, "LLM should have been called once at turn=2"
-        assert move == "S"
-        logger.info("crewAI LLM called at configured cadence step")
+        assert llm_calls == [], "LLM must not be called for movement selection"
+        assert move in {"NORTH", "SOUTH", "EAST", "WEST", "STAY", "N", "S", "E", "W"}
+        logger.info(f"select_move correctly used RL/heuristic: {move}")
 
 
 # ---------------------------------------------------------------------------
@@ -410,10 +421,10 @@ class TestFullGameWithCrewAIAndRL:
         )
 
     @pytest.mark.asyncio
-    async def test_full_game_with_llm_cadence(self, tmp_path):
-        """Game with every_n_steps=3: LLM is invoked at steps 3, 6, 9 (best-effort)."""
+    async def test_full_game_without_llm_movement(self, tmp_path):
+        """Game runs to completion using only RL/heuristic — no LLM for movement (§0.5)."""
         game_id = "crewai_cadence_001"
-        rt = _make_runtime("cop", tmp_path, llm_every_n=3)
+        rt = _make_runtime("cop", tmp_path, llm_every_n=1)  # even at max cadence, no LLM
         rt.game_id = game_id
         rt.game_dir = tmp_path / game_id
         rt.game_dir.mkdir(parents=True, exist_ok=True)
@@ -422,16 +433,15 @@ class TestFullGameWithCrewAIAndRL:
 
         llm_steps: list[int] = []
 
-        async def mock_llm(game_id, obs):
+        async def spy_llm(game_id, obs):
             step = obs.get("turn", -1)
             llm_steps.append(step)
-            logger.info(f"[crewai_cadence] LLM called at turn={step}")
-            return "N"  # return a valid short move
+            return "N"
 
         rt.opponent_client.action = AsyncMock(side_effect=_make_mcp_side_effect(game_id, "thief"))
 
         with (
-            patch.object(rt, "_select_move_llm_async", new=mock_llm),
+            patch.object(rt, "_select_move_llm_async", new=spy_llm),
             patch("agent.orchestrator_crew.Crew") as mock_crew,
         ):
             mock_crew.return_value = MagicMock()
@@ -439,11 +449,10 @@ class TestFullGameWithCrewAIAndRL:
 
         assert result["ok"] is True
         assert result["audit_ok"] is True
-
-        # LLM should have been called for turn % 3 == 0 turns
-        logger.info(f"[crewai_cadence] LLM called at turns: {llm_steps}")
-        if result["final_step"] >= 3:
-            assert len(llm_steps) >= 1, "LLM should have been called at least once"
+        assert llm_steps == [], f"LLM must not be called for movement; called at: {llm_steps}"
+        logger.info(
+            f"[no_llm_movement] game done: winner={result['winner']} steps={result['final_step']}"
+        )
 
     @pytest.mark.asyncio
     async def test_full_game_result_files_written(self, tmp_path):

@@ -187,42 +187,22 @@ async def send_reveal(runtime: PeerRuntime, step: int, reveal_payload: dict) -> 
 
 
 async def select_move(runtime: PeerRuntime, board_state: dict) -> str:
-    """Choose a move: RL policy → crewAI LLM crew → heuristic fallback.
+    """Choose a move: RL policy → deterministic heuristic.
 
-    every_n_steps (on runtime, default 999): use LLM every N steps.
-    Set to 1 to route every move through crewAI; 999 = RL only for fast games.
+    LLM movement is forbidden unless both peers opted in via Step-0
+    allow_llm_movement=true. Use LLM only for hints and profiling.
     """
     obs = runtime._build_observation(board_state)
 
-    # RL fast path
+    # RL policy path
     try:
         move = runtime._select_move_rl(obs)
         if move:
-            step = board_state.get("turn", 0)
-            every_n = getattr(runtime, "llm_every_n_steps", 999)
-            if every_n < 999 and step % every_n == 0 and step > 0:
-                # LLM override on configured cadence — verifies crew works
-                try:
-                    move = await runtime._select_move_llm_async(runtime.game_id, obs)
-                    logger.info(f"[PeerTurn] LLM crew move at step {step}: {move}")
-                except Exception as exc:
-                    logger.warning(f"[PeerTurn] LLM fallback failed at step {step}: {exc}")
             return move
     except Exception as exc:
         logger.warning(f"[PeerTurn] RL move selection failed: {exc}")
 
-    # LLM fallback when RL is unavailable
-    llm_fn = getattr(runtime, "_select_move_llm_async", None)
-    if llm_fn is not None:
-        obs = runtime._build_observation(board_state)
-        try:
-            move = await llm_fn(runtime.game_id, obs)
-            if move:
-                return move
-        except Exception as exc:
-            logger.warning(f"[PeerTurn] LLM fallback also failed: {exc}")
-
-    # Deterministic heuristic fallback
+    # Deterministic heuristic fallback (always available, no LLM)
     from agent.board import Board
 
     moves = Board.from_dict(board_state).get_legal_moves(runtime.role)

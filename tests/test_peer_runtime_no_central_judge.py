@@ -211,7 +211,9 @@ class TestRunFinalAudit:
         game_dir, nonces = self._setup_game(tmp_path, game_id, steps=3)
         ok, details = run_final_audit(game_dir, game_id, "thief", nonces)
         assert ok is True
-        assert all(v == "ok" for v in details.values())
+        assert details.get("audit_status") == "PASSED"
+        step_results = {k: v for k, v in details.items() if k.startswith("step_")}
+        assert all(v == "ok" for v in step_results.values())
 
     def test_missing_nonce_causes_failure(self, tmp_path):
         game_id = "audit_missing_nonce"
@@ -229,12 +231,13 @@ class TestRunFinalAudit:
         assert ok is False
         assert details["step_1"] == "commitment_mismatch"
 
-    def test_empty_game_audit_ok(self, tmp_path):
+    def test_empty_game_audit_not_applicable(self, tmp_path):
+        """Zero-turn abort with no commits must yield NOT_APPLICABLE, not success."""
         game_dir = tmp_path / "audit_empty"
         game_dir.mkdir()
         ok, details = run_final_audit(game_dir, "empty_game", "thief", {})
-        assert ok is True
-        assert details == {}
+        assert ok is False
+        assert details.get("audit_status") == "NOT_APPLICABLE"
 
 
 # ---------------------------------------------------------------------------

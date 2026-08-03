@@ -31,6 +31,9 @@ def _load_scoring() -> dict:
         return {}
 
 
+COUNTED_GAMELETS = 6  # league binding rule: exactly six gamelets per counted match
+
+
 class GameSeries:
     """Runs a fixed number of gamelets and aggregates scores into a series result."""
 
@@ -44,7 +47,13 @@ class GameSeries:
         max_turns: int = 35,
         group_name: str = "unknown",
         n_gamelets: int = 6,
+        uncounted: bool = False,
     ):
+        if not uncounted and n_gamelets != COUNTED_GAMELETS:
+            raise ValueError(
+                f"Counted series requires exactly {COUNTED_GAMELETS} gamelets, got {n_gamelets}. "
+                f"Pass uncounted=True for development runs with a different count."
+            )
         self.cop_url = cop_url
         self.thief_url = thief_url
         self.secret = secret
@@ -53,6 +62,7 @@ class GameSeries:
         self.max_turns = max_turns
         self.group_name = group_name
         self.n_gamelets = n_gamelets
+        self.uncounted = uncounted
 
     def _make_runner(self) -> GameRunner:
         return GameRunner(
@@ -131,6 +141,7 @@ class GameSeries:
             "series_id": series_id,
             "config_sha256": self.config_sha256,
             "n_gamelets": self.n_gamelets,
+            "counted": not self.uncounted,
             "gamelets": gamelets,
             "cop_total": cop_total,
             "thief_total": thief_total,

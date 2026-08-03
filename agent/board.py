@@ -143,3 +143,16 @@ class Board:
         """Return legal move strings for the given role."""
         position = self.get_position(role)
         return self.get_candidate_actions(position)
+
+    def has_orthogonal_escape(self, role: str) -> bool:
+        """Return True if role can move to a different cell orthogonally.
+
+        STAY is excluded: a surrounded thief that can only STAY is trapped.
+        """
+        x, y = self.get_position(role)
+        for action, (dx, dy) in self.DIRECTIONS.items():
+            if action == "STAY":
+                continue
+            if self.is_valid_position(x + dx, y + dy):
+                return True
+        return False

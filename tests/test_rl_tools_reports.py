@@ -149,12 +149,11 @@ class TestCheckGameStatus:
         b.turn = 35
         assert check_game_status(b, 35) == GameOutcome.THIEF_WIN
 
-    def test_thief_not_trapped_when_stay_available(self):
-        # STAY is always a valid candidate action, so the thief is never truly
-        # "trapped" by barriers alone. Verify ONGOING is returned even at a corner.
+    def test_thief_trapped_when_only_stay_available(self):
+        # Thief at corner [0,6] with barriers at [0,5] and [1,6]: no orthogonal
+        # escape. STAY does not count as an escape — binding rule §3.4.
         b = _make_board(thief=(0, 6), grid=7, barriers=[[0, 5], [1, 6]])
-        # turn=0, no capture → ONGOING (STAY is always a legal action)
-        assert check_game_status(b, 35) == GameOutcome.ONGOING
+        assert check_game_status(b, 35) == GameOutcome.COP_WIN
 
     def test_ongoing(self):
         b = _make_board()
@@ -203,11 +202,12 @@ class TestEnvHelpers:
         assert remaining == 5
         assert b.barriers == []
 
-    def test_apply_place_action_on_thief(self):
+    def test_apply_place_action_on_thief_is_capture(self):
         b = _make_board(cop=(3, 3), thief=(3, 2))
-        # PLACE_N would land on thief → skip
+        # PLACE_N lands on thief → legal capture, barrier consumed (§3.4).
         remaining = apply_place_action(b, "PLACE_N", 7, 5)
-        assert remaining == 5
+        assert remaining == 4
+        assert b.is_capture() is True
 
 
 # ===========================================================================
