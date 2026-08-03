@@ -19,6 +19,8 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
+import pytest
+
 from agent.mcp.coordinator import ProtocolCoordinator, gamelet_from_game_id
 from agent.mcp.crypto import canonical_json, sign_message
 from agent.mcp.messages import ActionMessage, StartGameMessage
@@ -740,3 +742,674 @@ class TestOutboundCoordinatorHooks:
         # Terminal: no further advances
         coord.begin_step(game_id, gamelet, role, step=2)  # should be a no-op
         assert coord.get_state(game_id, gamelet, role) == ProtocolState.DONE
+
+
+# ---------------------------------------------------------------------------
+# Phase 1 hardening tests (Fixes 1–8)
+# ---------------------------------------------------------------------------
+
+
+class TestFix1FailClosedHandshake:
+    """Fix 1: _send_start_game raises RuntimeError in counted_mode on failure."""
+
+    def test_counted_mode_flag_stored_on_runtime(self):
+        """PeerRuntime accepts and stores counted_mode flag."""
+        from agent.peer_runtime import PeerRuntime
+
+        rt = PeerRuntime(
+            role="cop",
+            secret="s",
+            config_sha256="a" * 64,
+            opponent_url="http://localhost:9999/mcp",
+            counted_mode=True,
+        )
+        assert rt.counted_mode is True
+
+    def test_default_counted_mode_is_false(self):
+        """counted_mode defaults to False (fail-open for backwards compat)."""
+        from agent.peer_runtime import PeerRuntime
+
+        rt = PeerRuntime(
+            role="cop",
+            secret="s",
+            config_sha256="a" * 64,
+            opponent_url="http://localhost:9999/mcp",
+        )
+        assert rt.counted_mode is False
+
+    def test_send_start_game_raises_in_counted_mode_on_rejection(self):
+        """In counted_mode, a rejection response from opponent raises RuntimeError."""
+        import asyncio
+
+        from agent.peer_runtime import PeerRuntime
+
+        rt = PeerRuntime(
+            role="cop",
+            secret="s",
+            config_sha256="a" * 64,
+            opponent_url="http://localhost:9999/mcp",
+            counted_mode=True,
+        )
+
+        # Patch the opponent client to return an error response
+        class FakeClient:
+            async def start_game(self, msg):
+                return {"ok": False, "error": "rejected"}
+
+        rt.opponent_client = FakeClient()
+
+        with pytest.raises(RuntimeError, match="rejected"):
+            asyncio.run(rt._send_start_game("game-abc_g1", counted_mode=True))
+
+    def test_send_start_game_warns_in_non_counted_mode_on_rejection(self):
+        """In non-counted mode, rejection is only logged as a warning (no exception)."""
+        import asyncio
+
+        from agent.peer_runtime import PeerRuntime
+
+        rt = PeerRuntime(
+            role="cop",
+            secret="s",
+            config_sha256="a" * 64,
+            opponent_url="http://localhost:9999/mcp",
+        )
+
+        class FakeClient:
+            async def start_game(self, msg):
+                return {"ok": False, "error": "rejected"}
+
+        rt.opponent_client = FakeClient()
+        # Should NOT raise — just warns
+        asyncio.run(rt._send_start_game("game-abc_g1", counted_mode=False))
+
+
+class TestFix2FinalAuditWiring:
+    """Fix 2: do_final_audit advances coordinator SM to DONE on the active (cop) side."""
+
+    def test_audit_advances_sm_to_done_on_success(self, tmp_path):
+        """After a successful final_audit, coordinator SM reaches DONE."""
+        import asyncio
+        import unittest.mock
+
+        from agent.mcp.coordinator import ProtocolCoordinator
+        from agent.mcp.session_registry import SessionRegistry
+        from agent.peer_runtime_audit import do_final_audit
+
+        reg = SessionRegistry()
+        coord = ProtocolCoordinator(registry=reg)
+        game_id = "game-fix2-test_g1"
+        gamelet = 1
+        role = "cop"
+
+        # Advance SM to STEP_VERIFIED
+        coord.on_handshake_complete(game_id, gamelet, role)
+        coord.begin_step(game_id, gamelet, role, step=1)
+        coord.on_commit_exchange_complete(game_id, gamelet, role, step=1)
+        coord.on_reveal_exchange_complete(game_id, gamelet, role, step=1)
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.STEP_VERIFIED
+
+        import agent.mcp.coordinator as coord_module
+
+        original = coord_module._coordinator
+        coord_module._coordinator = coord
+        try:
+
+            class FakeClient:
+                async def action(self, gid, msg):
+                    return {"ok": True, "nonces": {}}
+
+            game_dir = tmp_path / game_id
+            game_dir.mkdir(parents=True, exist_ok=True)
+
+            # Mock run_final_audit to return success
+            mock_return = (True, {"audit_status": "ok"})
+            with unittest.mock.patch(
+                "agent.peer_runtime_audit.run_final_audit", return_value=mock_return
+            ):
+                ok, details = asyncio.run(
+                    do_final_audit(
+                        FakeClient(),
+                        game_id,
+                        role,
+                        "a" * 64,
+                        {},
+                        game_dir,
+                        "thief",
+                        1,
+                        lambda: "2024-01-01T00:00:00",
+                        gamelet=gamelet,
+                    )
+                )
+        finally:
+            coord_module._coordinator = original
+
+        assert ok
+        # SM should have reached DONE
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.DONE
+
+    def test_audit_transitions_to_technical_loss_on_failure(self, tmp_path):
+        """After a failed final_audit, coordinator SM reaches TECHNICAL_LOSS."""
+        import asyncio
+
+        from agent.mcp.coordinator import ProtocolCoordinator
+        from agent.mcp.session_registry import SessionRegistry
+        from agent.peer_runtime_audit import do_final_audit
+
+        reg = SessionRegistry()
+        coord = ProtocolCoordinator(registry=reg)
+        game_id = "game-fix2-fail_g1"
+        gamelet = 1
+        role = "cop"
+
+        coord.on_handshake_complete(game_id, gamelet, role)
+        coord.begin_step(game_id, gamelet, role, step=1)
+        coord.on_commit_exchange_complete(game_id, gamelet, role, step=1)
+        coord.on_reveal_exchange_complete(game_id, gamelet, role, step=1)
+
+        import agent.mcp.coordinator as coord_module
+
+        original = coord_module._coordinator
+        coord_module._coordinator = coord
+        try:
+
+            class FakeClientBadNonce:
+                async def action(self, gid, msg):
+                    # Return a bad nonce that will fail verification
+                    return {"ok": True, "nonces": {"1": "bad_nonce"}}
+
+            game_dir = tmp_path / game_id
+            game_dir.mkdir(parents=True, exist_ok=True)
+            # Write a fake opponent commit that won't match the bad nonce
+            import json
+
+            (game_dir / "opponent_commits.json").write_text(
+                json.dumps({"1": {"h_commit": "b" * 64, "nonce": "real_nonce"}})
+            )
+            ok, details = asyncio.run(
+                do_final_audit(
+                    FakeClientBadNonce(),
+                    game_id,
+                    role,
+                    "a" * 64,
+                    {},
+                    game_dir,
+                    "thief",
+                    1,
+                    lambda: "2024-01-01T00:00:00",
+                    gamelet=gamelet,
+                )
+            )
+        finally:
+            coord_module._coordinator = original
+
+        assert not ok
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.TECHNICAL_LOSS
+
+
+class TestFix3SessionCleanup:
+    """Fix 3: cleanup_session removes session from registry after terminal state."""
+
+    def test_cleanup_removes_done_session(self):
+        """cleanup_session removes a DONE session from the registry."""
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        role = "cop"
+
+        coord.on_handshake_complete(game_id, gamelet, role)
+        coord.begin_step(game_id, gamelet, role, step=1)
+        coord.on_commit_exchange_complete(game_id, gamelet, role, step=1)
+        coord.on_reveal_exchange_complete(game_id, gamelet, role, step=1)
+        coord.on_audit_begin(game_id, gamelet, role)
+        coord.on_final_audit_complete(game_id, gamelet, role)
+        coord.on_done(game_id, gamelet, role)
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.DONE
+
+        coord.cleanup_session(game_id, gamelet, role)
+        assert coord.get_state(game_id, gamelet, role) is None
+        assert reg.get(game_id, gamelet, role) is None
+
+    def test_cleanup_removes_technical_loss_session(self):
+        """cleanup_session removes a TECHNICAL_LOSS session."""
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        role = "thief"
+
+        coord.on_handshake_complete(game_id, gamelet, role)
+        coord.on_technical_loss(game_id, gamelet, role, reason="test")
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.TECHNICAL_LOSS
+
+        coord.cleanup_session(game_id, gamelet, role)
+        assert coord.get_state(game_id, gamelet, role) is None
+
+    def test_cleanup_is_idempotent_for_missing_session(self):
+        """cleanup_session does nothing if the session doesn't exist."""
+        reg, coord = _fresh_registry_and_coordinator()
+        coord.cleanup_session("nonexistent-game_g1", 1, "cop")  # should not raise
+
+    def test_cleanup_also_clears_idempotency_cache(self):
+        """cleanup_session also purges the idempotency cache for the session."""
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        role = "thief"
+
+        # Seed some idempotency records
+        coord._idempotency[(game_id, gamelet, role, 1, "commit")] = None  # type: ignore
+        coord._idempotency[(game_id, gamelet, role, 1, "reveal")] = None  # type: ignore
+        coord._idempotency[("other-game_g1", gamelet, role, 1, "commit")] = None  # type: ignore
+
+        coord.on_technical_loss(game_id, gamelet, role, reason="cleanup test")
+        coord.cleanup_session(game_id, gamelet, role)
+
+        # Only the removed session's records should be gone
+        assert (game_id, gamelet, role, 1, "commit") not in coord._idempotency
+        assert (game_id, gamelet, role, 1, "reveal") not in coord._idempotency
+        # Other game's records must be untouched
+        assert ("other-game_g1", gamelet, role, 1, "commit") in coord._idempotency
+
+
+class TestFix4RevealIdempotency:
+    """Fix 4: reveal idempotency keyed on full payload (move + hint + intent + state_hash)."""
+
+    def test_exact_duplicate_reveal_is_idempotent(self, tmp_path):
+        """Sending the exact same reveal twice returns ok=True both times."""
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        game_logs: dict = {}
+
+        _call_start_game(game_id, "thief", tmp_path, game_logs, coordinator=coord)
+        _call_commit(game_id, "thief", tmp_path, game_logs, coordinator=coord)
+
+        # Force SM to BOTH_COMMITTED
+        gamelet = gamelet_from_game_id(game_id)
+        coord.on_passive_commit_sent(game_id, gamelet, "thief", 1, "h" * 64)
+
+        r1 = _call_reveal(game_id, "thief", tmp_path, game_logs, coordinator=coord)
+        assert r1.get("ok"), f"First reveal failed: {r1}"
+
+        r2 = _call_reveal(game_id, "thief", tmp_path, game_logs, coordinator=coord)
+        assert r2.get("ok"), f"Duplicate reveal rejected: {r2}"
+        assert r2.get("idempotent") is True
+
+    def test_conflicting_reveal_payload_rejected(self, tmp_path):
+        """A reveal with different hint but same step/move is rejected as conflicting."""
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        game_logs: dict = {}
+
+        _call_start_game(game_id, "thief", tmp_path, game_logs, coordinator=coord)
+        _call_commit(game_id, "thief", tmp_path, game_logs, coordinator=coord)
+        coord.on_passive_commit_sent(game_id, gamelet, "thief", 1, "h" * 64)
+
+        # First reveal succeeds
+        r1 = _call_reveal(game_id, "thief", tmp_path, game_logs, coordinator=coord)
+        assert r1.get("ok")
+
+        # Send a second reveal with a different hint — should be rejected as conflicting
+        msg = ActionMessage(
+            game_id=game_id,
+            step=1,
+            role="cop",
+            config_sha256=CONFIG_SHA256,
+            timestamp=_now(),
+            phase="reveal",
+            move="N",
+            hint="A completely different hint text here",  # different hint
+            intent="truth",
+            state_hash="c" * 64,
+        )
+        msg_json = canonical_json(msg.to_dict())
+        sig = sign_message(msg.to_dict(), SECRET)
+        result = handle_action(
+            role="thief",
+            secret=SECRET,
+            config_sha256=CONFIG_SHA256,
+            games_dir=tmp_path,
+            game_logs=game_logs,
+            handler_callbacks={},
+            game_id=game_id,
+            message_json=msg_json,
+            signature=sig,
+            coordinator=coord,
+        )
+        assert result.get("ok") is False, f"Expected rejection for conflicting reveal: {result}"
+        err = result.get("error", "").lower()
+        assert "conflict" in err or "mismatch" in err
+
+
+class TestFix5StepEnforcement:
+    """Fix 5: Out-of-order commits/reveals are rejected."""
+
+    def test_replayed_commit_step_rejected(self, tmp_path):
+        """Sending commit with same step number twice is rejected after first succeeds."""
+        from agent.peer_agent_passive import (
+            handle_passive_commit,
+            handle_passive_reveal,
+            init_passive_game,
+        )
+        from agent.peer_runtime import PeerRuntime
+
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        game_logs: dict = {}
+
+        runtime = PeerRuntime(
+            role="thief",
+            secret=SECRET,
+            config_sha256=CONFIG_SHA256,
+            opponent_url="http://localhost:9999/mcp",
+        )
+        rules_ref: list = []
+
+        def on_action(gid, msg):
+            if msg.phase == "commit":
+                return handle_passive_commit(runtime, gid, msg, rules_ref)
+            if msg.phase == "reveal":
+                return handle_passive_reveal(runtime, gid, msg, rules_ref)
+            return {"ok": True}
+
+        _call_start_game(
+            game_id,
+            "thief",
+            tmp_path,
+            game_logs,
+            callbacks={"on_action": on_action},
+            coordinator=coord,
+        )
+        init_passive_game(runtime, game_id, rules_ref)
+
+        # Step 1 succeeds
+        r1 = _call_commit(
+            game_id,
+            "thief",
+            tmp_path,
+            game_logs,
+            step=1,
+            callbacks={"on_action": on_action},
+            coordinator=coord,
+        )
+        assert r1.get("ok"), f"Step 1 commit failed: {r1}"
+
+        # Step 1 again (replay) should be rejected.
+        # Send a DIFFERENT h_commit to bypass idempotency cache and hit step check.
+        msg = ActionMessage(
+            game_id=game_id,
+            step=1,
+            role="cop",
+            config_sha256=CONFIG_SHA256,
+            timestamp=_now(),
+            phase="commit",
+            h_commit="e" * 64,  # different h_commit — should trigger conflicting duplicate
+        )
+        msg_json = canonical_json(msg.to_dict())
+        sig = sign_message(msg.to_dict(), SECRET)
+        result = handle_action(
+            role="thief",
+            secret=SECRET,
+            config_sha256=CONFIG_SHA256,
+            games_dir=tmp_path,
+            game_logs=game_logs,
+            handler_callbacks={"on_action": on_action},
+            game_id=game_id,
+            message_json=msg_json,
+            signature=sig,
+            coordinator=coord,
+        )
+        assert result.get("ok") is False, f"Expected replay commit rejection: {result}"
+
+    def test_lower_step_commit_rejected(self, tmp_path):
+        """After accepting step=2 commit, step=1 commit is rejected."""
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        game_logs: dict = {}
+
+        _call_start_game(game_id, "thief", tmp_path, game_logs, coordinator=coord)
+
+        # Accept step 2
+        msg2 = ActionMessage(
+            game_id=game_id,
+            step=2,
+            role="cop",
+            config_sha256=CONFIG_SHA256,
+            timestamp=_now(),
+            phase="commit",
+            h_commit="b" * 64,
+        )
+        msg_json2 = canonical_json(msg2.to_dict())
+        sig2 = sign_message(msg2.to_dict(), SECRET)
+        r = handle_action(
+            role="thief",
+            secret=SECRET,
+            config_sha256=CONFIG_SHA256,
+            games_dir=tmp_path,
+            game_logs=game_logs,
+            handler_callbacks={},
+            game_id=game_id,
+            message_json=msg_json2,
+            signature=sig2,
+            coordinator=coord,
+        )
+        assert r.get("ok"), f"Step 2 commit failed: {r}"
+
+        # Advance SM to STEP_VERIFIED so we can receive another commit
+        coord.on_passive_commit_sent(game_id, gamelet, "thief", 2, "h" * 64)
+        # Force to STEP_VERIFIED for next step test
+        entry = reg.get(game_id, gamelet, "thief")
+        if entry:
+            entry.sm.state = ProtocolState.STEP_VERIFIED
+
+        # Now try step=1 — must be rejected (step <= last_accepted=2)
+        msg1 = ActionMessage(
+            game_id=game_id,
+            step=1,
+            role="cop",
+            config_sha256=CONFIG_SHA256,
+            timestamp=_now(),
+            phase="commit",
+            h_commit="c" * 64,
+        )
+        msg_json1 = canonical_json(msg1.to_dict())
+        sig1 = sign_message(msg1.to_dict(), SECRET)
+        result = handle_action(
+            role="thief",
+            secret=SECRET,
+            config_sha256=CONFIG_SHA256,
+            games_dir=tmp_path,
+            game_logs=game_logs,
+            handler_callbacks={},
+            game_id=game_id,
+            message_json=msg_json1,
+            signature=sig1,
+            coordinator=coord,
+        )
+        assert result.get("ok") is False, f"Expected step=1 rejection after step=2: {result}"
+        assert "out-of-order" in result.get("error", "").lower()
+
+
+class TestFix6GameIdValidation:
+    """Fix 6: gamelet_from_game_id strict mode rejects IDs without _gN suffix."""
+
+    def test_strict_mode_rejects_missing_suffix(self):
+        """gamelet_from_game_id(strict=True) raises ValueError for bare game IDs."""
+        from agent.mcp.coordinator import gamelet_from_game_id
+
+        with pytest.raises(ValueError, match="_gN"):
+            gamelet_from_game_id("bare-game-id", strict=True)
+
+    def test_strict_mode_accepts_valid_suffix(self):
+        """gamelet_from_game_id(strict=True) works for IDs with _gN suffix."""
+        from agent.mcp.coordinator import gamelet_from_game_id
+
+        assert gamelet_from_game_id("game-abc_g3", strict=True) == 3
+        assert gamelet_from_game_id("game-abc_g0", strict=True) == 0
+
+    def test_non_strict_mode_defaults_to_zero(self):
+        """Non-strict mode falls back to 0 for bare game IDs."""
+        from agent.mcp.coordinator import gamelet_from_game_id
+
+        assert gamelet_from_game_id("bare-game-id") == 0
+        assert gamelet_from_game_id("bare-game-id", strict=False) == 0
+
+
+class TestFix7AbortGameEndGuards:
+    """Fix 7: abort uses coordinator, game_end has state guard."""
+
+    def test_game_end_rejected_in_done_state(self, tmp_path):
+        """game_end is rejected when session is already DONE."""
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        game_logs: dict = {}
+
+        # Advance to DONE
+        coord.on_handshake_complete(game_id, gamelet, "thief")
+        coord.begin_step(game_id, gamelet, "thief", 1)
+        coord.on_commit_exchange_complete(game_id, gamelet, "thief", 1)
+        coord.on_reveal_exchange_complete(game_id, gamelet, "thief", 1)
+        coord.on_audit_begin(game_id, gamelet, "thief")
+        coord.on_final_audit_complete(game_id, gamelet, "thief")
+        coord.on_done(game_id, gamelet, "thief")
+        assert coord.get_state(game_id, gamelet, "thief") == ProtocolState.DONE
+
+        # Now try game_end — should be rejected
+        msg = ActionMessage(
+            game_id=game_id,
+            step=1,
+            role="cop",
+            config_sha256=CONFIG_SHA256,
+            timestamp=_now(),
+            phase="game_end",
+            reason="cop_caught_thief",
+        )
+        msg_json = canonical_json(msg.to_dict())
+        sig = sign_message(msg.to_dict(), SECRET)
+        # Need a game_log entry
+        from agent.mcp.log import GameLog
+
+        game_logs[game_id] = GameLog(game_id, tmp_path)
+        result = handle_action(
+            role="thief",
+            secret=SECRET,
+            config_sha256=CONFIG_SHA256,
+            games_dir=tmp_path,
+            game_logs=game_logs,
+            handler_callbacks={},
+            game_id=game_id,
+            message_json=msg_json,
+            signature=sig,
+            coordinator=coord,
+        )
+        assert result.get("ok") is False, f"Expected game_end rejection in DONE state: {result}"
+        assert "protocol violation" in result.get("error", "").lower()
+
+    def test_abort_transitions_to_aborted_state(self, tmp_path):
+        """abort phase transitions SM to TECHNICAL_LOSS via coordinator."""
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        game_logs: dict = {}
+
+        _call_start_game(game_id, "thief", tmp_path, game_logs, coordinator=coord)
+        assert coord.get_state(game_id, gamelet, "thief") == ProtocolState.READY
+
+        msg = ActionMessage(
+            game_id=game_id,
+            step=1,
+            role="cop",
+            config_sha256=CONFIG_SHA256,
+            timestamp=_now(),
+            phase="abort",
+            reason="opponent_cheated",
+        )
+        msg_json = canonical_json(msg.to_dict())
+        sig = sign_message(msg.to_dict(), SECRET)
+        result = handle_action(
+            role="thief",
+            secret=SECRET,
+            config_sha256=CONFIG_SHA256,
+            games_dir=tmp_path,
+            game_logs=game_logs,
+            handler_callbacks={},
+            game_id=game_id,
+            message_json=msg_json,
+            signature=sig,
+            coordinator=coord,
+        )
+        assert result.get("ok"), f"abort failed: {result}"
+        # SM must be in TECHNICAL_LOSS now
+        assert coord.get_state(game_id, gamelet, "thief") == ProtocolState.TECHNICAL_LOSS
+
+
+class TestFix8IsReady:
+    """Fix 8: is_ready() returns True only for active gameplay states."""
+
+    def test_is_ready_false_for_idle(self):
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        # No session exists → False
+        assert coord.is_ready(game_id, gamelet, "cop") is False
+
+    def test_is_ready_false_for_done(self):
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        role = "cop"
+
+        coord.on_handshake_complete(game_id, gamelet, role)
+        coord.begin_step(game_id, gamelet, role, 1)
+        coord.on_commit_exchange_complete(game_id, gamelet, role, 1)
+        coord.on_reveal_exchange_complete(game_id, gamelet, role, 1)
+        coord.on_audit_begin(game_id, gamelet, role)
+        coord.on_final_audit_complete(game_id, gamelet, role)
+        coord.on_done(game_id, gamelet, role)
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.DONE
+        assert coord.is_ready(game_id, gamelet, role) is False
+
+    def test_is_ready_false_for_technical_loss(self):
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        role = "cop"
+
+        coord.on_handshake_complete(game_id, gamelet, role)
+        coord.on_technical_loss(game_id, gamelet, role, reason="test")
+        assert coord.is_ready(game_id, gamelet, role) is False
+
+    def test_is_ready_true_for_ready_state(self):
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        role = "cop"
+
+        coord.on_handshake_complete(game_id, gamelet, role)
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.READY
+        assert coord.is_ready(game_id, gamelet, role) is True
+
+    def test_is_ready_true_for_computing_move(self):
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        role = "cop"
+
+        coord.on_handshake_complete(game_id, gamelet, role)
+        coord.begin_step(game_id, gamelet, role, 1)
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.COMPUTING_MOVE
+        assert coord.is_ready(game_id, gamelet, role) is True
+
+    def test_is_ready_true_for_step_verified(self):
+        reg, coord = _fresh_registry_and_coordinator()
+        game_id = _fresh_game_id()
+        gamelet = gamelet_from_game_id(game_id)
+        role = "cop"
+
+        coord.on_handshake_complete(game_id, gamelet, role)
+        coord.begin_step(game_id, gamelet, role, 1)
+        coord.on_commit_exchange_complete(game_id, gamelet, role, 1)
+        coord.on_reveal_exchange_complete(game_id, gamelet, role, 1)
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.STEP_VERIFIED
+        assert coord.is_ready(game_id, gamelet, role) is True

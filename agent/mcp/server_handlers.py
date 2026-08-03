@@ -13,7 +13,6 @@ a successful callback.
 
 from __future__ import annotations
 
-import contextlib
 import logging
 from pathlib import Path
 
@@ -27,14 +26,28 @@ from agent.mcp.messages import (
     validate_start_game_message,
 )
 from agent.mcp.protocol import ProtocolState
-from agent.mcp.session_registry import get_registry
 
 logger = logging.getLogger(__name__)
 
-_registry = get_registry()
-
 # Keep the old helper for backwards compatibility; coordinator now owns the canonical version.
 _gamelet_from_game_id = gamelet_from_game_id
+
+# States that are valid for receiving a game_end message
+_GAME_END_VALID_STATES = frozenset(
+    {
+        ProtocolState.STEP_VERIFIED,
+        ProtocolState.AUDITING,
+        ProtocolState.RESULT_AGREEMENT,
+        # Also allow from any active play state (opponent may end game at any point)
+        ProtocolState.COMPUTING_MOVE,
+        ProtocolState.COMMIT_SENT,
+        ProtocolState.COMMIT_RECEIVED,
+        ProtocolState.BOTH_COMMITTED,
+        ProtocolState.REVEAL_SENT,
+        ProtocolState.REVEAL_RECEIVED,
+        ProtocolState.READY,
+    }
+)
 
 
 def _err(game_log: GameLog, tag: str, actor: str, phase: str, msg: str, extra: dict) -> dict:
@@ -64,6 +77,7 @@ def handle_start_game(
         msg = StartGameMessage.from_json(message_json)
         game_id = msg.game_id
         gamelet = gamelet_from_game_id(game_id)
+
         game_log = GameLog(game_id, games_dir)
         game_logs[game_id] = game_log
         actor = msg.roles.get(role, "unknown")
@@ -238,8 +252,18 @@ def handle_action(
 
         elif msg.phase == "reveal":
             move = msg.move or ""
+            hint = msg.hint
+            intent = msg.intent
+            state_hash = msg.state_hash
             ok, err, cached, prev_state = coord.check_and_advance_inbound_reveal(
-                game_id, gamelet, role, msg.step, move
+                game_id,
+                gamelet,
+                role,
+                msg.step,
+                move,
+                hint=hint,
+                intent=intent,
+                state_hash=state_hash,
             )
             if not ok:
                 return _err(
@@ -257,7 +281,17 @@ def handle_action(
 
             result = _invoke_callback(handler_callbacks, game_id, msg)
             if result.get("ok"):
-                coord.record_reveal_response(game_id, gamelet, role, msg.step, move, result)
+                coord.record_reveal_response(
+                    game_id,
+                    gamelet,
+                    role,
+                    msg.step,
+                    move,
+                    result,
+                    hint=hint,
+                    intent=intent,
+                    state_hash=state_hash,
+                )
                 # If passive side returned move, advance REVEAL_RECEIVED → STEP_VERIFIED
                 if result.get("move"):
                     coord.on_passive_reveal_sent(game_id, gamelet, role, msg.step, result["move"])
@@ -288,13 +322,42 @@ def handle_action(
             return result
 
         elif msg.phase == "game_end":
+            # Fix 7: Coordinator guard for game_end — only accept in active/audit states
+            current_state = coord.get_state(game_id, gamelet, role)
+            if current_state is not None and current_state not in _GAME_END_VALID_STATES:
+                return _err(
+                    game_log,
+                    "action:game_end",
+                    msg.role,
+                    "game_end",
+                    f"Protocol violation: game_end received in state {current_state.value}",
+                    base,
+                )
+            game_log.append(
+                "game_end",
+                msg.role,
+                "game_end",
+                "ok",
+                {"step": msg.step, "reason": msg.reason},
+            )
             result = _invoke_callback(handler_callbacks, game_id, msg)
             return result
 
         elif msg.phase == "abort":
-            entry = _registry.get_or_create(game_id, gamelet, role)
-            with entry.lock, contextlib.suppress(ValueError):
-                entry.sm.transition(ProtocolState.ABORTED)
+            # Fix 7: Route abort through coordinator for proper logging and state tracking
+            coord.on_technical_loss(
+                game_id,
+                gamelet,
+                role,
+                reason=f"abort received from {msg.role}",
+            )
+            game_log.append(
+                "abort",
+                msg.role,
+                "abort",
+                "ok",
+                {"step": msg.step, "reason": getattr(msg, "reason", "")},
+            )
             result = _invoke_callback(handler_callbacks, game_id, msg)
             return result
 
