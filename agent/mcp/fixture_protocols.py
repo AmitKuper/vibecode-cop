@@ -1,4 +1,5 @@
 """Deterministic fixture opponents for protocol conformance tests."""
+
 import hashlib
 import json
 

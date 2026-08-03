@@ -1,4 +1,5 @@
 """Bilateral result agreement — both peers must sign identical consensus."""
+
 import hashlib
 import json
 from dataclasses import asdict, dataclass, field
@@ -9,9 +10,9 @@ class GameletOutcome:
     gamelet: int
     cop_score: int
     thief_score: int
-    winner: str             # "cop" | "thief" | "draw"
+    winner: str  # "cop" | "thief" | "draw"
     turns_played: int
-    technical_loss_role: str = ""   # "" | "cop" | "thief"
+    technical_loss_role: str = ""  # "" | "cop" | "thief"
     transcript_root: str = ""
 
 
@@ -22,7 +23,7 @@ class ResultAgreement:
     gamelet_outcomes: list = field(default_factory=list)  # list[GameletOutcome]
     cop_total_score: int = 0
     thief_total_score: int = 0
-    series_winner: str = ""     # "cop" | "thief" | "draw"
+    series_winner: str = ""  # "cop" | "thief" | "draw"
     counted_status: bool = False
     token_totals: dict = field(default_factory=dict)
     ledger_update_hash: str = ""
@@ -43,8 +44,10 @@ class ResultAgreement:
         """Hash of fields that must match between both peers."""
         consensus = {
             "game_uid": self.game_uid,
-            "gamelet_outcomes": [asdict(o) if hasattr(o, '__dataclass_fields__') else o
-                                 for o in self.gamelet_outcomes],
+            "gamelet_outcomes": [
+                asdict(o) if hasattr(o, "__dataclass_fields__") else o
+                for o in self.gamelet_outcomes
+            ],
             "cop_total_score": self.cop_total_score,
             "thief_total_score": self.thief_total_score,
             "series_winner": self.series_winner,
@@ -66,9 +69,7 @@ class SignedResultAgreement:
     @classmethod
     def from_dict(cls, d: dict) -> "SignedResultAgreement":
         d2 = dict(d["agreement"])
-        d2["gamelet_outcomes"] = [
-            GameletOutcome(**o) for o in d2.get("gamelet_outcomes", [])
-        ]
+        d2["gamelet_outcomes"] = [GameletOutcome(**o) for o in d2.get("gamelet_outcomes", [])]
         return cls(ResultAgreement(**d2), d["signature_hex"])
 
 
@@ -76,9 +77,7 @@ class ResultConsensusError(ValueError):
     pass
 
 
-def verify_bilateral_consensus(
-    local: SignedResultAgreement, remote: SignedResultAgreement
-) -> None:
+def verify_bilateral_consensus(local: SignedResultAgreement, remote: SignedResultAgreement) -> None:
     """Raise ResultConsensusError if the two signed agreements disagree on consensus fields."""
     local_hash = local.agreement.consensus_fields_hash()
     remote_hash = remote.agreement.consensus_fields_hash()

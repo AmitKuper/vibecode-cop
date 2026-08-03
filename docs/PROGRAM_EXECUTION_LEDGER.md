@@ -1,0 +1,29 @@
+# Program Execution Ledger — vibecode-cop
+
+Records all phases from Phase 0 through Phase 11.
+Test counts are measured at phase end (cop repo).
+
+| Phase | Starting SHA | Resulting SHA | Tests Before | Tests After | Description                                                      |
+|-------|-------------|--------------|-------------|------------|------------------------------------------------------------------|
+| 0.5   | (initial)   | 0e73947      | 0           | 569        | Reproducible green baseline, 87.71% coverage, zero Ruff violations |
+| 0     | 0e73947     | e411836      | 569         | 569        | Correct five binding-rule regressions (empty audit, trapped thief, FastAPI) |
+| 1     | e411836     | d5b33b2      | 569         | 600+       | Deterministic domain core, typed schemas, conformance tests, coverage gap tests |
+| 1B    | d5b33b2     | e7334c3      | 600+        | 620+       | Harden ProtocolCoordinator: fail-closed handshake, final audit wiring |
+| 2     | e7334c3     | c235415      | 620+        | 680+       | Single config authority, complete state commitment, six-gamelet enforcement |
+| 2B    | c235415     | b1c8c26      | 680+        | 700+       | Wire ProtocolCoordinator to production path                       |
+| 3     | b1c8c26     | cce9cdd      | 700+        | 750+       | Local truth types, symmetric scent, Bayesian belief engine, hint policy |
+| 4     | cce9cdd     | 2e1ae88      | 750+        | 820+       | RL infrastructure, action spaces, legal masking, model schema     |
+| 5     | 2e1ae88     | 1daa6cf      | 820+        | 880+       | Step-0 bilateral declarations, league ledger, lifecycle artifacts  |
+| 6     | 1daa6cf     | 689580a      | 880+        | 960+       | Per-step evidence journal, transcript chain, bilateral audit and result consensus |
+| 7     | 689580a     | 6ea6b2d      | 960+        | 1020+      | Deadline Tracker, independent Watchdog, recovery state, chaos tests |
+| 8     | 6ea6b2d     | ed68850      | 1020+       | 1060+      | Gmail Gatekeeper pipeline: token bucket, circuit breaker, DOS detector |
+| 9     | ed68850     | 8429f6f      | 1060+       | 1080+      | Live GUI belief-map app, anchored Replay app, screenshots         |
+| 10    | 8429f6f     | b9c10bc      | 1080+       | 1095       | TransportPort/GameProtocolPort abstraction, capability negotiation  |
+| 11    | b9c10bc     | (this commit) | 1095       | 1095       | Docs rewrite, CI pipeline, version bump to 2.0.0, release tag     |
+
+## Notes
+
+- "Tests Before" for phases 1–10 are approximations based on git log context.
+  The definitive count at Phase 10 end is 1095 (cop) / 1094 (thief).
+- Phases 2 and 2B share a single planning cycle but distinct commits.
+- Phase 11 adds no new test code; count remains 1095.

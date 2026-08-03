@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "Phase 11",
+  "cop_sha": "b9c10bc",
+  "thief_sha": "166c324",
+  "cop_tests": 1095,
+  "thief_tests": 1094,
+  "coverage_threshold": 85,
+  "ruff_violations": 0,
+  "external_pending": [
+    "real_opponent_match",
+    "trained_rl_checkpoint",
+    "gmail_oauth_credentials",
+    "public_tunnel_evidence",
+    "group_id_8char",
+    "gui_screenshots_browser",
+    "moodle_submission"
+  ]
+}

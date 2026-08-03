@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 import numpy as np
-import pytest
 
-from agent.scent import DECAY, KERNEL_RADIUS, ScentFields, _radial_kernel
+from agent.scent import KERNEL_RADIUS, ScentFields, _radial_kernel
 
 
 class TestRadialKernel:

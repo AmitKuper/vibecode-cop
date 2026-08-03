@@ -1,4 +1,5 @@
 """Game protocol port — deterministic mapping from game actions to transport calls."""
+
 import hashlib
 import json
 

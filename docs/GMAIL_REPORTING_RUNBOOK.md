@@ -82,14 +82,17 @@ import json
 
 creds = load_oauth_credentials(Path("secrets/gmail/token.json"))
 
+
 def real_sender(to, subject, body, attachments):
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
+
     msg = MIMEMultipart()
     msg["To"] = to
     msg["Subject"] = subject
     msg.attach(MIMEText(body, "plain"))
     return gmail_api_send(msg, creds)
+
 
 gk = Gatekeeper(gmail_sender=real_sender)
 mid = gk.send(

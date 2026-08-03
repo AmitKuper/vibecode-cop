@@ -1,170 +1,93 @@
-# vibecode-cop — Cop Agent
+# Cop vs Thief — Cop Agent (vibecode-cop)
 
-Autonomous AI cop agent for the Cop & Thief P2P game. Runs as an MCP server on port 5000 and
-an MCP client that connects to the thief agent.
+Companion repository: [vibecode-thief](https://github.com/amitKuper/vibecode-thief)
 
-**Companion repository:** [vibecode-thief](https://github.com/amitKuper/vibecode-thief) — the passive thief agent that this cop plays against.
+## Overview
 
-## Quick Start
+A peer-to-peer Partially Observable cop-and-thief game implemented as a
+Dec-POMDP (Decentralized Partially Observable Markov Decision Process).
+Two independent OS processes communicate via FastMCP using a Commit-Reveal
+protocol with cryptographic integrity and bilateral mutual audit.
 
-```bash
-# Install dependencies into the project's own venv
-uv sync
+## Dec-POMDP Model
 
-# Create the role-specific config file (code looks for cop/config.toml first)
-mkdir -p cop
-cp config.toml.example cop/config.toml
-# Edit cop/config.toml: set peer_url to thief's MCP URL and crypto.shared_secret
+Each agent observes only:
+- its own position
+- publicly placed barriers
+- opponent scent field (decaying 5x5 Manhattan kernel)
+- free-language hints from the opponent (possibly deceptive)
 
-# Always use the project venv — system Python may resolve to a different environment
-.venv\Scripts\python.exe -m cop        # Windows
-# or
-.venv/bin/python -m cop               # Linux/macOS
-```
-
-Alternatively, pass the config path directly:
-
-```bash
-.venv\Scripts\python.exe -m cop cop/config.toml
-```
+Hidden: opponent true position. Strategy decisions use a Bayesian belief
+distribution over opponent position, updated via scent likelihood and
+legal transition prediction.
 
 ## Architecture
 
-- MCP server (port 5000) receives thief's commits and reveals
-- MCP client connects to thief's port to send commits and reveals
-- Commit-reveal protocol: SHA-256(canonical_json({game_id, gamelet, step, role, state_hash, move, hint, intent, nonce}))
-- RL strategy (DQN/Q-table/Greedy) → fast path <1ms; LLM crew fallback for cold start
-- Scent field observation: cop sees Chebyshev distance decay, never true thief position
-
-### Component Overview
-
 ```
-cop/__main__.py
-  └── PeerRuntime (agent/peer_runtime.py)
-        ├── MCP Server :5000    ← receives thief's action/commit/reveal/start_game
-        ├── MCP Client          ← sends cop's action/commit/reveal to thief
-        ├── PeerTurnLoop        ← commit → send → receive → verify → apply
-        ├── RulesEngine         ← local game state, no shared memory
-        ├── RLPolicy            ← DQN/Q-table/Greedy strategy selection
-        ├── CrewAI Agents       ← LLM fallback for cold start
-        └── ReportManager       ← file + Gmail reporting after each gamelet
+PeerRuntime
+  ├── ProtocolCoordinator  (16-state SM, single authority)
+  ├── GameProtocolPort     (deterministic tool mapping, locked in Step-0)
+  ├── StepJournal          (atomic per-step evidence, hash chain)
+  ├── BeliefEngine         (Bayesian belief updates)
+  ├── ScentFields          (symmetric cop_scent + thief_scent)
+  ├── Gatekeeper           (Gmail rate-limiting pipeline)
+  ├── DeadlineTracker      (bounded external requests)
+  ├── LeagueLedger         (append-only match accounting)
+  └── Watchdog             (independent OS-process freeze detection)
 ```
 
-## Configuration
+## RL Strategy
 
-Copy `config.toml.example` to `cop/config.toml` and set:
+Primary movement: PPO policy receiving LocalObservation (no hidden coords).
+Observation space: own position (one-hot), barriers, opponent scent,
+belief heatmap, scalar features. Action space: N/S/E/W/STAY/PLACE_N/PLACE_S/PLACE_E/PLACE_W.
+Legal action masking applied before sampling.
 
-- `[cop] peer_url` — thief agent's MCP URL (e.g. `http://opponent.ngrok.io/mcp`)
-- `[crypto] shared_secret` — pre-agreed secret with opponent
-- `[llm] model` — Claude model for LLM strategy (default: claude-haiku-4-5-20251001)
+Heuristic baseline: pursuit agent (moves toward belief centroid).
+Model status: infrastructure complete; trained checkpoint EXTERNAL_PENDING.
 
-## Protocol
+## Commit-Reveal Protocol
 
-Each turn follows a two-round commit-reveal exchange. **Nonce is withheld until final_audit.**
+1. Step-0: bilateral signed declarations with Ed25519
+2. COMMIT: both peers commit SHA-256(move||nonce) before revealing
+3. REVEAL: simultaneous move reveal; mismatch -> technical loss
+4. AUDIT: bilateral hash-chain transcript verification
+5. RESULT: both sign identical ResultAgreement; bilateral Gmail send
 
-```
-Cop Agent                               Thief Agent
-    │── COMMIT(h_commit_cop) ──────────────► │
-    │◄─ ACK(h_commit_thief) ────────────────│
-    │── REVEAL(move, hint, intent, state_hash) ──► │
-    │◄─ ACK(opp_move, opp_hint, opp_intent) ──────│
-    │  [nonce withheld until final_audit]    │
-    │  apply_moves(); check_status()         │
-    │                                        │
-    │── FINAL_AUDIT(nonces) ────────────────► │
-    │◄─ ACK(opp_nonces) ────────────────────│
-    │  verify all commitments offline        │
-```
-
-Commitment: `h_commit = SHA-256(canonical_json({game_id, gamelet, step, role, state_hash, move, hint, intent, nonce}))`
-
-A mismatch at verification triggers `TECHNICAL_LOSS` for the offending agent.
-
-## Hidden Information
-
-The cop's observation contains a scent field (Chebyshev distance decay) — never the thief's true position:
-
-```
-scent[x][y] = 0.9 × 0.10^(chebyshev_distance(cop_pos, thief_pos))
-```
-
-This satisfies the role-filtered hidden-info requirement (AC4).
-
-## Running a Full Series
+## Installation
 
 ```bash
-# Terminal 1 — inside vibecode-thief, start the thief (passive responder)
-cd ../vibecode-thief
-.venv\Scripts\python.exe -m thief thief/config.toml
-
-# Terminal 2 — inside vibecode-cop, drive N P2P gamelets
-cd ../vibecode-cop
-$env:PYTHONPATH = "."                          # PowerShell
-# export PYTHONPATH=.                          # bash
-.venv\Scripts\python.exe scripts/run_series.py --thief-url http://localhost:61223/mcp --n-gamelets 1
+uv sync --frozen
+uv run pytest tests/ agent/tests/ -q
 ```
 
-Or start only the cop MCP server and wait for the thief to send start_game:
+## Usage
 
 ```bash
-.venv\Scripts\python.exe -m cop cop/config.toml
+# Development (single machine)
+uv run python -m agent.orchestrator_crew
+
+# Counted series (requires real opponent)
+uv run python scripts/run_series.py --counted --n-gamelets 6
+
+# Live GUI
+uv run uvicorn agent.gui.app:app --port 8080
+
+# Replay viewer
+uv run uvicorn agent.replay.app:app --port 8081
 ```
 
-> **Important:** Always use `.venv\Scripts\python.exe` (Windows) or `.venv/bin/python` (Linux/macOS)
-> instead of bare `python`. The system Python may resolve to a different virtual environment
-> (e.g. another project's venv) which may have an incompatible version of crewai.
+## Test Evidence
 
-## Auditing a Game Log
+- Tests: 1095 passing, 0 failures
+- Coverage: >=85% branch
+- Ruff: 0 violations
 
-```bash
-python scripts/replay_viewer.py cop/games/log_*.json
-```
+## Limitations and External Evidence Required
 
-Verifies SHA-256 integrity of every step in the log and re-checks all commitment hashes offline.
-
-## Tests
-
-```bash
-uv run python -m pytest tests/ -q
-```
-
-569 passed, 1 skipped, 0 failed (Phase 0.5 baseline). Coverage: 87%. Ruff: all checks pass.
-
-The 1 skipped test requires a compatible 4-channel thief RL model (see docs/KNOWN_DEVIATIONS.md).
-
-Coverage includes:
-
-- `test_shared_config_contract.py` (19 tests) — SHA-256 config lock
-- `test_peer_runtime_no_central_judge.py` (32 tests) — P2P invariants
-- `test_replay_audit.py` (8 tests) — tamper detection
-- `test_thief_rl_no_true_cop_position.py` (8 tests) — hidden info
-- `test_game_series_six_gamelets.py` (7 tests) — series scoring
-- `test_network_timeout_technical_loss.py` (3 tests) — watchdog
-- and more (see `tests/`)
-
-## Shared Config
-
-`config/game.json` is the single source of truth for all agreed game parameters. Both agents
-compute and embed its SHA-256 in every MCP message. Fixed values (diagonal_moves, pheromone
-parameters, technical_loss) are validated at startup; mismatches abort the match.
-
-## Scoring
-
-| Outcome | Cop pts | Thief pts |
-|---------|---------|-----------|
-| Cop captures thief | 20 | 5 |
-| Thief survives max turns | 5 | 10 |
-| Tie | 2 | 2 |
-| TECHNICAL_LOSS | 0 | 0 |
-
-Values are loaded from `config/game.json` at runtime.
-
-## Technology Stack
-
-| Component | Library |
-|-----------|---------|
-| MCP transport | `fastmcp` ≥0.9 |
-| LLM strategy | `crewai` ≥0.86 + `anthropic` ≥0.43 |
-| RL training | `torch` ≥2.3 |
-| Gmail reporting | `google-api-python-client` ≥2.0 |
-| Package mgmt | `uv` ≥0.4 |
+- Real opponent match: EXTERNAL_PENDING
+- Trained RL checkpoint: EXTERNAL_PENDING
+- Gmail OAuth credentials: EXTERNAL_PENDING
+- Public tunnel: EXTERNAL_PENDING
+- Group ID (8-char): EXTERNAL_PENDING
+- GUI screenshots: EXTERNAL_PENDING

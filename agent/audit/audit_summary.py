@@ -1,4 +1,5 @@
 """Bilateral audit summary signed by each peer independently."""
+
 import hashlib
 import json
 from dataclasses import asdict, dataclass, field

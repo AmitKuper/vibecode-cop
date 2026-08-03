@@ -1,0 +1,38 @@
+name: CI
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+      - name: Sync deps
+        run: uv sync --frozen
+      - name: Lock consistency
+        run: uv lock --check
+      - name: Run tests
+        run: uv run pytest tests/ agent/tests/ -q --tb=short
+      - name: Coverage
+        run: |
+          uv run pytest tests/ agent/tests/ \
+            --cov=agent --cov-branch \
+            --cov-report=xml \
+            --cov-fail-under=85
+      - name: Ruff lint
+        run: uv run ruff check .
+      - name: Ruff format
+        run: uv run ruff format --check .
+      - name: Secret scan
+        run: |
+          # Basic secret pattern check
+          if grep -rE "(AKIA|sk-|ghp_|gmail.*password)" --include="*.py" --include="*.json" .; then
+            echo "Potential secret found"
+            exit 1
+          fi
+          echo "No secrets found"

@@ -10,16 +10,16 @@ from agent.observation import BeliefState, LocalObservation, SafeLiveView
 
 class TestLocalObservation:
     def _make(self, **kwargs):
-        defaults = dict(
-            own_position=(2, 3),
-            own_barriers_remaining=5,
-            known_barriers=[(0, 1), (1, 2)],
-            opponent_scent=[[0.1, 0.2], [0.3, 0.4]],
-            last_hint="heading north",
-            step=4,
-            gamelet=1,
-            grid_size=7,
-        )
+        defaults = {
+            "own_position": (2, 3),
+            "own_barriers_remaining": 5,
+            "known_barriers": [(0, 1), (1, 2)],
+            "opponent_scent": [[0.1, 0.2], [0.3, 0.4]],
+            "last_hint": "heading north",
+            "step": 4,
+            "gamelet": 1,
+            "grid_size": 7,
+        }
         defaults.update(kwargs)
         return LocalObservation(**defaults)
 
@@ -118,9 +118,16 @@ class TestSafeLiveView:
 
     def test_no_hidden_opponent_coord(self):
         view = self._make()
-        for forbidden in ("opponent_position", "cop_position", "thief_position",
-                          "cop_true_pos", "thief_true_pos"):
-            assert not hasattr(view, forbidden), f"Forbidden field {forbidden!r} found in SafeLiveView"
+        for forbidden in (
+            "opponent_position",
+            "cop_position",
+            "thief_position",
+            "cop_true_pos",
+            "thief_true_pos",
+        ):
+            assert not hasattr(view, forbidden), (
+                f"Forbidden field {forbidden!r} found in SafeLiveView"
+            )
 
     def test_fields_accessible(self):
         view = self._make()

@@ -1,4 +1,5 @@
 """Abstract transport layer — separates transport mechanism from game semantics."""
+
 from abc import ABC, abstractmethod
 
 

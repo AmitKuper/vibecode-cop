@@ -1,4 +1,5 @@
 """Tests for capability negotiation (Phase 10C)."""
+
 import pytest
 
 from agent.mcp.capability_negotiation import (

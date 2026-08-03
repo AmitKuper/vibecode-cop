@@ -1,4 +1,5 @@
 """Capability document exchange during Step-0."""
+
 import hashlib
 import json
 from dataclasses import asdict, dataclass, field

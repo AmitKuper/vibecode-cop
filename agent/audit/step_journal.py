@@ -1,4 +1,5 @@
 """Durable per-step evidence with atomic append."""
+
 import hashlib
 import json
 import os
@@ -16,12 +17,12 @@ class StepEvidence:
     role: str  # "cop" or "thief"
 
     # Commit phase
-    local_commitment: str = ""          # h_commit we sent
-    local_nonce: str = ""               # our nonce (stays secret until audit)
-    local_commitment_sig: str = ""      # our signature on commitment
-    received_commitment: str = ""       # opponent's h_commit
+    local_commitment: str = ""  # h_commit we sent
+    local_nonce: str = ""  # our nonce (stays secret until audit)
+    local_commitment_sig: str = ""  # our signature on commitment
+    received_commitment: str = ""  # opponent's h_commit
     received_commitment_sig: str = ""
-    commitment_ack_digest: str = ""     # digest of our ack response
+    commitment_ack_digest: str = ""  # digest of our ack response
 
     # Reveal phase
     local_move: str = ""
@@ -37,7 +38,7 @@ class StepEvidence:
 
     # Verification
     commitment_verified: bool = False
-    transcript_hash: str = ""           # chain: SHA256(prev || canonical_event_bytes)
+    transcript_hash: str = ""  # chain: SHA256(prev || canonical_event_bytes)
     protocol_state_before: str = ""
     protocol_state_after: str = ""
     timestamp_utc: str = ""

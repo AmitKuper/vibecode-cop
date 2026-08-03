@@ -1,4 +1,5 @@
 """Tests for TransportPort / GameProtocolPort abstractions (Phase 10A/10B)."""
+
 import inspect
 
 import pytest
@@ -119,12 +120,11 @@ def test_no_llm_in_crypto_path():
     source = inspect.getsource(pp_mod)
     # Check for import statements containing LLM library names (not comments/docstrings)
     import_lines = [
-        line for line in source.splitlines()
+        line
+        for line in source.splitlines()
         if line.strip().startswith("import") or line.strip().startswith("from")
     ]
     llm_import_markers = ["openai", "anthropic", "litellm", "langchain", "crewai"]
     for marker in llm_import_markers:
         matching = [ln for ln in import_lines if marker in ln.lower()]
-        assert not matching, (
-            f"protocol_port.py imports LLM library {marker!r}: {matching}"
-        )
+        assert not matching, f"protocol_port.py imports LLM library {marker!r}: {matching}"

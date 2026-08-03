@@ -83,13 +83,9 @@ class LeagueLedger:
         if not counted:
             return
         if opponent_id in self.counted_opponents():
-            raise LeagueLedgerError(
-                f"Already played counted match against {opponent_id!r}"
-            )
+            raise LeagueLedgerError(f"Already played counted match against {opponent_id!r}")
         if self.counted_match_count() >= MAX_COUNTED_MATCHES:
-            raise LeagueLedgerError(
-                f"Max counted matches ({MAX_COUNTED_MATCHES}) reached"
-            )
+            raise LeagueLedgerError(f"Max counted matches ({MAX_COUNTED_MATCHES}) reached")
 
     def append(self, entry: LedgerEntry) -> None:
         """Validate and append *entry*, then persist to disk."""

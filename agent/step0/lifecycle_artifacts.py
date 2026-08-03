@@ -26,10 +26,7 @@ class LifecycleArtifactSet:
     def validate_all_present(self) -> list[str]:
         """Return a list of paths that do not exist on disk."""
         all_paths = (
-            [self.declaration_path]
-            + self.config_paths
-            + self.log_paths
-            + [self.result_path]
+            [self.declaration_path] + self.config_paths + self.log_paths + [self.result_path]
         )
         return [p for p in all_paths if not Path(p).exists()]
 
@@ -54,9 +51,7 @@ def result_path(base_dir: str, game_uid: str) -> str:
     return str(Path(base_dir) / f"result_{game_uid}.json")
 
 
-def build_artifact_set(
-    base_dir: str, game_uid: str, num_gamelets: int = 6
-) -> LifecycleArtifactSet:
+def build_artifact_set(base_dir: str, game_uid: str, num_gamelets: int = 6) -> LifecycleArtifactSet:
     """Build a LifecycleArtifactSet for *num_gamelets* gamelets."""
     return LifecycleArtifactSet(
         game_uid=game_uid,

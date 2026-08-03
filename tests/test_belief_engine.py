@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import numpy as np
-import pytest
 
 from agent.belief_engine import BeliefEngine
 from agent.observation import BeliefState

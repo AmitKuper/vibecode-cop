@@ -1,4 +1,5 @@
 """Tests for deterministic fixture opponents (Phase 10D)."""
+
 import hashlib
 import json
 

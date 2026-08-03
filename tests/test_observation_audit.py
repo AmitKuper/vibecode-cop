@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from agent.observation_audit import audit_observation_for_leaks
 
 
