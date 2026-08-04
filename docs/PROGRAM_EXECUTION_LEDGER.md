@@ -1,5 +1,19 @@
 # Program Execution Ledger — vibecode-cop
 
+## Codex Stage B/C continuation (2026-08-05)
+
+| Milestone | Starting cop/thief SHA | Status | Executable evidence | Resulting SHA |
+|---|---|---|---|---|
+| M0 independent baseline | `bc8de6add8a979fa915295c71e47d2773ff244d2` / `b7a65401b64ea9fa7e48dfda83cae6d9ecc4ef61` | PASS | Both clean; frozen sync/lock pass; pytest 1308 pass vs 1181 pass + 2 skip; configured branch coverage rounded 85% with invalid omissions vs 80.76%; Ruff lint pass; format 15/9 fail; both CLI help fail; cop verifier false-positive and thief verifier absent. Baseline score 36; matrix PASS=24/FAIL=25/EXTERNAL_PENDING=6. | documentation worktree, pending commit |
+
+Active plan: `docs/CODEX_100_READINESS_EXECPLAN.md`. Baseline audit:
+`CODEX_BASELINE_AUDIT.md`. Traceability:
+`docs/REQUIREMENTS_TRACEABILITY.md`.
+
+Next acceptance target is M1: one fail-closed real two-process counted composition
+root and exactly-six lifecycle trace. No prior phase claim supersedes the fresh M0
+runtime evidence.
+
 Records all phases from Phase 0 through Phase 11.
 Test counts are measured at phase end (cop repo).
 
