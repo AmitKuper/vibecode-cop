@@ -20,3 +20,16 @@ thief/games/
 games/
 logs/
 agent/memory/
+heartbeat_*.json
+journal_*.json
+deadlines_*.json
+recovery_*.json
+watchdog_evidence_*.json
+game_config.toml
+*.log
+*.log.err
+*.log.out
+cop_err.log
+cop_out.log
+thief_err.log
+thief_out.log
