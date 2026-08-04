@@ -21,7 +21,9 @@ Test counts are measured at phase end (cop repo).
 | 10    | 8429f6f     | b9c10bc      | 1080+       | 1095       | TransportPort/GameProtocolPort abstraction, capability negotiation  |
 | 11    | b9c10bc     | (this commit) | 1095       | 1095       | Docs rewrite, CI pipeline, version bump to 2.0.0, release tag     |
 
-| v7 P3 | b5de5b1 (cop) / b4dba23 (thief) | (this commit) | 1120/1119 | 1151/1150 | Wire Step-0, StepJournal, Watchdog, LeagueLedger into production lifecycle |
+| v7 P3 | b5de5b1 (cop) / b4dba23 (thief) | 7fddd0d (cop) / abc300e (thief) | 1120/1119 | 1163/1162 | Wire Step-0, StepJournal, Watchdog, LeagueLedger into production lifecycle |
+| v7 P4 | 7fddd0d (cop) / abc300e (thief) | 7fddd0d (cop) / abc300e (thief) | 1151/1150 | 1163/1162 | Heuristic wired, strategic language policy, belief updates in turn loop |
+| v7 P5 | 7fddd0d (cop) / abc300e (thief) | (this commit) | 1163/1162 | 1171+ | SafeLiveView wired to AgentOrchestrator, GameProtocolPort, accurate README, v3.0-code-ready tag |
 
 ## Notes
 
@@ -34,3 +36,7 @@ Test counts are measured at phase end (cop repo).
   `record_match_in_ledger`, `send_report_via_gatekeeper` into AgentOrchestrator;
   `run_game` calls `start_watchdog`/`stop_watchdog`; `_send_start_game` validates
   Step-0 in counted mode; `run_peer_turn` records step evidence and emits heartbeats.
+- v7 Phase 5 wired: `publish_live_view` publishes SafeLiveView (no hidden coords) from
+  AgentOrchestrator after each turn in `run_peer_turn`; `create_protocol_port` creates
+  deterministic GameProtocolPort with locked ProtocolMapping; README rewritten with
+  accurate EXTERNAL_PENDING claims; REQUIREMENTS_TRACEABILITY updated.

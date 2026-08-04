@@ -181,6 +181,34 @@ async def run_peer_turn(
             [tuple(b) for b in runtime.board.barriers],
         )
 
+    # 5A: Publish SafeLiveView after each turn
+    if getattr(runtime, "orchestrator", None) is not None:
+        try:
+            _board = runtime.board
+            _role = runtime.role
+            own_pos = tuple(
+                _board.cop_position if _role == "cop" else _board.thief_position
+            )
+            barrier_list = [tuple(b) for b in _board.barriers]
+            received_hint = opp_reveal.get("hint", "")
+            if hasattr(coord, "get_state"):
+                _proto = str(coord.get_state(runtime.game_id, gamelet, _role))
+            else:
+                _proto = "STEP_VERIFIED"
+            runtime.orchestrator.publish_live_view(
+                own_position=own_pos,
+                barriers=barrier_list,
+                last_hint=received_hint or "",
+                turn=step,
+                gamelet=gamelet,
+                protocol_state=_proto,
+                your_turn=False,
+            )
+        except Exception as _lv_err:
+            logger.debug(
+                "[PeerTurn] publish_live_view failed at step %d: %s", step, _lv_err
+            )
+
     # 3D: Record step evidence in StepJournal
     if getattr(runtime, "orchestrator", None) is not None:
         try:

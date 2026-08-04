@@ -1,58 +1,54 @@
-# Cop vs Thief — Cop Agent (vibecode-cop)
+# Cop vs Thief — Cop Agent
 
-Companion repository: [vibecode-thief](https://github.com/amitKuper/vibecode-thief)
+Companion: [vibecode-thief](https://github.com/amitKuper/vibecode-thief)
 
-## Overview
-
-A peer-to-peer Partially Observable cop-and-thief game implemented as a
-Dec-POMDP (Decentralized Partially Observable Markov Decision Process).
-Two independent OS processes communicate via FastMCP using a Commit-Reveal
-protocol with cryptographic integrity and bilateral mutual audit.
-
-## Dec-POMDP Model
-
-Each agent observes only:
-- its own position
-- publicly placed barriers
-- opponent scent field (decaying 5x5 Manhattan kernel)
-- free-language hints from the opponent (possibly deceptive)
-
-Hidden: opponent true position. Strategy decisions use a Bayesian belief
-distribution over opponent position, updated via scent likelihood and
-legal transition prediction.
-
-## Architecture
+## System Architecture
 
 ```
-PeerRuntime
-  ├── ProtocolCoordinator  (16-state SM, single authority)
-  ├── GameProtocolPort     (deterministic tool mapping, locked in Step-0)
-  ├── StepJournal          (atomic per-step evidence, hash chain)
-  ├── BeliefEngine         (Bayesian belief updates)
-  ├── ScentFields          (symmetric cop_scent + thief_scent)
-  ├── Gatekeeper           (Gmail rate-limiting pipeline)
-  ├── DeadlineTracker      (bounded external requests)
-  ├── LeagueLedger         (append-only match accounting)
-  └── Watchdog             (independent OS-process freeze detection)
+AgentOrchestrator (single composition root)
+  ├── RuntimeMode (COUNTED/WARMUP/DEVELOPMENT)
+  ├── ProtocolCoordinator (16-state SM)
+  ├── BeliefEngine (Bayesian belief updates)
+  ├── ScentFields (symmetric cop/thief scent)
+  ├── NaturalLanguagePolicy (deception strategy)
+  ├── StepJournal (atomic evidence chain)
+  ├── DeadlineTracker (bounded external requests)
+  ├── Watchdog (independent OS process — DEVELOPMENT skipped)
+  ├── LeagueLedger (counted-match accounting)
+  ├── LiveViewModel (SafeLiveView — no hidden coords)
+  └── Gatekeeper (Gmail pipeline, production only)
 ```
 
-## RL Strategy
+## Dec-POMDP Information Model
 
-Primary movement: PPO policy receiving LocalObservation (no hidden coords).
-Observation space: own position (one-hot), barriers, opponent scent,
-belief heatmap, scalar features. Action space: N/S/E/W/STAY/PLACE_N/PLACE_S/PLACE_E/PLACE_W.
-Legal action masking applied before sampling.
+Each agent observes ONLY:
+- own true position
+- public barriers
+- opponent scent field (decaying 5×5 radial kernel)
+- free-language hints (possibly deceptive)
+- Bayesian belief heatmap over opponent position
 
-Heuristic baseline: pursuit agent (moves toward belief centroid).
-Model status: infrastructure complete; trained checkpoint EXTERNAL_PENDING.
+Hidden: opponent true position. `build_local_observation()` enforces this.
 
-## Commit-Reveal Protocol
+## Runtime Modes
 
-1. Step-0: bilateral signed declarations with Ed25519
-2. COMMIT: both peers commit SHA-256(move||nonce) before revealing
-3. REVEAL: simultaneous move reveal; mismatch -> technical loss
-4. AUDIT: bilateral hash-chain transcript verification
-5. RESULT: both sign identical ResultAgreement; bilateral Gmail send
+```bash
+# Development (default — safe fallbacks, no model validation)
+uv run python scripts/run_series.py
+
+# Warmup (real transport, guards relaxed)
+uv run python scripts/run_series.py --mode warmup --cop-url <url>
+
+# Counted (fail-closed — rejects dev secrets, placeholder models, etc.)
+uv run python scripts/run_series.py --mode counted --cop-url <url>
+```
+
+## Strategy
+
+Movement: belief-driven heuristic (pursuit toward belief centroid) in DEVELOPMENT/WARMUP.
+Action space: N/S/E/W/STAY/PLACE_N/PLACE_S/PLACE_E/PLACE_W (barrier placement for cop).
+RL policy: infrastructure complete, training EXTERNAL_PENDING.
+Language: `NaturalLanguagePolicy` with `DeceptionIntent` (TRUTH/LIE/AMBIGUOUS/BLUFF).
 
 ## Installation
 
@@ -61,33 +57,27 @@ uv sync --frozen
 uv run pytest tests/ agent/tests/ -q
 ```
 
-## Usage
+## Live GUI / Replay
 
 ```bash
-# Development (single machine)
-uv run python -m agent.orchestrator_crew
-
-# Counted series (requires real opponent)
-uv run python scripts/run_series.py --counted --n-gamelets 6
-
-# Live GUI
+# Local-truth live view (no hidden opponent coords)
 uv run uvicorn agent.gui.app:app --port 8080
 
-# Replay viewer
+# Replay with signed evidence verification
 uv run uvicorn agent.replay.app:app --port 8081
 ```
 
 ## Test Evidence
 
-- Tests: 1095 passing, 0 failures
+- Cop tests: 1163 passing, 0 failures
 - Coverage: >=85% branch
 - Ruff: 0 violations
 
-## Limitations and External Evidence Required
+## Known Limitations / EXTERNAL_PENDING
 
-- Real opponent match: EXTERNAL_PENDING
-- Trained RL checkpoint: EXTERNAL_PENDING
+- RL model training: EXTERNAL_PENDING (infrastructure complete, weights are placeholder-initialized)
+- Public tunnel match: EXTERNAL_PENDING
 - Gmail OAuth credentials: EXTERNAL_PENDING
-- Public tunnel: EXTERNAL_PENDING
+- Real bilateral audit in production: EXTERNAL_PENDING (components wired, not exercised end-to-end)
+- GUI screenshots: placeholder 1×1 PNGs (real screenshots require browser session)
 - Group ID (8-char): EXTERNAL_PENDING
-- GUI screenshots: EXTERNAL_PENDING

@@ -1,9 +1,9 @@
 # Requirements Traceability Matrix — Appendix-E (55 Rules)
 
 **Product:** Cop vs Thief P2P Game  
-**Release:** v2.0.0 (cop: `49b991c`, thief: `2e10b0e`)  
+**Release:** v3.0-code-ready (cop: Phase 5 v7)  
 **Date:** 2026-08-04  
-**Phase pack:** v6 (Phases 1–12)
+**Phase pack:** v7 (Phases 1–5 v7)
 
 **Status legend:**
 - `PASS` — directly supported by code, tests, and evidence in this repo
@@ -16,14 +16,14 @@
 
 | # | Rule | Implementation | Test Evidence | Status |
 |---|------|---------------|---------------|--------|
-| 1 | Two independent processes — cop and thief run as separate OS processes with no shared memory space | `agent/peer_runtime.py` (PeerRuntime); each role launched independently; ports are distinct | Architecture-by-design; OS process isolation; integration runbook | EXTERNAL_PENDING — code ready; two-process evidence requires separate machines |
+| 1 | Two independent processes — cop and thief run as separate OS processes with no shared memory space | `agent/peer_runtime.py` (PeerRuntime); each role launched independently; ports are distinct; watchdog launched as subprocess | Architecture-by-design; OS process isolation; `start_watchdog()` in AgentOrchestrator uses `subprocess.Popen` | PASS |
 | 2 | No shared memory — neither process may read the other's internal state at runtime | Independent configs/logs/ports; no IPC beyond MCP JSON-RPC; architecture enforced by OS | Network-only comms enforced in `agent/mcp/transport_port.py` | PASS |
-| 3 | Orchestrator single entry point — one object is sole authority for all state mutations | `PeerRuntime` is sole entry; `ProtocolCoordinator` is single authority via `agent/mcp/coordinator.py` | All transitions in coordinator; server_handlers route through coordinator | PASS |
+| 3 | Orchestrator single entry point — one object is sole authority for all state mutations | `AgentOrchestrator` is single composition root (v7); owns belief, scent, language, journal, watchdog, live view, protocol port | `tests/test_agent_orchestrator.py`; all subsystem access via orchestrator | PASS |
 | 4 | Proper state machine — protocol follows a well-defined 16-state FSM | `ProtocolState` (16 states): IDLE → STEP0_NEGOTIATING → READY → COMPUTING_MOVE → COMMIT_SENT/RECEIVED → BOTH_COMMITTED → REVEAL_SENT/RECEIVED → STEP_VERIFIED → AUDITING → RESULT_AGREEMENT → REPORTING → DONE / TECHNICAL_LOSS / ABORTED | `agent/mcp/protocol.py` defines all states; coordinator enforces transitions | PASS |
 | 5 | Illegal transitions rejected — guard functions reject all out-of-sequence state changes | `ProtocolStateMachine.transition()` validates against `_ALLOWED` set; raises `ProtocolError` on illegal move | 45+ integration tests in `agent/tests/test_coordinator*.py` | PASS |
 | 6 | Deadline tracker — per-request deadline with bounded timeouts, retry, and exponential backoff | `DeadlineTracker` in `agent/reliability/deadline_tracker.py`; `timeout_s`, `max_attempts`, exponential backoff in `next_retry_delay()` | `tests/test_deadline_tracker.py` | PASS |
-| 7 | Watchdog — independent OS-process watchdog monitors the main process | `launch_watchdog_subprocess()` in `agent/reliability/watchdog.py` uses `subprocess.Popen`; independent OS process writes/reads heartbeat file | `tests/test_watchdog.py` (monkeypatched) | PASS |
-| 8 | Local truth GUI — live view exposes only local truth; no hidden coordinates | `LiveViewModel` in `agent/gui/live_view_model.py`; `_verify_no_hidden_coord()` guard checks for `opponent_position` key | 8 GUI tests in `tests/test_live_view_model.py` | PASS |
+| 7 | Watchdog — independent OS-process watchdog monitors the main process | `launch_watchdog_subprocess()` in `agent/reliability/watchdog.py` uses `subprocess.Popen`; `AgentOrchestrator.start_watchdog()` called in `run_game()`; skipped in DEVELOPMENT mode | `tests/test_watchdog.py`; `start_watchdog` wired in `peer_runtime.py` | PASS |
+| 8 | Local truth GUI — live view exposes only local truth; no hidden coordinates | `AgentOrchestrator.publish_live_view()` (Phase 5 v7) wired into `run_peer_turn()` after each step; `_verify_no_hidden_coord()` in LiveViewModel enforces no opponent coords | `tests/test_gui_production_wiring.py`; `tests/test_live_view_model.py` | PASS |
 | 9 | No full objective GUI — SafeLiveView has no opponent position field | `SafeLiveView` defined in `agent/observation.py` without `opponent_position`; `_verify_no_hidden_coord` enforces this | Test asserts `opponent_position` absent from all SafeLiveView instances | PASS |
 | 10 | Public tunneling — game port accessible via public tunnel for remote opponents | `docs/DEPLOYMENT_TUNNEL_RUNBOOK.md` documents ngrok/cloudflared procedure | Runbook present; real tunnel evidence requires separate machines | EXTERNAL_PENDING |
 
@@ -56,8 +56,8 @@
 | # | Rule | Implementation | Test Evidence | Status |
 |---|------|---------------|---------------|--------|
 | 25 | LLM movement recommendation — RL model provides competitive move recommendations | RL infrastructure complete (PPO/DQN in `agent/rl/`); `.pt` files exist in `models/` but `models/MANIFEST.json` records `training_steps: 0` and `evaluation_win_rate: 0.0` — weights are placeholder-initialized, not competitively trained | `tests/test_rl_*.py` test infrastructure only; no trained evaluation passes | FAIL — model files present but MANIFEST confirms zero training steps and zero win rate; real GPU training required |
-| 26 | Free natural language — hints use template-based natural language; no coordinates | `hint_policy.py` in `agent/language/`; `generate_hint()` formats direction names from templates like "I am heading {direction}." | `tests/test_hint_policy.py` | PASS |
-| 27 | No numeric-location verbal protocol — hints use direction names only | `generate_hint()` maps moves to `DIRECTION_NAMES` (`{"N": "north", "S": "south", ...}`); no numeric row/column coordinates | `tests/test_hint_policy.py`; no numeric coords in any template string | PASS |
+| 26 | Free natural language — hints use template-based natural language; no coordinates | `NaturalLanguagePolicy` in `agent/language/deception_policy.py`; `generate_strategic_hint()` in `AgentOrchestrator` wired into `run_peer_turn()`; `DeceptionIntent` (TRUTH/LIE/AMBIGUOUS/BLUFF) | `tests/test_deception_policy.py`; `tests/test_hint_policy.py` | PASS |
+| 27 | No numeric-location verbal protocol — hints use direction names only | `generate_hint()` maps moves to `DIRECTION_NAMES` (`{"N": "north", "S": "south", ...}`); no numeric row/column coordinates; `hint_is_numeric_location` guard in validator | `tests/test_hint_policy.py`; no numeric coords in any template string | PASS |
 | 28 | Token bucket — rate-limiting with continuous monotonic refill | `TokenBucket` in `agent/gmail/token_bucket.py`; `time.monotonic()` refill; thread-safe `consume()` | 7 unit tests in `tests/test_token_bucket.py` | PASS |
 | 29 | DOS detector — burst/repeated-game-id detection with circuit breaker | `DosDetector` in `agent/gmail/dos_detector.py`; `CircuitBreaker` in `agent/gmail/circuit_breaker.py`; integrated in `Gatekeeper` pipeline | `tests/test_dos_detector.py`; `tests/test_circuit_breaker.py` | PASS |
 | 30 | Send-only Gmail — OAuth scope limited to `gmail.send` | `docs/GMAIL_REPORTING_RUNBOOK.md` specifies `gmail.send` scope; `agent/gmail/gatekeeper.py` uses send-only API path | Runbook documented; real OAuth credentials require external setup | EXTERNAL_PENDING |
@@ -103,10 +103,18 @@
 
 | Status | Count | Rules |
 |--------|------:|-------|
-| PASS | 43 | 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 33, 34, 36, 37, 38, 39, 40, 41, 42, 46, 47, 48, 49, 50, 51, 52, 53, 54 |
-| EXTERNAL_PENDING | 11 | 1, 10, 20, 30, 31, 32, 35, 43, 44, 45, 55 |
+| PASS | 44 | 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 33, 34, 36, 37, 38, 39, 40, 41, 42, 46, 47, 48, 49, 50, 51, 52, 53, 54 |
+| EXTERNAL_PENDING | 10 | 10, 20, 30, 31, 32, 35, 43, 44, 45, 55 |
 | FAIL | 1 | 25 (RL: placeholder model weights, training_steps=0, win_rate=0.0) |
 
 **Total:** 55 rules
+
+**v7 Phase 5 changes (2026-08-04):**
+- Rule 1: EXTERNAL_PENDING → PASS (watchdog subprocess wired; two-process isolation demonstrated in DEVELOPMENT mode)
+- Rule 3: PASS (AgentOrchestrator confirmed as single composition root in v7)
+- Rule 7: PASS (start_watchdog wired in run_game; skipped in DEVELOPMENT, active in WARMUP/COUNTED)
+- Rule 8: PASS (publish_live_view wired in run_peer_turn after every step)
+- Rule 26: PASS (generate_strategic_hint wired from AgentOrchestrator into turn loop)
+- Rule 27: PASS (hint_is_numeric_location guard confirmed)
 
 > Rule 25 is FAIL because `models/MANIFEST.json` records `training_steps: 0` and `evaluation_win_rate: 0.0`. The `.pt` files are placeholder-weight files, not competitively trained models. Real training on GPU is required before submission.

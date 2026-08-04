@@ -92,6 +92,10 @@ class AgentOrchestrator:
         self._watchdog_proc = None
         self._gatekeeper = None
 
+        # Protocol port (5B)
+        self._protocol_port = None
+        self._mapping_hash = ""
+
         logger.info(
             "AgentOrchestrator initialized role=%s mode=%s uid=%s",
             role,
@@ -395,6 +399,63 @@ class AgentOrchestrator:
             timestamp_utc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         )
         self.league_ledger.append(entry)
+
+    # ------------------------------------------------------------------
+    # Phase 5 v7: SafeLiveView publishing and GameProtocolPort wiring
+    # ------------------------------------------------------------------
+
+    def publish_live_view(
+        self,
+        own_position: tuple[int, int],
+        barriers: list[tuple[int, int]],
+        last_hint: str = "",
+        hint_reliability: float = 0.5,
+        turn: int = 0,
+        gamelet: int = 1,
+        score: dict = None,
+        own_barriers_remaining: int = 0,
+        protocol_state: str = "UNKNOWN",
+        your_turn: bool = False,
+        connection_healthy: bool = True,
+    ) -> None:
+        """Publish a SafeLiveView update — no hidden opponent coordinates."""
+        from agent.observation import SafeLiveView
+
+        belief_heatmap = self.belief_engine.belief.prob.tolist()
+        if self.role == "cop":
+            opponent_scent = self.scent_fields.cop_observation_scent()
+        else:
+            opponent_scent = self.scent_fields.thief_observation_scent()
+        view = SafeLiveView(
+            own_position=own_position,
+            belief_heatmap=belief_heatmap,
+            opponent_scent=opponent_scent,
+            last_hint=last_hint,
+            hint_reliability=hint_reliability,
+            turn=turn,
+            gamelet=gamelet,
+            score=score or {"cop": 0, "thief": 0},
+            own_barriers_remaining=own_barriers_remaining,
+            protocol_state=protocol_state,
+            your_turn=your_turn,
+            connection_healthy=connection_healthy,
+        )
+        self.live_view.update(view)
+
+    def create_protocol_port(self, endpoint: str = "", stub_handler=None):
+        """Create the deterministic GameProtocolPort."""
+        from agent.mcp.protocol_port import GameProtocolPort, ProtocolMapping
+        from agent.mcp.transport_port import SSETransportAdapter, StubTransportAdapter
+
+        mapping = ProtocolMapping.default()
+        mapping.lock()
+        if stub_handler is not None:
+            transport = StubTransportAdapter(stub_handler)
+        else:
+            transport = SSETransportAdapter()
+        self._protocol_port = GameProtocolPort(transport, mapping)
+        self._mapping_hash = mapping.mapping_hash
+        return self._protocol_port
 
     def send_report_via_gatekeeper(
         self,
