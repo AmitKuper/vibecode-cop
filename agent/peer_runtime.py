@@ -8,6 +8,10 @@ there is no central third-party judge. Sub-modules:
 
 import logging
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from agent.agent_orchestrator import AgentOrchestrator
 
 from agent.board import Board
 from agent.mcp.client import GameMCPClient
@@ -100,6 +104,7 @@ class PeerRuntime(_CrewMixin):
         self.llm = self._init_llm(llm_dict)
         self.crews: dict = {}
         self.protocol_adapter = None  # set after discovery in run_game()
+        self.orchestrator: AgentOrchestrator | None = None  # lazy-init in run_game()
 
     async def run_game(self, game_id: str, counted_mode: bool | None = None) -> dict:
         """Drive this agent's side of the game to completion.
@@ -112,6 +117,25 @@ class PeerRuntime(_CrewMixin):
         effective_counted_mode = counted_mode if counted_mode is not None else self.counted_mode
         self.game_id = game_id
         self.game_dir = self.games_dir / game_id
+
+        # Initialize AgentOrchestrator (v7 composition root) on first game
+        if self.orchestrator is None:
+            from agent.agent_orchestrator import AgentOrchestrator
+            from agent.runtime_mode import RuntimeMode
+
+            _mode = RuntimeMode.COUNTED if effective_counted_mode else RuntimeMode.DEVELOPMENT
+            try:
+                self.orchestrator = AgentOrchestrator(
+                    role=self.role,
+                    game_uid=game_id,
+                    grid_size=self.config.get("grid_size", 7) if hasattr(self, "config") else 7,
+                    mode=_mode,
+                )
+            except Exception as _orch_err:
+                logger.warning(
+                    "[PeerRuntime/%s] AgentOrchestrator init failed: %s", self.role, _orch_err
+                )
+
         self.game_dir.mkdir(parents=True, exist_ok=True)
         cop_start, thief_start = _load_start_positions()
         self.board = Board(cop_position=cop_start, thief_position=thief_start)

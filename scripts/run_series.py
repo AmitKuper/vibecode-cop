@@ -48,6 +48,17 @@ def _parse_args() -> argparse.Namespace:
         help="Number of gamelets (must be >= 6 per league rules; default: 6)",
     )
     p.add_argument("--config", default="")
+    p.add_argument(
+        "--mode",
+        choices=["counted", "warmup", "development"],
+        default="development",
+        help="Runtime mode (default: development)",
+    )
+    p.add_argument(
+        "--counted",
+        action="store_true",
+        help="Deprecated alias for --mode counted",
+    )
     return p.parse_args()
 
 
@@ -78,6 +89,7 @@ async def run_series(
     group_name: str,
     llm_dict: dict | None = None,
     counted_mode: bool = False,
+    mode: "RuntimeMode | None" = None,  # noqa: F821
 ) -> dict:
     """Run n_gamelets via cop PeerRuntime (P2P, no central judge).
 
@@ -89,11 +101,37 @@ async def run_series(
         n_gamelets: Number of gamelets to play.
         group_name: League group name.
         llm_dict: Optional LLM configuration dict.
-        counted_mode: If True, enforce exactly 6 gamelets (league rule).
-            Raises ValueError if n_gamelets != 6.
+        counted_mode: Deprecated. Use mode=RuntimeMode.COUNTED instead.
+        mode: Runtime mode. COUNTED enforces production constraints.
     """
+    from agent.runtime_mode import RuntimeMode
+
+    # Resolve effective mode — explicit mode= wins; counted_mode=True is the legacy alias
+    if mode is None:
+        mode = RuntimeMode.COUNTED if counted_mode else RuntimeMode.DEVELOPMENT
+    elif counted_mode and mode == RuntimeMode.DEVELOPMENT:
+        mode = RuntimeMode.COUNTED  # --counted overrides --mode development
+
+    # Legacy backward-compatible gamelet check (counted_mode=True path)
     if counted_mode and n_gamelets != 6:
         raise ValueError(f"Counted mode requires exactly 6 gamelets, got {n_gamelets}")
+
+    # New COUNTED mode enforcement (only when mode was explicitly set to COUNTED)
+    if mode == RuntimeMode.COUNTED and not counted_mode:
+        if n_gamelets != 6:
+            raise ValueError(f"COUNTED mode requires exactly 6 gamelets, got {n_gamelets}")
+        if not secret or secret in ("dev-secret-change-me", "change-me", ""):
+            raise ValueError("COUNTED mode rejected: development/placeholder secret")
+        try:
+            import subprocess
+
+            sha = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], capture_output=True, text=True
+            ).stdout.strip()
+        except Exception:
+            sha = "unknown"
+        if not sha or sha == "unknown":
+            raise ValueError("COUNTED mode rejected: git SHA unknown")
     from agent.config.shared_config import load_shared_config
     from agent.peer_runtime import PeerRuntime
 
@@ -220,6 +258,10 @@ async def main() -> int:
 
     llm_dict = config.get("llm") or None
 
+    from agent.runtime_mode import RuntimeMode
+
+    mode = RuntimeMode.COUNTED if args.counted else RuntimeMode(args.mode)
+
     # Counted series must be exactly 6 gamelets (binding league rule).
     if args.n_gamelets != 6:
         logger.error(
@@ -236,6 +278,7 @@ async def main() -> int:
         n_gamelets=n_gamelets,
         group_name=group_name,
         llm_dict=llm_dict,
+        mode=mode,
     )
     print(json.dumps(result, indent=2))
     return 0
