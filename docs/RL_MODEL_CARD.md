@@ -38,3 +38,25 @@ Before this model can be used in counted (competitive) mode:
 - Placeholder model: random-quality performance
 - Not trained on barrier placement strategies
 - Single grid_size (7x7) — not portable to other sizes without retraining
+
+## Phase 4 v7 Status
+
+### Heuristic Baseline (ACTIVE in DEVELOPMENT mode)
+Belief-driven pursuit/evasion heuristic is active via `AgentOrchestrator.select_move_heuristic()`:
+- **Cop**: `pursuit_cop` — greedy Manhattan toward belief centroid (highest-prob cell)
+- **Thief**: `evasion_thief` — greedy Manhattan away from belief centroid
+- Wired into `peer_turn_loop.py` when `runtime.orchestrator` is set and no RL model loaded
+
+### RL Training: EXTERNAL_PENDING
+Real PPO training is required. Current MANIFEST.json has `training_steps=0`.
+
+### Language Policy: NaturalLanguagePolicy
+- `NaturalLanguagePolicy` (in `agent/language/deception_policy.py`) with configurable `bluff_probability`
+- Intents: TRUTH, LIE, AMBIGUOUS, BLUFF — chosen based on belief entropy
+- No numeric coordinates ever appear in hints
+
+### Counted Mode: Rejects Placeholder Model
+`_validate_counted_preconditions()` now validates the MANIFEST.json on startup:
+- Rejects if `training_steps == 0`
+- Rejects if `evaluation_win_rate == 0.0`
+- Rejects if role/grid_size incompatible

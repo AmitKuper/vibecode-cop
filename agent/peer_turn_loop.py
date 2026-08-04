@@ -54,8 +54,33 @@ async def run_peer_turn(
     coord.begin_step(runtime.game_id, gamelet, runtime.role, step)
 
     move = await select_move(runtime, {**board_state, "scent_field": rules.get_scent_field()})
-    intent = "truth"
-    hint = generate_hint(move, intent)
+
+    # 4C: Use belief-driven heuristic when orchestrator is available and no RL model loaded
+    if getattr(runtime, "orchestrator", None) is not None and not getattr(runtime, "rl_model_loaded", False):
+        try:
+            own_pos = tuple(runtime.board.cop_position if runtime.role == "cop" else runtime.board.thief_position)
+            barrier_list = [tuple(b) for b in runtime.board.barriers]
+            barriers_remaining = getattr(runtime.board, "cop_barriers_remaining", 0) if runtime.role == "cop" else 0
+            move = runtime.orchestrator.select_move_heuristic(
+                own_position=own_pos,
+                barriers=barrier_list,
+                barriers_remaining=barriers_remaining,
+            )
+        except Exception as _heuristic_err:
+            logger.warning("[PeerTurn] Heuristic fallback failed at step %d: %s", step, _heuristic_err)
+
+    # 4B: Use strategic language policy when orchestrator is available
+    if getattr(runtime, "orchestrator", None) is not None:
+        try:
+            hint, intent = runtime.orchestrator.generate_strategic_hint(move)
+        except Exception as _lang_err:
+            logger.warning("[PeerTurn] Strategic hint failed at step %d: %s", step, _lang_err)
+            from agent.language.hint_policy import generate_hint as _gen_hint
+            intent = "truth"
+            hint = _gen_hint(move, intent)
+    else:
+        intent = "truth"
+        hint = generate_hint(move, intent)
 
     h_commit, nonce = create_commitment(
         game_id=runtime.game_id,

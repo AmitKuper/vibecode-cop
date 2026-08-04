@@ -43,6 +43,11 @@ class AgentOrchestrator:
         if self.mode == RuntimeMode.COUNTED:
             self._validate_counted_preconditions()
 
+        # Language policy
+        from agent.language.deception_policy import NaturalLanguagePolicy
+
+        self.language_policy: NaturalLanguagePolicy = NaturalLanguagePolicy(role)
+
         # Protocol state
         from agent.mcp.coordinator import get_coordinator
 
@@ -117,6 +122,37 @@ class AgentOrchestrator:
         if model_sha in ("placeholder", "", "unknown"):
             raise ValueError("COUNTED mode rejected: placeholder/missing model SHA")
 
+        # Validate RL model manifest
+        from pathlib import Path
+
+        from agent.rl.model_schema import ModelLoadError, load_manifest
+
+        manifest_path = self.config.get("model_manifest_path", "models/MANIFEST.json")
+        if not Path(manifest_path).exists():
+            raise ValueError(
+                f"COUNTED mode rejected: model manifest not found at {manifest_path}"
+            )
+        try:
+            manifest = load_manifest(manifest_path)
+            if self.role not in manifest:
+                raise ValueError(
+                    f"COUNTED mode rejected: no model for role {self.role!r}"
+                )
+            entry = manifest[self.role]
+            if entry.training_steps == 0:
+                raise ValueError(
+                    "COUNTED mode rejected: model has training_steps=0 (placeholder)"
+                )
+            if entry.evaluation_win_rate == 0.0:
+                raise ValueError(
+                    "COUNTED mode rejected: model has evaluation_win_rate=0.0 (placeholder)"
+                )
+            ok, reason = entry.is_compatible(self.role, self.config.get("grid_size", 7))
+            if not ok:
+                raise ValueError(f"COUNTED mode rejected: model incompatible — {reason}")
+        except ModelLoadError as e:
+            raise ValueError(f"COUNTED mode rejected: {e}")
+
     def get_journal(self, gamelet: int) -> StepJournal:
         """Get or create per-gamelet step journal."""
         from agent.audit.step_journal import StepJournal
@@ -180,10 +216,18 @@ class AgentOrchestrator:
             return evasion_thief(own_position, centroid, barriers, self.grid_size)
 
     def generate_hint(self, move: str, intent: str = "truth") -> str:
-        """Generate free-language hint via language policy."""
-        from agent.language.hint_policy import generate_hint
+        """Generate free-language hint via language policy (legacy interface)."""
+        from agent.language.deception_policy import DeceptionIntent
 
-        return generate_hint(move, intent)
+        intent_enum = DeceptionIntent(intent) if intent in DeceptionIntent._value2member_map_ else DeceptionIntent.TRUTH
+        return self.language_policy.generate(move, intent_enum)
+
+    def generate_strategic_hint(self, move: str) -> tuple[str, str]:
+        """Generate a strategically chosen hint and its intent. Returns (hint, intent_str)."""
+        entropy = self.belief_engine.belief.entropy
+        intent = self.language_policy.choose_intent(step=0, belief_entropy=entropy)
+        hint = self.language_policy.generate(move, intent)
+        return hint, intent.value
 
     def apply_turn(
         self,
