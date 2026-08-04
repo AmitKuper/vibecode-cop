@@ -122,10 +122,7 @@ def local_thief_observation(
     """
     n = board.grid_size
     tx, ty = board.thief_position
-    if cop_scent_field is None:
-        scent_ch = _empty_grid(n)
-    else:
-        scent_ch = cop_scent_field
+    scent_ch = _empty_grid(n) if cop_scent_field is None else cop_scent_field
     return [
         _one_hot(n, tx, ty),
         scent_ch,

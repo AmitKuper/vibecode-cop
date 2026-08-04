@@ -2,6 +2,7 @@
 
 import json
 import logging
+from datetime import UTC, datetime
 from pathlib import Path  # noqa: F401 — used by subclasses via self.games_dir
 
 from agent.mcp.messages import ActionMessage
@@ -55,7 +56,7 @@ class GameStateMixin:
                             "step": step,
                             "cop_move": cop_move,
                             "thief_move": thief_move,
-                            "timestamp": __import__("datetime").datetime.utcnow().isoformat(),
+                            "timestamp": datetime.now(UTC).isoformat(),
                         }
                     )
                     + "\n"

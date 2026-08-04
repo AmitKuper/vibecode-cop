@@ -2,7 +2,7 @@
 
 import json
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
 from agent.mcp.log_replay import load_from_file
@@ -35,7 +35,7 @@ class GameLog:
     ) -> None:
         """Append an event to the log and persist it."""
         event = {
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(UTC).isoformat(),
             "event_type": event_type,
             "role": role,
             "phase": phase,

@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock
-
 
 class TestSymmetricLanguagePolicy:
     """Verify that both active and passive sides use the same language interface."""
@@ -45,7 +43,6 @@ class TestSymmetricLanguagePolicy:
         from agent.peer_agent_passive import _generate_hint
 
         # Run many samples — should NOT always return truth intent
-        intents_seen = set()
         for _ in range(50):
             # The hint itself doesn't tell us the intent, but we can call choose_intent directly
             pass
@@ -124,18 +121,20 @@ class TestSymmetricLanguagePolicy:
 
     def test_choose_intent_varies_with_entropy(self):
         """High entropy should produce more deceptive intents than low entropy."""
-        from agent.language.deception_policy import DeceptionIntent, NaturalLanguagePolicy
-
         import random
+
+        from agent.language.deception_policy import DeceptionIntent, NaturalLanguagePolicy
 
         random.seed(42)
         policy = NaturalLanguagePolicy("cop", bluff_probability=0.5)
 
-        high_entropy_intents = [policy.choose_intent(step=1, belief_entropy=5.0) for _ in range(100)]
-        low_entropy_intents = [policy.choose_intent(step=1, belief_entropy=0.0) for _ in range(100)]
+        high_entropy_intents = [
+            policy.choose_intent(step=1, belief_entropy=5.0) for _ in range(100)
+        ]
+        low_entropy_intents = [
+            policy.choose_intent(step=1, belief_entropy=0.0) for _ in range(100)
+        ]
 
-        # At least some variation should exist at high entropy
-        high_set = set(high_entropy_intents)
         # High entropy → more bluffing/lying, low entropy → more truth
         truth_rate_high = high_entropy_intents.count(DeceptionIntent.TRUTH) / 100
         truth_rate_low = low_entropy_intents.count(DeceptionIntent.TRUTH) / 100

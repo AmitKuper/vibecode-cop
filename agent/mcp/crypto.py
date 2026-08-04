@@ -128,7 +128,6 @@ def build_public_transition_root(
     public_outcome: str = "",
 ) -> str:
     """SHA-256 of all public/agreed state after one step. Non-enumerable (large domain)."""
-    import hashlib, json
     payload = {
         "game_uid": game_uid,
         "gamelet": gamelet,
@@ -158,9 +157,8 @@ def build_private_state_commitment(
     """Salted private local-state commitment. Salt = local_nonce (secret until audit).
 
     Binds own position without exposing it. Non-enumerable because nonce is 32 random bytes.
-    Not just a hash of a small coordinate space (position alone would be enumerable in 7x7=49 cells).
+    Position alone would be enumerable in 7x7=49 cells; the nonce salt prevents that.
     """
-    import hashlib, json
     payload = {
         "game_uid": game_uid,
         "gamelet": gamelet,

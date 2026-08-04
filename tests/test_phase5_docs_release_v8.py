@@ -104,7 +104,6 @@ class TestVerificationManifest:
     def test_manifest_version_is_current(self):
         """Manifest package_version must match pyproject.toml."""
         import json
-
         import tomllib
 
         manifest = json.loads(Path("results/verification_manifest.json").read_text())
@@ -116,8 +115,9 @@ class TestVerificationManifest:
 class TestSafetyNoHiddenCoordInSafeLiveView:
     def test_safe_live_view_has_no_opponent_position_field(self):
         """SafeLiveView must not expose opponent_position."""
-        from agent.observation import SafeLiveView
         import dataclasses
+
+        from agent.observation import SafeLiveView
 
         fields = {f.name for f in dataclasses.fields(SafeLiveView)}
         forbidden = {"opponent_position", "cop_position", "thief_position"}
@@ -126,8 +126,9 @@ class TestSafetyNoHiddenCoordInSafeLiveView:
 
     def test_local_observation_has_no_opponent_position_field(self):
         """LocalObservation must not expose opponent_position."""
-        from agent.observation import LocalObservation
         import dataclasses
+
+        from agent.observation import LocalObservation
 
         fields = {f.name for f in dataclasses.fields(LocalObservation)}
         forbidden = {"opponent_position", "cop_position", "thief_position"}

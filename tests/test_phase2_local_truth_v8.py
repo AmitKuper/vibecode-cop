@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
-
 # ---------------------------------------------------------------------------
 # Recursive leak checker
 # ---------------------------------------------------------------------------
@@ -76,7 +73,7 @@ def test_thief_observation_channel1_is_not_cop_one_hot():
 # ---------------------------------------------------------------------------
 
 def test_build_local_observation_no_hidden_coords():
-    """build_local_observation must not expose cop_position, thief_position, or opponent_position."""
+    """build_local_observation must not expose cop_position, thief_position, opponent_position."""
     from agent.peer_turn_helpers import build_local_observation
 
     obs = build_local_observation(
@@ -103,8 +100,8 @@ def test_build_local_observation_no_hidden_coords():
 
 def test_build_board_state_has_both_positions():
     """build_board_state is the private commitment dict — it must contain both positions."""
-    from agent.peer_turn_helpers import build_board_state
     from agent.board import Board
+    from agent.peer_turn_helpers import build_board_state
 
     class _FakeRuntime:
         role = "cop"
@@ -115,7 +112,7 @@ def test_build_board_state_has_both_positions():
 
     bs = build_board_state(_FakeRuntime())
     assert "cop_position" in bs, "build_board_state must include cop_position (private commitment)"
-    assert "thief_position" in bs, "build_board_state must include thief_position (private commitment)"
+    assert "thief_position" in bs, "build_board_state must include thief_position"
 
 
 # ---------------------------------------------------------------------------
@@ -149,7 +146,7 @@ def test_crew_mixin_build_observation_no_grid_state():
 
 def test_thief_observation_shape():
     """thief_observation must return exactly 4 channels of shape (grid_size, grid_size)."""
-    from agent.rl.observation import thief_observation, observation_shape
+    from agent.rl.observation import observation_shape, thief_observation
 
     n = 7
     board = _make_board(n)
@@ -201,12 +198,12 @@ def test_build_private_state_commitment_non_enumerable():
     """Different positions → different hashes; different nonces → different hashes."""
     from agent.mcp.crypto import build_private_state_commitment
 
-    base_kwargs = dict(
-        own_barriers_remaining=14,
-        step=1,
-        gamelet=1,
-        game_uid="game-123",
-    )
+    base_kwargs = {
+        "own_barriers_remaining": 14,
+        "step": 1,
+        "gamelet": 1,
+        "game_uid": "game-123",
+    }
 
     nonce = "a" * 64  # fixed nonce
 
@@ -217,7 +214,7 @@ def test_build_private_state_commitment_non_enumerable():
     nonce2 = "b" * 64
     h3 = build_private_state_commitment(own_position=(0, 0), local_nonce=nonce, **base_kwargs)
     h4 = build_private_state_commitment(own_position=(0, 0), local_nonce=nonce2, **base_kwargs)
-    assert h3 != h4, "Same position with different nonces must produce different hashes (non-enumerable)"
+    assert h3 != h4, "Same position with different nonces must produce different hashes"
 
     # Verify hex length
     assert len(h1) == 64

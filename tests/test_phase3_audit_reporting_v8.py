@@ -3,9 +3,7 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from unittest.mock import MagicMock, patch
-
 
 # ---------------------------------------------------------------------------
 # Bilateral AuditSummary exchange tests
@@ -23,8 +21,10 @@ class TestBilateralAuditSummary:
         rt.game_id = "test-game_g1"
         rt.game_dir = tmp_path
         rt._my_commits = {
-            1: {"nonce": "nonce-1", "h_commit": "aaa", "move": "N", "hint": "", "intent": "truth", "state_hash": "s1"},
-            2: {"nonce": "nonce-2", "h_commit": "bbb", "move": "S", "hint": "", "intent": "truth", "state_hash": "s2"},
+            1: {"nonce": "nonce-1", "h_commit": "aaa", "move": "N",
+                "hint": "", "intent": "truth", "state_hash": "s1"},
+            2: {"nonce": "nonce-2", "h_commit": "bbb", "move": "S",
+                "hint": "", "intent": "truth", "state_hash": "s2"},
         }
         return rt
 
@@ -74,7 +74,10 @@ class TestBilateralAuditSummary:
         """Active side parses and verifies opponent's signed AuditSummary."""
         import asyncio
 
-        from agent.audit.audit_summary import AuditSummary, SignedAuditSummary, create_signed_audit_summary
+        from agent.audit.audit_summary import (
+            AuditSummary,
+            create_signed_audit_summary,
+        )
         from agent.peer_runtime_audit import do_final_audit
         from agent.step0.signing import generate_key_pair
 
@@ -173,7 +176,6 @@ class TestLeagueLedgerWiring:
         """LeagueLedger records are written to the work_dir file."""
         from agent.agent_orchestrator import AgentOrchestrator
         from agent.runtime_mode import RuntimeMode
-        from agent.step0.league_ledger import LeagueLedger
 
         orch = AgentOrchestrator(
             role="cop",
@@ -200,7 +202,6 @@ class TestGatekeeperWiring:
     def test_send_report_via_gatekeeper_calls_sender(self, tmp_path):
         """Gatekeeper.send() is invoked with valid JSON body."""
         from agent.agent_orchestrator import AgentOrchestrator
-        from agent.gmail.gatekeeper import Gatekeeper
         from agent.runtime_mode import RuntimeMode
 
         sent = []
@@ -265,7 +266,6 @@ class TestGatekeeperWiring:
 class TestPeerAgentRuntimeFinalAuditRouting:
     def test_on_action_routes_final_audit_to_handler(self, tmp_path):
         """PeerAgentRuntime._on_action() calls handle_passive_final_audit for final_audit."""
-        from agent.peer_agent_passive import handle_passive_final_audit
         from agent.peer_agent_runtime import PeerAgentRuntime
 
         with (

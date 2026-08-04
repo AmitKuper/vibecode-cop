@@ -35,7 +35,12 @@ async def do_final_audit(
     on_audit_begin → on_final_audit_complete → on_done so that the SM
     reaches DONE rather than staying in STEP_VERIFIED indefinitely.
     """
-    from agent.audit.audit_summary import AuditSummary, SignedAuditSummary, create_signed_audit_summary, verify_audit_summary
+    from agent.audit.audit_summary import (
+        AuditSummary,
+        SignedAuditSummary,
+        create_signed_audit_summary,
+        verify_audit_summary,
+    )
     from agent.mcp.coordinator import get_coordinator
     from agent.step0.signing import generate_key_pair
 
@@ -81,6 +86,7 @@ async def do_final_audit(
     )
     my_signed = create_signed_audit_summary(my_summary, priv_key)
     details["my_audit_summary_hash"] = my_summary.summary_hash()
+    details["my_signed_summary"] = json.dumps(my_signed.to_dict())
 
     # Verify opponent's SignedAuditSummary if provided
     opp_summary_json = resp.get("signed_audit_summary")
