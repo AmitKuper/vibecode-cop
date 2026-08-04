@@ -1,11 +1,11 @@
 {
   "schema_version": "2.0",
   "package_version": "3.0.0",
-  "generated_by": "v8-phase5",
-  "cop_sha": "ac8cbdcd61ec3bfbe27c88836d88fc72dbf813b0",
-  "thief_sha": "5f62111f09fe812cde4cba8ee06283240778a955",
-  "cop_tests": 1173,
-  "thief_tests": 1143,
+  "generated_by": "v8-self-review",
+  "cop_sha": "566792c",
+  "thief_sha": "710f325",
+  "cop_tests": 1227,
+  "thief_tests": 1181,
   "coverage_threshold": 85,
   "ruff_violations": 0,
   "p0_bugs_fixed": [
@@ -16,9 +16,17 @@
     "generate_strategic_hint() hardcoded step=0",
     "passive side always used truth intent (not symmetric)"
   ],
-  "rules_pass": 43,
+  "self_review_fixes": [
+    "agent/mcp/crypto.py: removed inline imports, fixed docstring line length",
+    "agent/peer_runtime.py: top-level hashlib/json imports, fixed long logger lines",
+    "agent/peer_runtime_audit.py: multi-line import, my_signed stored in audit details",
+    "agent/rl/observation.py: SIM108 ternary for cop_scent_field",
+    "agent/mcp/log.py: datetime.utcnow() -> datetime.now(UTC)",
+    "agent/orchestrator_game.py: datetime.utcnow() -> datetime.now(UTC)"
+  ],
+  "rules_pass": 45,
   "rules_external_pending": 10,
-  "rules_fail": 2,
+  "rules_fail": 0,
   "external_pending": [
     "real_opponent_match",
     "trained_rl_checkpoint",
