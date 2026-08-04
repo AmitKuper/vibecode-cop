@@ -167,6 +167,7 @@ async def run_series(
                 games_dir=games_dir,
                 group_name=group_name,
                 llm_dict=llm_dict,
+                counted_mode=(mode == RuntimeMode.COUNTED),
             )
             result = await runtime.run_game(game_id=game_id)
             winner = result.get("winner", "unknown")

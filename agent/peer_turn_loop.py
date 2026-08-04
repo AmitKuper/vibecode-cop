@@ -14,6 +14,8 @@ import asyncio
 import logging
 from typing import TYPE_CHECKING
 
+from agent.domain.transition import apply_joint_action
+from agent.domain.types import DomainState
 from agent.language.hint_policy import generate_hint
 from agent.mcp.coordinator import gamelet_from_game_id, get_coordinator
 from agent.mcp.crypto import create_commitment, hash_game_state
@@ -82,6 +84,7 @@ async def run_peer_turn(
         except Exception as _lang_err:
             logger.warning("[PeerTurn] Strategic hint failed at step %d: %s", step, _lang_err)
             from agent.language.hint_policy import generate_hint as _gen_hint
+
             intent = "truth"
             hint = _gen_hint(move, intent)
     else:
@@ -166,14 +169,64 @@ async def run_peer_turn(
     opp_move = _MOVE_ALIASES.get(opp_move_short, opp_move_short)
     cop_move, thief_move = (my_move, opp_move) if runtime.role == "cop" else (opp_move, my_move)
 
-    if not rules.validate_move("cop", cop_move):
-        logger.warning(f"[PeerTurn] Invalid cop move {cop_move!r} at step {step}, using STAY")
-        cop_move = "STAY"
-    if not rules.validate_move("thief", thief_move):
-        logger.warning(f"[PeerTurn] Invalid thief move {thief_move!r} at step {step}, using STAY")
-        thief_move = "STAY"
+    # Use canonical apply_joint_action so PLACE_* barrier actions are handled correctly
+    # on the active side (preventing board divergence with the passive/reveal path).
+    _place_actions = frozenset({"PLACE_N", "PLACE_S", "PLACE_E", "PLACE_W"})
+    _is_place = cop_move in _place_actions
 
-    rules.apply_moves(cop_move, thief_move)
+    if not _is_place:
+        # Legacy validation for movement-only actions
+        if not rules.validate_move("cop", cop_move):
+            logger.warning(f"[PeerTurn] Invalid cop move {cop_move!r} at step {step}, using STAY")
+            cop_move = "STAY"
+        if not rules.validate_move("thief", thief_move):
+            logger.warning(
+                f"[PeerTurn] Invalid thief move {thief_move!r} at step {step}, using STAY"
+            )
+            thief_move = "STAY"
+        rules.apply_moves(cop_move, thief_move)
+    else:
+        # Canonical domain engine: handles PLACE_* correctly (barrier placement + STAY for cop)
+        if not rules.validate_move("thief", thief_move):
+            logger.warning(
+                f"[PeerTurn] Invalid thief move {thief_move!r} at step {step}, using STAY"
+            )
+            thief_move = "STAY"
+        domain_state = DomainState(
+            turn=runtime.board.turn,
+            grid_size=runtime.board.grid_size,
+            cop_position=tuple(runtime.board.cop_position),
+            thief_position=tuple(runtime.board.thief_position),
+            barriers=[tuple(b) for b in runtime.board.barriers],
+            cop_barriers_remaining=runtime._cop_barriers_remaining,
+            move_history=[],
+            scent_grid=rules.get_scent_field() or [],
+        )
+        tr = apply_joint_action(domain_state, cop_move, thief_move)
+        ns = tr.new_state
+        # Sync canonical result back into runtime.board (legacy Board object)
+        runtime.board.cop_position = list(ns.cop_position)
+        runtime.board.thief_position = list(ns.thief_position)
+        runtime.board.barriers = [list(b) for b in ns.barriers]
+        runtime.board.turn = ns.turn
+        runtime._cop_barriers_remaining = ns.cop_barriers_remaining
+        runtime.board.move_history.append(
+            {
+                "turn": domain_state.turn,
+                "cop_move": cop_move,
+                "thief_move": thief_move,
+                "cop_position": list(ns.cop_position),
+                "thief_position": list(ns.thief_position),
+            }
+        )
+        rules.update_scent()
+        if not tr.cop_action_legal:
+            logger.warning(
+                f"[PeerTurn] PLACE action {cop_move!r} illegal at step {step}: {tr.error}"
+            )
+        if tr.barrier_placed:
+            logger.info(f"[PeerTurn] step={step} cop placed barrier at {tr.barrier_position}")
+
     logger.info(
         f"[PeerTurn] step={step} cop={cop_move} thief={thief_move} "
         f"cop_pos={runtime.board.cop_position} thief_pos={runtime.board.thief_position}"
@@ -192,9 +245,7 @@ async def run_peer_turn(
         try:
             _board = runtime.board
             _role = runtime.role
-            own_pos = tuple(
-                _board.cop_position if _role == "cop" else _board.thief_position
-            )
+            own_pos = tuple(_board.cop_position if _role == "cop" else _board.thief_position)
             barrier_list = [tuple(b) for b in _board.barriers]
             received_hint = opp_reveal.get("hint", "")
             if hasattr(coord, "get_state"):
@@ -211,9 +262,7 @@ async def run_peer_turn(
                 your_turn=False,
             )
         except Exception as _lv_err:
-            logger.debug(
-                "[PeerTurn] publish_live_view failed at step %d: %s", step, _lv_err
-            )
+            logger.debug("[PeerTurn] publish_live_view failed at step %d: %s", step, _lv_err)
 
     # 3D: Record step evidence in StepJournal
     if getattr(runtime, "orchestrator", None) is not None:

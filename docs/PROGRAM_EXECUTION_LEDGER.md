@@ -23,7 +23,8 @@ Test counts are measured at phase end (cop repo).
 
 | v7 P3 | b5de5b1 (cop) / b4dba23 (thief) | 7fddd0d (cop) / abc300e (thief) | 1120/1119 | 1163/1162 | Wire Step-0, StepJournal, Watchdog, LeagueLedger into production lifecycle |
 | v7 P4 | 7fddd0d (cop) / abc300e (thief) | 7fddd0d (cop) / abc300e (thief) | 1151/1150 | 1163/1162 | Heuristic wired, strategic language policy, belief updates in turn loop |
-| v7 P5 | 7fddd0d (cop) / abc300e (thief) | (this commit) | 1163/1162 | 1171+ | SafeLiveView wired to AgentOrchestrator, GameProtocolPort, accurate README, v3.0-code-ready tag |
+| v7 P5 | 7fddd0d (cop) / abc300e (thief) | 9acbe85 (cop) | 1163/1162 | 1171 | SafeLiveView wired to AgentOrchestrator, GameProtocolPort, accurate README, v3.0-code-ready tag |
+| v8 P1 | 9acbe85 (cop) / 336618d (thief) | (this commit) | 1171/1170 | 1182/1181+ | Fix P0-1: counted_mode propagated to PeerRuntime in run_series; Fix P0-2: PLACE_* actions use apply_joint_action so active board matches passive board |
 
 ## Notes
 
