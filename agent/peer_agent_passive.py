@@ -63,10 +63,33 @@ def handle_passive_commit(rt: PeerRuntime, game_id: str, message, rules_ref: lis
         "turn": rt.board.turn,
     }
     state_hash = hash_game_state(board_state)
-    move = rt._select_move_rl(rt._build_observation(board_state))
-    if not move:
-        legal = rt.board.get_legal_moves(rt.role)
-        move = legal[0] if legal else "STAY"
+    from agent.domain.runtime_transition import legal_actions_for_role
+
+    rules = rules_ref[0] if rules_ref else RulesEngine(rt.board, max_turns=rt.max_turns)
+    legal = legal_actions_for_role(rt, rules, rt.role)
+    if rt.counted_mode:
+        if rt.orchestrator is None or not rt.rl_model_loaded:
+            raise RuntimeError("counted recurrent movement policy is unavailable")
+        own_position = tuple(rt.board.cop_position if rt.role == "cop" else rt.board.thief_position)
+        move = rt.orchestrator.select_trained_move(
+            own_position=own_position,
+            barriers=[tuple(item) for item in rt.board.barriers],
+            barriers_remaining=rt._cop_barriers_remaining if rt.role == "cop" else 0,
+            legal_actions=legal,
+            step=message.step,
+            gamelet=rt._gamelet_number(game_id),
+            last_hint=rt._last_opponent_hint,
+        )
+    else:
+        move = rt._select_move_rl(rt._build_observation(board_state))
+        if not move:
+            move = legal[0]
+    selected = {"NORTH": "N", "SOUTH": "S", "EAST": "E", "WEST": "W"}.get(move, move)
+    if selected not in legal:
+        if rt.counted_mode:
+            raise RuntimeError(f"Counted policy selected illegal action {move!r}")
+        selected = legal[0]
+    move = selected
     # Use orchestrator's symmetric language policy if available
     _orch = getattr(rt, "orchestrator", None)
     if _orch is not None:
@@ -109,8 +132,8 @@ def handle_passive_commit(rt: PeerRuntime, game_id: str, message, rules_ref: lis
 
 def handle_passive_reveal(rt: PeerRuntime, game_id: str, message, rules_ref: list) -> dict:
     """Return own reveal when cop sends its reveal; apply moves to local board."""
+    from agent.domain.runtime_transition import IllegalJointActionError, apply_runtime_transition
     from agent.peer_audit import append_opponent_reveal
-    from agent.rl.env_helpers import apply_place_action
 
     payload = rt._my_commits.get(message.step)
     if not payload:
@@ -131,28 +154,25 @@ def handle_passive_reveal(rt: PeerRuntime, game_id: str, message, rules_ref: lis
 
     rules = rules_ref[0] if rules_ref else RulesEngine(rt.board, max_turns=rt.max_turns)
 
-    # Handle cop barrier placement: PLACE_* places a barrier then cop stays.
-    if cop_move.startswith("PLACE_"):
-        barriers_remaining = getattr(rt, "_cop_barriers_remaining", 14)
-        new_remaining = apply_place_action(
-            rt.board, cop_move, rt.board.grid_size, barriers_remaining
-        )
-        rt._cop_barriers_remaining = new_remaining
-        cop_move = "STAY"
-        if list(rt.board.thief_position) in rt.board.barriers:
-            rt.board.turn += 1
-            return {
-                "ok": True,
-                "phase": "reveal",
-                "move": payload["move"],
-                "hint": payload["hint"],
-                "intent": payload["intent"],
-                "state_hash": payload["state_hash"],
-                "captured": True,
-            }
+    try:
+        transition = apply_runtime_transition(rt, rules, cop_move, thief_move)
+    except IllegalJointActionError as exc:
+        return {"ok": False, "error": f"Protocol violation: {exc}"}
 
-    if rules.validate_move("cop", cop_move) and rules.validate_move("thief", thief_move):
-        rules.apply_moves(cop_move, thief_move)
+    rt._last_opponent_hint = opp_reveal["hint"]
+    if rt.orchestrator is not None:
+        rt.orchestrator.update_scent_and_belief(
+            tuple(rt.board.cop_position),
+            tuple(rt.board.thief_position),
+            [tuple(item) for item in rt.board.barriers],
+        )
+        rt.orchestrator.record_step_evidence(
+            gamelet=rt._gamelet_number(game_id),
+            step=message.step,
+            local_commitment=payload["h_commit"],
+            local_move=payload["move"],
+            received_move=raw_opp_move,
+        )
 
     return {
         "ok": True,
@@ -161,6 +181,7 @@ def handle_passive_reveal(rt: PeerRuntime, game_id: str, message, rules_ref: lis
         "hint": payload["hint"],
         "intent": payload["intent"],
         "state_hash": payload["state_hash"],
+        "captured": transition.capture or transition.trapped,
     }
 
 
@@ -170,10 +191,14 @@ def handle_passive_final_audit(rt: PeerRuntime, game_id: str, message) -> dict:
     Runs local audit with received opponent nonces, creates and signs AuditSummary,
     returns own nonces + signed AuditSummary for bilateral consensus.
     """
+    import hashlib
+    import json
     import time
 
     from agent.audit.audit_summary import AuditSummary, create_signed_audit_summary
-    from agent.peer_audit import run_final_audit
+    from agent.mcp.coordinator import gamelet_from_game_id
+    from agent.peer_audit import load_opponent_commits, run_final_audit
+    from agent.step0.declaration import SignedDeclaration
     from agent.step0.signing import generate_key_pair
 
     # 1. Return own nonces
@@ -186,26 +211,49 @@ def handle_passive_final_audit(rt: PeerRuntime, game_id: str, message) -> dict:
     audit_ok, details = run_final_audit(rt.game_dir, game_id, opp_role, opp_nonces)
 
     # 3. Create signed AuditSummary
-    priv_key, pub_key = generate_key_pair()
+    priv_key = getattr(rt, "_signing_private_key", None)
+    pub_key = getattr(rt, "_signing_public_key", None)
+    if not isinstance(priv_key, bytes) or not isinstance(pub_key, bytes):
+        priv_key, pub_key = generate_key_pair()
     pub_hex = pub_key.hex()
     audit_status = details.get("audit_status", "NOT_APPLICABLE")
+    gamelet = rt._gamelet_number(game_id)
+    if not isinstance(gamelet, int):
+        gamelet = gamelet_from_game_id(game_id)
+    local_step0 = rt._local_step0.get(game_id)
+    declaration_hash = ""
+    if isinstance(local_step0, SignedDeclaration):
+        declaration_hash = local_step0.declaration.declaration_hash()
+    transcript_root = rt.orchestrator.get_journal(gamelet).transcript_root()
+    if not isinstance(transcript_root, str):
+        transcript_root = ""
+    final_state_hash = hashlib.sha256(
+        json.dumps(rt.board.to_dict(), sort_keys=True, default=str).encode()
+    ).hexdigest()
     summary = AuditSummary(
         game_uid=game_id,
-        gamelet=0,
-        expected_steps=len(rt._my_commits),
-        verified_steps=sum(1 for v in details.values() if v == "ok"),
+        gamelet=gamelet,
+        transcript_root=transcript_root,
+        declaration_hash=declaration_hash,
+        config_hash=rt.config_sha256 if isinstance(rt.config_sha256, str) else "",
+        expected_steps=len(load_opponent_commits(rt.game_dir)),
+        verified_steps=sum(1 for k, v in details.items() if k.startswith("step_") and v == "ok"),
         audit_status=audit_status,
         mismatch_evidence="" if audit_ok else str(details),
+        local_final_state_hash=final_state_hash,
         timestamp_utc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        signing_key_id=(
+            rt._signing_key_id if isinstance(rt._signing_key_id, str) else "legacy-ephemeral"
+        ),
         public_key_hex=pub_hex,
     )
     signed = create_signed_audit_summary(summary, priv_key)
-
-    import json
+    rt._local_audit_summaries[game_id] = signed
 
     return {
         "ok": True,
         "phase": "final_audit",
         "nonces": my_nonces,
         "signed_audit_summary": json.dumps(signed.to_dict()),
+        "audit_ok": audit_ok,
     }

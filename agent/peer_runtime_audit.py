@@ -25,6 +25,7 @@ async def do_final_audit(
     now_fn,
     *,
     gamelet: int = 0,
+    runtime=None,
 ) -> tuple[bool, dict]:
     """Send FINAL_AUDIT to opponent, receive their nonces, verify locally.
 
@@ -60,7 +61,17 @@ async def do_final_audit(
         nonces=my_nonces,
     )
     try:
-        resp = await opponent_client.action(game_id, msg)
+        if runtime is not None and runtime.protocol_adapter is not None:
+            from agent.peer_turn_helpers import _call_adapted_phase
+
+            resp = await _call_adapted_phase(
+                runtime,
+                "final_audit",
+                msg.to_dict(),
+                {"nonces": my_nonces},
+            )
+        else:
+            resp = await opponent_client.action(game_id, msg)
     except Exception as exc:
         logger.error(f"[PeerRuntime] FINAL_AUDIT call failed: {exc}")
         return False, {"error": str(exc)}
@@ -71,43 +82,86 @@ async def do_final_audit(
     logger.info(f"[PeerRuntime/{role}] Final audit: ok={audit_ok} details={details}")
 
     # Create and sign own AuditSummary
-    priv_key, pub_key = generate_key_pair()
+    if runtime is not None:
+        priv_key = runtime._signing_private_key
+        pub_key = runtime._signing_public_key
+        signing_key_id = runtime._signing_key_id
+        local_step0 = runtime._local_step0.get(game_id)
+        declaration_hash = local_step0.declaration.declaration_hash() if local_step0 else ""
+        transcript_root = runtime.orchestrator.get_journal(gamelet).transcript_root()
+        local_final_state_hash = (
+            __import__("hashlib")
+            .sha256(json.dumps(runtime.board.to_dict(), sort_keys=True).encode())
+            .hexdigest()
+        )
+    else:
+        priv_key, pub_key = generate_key_pair()
+        signing_key_id = "legacy-ephemeral"
+        declaration_hash = ""
+        transcript_root = ""
+        local_final_state_hash = ""
     pub_hex = pub_key.hex()
     audit_status = details.get("audit_status", "NOT_APPLICABLE")
     my_summary = AuditSummary(
         game_uid=game_id,
         gamelet=gamelet,
-        expected_steps=len(my_commits),
-        verified_steps=sum(1 for v in details.values() if v == "ok"),
+        transcript_root=transcript_root,
+        declaration_hash=declaration_hash,
+        config_hash=config_sha256,
+        expected_steps=len(load_opponent_commits(game_dir)),
+        verified_steps=sum(1 for k, v in details.items() if k.startswith("step_") and v == "ok"),
         audit_status=audit_status,
         mismatch_evidence="" if audit_ok else str(details),
+        local_final_state_hash=local_final_state_hash,
         timestamp_utc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        signing_key_id=signing_key_id,
         public_key_hex=pub_hex,
     )
     my_signed = create_signed_audit_summary(my_summary, priv_key)
     details["my_audit_summary_hash"] = my_summary.summary_hash()
-    details["my_signed_summary"] = json.dumps(my_signed.to_dict())
+    details["my_signed_summary"] = my_signed.to_dict()
+    if runtime is not None:
+        runtime._local_audit_summaries[game_id] = my_signed
 
     # Verify opponent's SignedAuditSummary if provided
-    opp_summary_json = resp.get("signed_audit_summary")
-    if opp_summary_json:
+    opp_summary_payload = resp.get("signed_audit_summary")
+    if opp_summary_payload:
         try:
-            opp_signed = SignedAuditSummary.from_dict(json.loads(opp_summary_json))
-            opp_valid = verify_audit_summary(opp_signed)
+            if isinstance(opp_summary_payload, str):
+                opp_summary_payload = json.loads(opp_summary_payload)
+            opp_signed = SignedAuditSummary.from_dict(opp_summary_payload)
+            expected_key = None
+            if runtime is not None:
+                remote_step0 = runtime._remote_step0.get(game_id)
+                if remote_step0 is None and runtime.counted_mode:
+                    raise ValueError("missing remote Step-0 identity")
+                if remote_step0 is not None:
+                    expected_key = bytes.fromhex(remote_step0.declaration.public_key_hex)
+            opp_valid = verify_audit_summary(opp_signed, expected_key)
+            opp_valid = opp_valid and opp_signed.summary.game_uid == game_id
+            opp_valid = opp_valid and opp_signed.summary.gamelet == gamelet
+            if runtime is not None:
+                opp_valid = opp_valid and opp_signed.summary.config_hash == config_sha256
             details["opponent_audit_summary_hash"] = opp_signed.summary.summary_hash()
             details["opponent_audit_verified"] = opp_valid
             details["opponent_audit_status"] = opp_signed.summary.audit_status
             if not opp_valid:
                 logger.warning("[PeerRuntime/%s] Opponent AuditSummary signature invalid", role)
                 audit_ok = False
+            elif runtime is not None:
+                runtime._remote_audit_summaries[game_id] = opp_signed
         except Exception as exc:
             logger.warning("[PeerRuntime/%s] Failed to parse opponent AuditSummary: %s", role, exc)
             details["opponent_audit_parse_error"] = str(exc)
+            audit_ok = False
+    elif runtime is not None and runtime.counted_mode:
+        details["opponent_audit_parse_error"] = "missing signed audit summary"
+        audit_ok = False
 
     if audit_ok:
-        # Advance SM: AUDITING → RESULT_AGREEMENT → DONE
+        # Advance SM: AUDITING → RESULT_AGREEMENT.  DONE is authorized only
+        # after the bilateral byte-identical ResultAgreement.
         coord.on_final_audit_complete(game_id, gamelet, role)
-        coord.on_done(game_id, gamelet, role)
     else:
         coord.on_technical_loss(game_id, gamelet, role, reason="audit_failed")
 

@@ -90,6 +90,7 @@ async def run_series(
     llm_dict: dict | None = None,
     counted_mode: bool = False,
     mode: "RuntimeMode | None" = None,  # noqa: F821
+    orchestrator_config: dict | None = None,
 ) -> dict:
     """Run n_gamelets via cop PeerRuntime (P2P, no central judge).
 
@@ -126,8 +127,8 @@ async def run_series(
             import subprocess
 
             sha = subprocess.check_output(
-                ["git", "rev-parse", "HEAD"], capture_output=True, text=True
-            ).stdout.strip()
+                ["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL, text=True
+            ).strip()
         except Exception:
             sha = "unknown"
         if not sha or sha == "unknown":
@@ -151,6 +152,18 @@ async def run_series(
     gamelets: list[dict] = []
     cop_total = 0
     thief_total = 0
+    runtime = PeerRuntime(
+        role="cop",
+        secret=secret,
+        config_sha256=config_sha256,
+        opponent_url=thief_url,
+        games_dir=games_dir,
+        group_name=group_name,
+        llm_dict=llm_dict,
+        my_endpoint=(orchestrator_config or {}).get("my_endpoint", ""),
+        counted_mode=mode == RuntimeMode.COUNTED,
+        orchestrator_config=orchestrator_config,
+    )
 
     for idx in range(1, n_gamelets + 1):
         gamelet_label = f"g{idx:02d}"
@@ -158,17 +171,6 @@ async def run_series(
         logger.info(f"[run_series] Gamelet {gamelet_label}: {game_id}")
 
         try:
-            # Each gamelet gets a fresh PeerRuntime so board state is reset
-            runtime = PeerRuntime(
-                role="cop",
-                secret=secret,
-                config_sha256=config_sha256,
-                opponent_url=thief_url,
-                games_dir=games_dir,
-                group_name=group_name,
-                llm_dict=llm_dict,
-                counted_mode=(mode == RuntimeMode.COUNTED),
-            )
             result = await runtime.run_game(game_id=game_id)
             winner = result.get("winner", "unknown")
             audit_ok = result.get("audit_ok", False)
@@ -194,6 +196,8 @@ async def run_series(
                 "final_step": result.get("final_step"),
             }
         except Exception as exc:
+            if mode == RuntimeMode.COUNTED:
+                raise
             logger.error(f"[run_series] Gamelet {gamelet_label} failed: {exc}", exc_info=True)
             gamelet_record = {
                 "gamelet": gamelet_label,
@@ -225,6 +229,37 @@ async def run_series(
         "started_at": started_at,
         "ended_at": datetime.now(UTC).isoformat(),
     }
+
+    if mode == RuntimeMode.COUNTED:
+        from agent.mcp.coordinator import gamelet_from_game_id, get_coordinator
+        from agent.peer_result import exchange_series_result
+
+        agreement_artifact = await exchange_series_result(runtime, series_result)
+        series_result["result_agreement"] = agreement_artifact
+        signed = runtime._signed_series_result
+        last_game_id = gamelets[-1]["game_id"]
+        remote_sig = agreement_artifact["remote_signature_hex"]
+        result_hash = signed.agreement.agreement_hash()
+        step0 = runtime._step0_agreements[last_game_id]
+        runtime.orchestrator.record_match_in_ledger(
+            opponent_id=runtime._remote_step0[last_game_id].declaration.group_id,
+            match_id=series_id,
+            counted=True,
+            declaration_hash=step0.agreement_hash,
+            result_hash=result_hash,
+            both_result_signatures=[signed.signature_hex, remote_sig],
+        )
+        delivery_id = runtime.orchestrator.send_report_via_gatekeeper(
+            idempotency_key=f"{series_id}_{runtime.role}",
+            game_id=series_id,
+            result_json=json.dumps(series_result, sort_keys=True, default=str),
+        )
+        series_result["report_delivery_id"] = delivery_id
+        get_coordinator().on_done(
+            last_game_id,
+            gamelet_from_game_id(last_game_id, strict=True),
+            runtime.role,
+        )
 
     out_path = games_dir / f"result_{series_id}_series.json"
     out_path.parent.mkdir(parents=True, exist_ok=True)

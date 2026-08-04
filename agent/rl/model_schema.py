@@ -26,6 +26,8 @@ class ModelManifestEntry:
     belief_schema_version: str
     inference_mode: str  # "argmax"|"sample"|"low_temp"|"top_k_mix"
     grid_size: int
+    artifact: str = ""
+    architecture: str = ""
     cop_actions: list = field(default_factory=lambda: list(COP_ACTION_NAMES))
     thief_actions: list = field(default_factory=lambda: list(THIEF_ACTION_NAMES))
     random_seed: int = 42
@@ -46,6 +48,9 @@ class ModelManifestEntry:
         if self.action_schema_version != CURRENT_ACTION_SCHEMA_VERSION:
             cur = CURRENT_ACTION_SCHEMA_VERSION
             return False, f"action schema {self.action_schema_version} != {cur}"
+        if self.belief_schema_version != CURRENT_BELIEF_SCHEMA_VERSION:
+            cur = CURRENT_BELIEF_SCHEMA_VERSION
+            return False, f"belief schema {self.belief_schema_version} != {cur}"
         return True, ""
 
 

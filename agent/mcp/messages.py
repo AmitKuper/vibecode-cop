@@ -32,6 +32,7 @@ class MessagePhase(Enum):
     FINAL_AUDIT = "final_audit"
     ABORT = "abort"
     GAME_END = "game_end"
+    RESULT_AGREEMENT = "result_agreement"
 
 
 class MessageType(Enum):

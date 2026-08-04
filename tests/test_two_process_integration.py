@@ -18,6 +18,7 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -99,8 +100,8 @@ def _make_reveal_msg(game_id: str, step: int = 1, role: str = "cop") -> ActionMe
         config_sha256=CONFIG_SHA256,
         timestamp=_now(),
         phase="reveal",
-        move="N",
-        hint="Moving north",
+        move="E",
+        hint="Moving east",
         intent="truth",
         state_hash="c" * 64,
     )
@@ -763,6 +764,13 @@ class TestFix1FailClosedHandshake:
             opponent_url="http://localhost:9999/mcp",
             counted_mode=True,
         )
+        from agent.step0.declaration import PeerDeclaration
+
+        rt.orchestrator = MagicMock()
+        rt.orchestrator.build_step0_declaration.return_value = PeerDeclaration(
+            game_uid="game-abc_g1", counted_mode=True
+        )
+        rt.orchestrator.validate_counted_declaration.return_value = []
         assert rt.counted_mode is True
 
     def test_default_counted_mode_is_false(self):
@@ -774,6 +782,12 @@ class TestFix1FailClosedHandshake:
             secret="s",
             config_sha256="a" * 64,
             opponent_url="http://localhost:9999/mcp",
+        )
+        from agent.step0.declaration import PeerDeclaration
+
+        rt.orchestrator = MagicMock()
+        rt.orchestrator.build_step0_declaration.return_value = PeerDeclaration(
+            game_uid="game-abc_g1"
         )
         assert rt.counted_mode is False
 
@@ -790,6 +804,13 @@ class TestFix1FailClosedHandshake:
             opponent_url="http://localhost:9999/mcp",
             counted_mode=True,
         )
+        from agent.step0.declaration import PeerDeclaration
+
+        rt.orchestrator = MagicMock()
+        rt.orchestrator.build_step0_declaration.return_value = PeerDeclaration(
+            game_uid="game-abc_g1", counted_mode=True
+        )
+        rt.orchestrator.validate_counted_declaration.return_value = []
 
         # Patch the opponent client to return an error response
         class FakeClient:
@@ -813,6 +834,12 @@ class TestFix1FailClosedHandshake:
             config_sha256="a" * 64,
             opponent_url="http://localhost:9999/mcp",
         )
+        from agent.step0.declaration import PeerDeclaration
+
+        rt.orchestrator = MagicMock()
+        rt.orchestrator.build_step0_declaration.return_value = PeerDeclaration(
+            game_uid="game-abc_g1"
+        )
 
         class FakeClient:
             async def start_game(self, msg):
@@ -826,8 +853,8 @@ class TestFix1FailClosedHandshake:
 class TestFix2FinalAuditWiring:
     """Fix 2: do_final_audit advances coordinator SM to DONE on the active (cop) side."""
 
-    def test_audit_advances_sm_to_done_on_success(self, tmp_path):
-        """After a successful final_audit, coordinator SM reaches DONE."""
+    def test_audit_waits_for_result_agreement_on_success(self, tmp_path):
+        """Audit authorizes RESULT_AGREEMENT but never skips directly to DONE."""
         import asyncio
         import unittest.mock
 
@@ -884,8 +911,7 @@ class TestFix2FinalAuditWiring:
             coord_module._coordinator = original
 
         assert ok
-        # SM should have reached DONE
-        assert coord.get_state(game_id, gamelet, role) == ProtocolState.DONE
+        assert coord.get_state(game_id, gamelet, role) == ProtocolState.RESULT_AGREEMENT
 
     def test_audit_transitions_to_technical_loss_on_failure(self, tmp_path):
         """After a failed final_audit, coordinator SM reaches TECHNICAL_LOSS."""

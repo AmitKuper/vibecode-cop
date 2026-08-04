@@ -140,18 +140,28 @@ def handle_start_game(
                 base,
             )
 
-        # Advance SM to READY (idempotent if already READY)
-        coord.on_handshake_complete(game_id, gamelet, role)
-
-        game_log.append_message_received("start_game", role, "handshake", True)
-
         if "on_start_game" in handler_callbacks:
             handler = handler_callbacks["on_start_game"]
             logger.info(f"Invoking on_start_game handler for {game_id}")
             result = handler(msg)
+            if not isinstance(result, dict) or not result.get("ok"):
+                return _err(
+                    game_log,
+                    "start_game",
+                    actor,
+                    "handshake",
+                    f"Local Step-0 rejected peer: {result}",
+                    base,
+                )
+            # A callback performs bilateral declaration verification.  Only a
+            # successful callback may authorize READY.
+            coord.on_handshake_complete(game_id, gamelet, role)
+            game_log.append_message_received("start_game", role, "handshake", True)
             game_log.append("start_game", role, "handshake", "ok", result)
             return result
 
+        coord.on_handshake_complete(game_id, gamelet, role)
+        game_log.append_message_received("start_game", role, "handshake", True)
         return {"ok": True, "game_id": game_id, "role": role}
 
     except Exception as e:
@@ -319,6 +329,22 @@ def handle_action(
                 {"step": msg.step, "nonce_count": len(msg.nonces) if msg.nonces else 0},
             )
             result = _invoke_callback(handler_callbacks, game_id, msg)
+            return result
+
+        elif msg.phase == "result_agreement":
+            current_state = coord.get_state(game_id, gamelet, role)
+            if current_state != ProtocolState.RESULT_AGREEMENT:
+                return _err(
+                    game_log,
+                    "action:result_agreement",
+                    msg.role,
+                    "result_agreement",
+                    f"Protocol violation: result_agreement in state {current_state}",
+                    base,
+                )
+            result = _invoke_callback(handler_callbacks, game_id, msg)
+            if result.get("ok"):
+                coord.on_done(game_id, gamelet, role)
             return result
 
         elif msg.phase == "game_end":

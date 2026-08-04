@@ -4,6 +4,8 @@ import hashlib
 import json
 from dataclasses import asdict, dataclass, field
 
+from agent.step0.signing import sign, verify
+
 
 @dataclass
 class GameletOutcome:
@@ -77,6 +79,25 @@ class ResultConsensusError(ValueError):
     pass
 
 
+def create_signed_result_agreement(
+    agreement: ResultAgreement, private_key_bytes: bytes
+) -> SignedResultAgreement:
+    return SignedResultAgreement(
+        agreement=agreement,
+        signature_hex=sign(private_key_bytes, agreement.canonical_bytes()).hex(),
+    )
+
+
+def verify_result_agreement_signature(
+    signed: SignedResultAgreement, expected_public_key: bytes
+) -> bool:
+    try:
+        signature = bytes.fromhex(signed.signature_hex)
+    except ValueError:
+        return False
+    return verify(expected_public_key, signed.agreement.canonical_bytes(), signature)
+
+
 def verify_bilateral_consensus(local: SignedResultAgreement, remote: SignedResultAgreement) -> None:
     """Raise ResultConsensusError if the two signed agreements disagree on consensus fields."""
     local_hash = local.agreement.consensus_fields_hash()
@@ -85,3 +106,5 @@ def verify_bilateral_consensus(local: SignedResultAgreement, remote: SignedResul
         raise ResultConsensusError(
             f"Result consensus mismatch: local={local_hash} remote={remote_hash}"
         )
+    if local.agreement.canonical_bytes() != remote.agreement.canonical_bytes():
+        raise ResultConsensusError("Result agreements are not byte-identical")

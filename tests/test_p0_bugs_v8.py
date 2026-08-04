@@ -13,7 +13,7 @@ from __future__ import annotations
 
 def test_counted_mode_true_propagates():
     """PeerRuntime must receive counted_mode=True when run_series is called with COUNTED mode."""
-    from unittest.mock import MagicMock, patch
+    from unittest.mock import AsyncMock, MagicMock, patch
 
     from agent.runtime_mode import RuntimeMode
 
@@ -38,7 +38,11 @@ def test_counted_mode_true_propagates():
         self.llm = None
         self.crews = {}
         self.protocol_adapter = None
-        self.orchestrator = None
+        self.orchestrator = MagicMock()
+        self.orchestrator.send_report_via_gatekeeper.return_value = "delivery-fixture"
+        self._signed_series_result = MagicMock()
+        self._step0_agreements = MagicMock()
+        self._remote_step0 = MagicMock()
 
     async def fake_run_game(self, game_id, counted_mode=None):
         return {
@@ -62,6 +66,10 @@ def test_counted_mode_true_propagates():
         patch("agent.peer_runtime.PeerRuntime.run_game", fake_run_game),
         patch("agent.config.shared_config.load_shared_config", return_value={}),
         patch("agent.config.shared_config.config_sha256", return_value="abc123"),
+        patch(
+            "agent.peer_result.exchange_series_result",
+            new=AsyncMock(return_value={"remote_signature_hex": "f" * 128}),
+        ),
         patch("subprocess.check_output", return_value=fake_proc),
     ):
         import asyncio
@@ -310,6 +318,8 @@ def test_peer_turn_loop_place_n_updates_runtime_board():
     runtime = MagicMock()
     runtime.board = board
     runtime.role = "cop"
+    runtime.counted_mode = False
+    runtime.rl_model_loaded = False
     runtime.game_id = "test_series_g01"
     runtime._cop_barriers_remaining = 14
     runtime._my_commits = {}
@@ -335,7 +345,7 @@ def test_peer_turn_loop_place_n_updates_runtime_board():
         patch(
             "agent.peer_turn_loop.send_reveal",
             new=AsyncMock(
-                return_value={"move": "PLACE_N", "hint": "", "intent": "truth", "state_hash": "x"}
+                return_value={"move": "STAY", "hint": "", "intent": "truth", "state_hash": "x"}
             ),
         ),
         patch("agent.peer_turn_loop.append_opponent_commit"),

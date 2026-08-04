@@ -15,13 +15,13 @@ def local_obs_to_tensor(obs: LocalObservation, belief: BeliefState) -> np.ndarra
     n = obs.grid_size
     # Own position one-hot (n*n)
     own_oh = np.zeros(n * n)
-    r, c = obs.own_position
-    own_oh[r * n + c] = 1.0
+    x, y = obs.own_position
+    own_oh[y * n + x] = 1.0
     # Barrier grid (n*n)
     barrier_grid = np.zeros(n * n)
-    for br, bc in obs.known_barriers:
-        if 0 <= br < n and 0 <= bc < n:
-            barrier_grid[br * n + bc] = 1.0
+    for bx, by in obs.known_barriers:
+        if 0 <= bx < n and 0 <= by < n:
+            barrier_grid[by * n + bx] = 1.0
     # Opponent scent (n*n) flattened
     scent_flat = np.array(obs.opponent_scent).flatten()[: n * n]
     # Belief heatmap (n*n) flattened

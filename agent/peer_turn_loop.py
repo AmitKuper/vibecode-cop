@@ -14,8 +14,11 @@ import asyncio
 import logging
 from typing import TYPE_CHECKING
 
-from agent.domain.transition import apply_joint_action
-from agent.domain.types import DomainState
+from agent.domain.runtime_transition import (
+    IllegalJointActionError,
+    apply_runtime_transition,
+    legal_actions_for_role,
+)
 from agent.language.hint_policy import generate_hint
 from agent.mcp.coordinator import gamelet_from_game_id, get_coordinator
 from agent.mcp.crypto import create_commitment, hash_game_state
@@ -55,27 +58,62 @@ async def run_peer_turn(
     # Advance SM: READY/STEP_VERIFIED → COMPUTING_MOVE
     coord.begin_step(runtime.game_id, gamelet, runtime.role, step)
 
-    move = await select_move(runtime, {**board_state, "scent_field": rules.get_scent_field()})
-
-    # 4C: Use belief-driven heuristic when orchestrator is available and no RL model loaded
+    legal_actions = legal_actions_for_role(runtime, rules, runtime.role)
     _has_orch = getattr(runtime, "orchestrator", None) is not None
-    _no_rl = not getattr(runtime, "rl_model_loaded", False)
-    if _has_orch and _no_rl:
+    if runtime.counted_mode:
+        if not _has_orch or not runtime.rl_model_loaded:
+            reason = "counted recurrent movement policy is unavailable"
+            coord.on_technical_loss(runtime.game_id, gamelet, runtime.role, reason=reason)
+            return None, reason
         try:
             _board = runtime.board
             _is_cop = runtime.role == "cop"
             own_pos = tuple(_board.cop_position if _is_cop else _board.thief_position)
             barrier_list = [tuple(b) for b in _board.barriers]
-            barriers_remaining = getattr(_board, "cop_barriers_remaining", 0) if _is_cop else 0
-            move = runtime.orchestrator.select_move_heuristic(
+            barriers_remaining = runtime._cop_barriers_remaining if _is_cop else 0
+            move = runtime.orchestrator.select_trained_move(
                 own_position=own_pos,
                 barriers=barrier_list,
                 barriers_remaining=barriers_remaining,
+                legal_actions=legal_actions,
+                step=step,
+                gamelet=gamelet,
+                last_hint=runtime._last_opponent_hint,
             )
-        except Exception as _heuristic_err:
-            logger.warning(
-                "[PeerTurn] Heuristic fallback failed at step %d: %s", step, _heuristic_err
-            )
+        except Exception as policy_error:
+            reason = f"counted recurrent policy inference failed: {policy_error}"
+            coord.on_technical_loss(runtime.game_id, gamelet, runtime.role, reason=reason)
+            return None, reason
+    else:
+        move = await select_move(runtime, {**board_state, "scent_field": rules.get_scent_field()})
+        if _has_orch:
+            try:
+                _board = runtime.board
+                _is_cop = runtime.role == "cop"
+                own_pos = tuple(_board.cop_position if _is_cop else _board.thief_position)
+                barrier_list = [tuple(b) for b in _board.barriers]
+                barriers_remaining = runtime._cop_barriers_remaining if _is_cop else 0
+                move = runtime.orchestrator.select_move_heuristic(
+                    own_position=own_pos,
+                    barriers=barrier_list,
+                    barriers_remaining=barriers_remaining,
+                )
+            except Exception as heuristic_error:
+                logger.warning(
+                    "[PeerTurn] Development heuristic failed at step %d: %s",
+                    step,
+                    heuristic_error,
+                )
+
+    selected = {"NORTH": "N", "SOUTH": "S", "EAST": "E", "WEST": "W"}.get(move, move)
+    if selected not in legal_actions:
+        reason = f"local policy selected illegal action {move!r} at step {step}"
+        if runtime.counted_mode:
+            coord.on_technical_loss(runtime.game_id, gamelet, runtime.role, reason=reason)
+            return None, reason
+        logger.warning("[PeerTurn] %s; development fallback=%s", reason, legal_actions[0])
+        selected = legal_actions[0]
+    move = selected
 
     # 4B: Use strategic language policy when orchestrator is available
     if getattr(runtime, "orchestrator", None) is not None:
@@ -136,7 +174,6 @@ async def run_peer_turn(
         "hint": hint,
         "intent": intent,
         "state_hash": state_hash,
-        "nonce": nonce,
     }
     opp_reveal_resp = await send_reveal(runtime, step, reveal_payload)
     if not opp_reveal_resp:
@@ -163,69 +200,23 @@ async def run_peer_turn(
         "intent": opp_reveal_resp.get("intent", "truth"),
         "state_hash": opp_reveal_resp.get("state_hash", ""),
     }
+    runtime._last_opponent_hint = opp_reveal["hint"]
     append_opponent_reveal(runtime.game_dir, step, opp_reveal)
 
     my_move = _MOVE_ALIASES.get(move, move)
     opp_move = _MOVE_ALIASES.get(opp_move_short, opp_move_short)
     cop_move, thief_move = (my_move, opp_move) if runtime.role == "cop" else (opp_move, my_move)
 
-    # Use canonical apply_joint_action so PLACE_* barrier actions are handled correctly
-    # on the active side (preventing board divergence with the passive/reveal path).
-    _place_actions = frozenset({"PLACE_N", "PLACE_S", "PLACE_E", "PLACE_W"})
-    _is_place = cop_move in _place_actions
-
-    if not _is_place:
-        # Legacy validation for movement-only actions
-        if not rules.validate_move("cop", cop_move):
-            logger.warning(f"[PeerTurn] Invalid cop move {cop_move!r} at step {step}, using STAY")
-            cop_move = "STAY"
-        if not rules.validate_move("thief", thief_move):
-            logger.warning(
-                f"[PeerTurn] Invalid thief move {thief_move!r} at step {step}, using STAY"
-            )
-            thief_move = "STAY"
-        rules.apply_moves(cop_move, thief_move)
-    else:
-        # Canonical domain engine: handles PLACE_* correctly (barrier placement + STAY for cop)
-        if not rules.validate_move("thief", thief_move):
-            logger.warning(
-                f"[PeerTurn] Invalid thief move {thief_move!r} at step {step}, using STAY"
-            )
-            thief_move = "STAY"
-        domain_state = DomainState(
-            turn=runtime.board.turn,
-            grid_size=runtime.board.grid_size,
-            cop_position=tuple(runtime.board.cop_position),
-            thief_position=tuple(runtime.board.thief_position),
-            barriers=[tuple(b) for b in runtime.board.barriers],
-            cop_barriers_remaining=runtime._cop_barriers_remaining,
-            move_history=[],
-            scent_grid=rules.get_scent_field() or [],
+    try:
+        transition = apply_runtime_transition(runtime, rules, cop_move, thief_move)
+    except IllegalJointActionError as exc:
+        reason = f"Protocol violation at step {step}: {exc}"
+        coord.on_technical_loss(runtime.game_id, gamelet, runtime.role, reason=reason)
+        return None, reason
+    if transition.barrier_placed:
+        logger.info(
+            "[PeerTurn] step=%d cop placed barrier at %s", step, transition.barrier_position
         )
-        tr = apply_joint_action(domain_state, cop_move, thief_move)
-        ns = tr.new_state
-        # Sync canonical result back into runtime.board (legacy Board object)
-        runtime.board.cop_position = list(ns.cop_position)
-        runtime.board.thief_position = list(ns.thief_position)
-        runtime.board.barriers = [list(b) for b in ns.barriers]
-        runtime.board.turn = ns.turn
-        runtime._cop_barriers_remaining = ns.cop_barriers_remaining
-        runtime.board.move_history.append(
-            {
-                "turn": domain_state.turn,
-                "cop_move": cop_move,
-                "thief_move": thief_move,
-                "cop_position": list(ns.cop_position),
-                "thief_position": list(ns.thief_position),
-            }
-        )
-        rules.update_scent()
-        if not tr.cop_action_legal:
-            logger.warning(
-                f"[PeerTurn] PLACE action {cop_move!r} illegal at step {step}: {tr.error}"
-            )
-        if tr.barrier_placed:
-            logger.info(f"[PeerTurn] step={step} cop placed barrier at {tr.barrier_position}")
 
     logger.info(
         f"[PeerTurn] step={step} cop={cop_move} thief={thief_move} "

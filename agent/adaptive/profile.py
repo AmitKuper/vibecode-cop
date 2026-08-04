@@ -119,6 +119,7 @@ class ProtocolProfile:
     def native(cls, endpoint: str = "http://localhost:8000") -> ProtocolProfile:
         """Native identity profile for a canonical local server."""
         from agent.adaptive.transport_probe import ProbeResult, TransportType
+
         probe = ProbeResult(
             transport=TransportType.STREAMABLE_HTTP,
             base_url=endpoint,

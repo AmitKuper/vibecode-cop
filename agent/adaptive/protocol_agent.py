@@ -92,6 +92,21 @@ class ProtocolUnderstandingAgent:
 
     def _heuristic_plan(self, intro: IntrospectionResult) -> ProtocolMappingPlan:
         """Deterministic heuristic: look for action-like tools by name."""
+        action = intro.get_tool("action")
+        start = intro.get_tool("start_game")
+        if action is not None:
+            action_props = action.input_schema.get("properties", {})
+            start_props = start.input_schema.get("properties", {}) if start else {}
+            envelope = {"game_id", "message_json", "signature"}.issubset(action_props)
+            signed_start = start is not None and {"message_json", "signature"}.issubset(start_props)
+            if envelope and signed_start:
+                return ProtocolMappingPlan.signed_envelope_plan(
+                    schema_digest=intro.schema_digest,
+                    server_name=intro.server_name,
+                    action_tool=action.name,
+                    start_tool=start.name,
+                )
+
         # Find best tool: prefer "action", then anything with "action"/"commit" in name
         tool = (
             intro.get_tool("action")
@@ -153,11 +168,13 @@ class ProtocolUnderstandingAgent:
         for cf in canonical:
             remote = cf if cf in props else self._closest_match(cf, props)
             if remote:
-                fms.append(FieldMapping(
-                    canonical_field=cf,
-                    remote_field=remote,
-                    required=(cf in {"game_id", "step", "role", "commitment", "move"}),
-                ))
+                fms.append(
+                    FieldMapping(
+                        canonical_field=cf,
+                        remote_field=remote,
+                        required=(cf in {"game_id", "step", "role", "commitment", "move"}),
+                    )
+                )
         return fms
 
     def _llm_plan(self, intro: IntrospectionResult) -> ProtocolMappingPlan:
@@ -221,9 +238,7 @@ class ProtocolUnderstandingAgent:
                 pass
         raise ValueError(f"LLM did not return valid JSON: {raw[:300]!r}")
 
-    def _build_plan_from_llm(
-        self, parsed: dict, intro: IntrospectionResult
-    ) -> ProtocolMappingPlan:
+    def _build_plan_from_llm(self, parsed: dict, intro: IntrospectionResult) -> ProtocolMappingPlan:
         verdict = CompatibilityVerdict(parsed.get("verdict", "COMPATIBLE"))
         renames: dict[str, str] = parsed.get("field_renames", {})
         tool_name: str = parsed.get("remote_tool_name", "action")
@@ -238,17 +253,21 @@ class ProtocolUnderstandingAgent:
             for cf in self._canonical_fields_for_phase(phase):
                 remote = renames.get(cf, cf if cf in props else self._closest_match(cf, props))
                 if remote:
-                    fms.append(FieldMapping(
-                        canonical_field=cf,
-                        remote_field=remote,
-                        required=(cf in {"game_id", "step", "role", "commitment", "move"}),
-                    ))
-            phase_mappings.append(PhaseMapping(
-                phase=phase,
-                remote_tool=tool_name,
-                field_mappings=fms,
-                response_extraction={"ok": "ok", "phase": "phase"},
-            ))
+                    fms.append(
+                        FieldMapping(
+                            canonical_field=cf,
+                            remote_field=remote,
+                            required=(cf in {"game_id", "step", "role", "commitment", "move"}),
+                        )
+                    )
+            phase_mappings.append(
+                PhaseMapping(
+                    phase=phase,
+                    remote_tool=tool_name,
+                    field_mappings=fms,
+                    response_extraction={"ok": "ok", "phase": "phase"},
+                )
+            )
 
         return ProtocolMappingPlan(
             remote_tool_name=tool_name,

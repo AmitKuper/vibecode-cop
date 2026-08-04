@@ -60,9 +60,7 @@ class TestSymmetricLanguagePolicy:
         policy = NaturalLanguagePolicy("thief")
         for move in ("N", "S", "E", "W", "STAY"):
             hint = _generate_hint(move, step=1, belief_entropy=1.0)
-            assert not policy.hint_is_numeric_location(hint), (
-                f"Hint contains coordinates: {hint!r}"
-            )
+            assert not policy.hint_is_numeric_location(hint), f"Hint contains coordinates: {hint!r}"
 
     def test_active_hint_never_contains_numeric_coordinates(self):
         """Active side's NaturalLanguagePolicy never generates coordinate strings."""
@@ -80,15 +78,16 @@ class TestSymmetricLanguagePolicy:
         """handle_passive_commit uses orchestrator.generate_strategic_hint when wired."""
         from unittest.mock import MagicMock, patch
 
+        from agent.board import Board
         from agent.peer_agent_passive import handle_passive_commit
 
         rt = MagicMock()
         rt.game_id = "test_g1"  # matches game_id to skip init_passive_game
         rt.role = "thief"
-        rt.board.cop_position = [0, 0]
-        rt.board.thief_position = [3, 3]
-        rt.board.turn = 0
-        rt.board.get_legal_moves.return_value = ["N"]
+        rt.counted_mode = False
+        rt.max_turns = 35
+        rt._cop_barriers_remaining = 14
+        rt.board = Board(cop_position=[0, 0], thief_position=[3, 3])
         rt._select_move_rl.return_value = None  # force heuristic path
         rt._my_commits = {}
         rt._store_my_commit = MagicMock()
@@ -131,9 +130,7 @@ class TestSymmetricLanguagePolicy:
         high_entropy_intents = [
             policy.choose_intent(step=1, belief_entropy=5.0) for _ in range(100)
         ]
-        low_entropy_intents = [
-            policy.choose_intent(step=1, belief_entropy=0.0) for _ in range(100)
-        ]
+        low_entropy_intents = [policy.choose_intent(step=1, belief_entropy=0.0) for _ in range(100)]
 
         # High entropy → more bluffing/lying, low entropy → more truth
         truth_rate_high = high_entropy_intents.count(DeceptionIntent.TRUTH) / 100

@@ -6,6 +6,7 @@ from __future__ import annotations
 # Recursive leak checker
 # ---------------------------------------------------------------------------
 
+
 def _find_keys_recursive(d, forbidden_keys, path=""):
     """Return list of paths for any forbidden key found recursively in nested dicts/lists."""
     found = []
@@ -24,8 +25,10 @@ def _find_keys_recursive(d, forbidden_keys, path=""):
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_board(grid_size=7):
     from agent.board import Board
+
     return Board(
         cop_position=[0, 0],
         thief_position=[3, 3],
@@ -42,6 +45,7 @@ def _one_hot_grid(n, x, y):
 # ---------------------------------------------------------------------------
 # Test 1: thief_observation channel 1 is NOT the exact cop one-hot
 # ---------------------------------------------------------------------------
+
 
 def test_thief_observation_channel1_is_not_cop_one_hot():
     """Channel 1 must be scent field, not the live cop position 1-hot."""
@@ -72,6 +76,7 @@ def test_thief_observation_channel1_is_not_cop_one_hot():
 # Test 2: build_local_observation does not contain forbidden keys
 # ---------------------------------------------------------------------------
 
+
 def test_build_local_observation_no_hidden_coords():
     """build_local_observation must not expose cop_position, thief_position, opponent_position."""
     from agent.peer_turn_helpers import build_local_observation
@@ -98,6 +103,7 @@ def test_build_local_observation_no_hidden_coords():
 # Test 3: build_board_state IS allowed to have both positions (private commitment)
 # ---------------------------------------------------------------------------
 
+
 def test_build_board_state_has_both_positions():
     """build_board_state is the private commitment dict — it must contain both positions."""
     from agent.board import Board
@@ -118,6 +124,7 @@ def test_build_board_state_has_both_positions():
 # ---------------------------------------------------------------------------
 # Test 4: _CrewMixin fallback _build_observation does not include grid_state
 # ---------------------------------------------------------------------------
+
 
 def test_crew_mixin_build_observation_no_grid_state():
     """_CrewMixin fallback _build_observation must not expose grid_state key."""
@@ -144,6 +151,7 @@ def test_crew_mixin_build_observation_no_grid_state():
 # Test 5: local_obs_to_tensor shape — thief obs has 4 channels, no hidden coord
 # ---------------------------------------------------------------------------
 
+
 def test_thief_observation_shape():
     """thief_observation must return exactly 4 channels of shape (grid_size, grid_size)."""
     from agent.rl.observation import observation_shape, thief_observation
@@ -164,6 +172,7 @@ def test_thief_observation_shape():
 # ---------------------------------------------------------------------------
 # Test 6: build_public_transition_root returns 64-char hex
 # ---------------------------------------------------------------------------
+
 
 def test_build_public_transition_root_hex():
     """build_public_transition_root must return a 64-char lowercase hex string."""
@@ -193,6 +202,7 @@ def test_build_public_transition_root_hex():
 # ---------------------------------------------------------------------------
 # Test 7: build_private_state_commitment non-enumerable properties
 # ---------------------------------------------------------------------------
+
 
 def test_build_private_state_commitment_non_enumerable():
     """Different positions → different hashes; different nonces → different hashes."""
@@ -224,6 +234,7 @@ def test_build_private_state_commitment_non_enumerable():
 # Test 8: Recursive dict leak checker detects nested cop_position
 # ---------------------------------------------------------------------------
 
+
 def test_recursive_leak_checker_finds_nested_keys():
     """_find_keys_recursive must detect forbidden keys at any nesting depth."""
     forbidden = {"cop_position", "thief_position", "opponent_position"}
@@ -245,6 +256,7 @@ def test_recursive_leak_checker_finds_nested_keys():
 
     # Verify thief_observation output (with no scent) is also clean
     from agent.rl.observation import thief_observation
+
     board = _make_board()
     obs = thief_observation(board, max_steps=35, cop_scent_field=None)
     # obs is a list of channel grids — no dict keys, so leak checker should find nothing

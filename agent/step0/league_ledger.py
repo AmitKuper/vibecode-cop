@@ -89,6 +89,16 @@ class LeagueLedger:
 
     def append(self, entry: LedgerEntry) -> None:
         """Validate and append *entry*, then persist to disk."""
+        existing = next((e for e in self._entries if e.match_id == entry.match_id), None)
+        if existing is not None:
+            if (
+                existing.opponent_id == entry.opponent_id
+                and existing.declaration_hash == entry.declaration_hash
+                and existing.result_hash == entry.result_hash
+                and existing.both_result_signatures == entry.both_result_signatures
+            ):
+                return
+            raise LeagueLedgerError(f"Conflicting replay for existing match_id {entry.match_id!r}")
         self.validate_before_append(entry.opponent_id, entry.counted)
         entry.previous_entry_hash = self.ledger_root()
         self._entries.append(entry)

@@ -62,6 +62,19 @@ class AgentOrchestrator:
 
         self.belief_engine: BeliefEngine = BeliefEngine(grid_size, role)
 
+        self.movement_policy = None
+        if self.mode == RuntimeMode.COUNTED:
+            from agent.rl.recurrent_policy import load_recurrent_policy
+
+            try:
+                self.movement_policy = load_recurrent_policy(
+                    self.config.get("model_manifest_path", "models/MANIFEST.json"), role
+                )
+            except Exception as exc:
+                raise ValueError(
+                    f"COUNTED mode rejected: recurrent movement policy failed to load: {exc}"
+                ) from exc
+
         # Reliability
         from agent.reliability.deadline_tracker import DeadlineTracker
 
@@ -109,18 +122,18 @@ class AgentOrchestrator:
         if not secret or secret in ("dev-secret-change-me", "change-me", ""):
             raise ValueError("COUNTED mode rejected: development/placeholder secret")
 
-        # Only run git check if config explicitly enables it (avoids test fragility)
-        if self.config.get("enforce_git_check", False):
-            import subprocess
+        import subprocess
 
-            try:
-                sha = subprocess.check_output(
-                    ["git", "rev-parse", "HEAD"], capture_output=True, text=True
-                ).stdout.strip()
-            except Exception:
-                sha = "unknown"
-            if not sha or sha == "unknown":
-                raise ValueError("COUNTED mode rejected: git SHA unknown")
+        try:
+            sha = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"],
+                stderr=subprocess.DEVNULL,
+                text=True,
+            ).strip()
+        except (OSError, subprocess.SubprocessError) as exc:
+            raise ValueError("COUNTED mode rejected: git SHA unknown") from exc
+        if len(sha) != 40 or any(ch not in "0123456789abcdef" for ch in sha.lower()):
+            raise ValueError("COUNTED mode rejected: git SHA invalid")
 
         model_sha = self.config.get("model_sha256", "placeholder")
         if model_sha in ("placeholder", "", "unknown"):
@@ -148,6 +161,19 @@ class AgentOrchestrator:
             ok, reason = entry.is_compatible(self.role, self.config.get("grid_size", 7))
             if not ok:
                 raise ValueError(f"COUNTED mode rejected: model incompatible — {reason}")
+            if entry.sha256 != model_sha:
+                raise ValueError(
+                    "COUNTED mode rejected: configured model SHA does not match manifest"
+                )
+            config_sha = self.config.get("config_sha256", "")
+            if entry.config_sha256 != config_sha:
+                raise ValueError(
+                    "COUNTED mode rejected: model training config SHA does not match counted config"
+                )
+            if entry.inference_mode != "argmax":
+                raise ValueError(
+                    "COUNTED mode rejected: recurrent policy inference must be deterministic argmax"
+                )
         except ModelLoadError as e:
             raise ValueError(f"COUNTED mode rejected: {e}") from e
 
@@ -194,6 +220,45 @@ class AgentOrchestrator:
         from agent.rl.action_space import COP_ACTIONS, THIEF_ACTIONS
 
         return COP_ACTIONS if self.role == "cop" else THIEF_ACTIONS
+
+    def reset_movement_history(self) -> None:
+        if self.movement_policy is not None:
+            self.movement_policy.reset()
+
+    def select_trained_move(
+        self,
+        *,
+        own_position: tuple[int, int],
+        barriers: list[tuple[int, int]],
+        barriers_remaining: int,
+        legal_actions: list[str],
+        step: int,
+        gamelet: int,
+        last_hint: str = "",
+    ) -> str:
+        """Run the role policy on local observation + belief + recurrent history."""
+        if self.movement_policy is None:
+            raise RuntimeError("trained recurrent movement policy is unavailable")
+        from agent.observation import LocalObservation
+
+        scent = (
+            self.scent_fields.cop_observation_scent()
+            if self.role == "cop"
+            else self.scent_fields.thief_observation_scent()
+        )
+        observation = LocalObservation(
+            own_position=own_position,
+            own_barriers_remaining=barriers_remaining,
+            known_barriers=barriers,
+            opponent_scent=scent,
+            last_hint=last_hint,
+            step=step,
+            gamelet=gamelet,
+            grid_size=self.grid_size,
+        )
+        return self.movement_policy.select_action(
+            observation, self.belief_engine.belief, legal_actions
+        )
 
     def select_move_heuristic(
         self,
@@ -269,23 +334,42 @@ class AgentOrchestrator:
 
         try:
             git_sha = subprocess.check_output(
-                ["git", "rev-parse", "HEAD"], capture_output=True, text=True
-            ).stdout.strip()
+                ["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL, text=True
+            ).strip()
         except Exception:
             git_sha = "unknown"
 
         return PeerDeclaration(
             game_uid=game_uid,
+            team_name=self.config.get("team_name", ""),
+            group_id=self.config.get("group_id", ""),
+            member_ids=list(self.config.get("member_ids", [])),
+            cop_repo_url=self.config.get("cop_repo_url", ""),
+            thief_repo_url=self.config.get("thief_repo_url", ""),
             model_role=self.role,
             model_algorithm=self.config.get("model_algorithm", "heuristic"),
             model_sha256=self.config.get("model_sha256", "placeholder"),
+            model_schema_version=self.config.get("model_schema_version", "1.0"),
+            inference_mode=self.config.get("inference_mode", "argmax"),
             git_sha=git_sha,
+            semantic_version=self.config.get("semantic_version", "0.1.0"),
+            release_tag=self.config.get("release_tag", ""),
             os_info=platform.platform(),
             cpu_info=platform.processor(),
+            ram_gb=float(self.config.get("ram_gb", 0.0)),
+            gpu_info=self.config.get("gpu_info", ""),
+            llm_provider=self.config.get("llm_provider", ""),
+            llm_model=self.config.get("llm_model", ""),
+            llm_token_budget=int(self.config.get("llm_token_budget", 0)),
             counted_mode=self.is_counted(),
             local_endpoint=self.config.get("my_endpoint", ""),
+            opponent_endpoint=self.config.get("opponent_endpoint", ""),
+            config_sha256=self.config.get("config_sha256", ""),
             canonical_config_sha256=self.config.get("canonical_config_sha256", ""),
             scent_model_hash=self.config.get("scent_model_hash", ""),
+            scent_numerical_vector=list(self.config.get("scent_numerical_vector", [])),
+            previous_counted_matches=self.league_ledger.counted_match_count(),
+            league_ledger_root=self.league_ledger.ledger_root(),
         )
 
     def validate_counted_declaration(self, decl: PeerDeclaration) -> list[str]:
@@ -379,6 +463,8 @@ class AgentOrchestrator:
         counted: bool,
         declaration_hash: str = "",
         result_hash: str = "",
+        both_result_signatures: list[str] | None = None,
+        report_delivery_ids: list[str] | None = None,
     ) -> None:
         """Append match to league ledger. Raises LeagueLedgerError on constraint violation."""
         import time
@@ -392,6 +478,8 @@ class AgentOrchestrator:
             declaration_hash=declaration_hash,
             result_hash=result_hash,
             timestamp_utc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            both_result_signatures=list(both_result_signatures or []),
+            report_delivery_ids=list(report_delivery_ids or []),
         )
         self.league_ledger.append(entry)
 

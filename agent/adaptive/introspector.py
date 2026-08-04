@@ -194,4 +194,5 @@ class MCPIntrospector:
 
     def introspect_sync(self, probe: ProbeResult) -> IntrospectionResult:
         import asyncio
+
         return asyncio.run(self.introspect(probe))

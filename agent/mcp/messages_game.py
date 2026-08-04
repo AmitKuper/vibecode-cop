@@ -24,6 +24,7 @@ class StartGameMessage:
     endpoint: str
     timestamp: str
     peer_url: str | None = None  # URL of the OTHER player (not the initiator)
+    signed_declaration: dict | None = None
 
     _KNOWN_FIELDS = frozenset(
         {
@@ -34,6 +35,7 @@ class StartGameMessage:
             "endpoint",
             "timestamp",
             "peer_url",
+            "signed_declaration",
         }
     )
 
@@ -59,6 +61,8 @@ class StartGameMessage:
         }
         if self.peer_url is not None:
             d["peer_url"] = self.peer_url
+        if self.signed_declaration is not None:
+            d["signed_declaration"] = self.signed_declaration
         return d
 
 
@@ -82,6 +86,9 @@ class ActionMessage:
     game_log: list | None = None  # optional full game log
     reason: str | None = None  # for abort / game_end
     board_state: dict | None = None  # current board state (sent in commit requests)
+    signed_audit_summary: dict | None = None
+    signed_result_agreement: dict | None = None
+    signed_audit_summaries: list | None = None
 
     @staticmethod
     def from_json(json_str: str) -> "ActionMessage":
@@ -105,6 +112,9 @@ class ActionMessage:
                 "game_log",
                 "reason",
                 "board_state",
+                "signed_audit_summary",
+                "signed_result_agreement",
+                "signed_audit_summaries",
             }
             filtered = {k: v for k, v in obj.items() if k in known}
             return ActionMessage(**filtered)
@@ -143,5 +153,11 @@ class ActionMessage:
             result["reason"] = self.reason
         if self.board_state is not None:
             result["board_state"] = self.board_state
+        if self.signed_audit_summary is not None:
+            result["signed_audit_summary"] = self.signed_audit_summary
+        if self.signed_result_agreement is not None:
+            result["signed_result_agreement"] = self.signed_result_agreement
+        if self.signed_audit_summaries is not None:
+            result["signed_audit_summaries"] = self.signed_audit_summaries
 
         return result

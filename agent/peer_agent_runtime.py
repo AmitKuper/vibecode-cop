@@ -50,11 +50,18 @@ class PeerAgentRuntime(_DiscoveryMixin):
         games_dir: Path,
         group_name: str = "unknown",
         llm_dict: dict | None = None,
+        my_endpoint: str = "",
+        mode=None,
+        orchestrator_config: dict | None = None,
     ):
         if role not in ("cop", "thief"):
             raise ValueError(f"role must be 'cop' or 'thief', got {role!r}")
         self.role = role
         self.secret = secret
+        from agent.runtime_mode import RuntimeMode
+
+        resolved_mode = mode if mode is not None else RuntimeMode.DEVELOPMENT
+        self.mode = resolved_mode
         self._peer_runtime = PeerRuntime(
             role=role,
             secret=secret,
@@ -63,6 +70,9 @@ class PeerAgentRuntime(_DiscoveryMixin):
             games_dir=Path(games_dir),
             group_name=group_name,
             llm_dict=llm_dict,
+            my_endpoint=my_endpoint,
+            counted_mode=resolved_mode == RuntimeMode.COUNTED,
+            orchestrator_config=orchestrator_config,
         )
         self.llm = self._peer_runtime.llm
         self._peer_url = opponent_url.rstrip("/").replace("/mcp", "")
@@ -84,6 +94,24 @@ class PeerAgentRuntime(_DiscoveryMixin):
 
     def _on_start_game(self, message) -> dict:
         game_id = message.game_id
+        self._peer_runtime._gamelet_number(game_id)
+        self._peer_runtime._ensure_orchestrator(game_id)
+        from agent.peer_step0 import (
+            accept_remote_signed_declaration,
+            build_local_signed_declaration,
+        )
+
+        local_signed = None
+        agreement = None
+        try:
+            local_signed = build_local_signed_declaration(self._peer_runtime, game_id)
+            agreement = accept_remote_signed_declaration(
+                self._peer_runtime, game_id, message.signed_declaration
+            )
+        except Exception as exc:
+            if self.mode.value == "counted":
+                raise
+            logger.warning("Development Step-0 compatibility fallback: %s", exc)
         try:
             self.discover_protocol(game_id, self._peer_url)
         except Exception as exc:
@@ -97,7 +125,14 @@ class PeerAgentRuntime(_DiscoveryMixin):
             logger.info(f"[PeerAgentRuntime/cop] Scheduled PeerRuntime.run_game({game_id})")
         else:
             init_passive_game(self._peer_runtime, game_id, self._rules_ref)
-        return {"ok": True, "game_id": game_id}
+        result = {
+            "ok": True,
+            "game_id": game_id,
+        }
+        if local_signed is not None and agreement is not None:
+            result["signed_declaration"] = local_signed.to_dict()
+            result["declaration_agreement_hash"] = agreement.agreement_hash
+        return result
 
     def _on_action(self, game_id: str, message) -> dict:
         phase = message.phase
@@ -107,6 +142,10 @@ class PeerAgentRuntime(_DiscoveryMixin):
             return handle_passive_reveal(self._peer_runtime, game_id, message, self._rules_ref)
         if phase == "final_audit":
             return handle_passive_final_audit(self._peer_runtime, game_id, message)
+        if phase == "result_agreement":
+            from agent.peer_result import accept_and_sign_result
+
+            return accept_and_sign_result(self._peer_runtime, game_id, message)
         if phase == "game_end":
             return {"ok": True, "phase": "game_end"}
         return {"ok": False, "error": f"Unknown phase: {phase}"}

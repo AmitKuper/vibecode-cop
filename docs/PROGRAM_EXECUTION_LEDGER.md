@@ -5,14 +5,15 @@
 | Milestone | Starting cop/thief SHA | Status | Executable evidence | Resulting SHA |
 |---|---|---|---|---|
 | M0 independent baseline | `bc8de6add8a979fa915295c71e47d2773ff244d2` / `b7a65401b64ea9fa7e48dfda83cae6d9ecc4ef61` | PASS | Both clean; frozen sync/lock pass; pytest 1308 pass vs 1181 pass + 2 skip; configured branch coverage rounded 85% with invalid omissions vs 80.76%; Ruff lint pass; format 15/9 fail; both CLI help fail; cop verifier false-positive and thief verifier absent. Baseline score 36; matrix PASS=24/FAIL=25/EXTERNAL_PENDING=6. | documentation worktree, pending commit |
+| M1/M2 counted lifecycle implementation | `71b99f3` / `2a0c139` | IN_PROGRESS | Counted CLI/composition, signed bilateral Step-0, canonical zero-trust turns, nonce-safe bilateral audit, byte-identical signed result agreement, idempotent ledger, and deterministic gameplay adapter implemented. Full gate 2026-08-05T02:49+03:00: cop 1323 pass + 2 skip in 159.19 s; thief 1198 pass + 2 skip in 159.07 s; Ruff lint PASS and format PASS (306/296 files). The two skips, real two-process one/six-gamelet, fake Gmail, replay, and chaos acceptance remain open. | pending implementation commit |
+| M3 RL calibration | `71b99f3` / `2a0c139` | IN_PROGRESS | Rejected checkpoints: 3.33%, 10%, 20%, 43.75%, and weighted 20% due zero worst-family results. After canonical geometry and local-only BC warm start + recurrent A2C: 73/80 wins (91.25%, Wilson 95% 83.02–95.70%), worst family 70%, 1.66 ms average inference/environment, zero technical failures. Temporary calibration only; production role champions and full evidence pending. | pending training-code commit |
 
 Active plan: `docs/CODEX_100_READINESS_EXECPLAN.md`. Baseline audit:
 `CODEX_BASELINE_AUDIT.md`. Traceability:
 `docs/REQUIREMENTS_TRACEABILITY.md`.
 
-Next acceptance target is M1: one fail-closed real two-process counted composition
-root and exactly-six lifecycle trace. No prior phase claim supersedes the fresh M0
-runtime evidence.
+Next acceptance target is the real two-process M1/M2 trace plus immutable M3 role
+champions. No unit-only result supersedes the remaining end-to-end acceptance.
 
 Records all phases from Phase 0 through Phase 11.
 Test counts are measured at phase end (cop repo).

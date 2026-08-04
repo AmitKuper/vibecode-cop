@@ -6,8 +6,9 @@ there is no central third-party judge. Sub-modules:
   peer_runtime_audit — final audit and game-end notification
 """
 
+from __future__ import annotations
+
 import hashlib
-import json
 import logging
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -83,6 +84,7 @@ class PeerRuntime(_CrewMixin):
         llm_dict: dict | None = None,
         my_endpoint: str = "",
         counted_mode: bool = False,
+        orchestrator_config: dict | None = None,
     ):
         if role not in ("cop", "thief"):
             raise ValueError(f"role must be 'cop' or 'thief', got {role!r}")
@@ -95,6 +97,7 @@ class PeerRuntime(_CrewMixin):
         self.games_dir = Path(games_dir)
         self.my_endpoint = my_endpoint or "http://localhost:5000/mcp"
         self.counted_mode = counted_mode
+        self.orchestrator_config = dict(orchestrator_config or {})
         self.opponent_client = GameMCPClient(opponent_url, secret)
         cop_start, thief_start = _load_start_positions()
         self.game_id: str = ""
@@ -107,6 +110,53 @@ class PeerRuntime(_CrewMixin):
         self.protocol_adapter = None  # set after adaptive negotiation in run_game()
         self._adaptive_profile = None  # ProtocolProfile set after negotiation
         self.orchestrator: AgentOrchestrator | None = None  # lazy-init in run_game()
+        self.rl_model_loaded = False
+        self._last_opponent_hint = ""
+        from agent.step0.signing import generate_key_pair
+
+        self._signing_private_key, self._signing_public_key = generate_key_pair()
+        self._signing_key_id = hashlib.sha256(self._signing_public_key).hexdigest()[:16]
+        self._inbound_profile_hash = hashlib.sha256(
+            b"course-p2p-signed-envelope-response-v1"
+        ).hexdigest()
+        self._local_step0: dict = {}
+        self._remote_step0: dict = {}
+        self._step0_agreements: dict = {}
+        self._local_audit_summaries: dict = {}
+        self._remote_audit_summaries: dict = {}
+
+    def _gamelet_number(self, game_id: str) -> int:
+        """Parse and enforce the counted six-gamelet API boundary."""
+        gamelet = gamelet_from_game_id(game_id, strict=self.counted_mode)
+        if self.counted_mode and gamelet not in range(1, 7):
+            raise ValueError(f"COUNTED gamelet must be in 1..6, got {gamelet}")
+        return gamelet
+
+    def _ensure_orchestrator(self, game_id: str) -> AgentOrchestrator | None:
+        """Construct the sole composition root, failing closed in counted mode."""
+        if self.orchestrator is not None:
+            return self.orchestrator
+        from agent.agent_orchestrator import AgentOrchestrator
+        from agent.runtime_mode import RuntimeMode
+
+        mode = RuntimeMode.COUNTED if self.counted_mode else RuntimeMode.DEVELOPMENT
+        try:
+            self.orchestrator = AgentOrchestrator(
+                role=self.role,
+                game_uid=game_id,
+                grid_size=int(self.orchestrator_config.get("grid_size", 7)),
+                mode=mode,
+                work_dir=str(self.games_dir / game_id),
+                config=self.orchestrator_config,
+            )
+            self.rl_model_loaded = getattr(self.orchestrator, "movement_policy", None) is not None
+        except Exception as exc:
+            if self.counted_mode:
+                raise RuntimeError(
+                    f"COUNTED AgentOrchestrator initialization failed: {exc}"
+                ) from exc
+            logger.warning("AgentOrchestrator initialization failed: %s", exc)
+        return self.orchestrator
 
     async def run_game(self, game_id: str, counted_mode: bool | None = None) -> dict:
         """Drive this agent's side of the game to completion.
@@ -117,26 +167,16 @@ class PeerRuntime(_CrewMixin):
                 continuing.  Defaults to self.counted_mode set at construction time.
         """
         effective_counted_mode = counted_mode if counted_mode is not None else self.counted_mode
+        self._gamelet_number(game_id)
         self.game_id = game_id
         self.game_dir = self.games_dir / game_id
 
-        # Initialize AgentOrchestrator (v7 composition root) on first game
-        if self.orchestrator is None:
-            from agent.agent_orchestrator import AgentOrchestrator
-            from agent.runtime_mode import RuntimeMode
-
-            _mode = RuntimeMode.COUNTED if effective_counted_mode else RuntimeMode.DEVELOPMENT
-            try:
-                self.orchestrator = AgentOrchestrator(
-                    role=self.role,
-                    game_uid=game_id,
-                    grid_size=self.config.get("grid_size", 7) if hasattr(self, "config") else 7,
-                    mode=_mode,
-                )
-            except Exception as _orch_err:
-                logger.warning(
-                    "[PeerRuntime/%s] AgentOrchestrator init failed: %s", self.role, _orch_err
-                )
+        if effective_counted_mode != self.counted_mode:
+            raise RuntimeError("Runtime mode cannot change after PeerRuntime construction")
+        self._ensure_orchestrator(game_id)
+        if hasattr(self.orchestrator, "reset_movement_history"):
+            self.orchestrator.reset_movement_history()
+        self._last_opponent_hint = ""
 
         self.game_dir.mkdir(parents=True, exist_ok=True)
         cop_start, thief_start = _load_start_positions()
@@ -176,6 +216,7 @@ class PeerRuntime(_CrewMixin):
             final_step,
             _now,
             gamelet=gamelet,
+            runtime=self,
         )
         if not audit_ok:
             winner = "TECHNICAL_LOSS"
@@ -221,9 +262,6 @@ class PeerRuntime(_CrewMixin):
             winner or "unknown",
             _now,
         )
-        # Fix 3: Cleanup session from registry after terminal state
-        get_coordinator().cleanup_session(game_id, gamelet, self.role)
-
         result = {
             "ok": True,
             "game_id": game_id,
@@ -233,43 +271,6 @@ class PeerRuntime(_CrewMixin):
             "abort_reason": abort_reason,
             "audit_ok": audit_ok,
         }
-
-        # Phase 3 v8: Wire LeagueLedger into counted mode terminal state
-        if effective_counted_mode and self.orchestrator is not None:
-            try:
-                result_hash = hashlib.sha256(
-                    json.dumps(result, sort_keys=True, default=str).encode()
-                ).hexdigest()
-                self.orchestrator.record_match_in_ledger(
-                    opponent_id=game_id.split("_")[0] if "_" in game_id else game_id,
-                    match_id=game_id,
-                    counted=True,
-                    result_hash=result_hash,
-                )
-                logger.info(
-                    "[PeerRuntime/%s] Match recorded in league ledger: %s",
-                    self.role, game_id,
-                )
-            except Exception as _ledger_err:
-                logger.warning(
-                    "[PeerRuntime/%s] LeagueLedger record failed: %s",
-                    self.role, _ledger_err,
-                )
-
-        # Phase 3 v8: Wire Gatekeeper into counted mode terminal state (each peer sends report)
-        if effective_counted_mode and audit_ok and self.orchestrator is not None:
-            try:
-                _result_json = json.dumps(result, sort_keys=True, default=str)
-                self.orchestrator.send_report_via_gatekeeper(
-                    idempotency_key=f"{game_id}_{self.role}",
-                    game_id=game_id,
-                    result_json=_result_json,
-                )
-                logger.info("[PeerRuntime/%s] Gmail report sent via Gatekeeper", self.role)
-            except Exception as _gk_err:
-                logger.warning(
-                    "[PeerRuntime/%s] Gatekeeper send failed: %s", self.role, _gk_err
-                )
 
         logger.info(f"[PeerRuntime/{self.role}] Game {game_id} done: {result}")
         return result
@@ -283,20 +284,23 @@ class PeerRuntime(_CrewMixin):
         warning and gameplay continues (the turn loop will detect the ordering
         violation at the first COMMIT).
         """
-        # 3C: Wire Step-0 validation into counted mode startup
-        if counted_mode and self.orchestrator is not None:
-            decl = self.orchestrator.build_step0_declaration(game_id)
-            # Attach adaptive protocol profile hash if negotiation succeeded
-            if self._adaptive_profile is not None:
-                decl.adapter_mapping_hash = self._adaptive_profile.profile_hash
-                decl.transport = self._adaptive_profile.remote_transport
-            errors = self.orchestrator.validate_counted_declaration(decl)
+        self._ensure_orchestrator(game_id)
+        from agent.peer_step0 import (
+            Step0ExchangeError,
+            accept_remote_signed_declaration,
+            build_local_signed_declaration,
+        )
+
+        gamelet = gamelet_from_game_id(game_id)
+        if counted_mode:
+            preliminary = self.orchestrator.build_step0_declaration(game_id, gamelet)
+            errors = self.orchestrator.validate_counted_declaration(preliminary)
             if errors:
                 raise RuntimeError(f"Step-0 validation failed for counted mode: {errors}")
+        local_signed = build_local_signed_declaration(self, game_id)
 
         from agent.mcp.messages import StartGameMessage
 
-        gamelet = gamelet_from_game_id(game_id)
         msg = StartGameMessage(
             game_id=game_id,
             roles={"cop": self.group_name, "thief": "opponent"},
@@ -304,10 +308,41 @@ class PeerRuntime(_CrewMixin):
             protocol_version="1.0",
             endpoint=self.my_endpoint,
             timestamp=_now(),
+            signed_declaration=local_signed.to_dict(),
         )
         try:
-            resp = await self.opponent_client.start_game(msg)
+            if self.protocol_adapter is not None:
+                from agent.peer_turn_helpers import _call_adapted_phase
+
+                msg_dict = msg.to_dict()
+                resp = await _call_adapted_phase(
+                    self,
+                    "start_game",
+                    msg_dict,
+                    {
+                        **msg_dict,
+                        "phase": "start_game",
+                        "role": self.role,
+                        "gamelet": gamelet,
+                    },
+                )
+            else:
+                resp = await self.opponent_client.start_game(msg)
             if resp.get("ok"):
+                try:
+                    agreement = accept_remote_signed_declaration(
+                        self, game_id, resp.get("signed_declaration")
+                    )
+                    remote_hash = resp.get("declaration_agreement_hash")
+                    if remote_hash and remote_hash != agreement.agreement_hash:
+                        raise Step0ExchangeError("bilateral declaration agreement hash mismatch")
+                except Step0ExchangeError:
+                    if counted_mode:
+                        raise
+                    logger.warning(
+                        "[PeerRuntime/%s] Development peer omitted/failed signed Step-0",
+                        self.role,
+                    )
                 get_coordinator().on_handshake_complete(game_id, gamelet, self.role)
                 logger.info(
                     f"[PeerRuntime/{self.role}] start_game handshake complete for {game_id}"
@@ -379,11 +414,17 @@ class PeerRuntime(_CrewMixin):
                 result.cache_hit,
             )
         except Exception as exc:
+            if self.counted_mode:
+                self.protocol_adapter = None
+                self._adaptive_profile = None
+                raise RuntimeError(f"Adaptive negotiation failed in COUNTED mode: {exc}") from exc
             logger.warning(
                 "[PeerRuntime/%s] Adaptive negotiation failed (%s) — using native identity adapter",
-                self.role, exc,
+                self.role,
+                exc,
             )
             from agent.adaptive.pipeline import native_adapter
+
             _nat = native_adapter()
             self.protocol_adapter = _nat.adapter
             self._adaptive_profile = _nat.profile

@@ -1191,6 +1191,8 @@ class TestHandlePassiveCommit:
         rt = MagicMock()
         rt.game_id = "g1"
         rt.role = "thief"
+        rt.counted_mode = False
+        rt.orchestrator = None
         rt.board = board
         rt._select_move_rl.return_value = "N"
         rt._build_observation.return_value = {}
@@ -1220,6 +1222,8 @@ class TestHandlePassiveCommit:
         rt = MagicMock()
         rt.game_id = ""  # not set
         rt.role = "thief"
+        rt.counted_mode = False
+        rt.orchestrator = None
         rt.board = board
         rt.games_dir = tmp_path
         rt.max_turns = 35
@@ -1272,8 +1276,15 @@ class TestHandlePassiveReveal:
         rt = MagicMock()
         rt.role = "thief"
         rt._my_commits = {
-            0: {"move": "N", "hint": "going north", "intent": "truth", "state_hash": SHA256}
+            0: {
+                "h_commit": SHA256,
+                "move": "N",
+                "hint": "going north",
+                "intent": "truth",
+                "state_hash": SHA256,
+            }
         }
+        rt.orchestrator = None
         rt.board = board
         rt._cop_barriers_remaining = 14
         rt.game_dir = tmp_path

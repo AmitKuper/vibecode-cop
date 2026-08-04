@@ -55,7 +55,10 @@ class StaticSemanticVerifier:
                 fm.canonical_field in _COMMITMENT_FIELDS or fm.remote_field in _COMMITMENT_FIELDS
                 for fm in commit_pm.field_mappings
             )
-            if not has_commitment:
+            signed_envelope = {fm.canonical_field for fm in commit_pm.field_mappings}.issuperset(
+                {"message_json", "signature"}
+            )
+            if not has_commitment and not signed_envelope:
                 errors.append("commit phase has no commitment field — cannot bind commit-reveal")
 
         # 4. Nonce must NOT appear in commit or reveal phases (only final_audit)
@@ -78,10 +81,10 @@ class StaticSemanticVerifier:
                 if fm.canonical_field in protected and (
                     fm.transform not in ("identity", "rename") and fm.transform != ""
                 ):
-                        warnings.append(
-                            f"Protected field {fm.canonical_field!r} has non-identity "
-                            f"transform {fm.transform!r} in phase {pm.phase!r}"
-                        )
+                    warnings.append(
+                        f"Protected field {fm.canonical_field!r} has non-identity "
+                        f"transform {fm.transform!r} in phase {pm.phase!r}"
+                    )
 
         # 6. No unresolved questions for mandatory phases
         if plan.unresolved_questions:

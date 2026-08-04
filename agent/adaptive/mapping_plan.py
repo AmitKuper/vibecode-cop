@@ -200,3 +200,51 @@ class ProtocolMappingPlan:
             confidence=1.0,
             agent_model="native-identity",
         )
+
+    @classmethod
+    def signed_envelope_plan(
+        cls,
+        *,
+        schema_digest: str,
+        server_name: str,
+        action_tool: str = "action",
+        start_tool: str = "start_game",
+    ) -> ProtocolMappingPlan:
+        """Plan for the course protocol's signed ``message_json`` envelope."""
+        action_fields = [
+            FieldMapping("game_id", "game_id"),
+            FieldMapping("message_json", "message_json"),
+            FieldMapping("signature", "signature"),
+        ]
+        return cls(
+            remote_tool_name=action_tool,
+            remote_server_name=server_name,
+            remote_schema_digest=schema_digest,
+            phase_mappings=[
+                PhaseMapping(
+                    phase="start_game",
+                    remote_tool=start_tool,
+                    field_mappings=[
+                        FieldMapping("message_json", "message_json"),
+                        FieldMapping("signature", "signature"),
+                    ],
+                    response_extraction={"ok": "ok", "phase": "phase"},
+                ),
+                *[
+                    PhaseMapping(
+                        phase=phase,
+                        remote_tool=action_tool,
+                        field_mappings=list(action_fields),
+                        response_extraction={
+                            "ok": "ok",
+                            "phase": "phase",
+                            "winner": "winner",
+                        },
+                    )
+                    for phase in ("commit", "reveal", "final_audit", "result_agreement")
+                ],
+            ],
+            verdict=CompatibilityVerdict.COMPATIBLE,
+            confidence=1.0,
+            agent_model="deterministic-signed-envelope",
+        )

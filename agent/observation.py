@@ -58,9 +58,9 @@ class BeliefState:
 
     def mask_barriers(self, barriers: list[tuple[int, int]]) -> BeliefState:
         new_prob = self.prob.copy()
-        for r, c in barriers:
-            if 0 <= r < self.grid_size and 0 <= c < self.grid_size:
-                new_prob[r][c] = 0.0
+        for x, y in barriers:
+            if 0 <= x < self.grid_size and 0 <= y < self.grid_size:
+                new_prob[y][x] = 0.0
         return BeliefState(
             self.grid_size, new_prob, self.entropy, self.confidence, self.step
         ).normalize()

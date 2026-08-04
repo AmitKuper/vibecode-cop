@@ -185,8 +185,8 @@ class TestComputeLegalMaskCop:
             assert mask[idx], f"{action} should be allowed when barriers_remaining=3"
 
     def test_move_blocked_by_barrier(self):
-        # Cop at (3,3), barrier at (2,3) = N move blocked
-        mask = compute_legal_mask_cop((3, 3), [(2, 3)], 0, 7)
+        # Cop at (3,3), barrier at (3,2) = N move blocked
+        mask = compute_legal_mask_cop((3, 3), [(3, 2)], 0, 7)
         n_idx = COP_ACTIONS.index("N")
         assert not mask[n_idx]
 
@@ -197,8 +197,8 @@ class TestComputeLegalMaskCop:
         assert not mask[COP_ACTIONS.index("W")]
 
     def test_place_blocked_by_existing_barrier(self):
-        # Barrier already at (2,3) — PLACE_N from (3,3) should be blocked
-        mask = compute_legal_mask_cop((3, 3), [(2, 3)], 5, 7)
+        # Barrier already at (3,2) — PLACE_N from (3,3) should be blocked
+        mask = compute_legal_mask_cop((3, 3), [(3, 2)], 5, 7)
         place_n = COP_ACTIONS.index("PLACE_N")
         assert not mask[place_n]
 
@@ -215,7 +215,7 @@ class TestComputeLegalMaskThief:
         assert mask[stay_idx]
 
     def test_blocked_by_barrier(self):
-        mask = compute_legal_mask_thief((3, 3), [(2, 3)], 7)
+        mask = compute_legal_mask_thief((3, 3), [(3, 2)], 7)
         n_idx = THIEF_ACTIONS.index("N")
         assert not mask[n_idx]
 

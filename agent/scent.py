@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
+SCENT_CENTER_INTENSITY = 0.9
 DECAY = 0.9
 KERNEL_RADIUS = 2  # 5x5 kernel
 
@@ -19,7 +20,7 @@ def _radial_kernel(radius: int) -> np.ndarray:
         for c in range(size):
             dist = abs(r - center) + abs(c - center)
             if dist <= radius:
-                kernel[r][c] = 1.0 - dist / (radius + 1)
+                kernel[r][c] = SCENT_CENTER_INTENSITY * (1.0 - dist / (radius + 1))
     return kernel
 
 
@@ -46,7 +47,8 @@ class ScentFields:
         new_thief = self.thief_scent * DECAY
 
         for field, pos in [(new_cop, cop_pos), (new_thief, thief_pos)]:
-            r0, c0 = pos
+            x0, y0 = pos
+            r0, c0 = y0, x0
             for dr in range(-radius, radius + 1):
                 for dc in range(-radius, radius + 1):
                     r, c = r0 + dr, c0 + dc

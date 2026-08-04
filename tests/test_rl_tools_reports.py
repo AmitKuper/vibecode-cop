@@ -691,11 +691,17 @@ class TestPeerTurnHelpers:
     def _make_runtime(self, role="thief"):
         rt = MagicMock()
         rt.role = role
+        rt.counted_mode = False
+        rt.orchestrator = None
+        rt.protocol_adapter = None
         rt.game_id = "game123"
         rt.config_sha256 = "abc123"
         rt.secret = "test-secret"
         rt.opponent_client = MagicMock()
         rt.board = _make_board()
+        rt.protocol_adapter = None
+        rt.counted_mode = False
+        rt.adapter_timeout_sec = 45.0
         return rt
 
     @pytest.mark.asyncio
@@ -810,6 +816,9 @@ class TestPeerTurnLoop:
     def _make_runtime(self, role="thief"):
         rt = MagicMock()
         rt.role = role
+        rt.counted_mode = False
+        rt.orchestrator = None
+        rt.protocol_adapter = None
         rt.game_id = "game123"
         rt.config_sha256 = "sha"
         rt.board = _make_board()

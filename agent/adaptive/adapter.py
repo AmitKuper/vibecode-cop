@@ -29,6 +29,7 @@ _PROTECTED_FIELDS = frozenset(
         "declaration_hash",
         "protocol_hash",
         "nonces",
+        "message_json",
     ]
 )
 
@@ -72,14 +73,11 @@ class DeterministicProtocolAdapter:
     def __init__(self, plan: ProtocolMappingPlan) -> None:
         if not plan.is_compatible():
             raise ProtocolCompatibilityError(
-                f"Plan is not compatible: verdict={plan.verdict.value}, "
-                f"gaps={plan.capability_gaps}"
+                f"Plan is not compatible: verdict={plan.verdict.value}, gaps={plan.capability_gaps}"
             )
         if not plan.has_required_phases():
             missing = plan.REQUIRED_PHASES - {pm.phase for pm in plan.phase_mappings}
-            raise ProtocolCompatibilityError(
-                f"Plan missing required phases: {missing}"
-            )
+            raise ProtocolCompatibilityError(f"Plan missing required phases: {missing}")
         self._plan = plan
         self._dsl = AdapterDSL()
         self._per_turn_llm_calls = 0
@@ -97,13 +95,34 @@ class DeterministicProtocolAdapter:
     ) -> AdaptedRequest:
         """Map a canonical message to the remote tool call params."""
         pm = self._get_phase_mapping(phase)
-        prot = self._extract_protected(canonical_msg, protected_values)
+        canonical = dict(canonical_msg)
+        prot = self._extract_protected(canonical, protected_values)
+        canonical.update(prot)
 
         params = self._dsl.map_message(
-            canonical_msg=canonical_msg,
+            canonical_msg=canonical,
             field_mappings=pm.field_mappings,
-            protected_values=prot,
+            protected_values=None,
         )
+
+        # Protected values may be renamed or nested by a verified mapping plan,
+        # but their byte values may never change.  Do not inject canonical field
+        # names at the top level: that breaks remote schemas and can create two
+        # conflicting representations of the same cryptographic value.
+        for fm in pm.field_mappings:
+            if fm.canonical_field not in prot:
+                continue
+            actual = self._deep_get(params, fm.remote_field)
+            expected = AdapterDSL.from_spec(
+                [{"name": fm.transform, "args": fm.transform_args}]
+                if fm.transform != "identity"
+                else []
+            ).apply_all(prot[fm.canonical_field])
+            if actual != expected:
+                raise ProtocolCompatibilityError(
+                    f"Protected field {fm.canonical_field!r} was changed while mapping "
+                    f"phase {phase!r}"
+                )
 
         # Schema-validate the request
         self._validate_request(params, pm)
@@ -130,9 +149,7 @@ class DeterministicProtocolAdapter:
 
         extracted: dict = {}
         for canonical_key, remote_path in pm.response_extraction.items():
-            value = AdapterDSL.identity().apply_all(
-                self._deep_get(raw_response, remote_path)
-            )
+            value = AdapterDSL.identity().apply_all(self._deep_get(raw_response, remote_path))
             extracted[canonical_key] = value
 
         # Verify protected response fields
@@ -140,9 +157,7 @@ class DeterministicProtocolAdapter:
             for k, expected_v in expected_protected.items():
                 actual_v = extracted.get(k) or raw_response.get(k)
                 if actual_v is not None and actual_v != expected_v:
-                    logger.error(
-                        "DeterministicAdapter: protected response field %r mismatch", k
-                    )
+                    logger.error("DeterministicAdapter: protected response field %r mismatch", k)
 
         digest = hashlib.sha256(
             json.dumps(raw_response, sort_keys=True, default=str).encode()
@@ -160,8 +175,7 @@ class DeterministicProtocolAdapter:
         ok = current_digest == self._plan.remote_schema_digest
         if not ok:
             logger.error(
-                "DeterministicAdapter: schema digest changed mid-series! "
-                "expected=%s actual=%s",
+                "DeterministicAdapter: schema digest changed mid-series! expected=%s actual=%s",
                 self._plan.remote_schema_digest,
                 current_digest,
             )
@@ -185,11 +199,9 @@ class DeterministicProtocolAdapter:
 
     def _validate_request(self, params: dict, pm: PhaseMapping) -> None:
         required = [fm.remote_field for fm in pm.field_mappings if fm.required]
-        missing = [f for f in required if not self._deep_get(params, f)]
+        missing = [f for f in required if self._deep_get(params, f) is None]
         if missing:
-            logger.warning(
-                "DeterministicAdapter: required fields missing in request: %s", missing
-            )
+            logger.warning("DeterministicAdapter: required fields missing in request: %s", missing)
 
     @staticmethod
     def _deep_get(d: dict, path: str) -> object:

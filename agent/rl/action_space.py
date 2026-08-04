@@ -7,8 +7,13 @@ import numpy as np
 COP_ACTIONS = ["N", "S", "E", "W", "STAY", "PLACE_N", "PLACE_S", "PLACE_E", "PLACE_W"]
 THIEF_ACTIONS = ["N", "S", "E", "W", "STAY"]
 
-MOVE_DELTAS = {"N": (-1, 0), "S": (1, 0), "E": (0, 1), "W": (0, -1), "STAY": (0, 0)}
-PLACE_DIRS = {"PLACE_N": (-1, 0), "PLACE_S": (1, 0), "PLACE_E": (0, 1), "PLACE_W": (0, -1)}
+MOVE_DELTAS = {"N": (0, -1), "S": (0, 1), "E": (1, 0), "W": (-1, 0), "STAY": (0, 0)}
+PLACE_DIRS = {
+    "PLACE_N": (0, -1),
+    "PLACE_S": (0, 1),
+    "PLACE_E": (1, 0),
+    "PLACE_W": (-1, 0),
+}
 
 
 def compute_legal_mask_cop(
@@ -20,19 +25,19 @@ def compute_legal_mask_cop(
     """Returns bool array of shape (9,) for COP_ACTIONS."""
     mask = np.zeros(len(COP_ACTIONS), dtype=bool)
     barrier_set = set(map(tuple, barriers))
-    r, c = position
+    x, y = position
     for i, action in enumerate(COP_ACTIONS):
         if action in MOVE_DELTAS:
-            dr, dc = MOVE_DELTAS[action]
-            nr, nc = r + dr, c + dc
-            if 0 <= nr < grid_size and 0 <= nc < grid_size and (nr, nc) not in barrier_set:
+            dx, dy = MOVE_DELTAS[action]
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < grid_size and 0 <= ny < grid_size and (nx, ny) not in barrier_set:
                 mask[i] = True
         elif action in PLACE_DIRS:
             if barriers_remaining <= 0:
                 continue
-            dr, dc = PLACE_DIRS[action]
-            br, bc = r + dr, c + dc
-            if 0 <= br < grid_size and 0 <= bc < grid_size and (br, bc) not in barrier_set:
+            dx, dy = PLACE_DIRS[action]
+            bx, by = x + dx, y + dy
+            if 0 <= bx < grid_size and 0 <= by < grid_size and (bx, by) not in barrier_set:
                 mask[i] = True
     return mask
 
@@ -45,11 +50,11 @@ def compute_legal_mask_thief(
     """Returns bool array of shape (5,) for THIEF_ACTIONS."""
     mask = np.zeros(len(THIEF_ACTIONS), dtype=bool)
     barrier_set = set(map(tuple, barriers))
-    r, c = position
+    x, y = position
     for i, action in enumerate(THIEF_ACTIONS):
-        dr, dc = MOVE_DELTAS[action]
-        nr, nc = r + dr, c + dc
-        if 0 <= nr < grid_size and 0 <= nc < grid_size and (nr, nc) not in barrier_set:
+        dx, dy = MOVE_DELTAS[action]
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < grid_size and 0 <= ny < grid_size and (nx, ny) not in barrier_set:
             mask[i] = True
     return mask
 

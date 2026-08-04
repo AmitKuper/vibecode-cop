@@ -20,8 +20,7 @@ class TestRadialKernel:
     def test_center_value(self):
         k = _radial_kernel(2)
         center = KERNEL_RADIUS
-        # center dist=0 → 1.0 - 0/(2+1) = 1.0
-        assert abs(k[center][center] - 1.0) < 1e-9
+        assert abs(k[center][center] - 0.9) < 1e-9
 
     def test_all_non_negative(self):
         k = _radial_kernel(2)
@@ -55,8 +54,14 @@ class TestScentFields:
         sf3 = sf2.update((3, 3), (3, 3))
         # The center cell after 2 updates: (prev * 0.9 + kernel_center)
         # We only check that it's larger than a single emission
-        kernel_center = 1.0 - 0 / (KERNEL_RADIUS + 1)
+        kernel_center = 0.9
         assert sf3.cop_scent[3][3] > kernel_center
+
+    def test_asymmetric_xy_position_maps_to_row_y_column_x(self):
+        sf = ScentFields.zeros(7).update((1, 4), (5, 2))
+        assert sf.cop_scent[4][1] == 0.9
+        assert sf.thief_scent[2][5] == 0.9
+        assert sf.cop_scent[1][4] < 0.9
 
     def test_decay_factor(self):
         sf = ScentFields.zeros(7)

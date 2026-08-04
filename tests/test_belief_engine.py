@@ -43,7 +43,13 @@ class TestBeliefEnginePredict:
         # Barrier adjacent to center
         engine2 = engine.predict([(2, 3)])
         # Barrier cell should have near-zero probability
-        assert engine2.belief.prob[2][3] < 1e-9
+        assert engine2.belief.prob[3][2] < 1e-9
+
+    def test_asymmetric_barrier_uses_public_xy_coordinates(self):
+        engine = BeliefEngine(grid_size=5, role="cop")
+        engine2 = engine.predict([(3, 1)])
+        assert engine2.belief.prob[1][3] < 1e-9
+        assert engine2.belief.prob[3][1] > 0
 
     def test_predict_spreads_probability(self):
         engine = BeliefEngine(grid_size=5, role="cop")

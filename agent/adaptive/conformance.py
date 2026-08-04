@@ -80,9 +80,7 @@ class ConformanceProbes:
         if all_passed:
             logger.info("ConformanceProbes: all passed (%s)", report.summary())
         else:
-            logger.error(
-                "ConformanceProbes: FAILED — %s", report.failed_probes()
-            )
+            logger.error("ConformanceProbes: FAILED — %s", report.failed_probes())
         return report
 
     def _probe_schema_validation(self) -> ProbeOutcome:
@@ -97,16 +95,13 @@ class ConformanceProbes:
             pm = next((p for p in self._plan.phase_mappings if p.phase == phase_name), None)
             if not pm:
                 return ProbeOutcome(
-                    "field_mapping_completeness", False,
-                    error=f"Phase {phase_name!r} not mapped"
+                    "field_mapping_completeness", False, error=f"Phase {phase_name!r} not mapped"
                 )
         return ProbeOutcome("field_mapping_completeness", True, notes="Commit+reveal mapped")
 
     def _probe_commitment_binding(self) -> ProbeOutcome:
         """Verify commit phase can carry a commitment value."""
-        commit_pm = next(
-            (pm for pm in self._plan.phase_mappings if pm.phase == "commit"), None
-        )
+        commit_pm = next((pm for pm in self._plan.phase_mappings if pm.phase == "commit"), None)
         if not commit_pm:
             return ProbeOutcome("commitment_binding", False, error="No commit phase")
 
@@ -122,13 +117,12 @@ class ConformanceProbes:
         }
         try:
             adapted = self._adapter.adapt_request("commit", canonical)
-            has_commitment = any(
-                "commit" in k.lower() for k in adapted.params
-            )
+            has_commitment = canonical["commitment"] in str(adapted.params)
             if not has_commitment:
                 return ProbeOutcome(
-                    "commitment_binding", False,
-                    error="Commitment field missing from adapted request"
+                    "commitment_binding",
+                    False,
+                    error="Commitment field missing from adapted request",
                 )
         except Exception as exc:
             return ProbeOutcome("commitment_binding", False, error=str(exc))
@@ -146,8 +140,9 @@ class ConformanceProbes:
             for fm in pm.field_mappings:
                 if "nonce" in fm.canonical_field.lower() or "nonce" in fm.remote_field.lower():
                     return ProbeOutcome(
-                        "nonce_isolation", False,
-                        error=f"Nonce field found in {phase_name} phase — security violation"
+                        "nonce_isolation",
+                        False,
+                        error=f"Nonce field found in {phase_name} phase — security violation",
                     )
         return ProbeOutcome(
             "nonce_isolation", True, notes="Nonce correctly isolated to final_audit"
@@ -175,15 +170,14 @@ class ConformanceProbes:
                 found = any(str(v) in str(param_v) for param_v in adapted.params.values())
                 if not found:
                     return ProbeOutcome(
-                        "protected_field_integrity", False,
-                        error=f"Protected field {k!r} lost or corrupted"
+                        "protected_field_integrity",
+                        False,
+                        error=f"Protected field {k!r} lost or corrupted",
                     )
         except Exception as exc:
             return ProbeOutcome("protected_field_integrity", False, error=str(exc))
 
-        return ProbeOutcome(
-            "protected_field_integrity", True, notes="Protected fields preserved"
-        )
+        return ProbeOutcome("protected_field_integrity", True, notes="Protected fields preserved")
 
     def _probe_phase_ordering(self) -> ProbeOutcome:
         """Verify all required phases can be instantiated."""
@@ -191,8 +185,7 @@ class ConformanceProbes:
             pm = next((p for p in self._plan.phase_mappings if p.phase == phase), None)
             if not pm:
                 return ProbeOutcome(
-                    "phase_ordering", False,
-                    error=f"Required phase {phase!r} not in plan"
+                    "phase_ordering", False, error=f"Required phase {phase!r} not in plan"
                 )
         return ProbeOutcome("phase_ordering", True, notes="All required phases present")
 
@@ -212,8 +205,9 @@ class ConformanceProbes:
             r2 = self._adapter.adapt_request("commit", canonical)
             if r1.params != r2.params:
                 return ProbeOutcome(
-                    "idempotency_structure", False,
-                    error="Non-deterministic adapter: same input produced different outputs"
+                    "idempotency_structure",
+                    False,
+                    error="Non-deterministic adapter: same input produced different outputs",
                 )
         except Exception as exc:
             return ProbeOutcome("idempotency_structure", False, error=str(exc))
@@ -245,20 +239,18 @@ class ConformanceProbes:
             c = self._adapter.adapt_request("commit", commit_msg)
             r = self._adapter.adapt_request("reveal", reveal_msg)
             if not c.params or not r.params:
-                return ProbeOutcome(
-                    "placeholder_commit_reveal", False, error="Empty params"
-                )
+                return ProbeOutcome("placeholder_commit_reveal", False, error="Empty params")
             # Verify no real nonce appeared
             all_values = str(c.params) + str(r.params)
             if "real_nonce" in all_values or "private_key" in all_values:
                 return ProbeOutcome(
-                    "placeholder_commit_reveal", False,
-                    error="Leaked protected value in probe output"
+                    "placeholder_commit_reveal",
+                    False,
+                    error="Leaked protected value in probe output",
                 )
         except Exception as exc:
             return ProbeOutcome("placeholder_commit_reveal", False, error=str(exc))
 
         return ProbeOutcome(
-            "placeholder_commit_reveal", True,
-            notes="Placeholder commit/reveal structure validated"
+            "placeholder_commit_reveal", True, notes="Placeholder commit/reveal structure validated"
         )

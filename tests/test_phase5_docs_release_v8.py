@@ -53,9 +53,7 @@ class TestReadmeCliAccuracy:
         """README must document all three RuntimeMode values."""
         readme = Path("README.md").read_text(encoding="utf-8")
         for mode in ("counted", "warmup", "development"):
-            assert mode.lower() in readme.lower(), (
-                f"README must mention RuntimeMode.{mode.upper()}"
-            )
+            assert mode.lower() in readme.lower(), f"README must mention RuntimeMode.{mode.upper()}"
 
 
 class TestProductionArchitectureDocs:

@@ -149,6 +149,7 @@ def test_compatible_no_per_turn_llm(fixture: Fixture) -> None:
 # Incompatible fixture rejection tests (6)
 # ---------------------------------------------------------------------------
 
+
 def test_incompat_no_final_audit_verifier_rejects() -> None:
     """Missing final_audit phase must be rejected by StaticSemanticVerifier."""
     f = fixture_incompat_no_final_audit()
@@ -170,25 +171,50 @@ def test_incompat_nonce_in_reveal_verifier_rejects() -> None:
         remote_server_name="nonce-reveal-server",
         remote_schema_digest=f.introspection.schema_digest,
         phase_mappings=[
-            PhaseMapping("start_game", "action", [
-                FieldMapping("game_id", "game_id"),
-            ], {}),
-            PhaseMapping("commit", "action", [
-                FieldMapping("game_id", "game_id"),
-                FieldMapping("commitment", "commitment"),
-            ], {}),
-            PhaseMapping("reveal", "action", [
-                FieldMapping("game_id", "game_id"),
-                FieldMapping("move", "move"),
-                FieldMapping("nonce", "nonce"),   # VIOLATION: nonce in reveal
-            ], {}),
-            PhaseMapping("final_audit", "action", [
-                FieldMapping("game_id", "game_id"),
-                FieldMapping("nonces", "nonces"),
-            ], {}),
-            PhaseMapping("result_agreement", "action", [
-                FieldMapping("game_id", "game_id"),
-            ], {}),
+            PhaseMapping(
+                "start_game",
+                "action",
+                [
+                    FieldMapping("game_id", "game_id"),
+                ],
+                {},
+            ),
+            PhaseMapping(
+                "commit",
+                "action",
+                [
+                    FieldMapping("game_id", "game_id"),
+                    FieldMapping("commitment", "commitment"),
+                ],
+                {},
+            ),
+            PhaseMapping(
+                "reveal",
+                "action",
+                [
+                    FieldMapping("game_id", "game_id"),
+                    FieldMapping("move", "move"),
+                    FieldMapping("nonce", "nonce"),  # VIOLATION: nonce in reveal
+                ],
+                {},
+            ),
+            PhaseMapping(
+                "final_audit",
+                "action",
+                [
+                    FieldMapping("game_id", "game_id"),
+                    FieldMapping("nonces", "nonces"),
+                ],
+                {},
+            ),
+            PhaseMapping(
+                "result_agreement",
+                "action",
+                [
+                    FieldMapping("game_id", "game_id"),
+                ],
+                {},
+            ),
         ],
         verdict=CompatibilityVerdict.COMPATIBLE,
         confidence=0.9,
@@ -209,24 +235,49 @@ def test_incompat_no_commitment_verifier_rejects() -> None:
         remote_server_name="no-commit-server",
         remote_schema_digest=f.introspection.schema_digest,
         phase_mappings=[
-            PhaseMapping("start_game", "action", [
-                FieldMapping("game_id", "game_id"),
-            ], {}),
-            PhaseMapping("commit", "action", [
-                FieldMapping("game_id", "game_id"),
-                FieldMapping("move", "move"),   # VIOLATION: no commitment field
-            ], {}),
-            PhaseMapping("reveal", "action", [
-                FieldMapping("game_id", "game_id"),
-                FieldMapping("move", "move"),
-            ], {}),
-            PhaseMapping("final_audit", "action", [
-                FieldMapping("game_id", "game_id"),
-                FieldMapping("nonces", "nonces"),
-            ], {}),
-            PhaseMapping("result_agreement", "action", [
-                FieldMapping("game_id", "game_id"),
-            ], {}),
+            PhaseMapping(
+                "start_game",
+                "action",
+                [
+                    FieldMapping("game_id", "game_id"),
+                ],
+                {},
+            ),
+            PhaseMapping(
+                "commit",
+                "action",
+                [
+                    FieldMapping("game_id", "game_id"),
+                    FieldMapping("move", "move"),  # VIOLATION: no commitment field
+                ],
+                {},
+            ),
+            PhaseMapping(
+                "reveal",
+                "action",
+                [
+                    FieldMapping("game_id", "game_id"),
+                    FieldMapping("move", "move"),
+                ],
+                {},
+            ),
+            PhaseMapping(
+                "final_audit",
+                "action",
+                [
+                    FieldMapping("game_id", "game_id"),
+                    FieldMapping("nonces", "nonces"),
+                ],
+                {},
+            ),
+            PhaseMapping(
+                "result_agreement",
+                "action",
+                [
+                    FieldMapping("game_id", "game_id"),
+                ],
+                {},
+            ),
         ],
         verdict=CompatibilityVerdict.COMPATIBLE,
         confidence=0.8,
@@ -255,8 +306,7 @@ def test_incompat_explicit_verdict_rejected() -> None:
         remote_server_name="test-server",
         remote_schema_digest="test",
         phase_mappings=[
-            PhaseMapping(p, "action", [], {})
-            for p in ProtocolMappingPlan.REQUIRED_PHASES
+            PhaseMapping(p, "action", [], {}) for p in ProtocolMappingPlan.REQUIRED_PHASES
         ],
         verdict=CompatibilityVerdict.INCOMPATIBLE,
         capability_gaps=["test gap"],
@@ -283,8 +333,10 @@ def test_incompat_adapter_raises_on_incompatible_plan() -> None:
 # Pipeline: no per-turn LLM calls in native adapter
 # ---------------------------------------------------------------------------
 
+
 def test_native_adapter_zero_llm_calls() -> None:
     from agent.adaptive.adapter import DeterministicProtocolAdapter
+
     adapter = DeterministicProtocolAdapter.native()
     adapter.adapt_request("commit", _COMMIT_MSG)
     adapter.adapt_request("reveal", _REVEAL_MSG)
@@ -308,6 +360,7 @@ def test_native_adapter_game_id_preserved() -> None:
 # ProtocolMappingPlan hash stability
 # ---------------------------------------------------------------------------
 
+
 def test_plan_hash_deterministic() -> None:
     plan = ProtocolMappingPlan.native_plan()
     h1 = plan.plan_hash()
@@ -327,8 +380,10 @@ def test_plan_serialization_roundtrip() -> None:
 # ProfileCache roundtrip
 # ---------------------------------------------------------------------------
 
+
 def test_profile_cache_disk_roundtrip(tmp_path) -> None:
     from agent.adaptive.profile import ProfileCache, ProtocolProfile
+
     cache = ProfileCache(tmp_path)
     profile = ProtocolProfile.native()
     cache.put(profile)
@@ -339,5 +394,6 @@ def test_profile_cache_disk_roundtrip(tmp_path) -> None:
 
 def test_profile_cache_miss_returns_none() -> None:
     from agent.adaptive.profile import ProfileCache
+
     cache = ProfileCache()
     assert cache.get("nonexistent_digest_12345") is None

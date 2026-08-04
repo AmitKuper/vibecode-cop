@@ -194,6 +194,20 @@ EXTERNAL_PENDING. Risk: never synthesize evidence. SHAs: pending.
   startup, tag, model-tracking, and verifier baseline checks.
 - [x] 2026-08-05T01:20+03:00 — classified the production-path defects and froze M0
   documents.
+- [x] 2026-08-05T02:10+03:00 — implemented explicit counted CLIs, strict six-gamelet
+  boundaries, bilateral signed Step-0 identity locking, canonical active/passive
+  transitions, nonce-safe audit, and signed bilateral result agreement; focused
+  composition/zero-trust/result tests pass in both repositories. Real subprocess
+  acceptance remains open.
+- [x] 2026-08-05T02:25+03:00 — wired deterministic protected-field MCP mappings into
+  live gameplay and proved compatible mapping/unit fixtures; real transport and
+  incompatible pre-commit fixture matrices remain open.
+- [x] 2026-08-05T02:44+03:00 — corrected canonical x/y scent and belief geometry and
+  Appendix-F center intensity, then calibrated local-only demonstration-guided
+  recurrent A2C at 91.25% overall, 70% worst-family, zero technical failures, and
+  1.66 ms average inference/environment latency over 80 held-out games. The
+  calibration artifact is not a champion; immutable role artifacts and the full
+  tournament gate remain open.
 - [ ] M1 counted composition root.
 - [ ] M2 zero-trust final lifecycle.
 - [ ] M3 RL strength.
@@ -236,6 +250,13 @@ EXTERNAL_PENDING. Risk: never synthesize evidence. SHAs: pending.
 - `all_code_verifiable_pass()` accepts `SKIP`, and real two-process/tournament work
   is mislabeled external although it is locally code-verifiable.
 - The thief has no verifier/result JSON and fails configured branch coverage.
+- Asymmetric coordinates exposed transposed scent/belief grids, and the symmetric
+  legacy tests had concealed the error. The Appendix-F center emission was also
+  1.0 instead of fixed 0.9.
+- Sparse-reward recurrent A2C collapsed and plain online expert regularization
+  omitted decisive barrier actions. A local-only behavioral-cloning warm start
+  followed by recurrent A2C removed that failure in calibration without exposing
+  hidden coordinates to inference.
 
 ## Validation
 

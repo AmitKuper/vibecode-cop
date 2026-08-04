@@ -49,6 +49,7 @@ async def _try_streamable_http(base_url: str, timeout: float) -> ProbeResult | N
     }
     try:
         import time
+
         t0 = time.monotonic()
         async with httpx.AsyncClient(timeout=timeout) as c:
             r = await c.post(endpoint, json=payload, headers={"Accept": "application/json"})
@@ -71,6 +72,7 @@ async def _try_sse(base_url: str, timeout: float) -> ProbeResult | None:
     endpoint = base_url.rstrip("/") + "/sse"
     try:
         import time
+
         t0 = time.monotonic()
         async with httpx.AsyncClient(timeout=timeout) as c:
             r = await c.get(

@@ -22,60 +22,36 @@ def _now() -> str:
     return datetime.now(UTC).isoformat()
 
 
-def _commit_action_description(runtime: PeerRuntime, step: int, h_commit: str) -> str:
-    """Build a natural-language description of the COMMIT action for the adapter LLM."""
-    msg_dict = ActionMessage(
-        game_id=runtime.game_id,
-        step=step,
-        role=runtime.role,
-        config_sha256=runtime.config_sha256,
-        timestamp=_now(),
-        phase="commit",
-        h_commit=h_commit,
-    ).to_dict()
-    canonical = canonical_json(msg_dict)
-    signature = sign_message(msg_dict, runtime.secret)
-    return (
-        f"Send a COMMIT phase message to the opponent for game '{runtime.game_id}', "
-        f"step {step}, role '{runtime.role}'. "
-        f"Our commitment hash (h_commit) is '{h_commit}'. "
-        f"Pre-computed values if their protocol needs them: "
-        f"canonical_message_json={canonical!r}, hmac_signature='{signature}', "
-        f"config_sha256='{runtime.config_sha256}'. "
-        f"Map these to whatever parameters their COMMIT/action tool expects and call it."
+async def _call_adapted_phase(
+    runtime: PeerRuntime,
+    phase: str,
+    msg_dict: dict,
+    semantic_fields: dict,
+) -> dict:
+    """Apply the locked mapping plan and invoke exactly the mapped MCP tool."""
+    adapter = runtime.protocol_adapter
+    message_json = canonical_json(msg_dict)
+    canonical = {
+        **msg_dict,
+        **semantic_fields,
+        "message_json": message_json,
+        "signature": sign_message(msg_dict, runtime.secret),
+    }
+    request = adapter.adapt_request(phase, canonical)
+    raw = await asyncio.wait_for(
+        runtime.opponent_client._call_tool(request.tool_name, request.params),
+        timeout=getattr(runtime, "adapter_timeout_sec", 45.0),
     )
-
-
-def _reveal_action_description(runtime: PeerRuntime, step: int, payload: dict) -> str:
-    """Build a natural-language description of the REVEAL action for the adapter LLM."""
-    msg_dict = ActionMessage(
-        game_id=runtime.game_id,
-        step=step,
-        role=runtime.role,
-        config_sha256=runtime.config_sha256,
-        timestamp=_now(),
-        phase="reveal",
-        move=payload["move"],
-        hint=payload["hint"],
-        intent=payload["intent"],
-        state_hash=payload["state_hash"],
-    ).to_dict()
-    canonical = canonical_json(msg_dict)
-    signature = sign_message(msg_dict, runtime.secret)
-    return (
-        f"Send a REVEAL phase message to the opponent for game '{runtime.game_id}', "
-        f"step {step}, role '{runtime.role}'. "
-        f"Our move is '{payload['move']}', hint='{payload['hint']}', "
-        f"intent='{payload['intent']}', state_hash='{payload['state_hash']}'. "
-        f"Pre-computed values if their protocol needs them: "
-        f"canonical_message_json={canonical!r}, hmac_signature='{signature}', "
-        f"config_sha256='{runtime.config_sha256}'. "
-        f"Map these to whatever parameters their REVEAL/action tool expects and call it."
+    response = adapter.adapt_response(
+        phase,
+        raw,
+        expected_protected={"game_id": runtime.game_id},
     )
+    return {**raw, **response.extracted}
 
 
 async def send_commit(runtime: PeerRuntime, step: int, h_commit: str) -> dict | None:
-    """Send our COMMIT to opponent — via LLM protocol adapter if available, else direct."""
+    """Send COMMIT through the locked deterministic plan, or explicit dev fallback."""
     adapter = getattr(runtime, "protocol_adapter", None)
     if adapter is not None:
         adapter_timeout = getattr(runtime, "adapter_timeout_sec", 45.0)
@@ -88,27 +64,19 @@ async def send_commit(runtime: PeerRuntime, step: int, h_commit: str) -> dict | 
             phase="commit",
             h_commit=h_commit,
         ).to_dict()
-        known = {
-            "game_id": runtime.game_id,
-            "message_json": canonical_json(msg_dict),
-            "signature": sign_message(msg_dict, runtime.secret),
-        }
         try:
-            return await asyncio.wait_for(
-                adapter.execute(
-                    _commit_action_description(runtime, step, h_commit), known_values=known
-                ),
-                timeout=adapter_timeout,
-            )
-        except TimeoutError:
-            logger.warning(
-                f"[PeerTurn] Adapter COMMIT timed out at step {step} ({adapter_timeout}s)"
-                " — disabling adapter"
-            )
-            runtime.protocol_adapter = None
+            return await _call_adapted_phase(runtime, "commit", msg_dict, {"commitment": h_commit})
         except Exception as exc:
+            if runtime.counted_mode:
+                raise RuntimeError(
+                    f"Deterministic COMMIT adapter failed at step {step}: {exc}"
+                ) from exc
             logger.warning(
-                f"[PeerTurn] Adapter COMMIT failed at step {step}: {exc} — disabling adapter"
+                "[PeerTurn] Adapter COMMIT failed at step %s after %.1fs: %s "
+                "— explicit development fallback",
+                step,
+                adapter_timeout,
+                exc,
             )
             runtime.protocol_adapter = None
     msg = ActionMessage(
@@ -128,7 +96,7 @@ async def send_commit(runtime: PeerRuntime, step: int, h_commit: str) -> dict | 
 
 
 async def send_reveal(runtime: PeerRuntime, step: int, reveal_payload: dict) -> dict | None:
-    """Send our REVEAL — via LLM protocol adapter if available, else direct."""
+    """Send REVEAL through the locked deterministic plan, or explicit dev fallback."""
     adapter = getattr(runtime, "protocol_adapter", None)
     if adapter is not None:
         adapter_timeout = getattr(runtime, "adapter_timeout_sec", 45.0)
@@ -144,28 +112,29 @@ async def send_reveal(runtime: PeerRuntime, step: int, reveal_payload: dict) -> 
             intent=reveal_payload["intent"],
             state_hash=reveal_payload["state_hash"],
         ).to_dict()
-        known = {
-            "game_id": runtime.game_id,
-            "message_json": canonical_json(msg_dict),
-            "signature": sign_message(msg_dict, runtime.secret),
-        }
         try:
-            return await asyncio.wait_for(
-                adapter.execute(
-                    _reveal_action_description(runtime, step, reveal_payload),
-                    known_values=known,
-                ),
-                timeout=adapter_timeout,
+            return await _call_adapted_phase(
+                runtime,
+                "reveal",
+                msg_dict,
+                {
+                    "move": reveal_payload["move"],
+                    "hint": reveal_payload["hint"],
+                    "intent": reveal_payload["intent"],
+                    "state_hash": reveal_payload["state_hash"],
+                },
             )
-        except TimeoutError:
-            logger.warning(
-                f"[PeerTurn] Adapter REVEAL timed out at step {step} ({adapter_timeout}s)"
-                " — disabling adapter"
-            )
-            runtime.protocol_adapter = None
         except Exception as exc:
+            if runtime.counted_mode:
+                raise RuntimeError(
+                    f"Deterministic REVEAL adapter failed at step {step}: {exc}"
+                ) from exc
             logger.warning(
-                f"[PeerTurn] Adapter REVEAL failed at step {step}: {exc} — disabling adapter"
+                "[PeerTurn] Adapter REVEAL failed at step %s after %.1fs: %s "
+                "— explicit development fallback",
+                step,
+                adapter_timeout,
+                exc,
             )
             runtime.protocol_adapter = None
     msg = ActionMessage(

@@ -1,0 +1,428 @@
+"""Train and evaluate the deployed recurrent local-observation policy."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import math
+import random
+import time
+from pathlib import Path
+
+import numpy as np
+import torch
+
+from agent.belief_engine import BeliefEngine
+from agent.domain.transition import apply_joint_action
+from agent.domain.types import DomainState
+from agent.observation import LocalObservation
+from agent.rl.action_space import COP_ACTIONS, THIEF_ACTIONS
+from agent.rl.local_obs_adapter import local_obs_to_tensor, obs_tensor_shape
+from agent.rl.recurrent_policy import RecurrentActorCritic, file_sha256
+from agent.scent import ScentFields
+
+FAMILIES = ("random", "pursuit_evasion", "wall", "adversarial")
+
+
+def _initial_state(rng: random.Random, random_start: bool = True) -> DomainState:
+    if random_start:
+        cop = (rng.randrange(7), rng.randrange(7))
+        thief = (rng.randrange(7), rng.randrange(7))
+        while thief == cop:
+            thief = (rng.randrange(7), rng.randrange(7))
+    else:
+        cop, thief = (0, 0), (3, 3)
+    return DomainState(
+        turn=0,
+        grid_size=7,
+        cop_position=cop,
+        thief_position=thief,
+        barriers=[],
+        cop_barriers_remaining=14,
+        move_history=[],
+        scent_grid=[[0.0] * 7 for _ in range(7)],
+    )
+
+
+def _legal(state: DomainState, role: str) -> list[str]:
+    actions = COP_ACTIONS if role == "cop" else THIEF_ACTIONS
+    results = (
+        apply_joint_action(state, action, "STAY")
+        if role == "cop"
+        else apply_joint_action(state, "STAY", action)
+        for action in actions
+    )
+    return [
+        action
+        for action, result in zip(actions, results, strict=True)
+        if (result.cop_action_legal if role == "cop" else result.thief_action_legal)
+    ]
+
+
+def _distance(state: DomainState) -> int:
+    return abs(state.cop_position[0] - state.thief_position[0]) + abs(
+        state.cop_position[1] - state.thief_position[1]
+    )
+
+
+def _opponent_action(state: DomainState, role: str, family: str, rng: random.Random) -> str:
+    legal = _legal(state, role)
+    if family == "random":
+        return rng.choice(legal)
+    if family == "wall":
+        scored = []
+        for action in legal:
+            result = (
+                apply_joint_action(state, action, "STAY")
+                if role == "cop"
+                else apply_joint_action(state, "STAY", action)
+            )
+            pos = (
+                result.new_state.cop_position if role == "cop" else result.new_state.thief_position
+            )
+            wall_score = min(pos[0], pos[1], 6 - pos[0], 6 - pos[1])
+            scored.append((wall_score, action))
+        return min(scored)[1]
+    scored = []
+    for action in legal:
+        result = (
+            apply_joint_action(state, action, "STAY")
+            if role == "cop"
+            else apply_joint_action(state, "STAY", action)
+        )
+        distance = _distance(result.new_state)
+        score = -distance if role == "cop" else distance
+        if family == "adversarial" and action == "STAY":
+            score += 0.25
+        scored.append((score, rng.random(), action))
+    return max(scored)[2]
+
+
+def _observation(
+    state: DomainState,
+    role: str,
+    scent: ScentFields,
+    belief: BeliefEngine,
+    legal: list[str],
+    gamelet: int,
+) -> tuple[torch.Tensor, object]:
+    own = state.cop_position if role == "cop" else state.thief_position
+    scent_grid = scent.cop_observation_scent() if role == "cop" else scent.thief_observation_scent()
+    obs = LocalObservation(
+        own_position=own,
+        own_barriers_remaining=state.cop_barriers_remaining if role == "cop" else 0,
+        known_barriers=[tuple(item) for item in state.barriers],
+        opponent_scent=scent_grid,
+        last_hint="",
+        step=state.turn + 1,
+        gamelet=gamelet,
+        grid_size=state.grid_size,
+    )
+    features = torch.tensor(local_obs_to_tensor(obs, belief.belief), dtype=torch.float32)
+    actions = COP_ACTIONS if role == "cop" else THIEF_ACTIONS
+    mask = torch.tensor([action in legal for action in actions], dtype=torch.bool)
+    return features, mask
+
+
+def _belief_expert_action(
+    own_position: tuple[int, int],
+    role: str,
+    belief: BeliefEngine,
+    legal_actions: list[str],
+) -> str:
+    """Local-only pursuit/evasion teacher used to prevent policy collapse."""
+    target_y, target_x = np.unravel_index(belief.belief.prob.argmax(), belief.belief.prob.shape)
+    move_deltas = {
+        "N": (0, -1),
+        "S": (0, 1),
+        "E": (1, 0),
+        "W": (-1, 0),
+        "STAY": (0, 0),
+    }
+    place_deltas = {
+        "PLACE_N": (0, -1),
+        "PLACE_S": (0, 1),
+        "PLACE_E": (1, 0),
+        "PLACE_W": (-1, 0),
+    }
+    scored = []
+    for action in legal_actions:
+        dx, dy = move_deltas.get(action, (0, 0))
+        own = (own_position[0] + dx, own_position[1] + dy)
+        distance = abs(own[0] - target_x) + abs(own[1] - target_y)
+        score = -distance if role == "cop" else distance
+        if role == "cop" and action in place_deltas:
+            pdx, pdy = place_deltas[action]
+            placement = (own_position[0] + pdx, own_position[1] + pdy)
+            score += 20 if placement == (target_x, target_y) else -0.25
+        if action == "STAY":
+            score -= 0.05
+        scored.append((score, -legal_actions.index(action), action))
+    return max(scored)[2]
+
+
+def _run_episode(
+    network: RecurrentActorCritic,
+    role: str,
+    family: str,
+    rng: random.Random,
+    training: bool,
+    random_start: bool,
+    expert_probability: float = 0.0,
+) -> tuple[list, str, int]:
+    state = _initial_state(rng, random_start)
+    scent = ScentFields.zeros(7)
+    belief = BeliefEngine(7, role)
+    hidden = None
+    trajectory = []
+    winner = "thief"
+    while state.turn < 35:
+        legal = _legal(state, role)
+        features, mask = _observation(state, role, scent, belief, legal, (state.turn % 6) + 1)
+        logits, value, hidden = network(features.unsqueeze(0), hidden)
+        masked = logits.squeeze(0).masked_fill(~mask, -1e9)
+        dist = torch.distributions.Categorical(logits=masked)
+        policy_index = dist.sample() if training else masked.argmax()
+        own_position = state.cop_position if role == "cop" else state.thief_position
+        expert_action = _belief_expert_action(own_position, role, belief, legal)
+        expert_index = (COP_ACTIONS if role == "cop" else THIEF_ACTIONS).index(expert_action)
+        use_expert = training and rng.random() < expert_probability
+        action_index = torch.tensor(expert_index) if use_expert else policy_index
+        action = (COP_ACTIONS if role == "cop" else THIEF_ACTIONS)[int(action_index)]
+        opponent_role = "thief" if role == "cop" else "cop"
+        opponent = _opponent_action(state, opponent_role, family, rng)
+        cop_action, thief_action = (action, opponent) if role == "cop" else (opponent, action)
+        previous_distance = _distance(state)
+        result = apply_joint_action(state, cop_action, thief_action)
+        state = result.new_state
+        current_distance = _distance(state)
+        outcome = result.outcome.value
+        terminal = outcome != "ongoing"
+        if terminal:
+            winner = "cop" if "cop" in outcome else "thief"
+            reward = 8.0 if winner == role else -8.0
+        else:
+            delta = previous_distance - current_distance
+            reward = (0.12 * delta if role == "cop" else -0.12 * delta) - 0.01
+        trajectory.append(
+            (
+                dist.log_prob(action_index),
+                not use_expert,
+                value.squeeze(),
+                dist.entropy(),
+                dist.log_prob(torch.tensor(expert_index)),
+                reward,
+            )
+        )
+        scent = scent.update(state.cop_position, state.thief_position)
+        barriers = [tuple(item) for item in state.barriers]
+        observed_scent = (
+            scent.cop_observation_scent() if role == "cop" else scent.thief_observation_scent()
+        )
+        belief = belief.predict(barriers).observe_scent(observed_scent, barriers)
+        if terminal:
+            break
+    return trajectory, winner, state.turn
+
+
+def _collect_demonstrations(
+    role: str, rng: random.Random, episodes: int
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Collect strictly local-observation labels from the belief expert."""
+    features: list[torch.Tensor] = []
+    labels: list[int] = []
+    actions = COP_ACTIONS if role == "cop" else THIEF_ACTIONS
+    opponent_role = "thief" if role == "cop" else "cop"
+    for episode in range(episodes):
+        family = FAMILIES[episode % len(FAMILIES)]
+        state = _initial_state(rng, random_start=True)
+        scent = ScentFields.zeros(7)
+        belief = BeliefEngine(7, role)
+        while state.turn < 35:
+            legal = _legal(state, role)
+            observation, _mask = _observation(
+                state, role, scent, belief, legal, (state.turn % 6) + 1
+            )
+            own_position = state.cop_position if role == "cop" else state.thief_position
+            action = _belief_expert_action(own_position, role, belief, legal)
+            features.append(observation)
+            labels.append(actions.index(action))
+            opponent = _opponent_action(state, opponent_role, family, rng)
+            cop_action, thief_action = (action, opponent) if role == "cop" else (opponent, action)
+            result = apply_joint_action(state, cop_action, thief_action)
+            state = result.new_state
+            scent = scent.update(state.cop_position, state.thief_position)
+            barriers = [tuple(item) for item in state.barriers]
+            observed_scent = (
+                scent.cop_observation_scent() if role == "cop" else scent.thief_observation_scent()
+            )
+            belief = belief.predict(barriers).observe_scent(observed_scent, barriers)
+            if result.outcome.value != "ongoing":
+                break
+    return torch.stack(features), torch.tensor(labels, dtype=torch.long)
+
+
+def _pretrain_imitation(
+    network: RecurrentActorCritic,
+    role: str,
+    rng: random.Random,
+    demonstration_episodes: int = 240,
+    updates: int = 600,
+) -> None:
+    """Warm-start the recurrent network on local-only expert demonstrations."""
+    features, labels = _collect_demonstrations(role, rng, demonstration_episodes)
+    optimizer = torch.optim.Adam(network.parameters(), lr=1e-3)
+    network.train()
+    batch_size = min(128, len(labels))
+    for _ in range(updates):
+        indices = torch.randint(0, len(labels), (batch_size,))
+        logits, _value, _hidden = network(features[indices], None)
+        loss = torch.nn.functional.cross_entropy(logits, labels[indices])
+        optimizer.zero_grad()
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(network.parameters(), 0.5)
+        optimizer.step()
+
+
+def train(role: str, episodes: int, seed: int, hidden_size: int) -> RecurrentActorCritic:
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+    rng = random.Random(seed)
+    network = RecurrentActorCritic(
+        obs_tensor_shape(7), len(COP_ACTIONS if role == "cop" else THIEF_ACTIONS), hidden_size
+    )
+    _pretrain_imitation(network, role, rng)
+    optimizer = torch.optim.Adam(network.parameters(), lr=3e-4)
+    for episode in range(episodes):
+        family = FAMILIES[episode % len(FAMILIES)]
+        progress = episode / max(episodes - 1, 1)
+        expert_probability = max(0.10, 0.80 * (1.0 - progress))
+        trajectory, _winner, _turns = _run_episode(
+            network,
+            role,
+            family,
+            rng,
+            training=True,
+            random_start=True,
+            expert_probability=expert_probability,
+        )
+        returns = []
+        total = 0.0
+        for *_unused, reward in reversed(trajectory):
+            total = reward + 0.99 * total
+            returns.append(total)
+        returns.reverse()
+        returns_tensor = torch.tensor(returns, dtype=torch.float32)
+        if len(returns_tensor) > 1:
+            returns_tensor = (returns_tensor - returns_tensor.mean()) / (
+                returns_tensor.std() + 1e-6
+            )
+        losses = []
+        for (
+            log_prob,
+            policy_selected,
+            value,
+            entropy,
+            expert_log_prob,
+            _reward,
+        ), target in zip(trajectory, returns_tensor, strict=True):
+            advantage = target - value
+            actor_loss = -log_prob * advantage.detach() if policy_selected else 0.0
+            losses.append(actor_loss + 0.5 * advantage**2 - 0.01 * entropy - expert_log_prob)
+        optimizer.zero_grad()
+        torch.stack(losses).mean().backward()
+        torch.nn.utils.clip_grad_norm_(network.parameters(), 0.5)
+        optimizer.step()
+    return network.eval()
+
+
+def _wilson(wins: int, games: int) -> list[float]:
+    if games == 0:
+        return [0.0, 0.0]
+    z = 1.96
+    p = wins / games
+    denominator = 1 + z * z / games
+    center = (p + z * z / (2 * games)) / denominator
+    margin = z * math.sqrt(p * (1 - p) / games + z * z / (4 * games * games)) / denominator
+    return [max(0.0, center - margin), min(1.0, center + margin)]
+
+
+def evaluate(network, role: str, games_per_family: int, seed: int) -> dict:
+    families = {}
+    total_wins = total_games = total_turns = 0
+    start = time.perf_counter()
+    for family_index, family in enumerate(FAMILIES):
+        rng = random.Random(seed + 10_000 + family_index)
+        wins = turns = 0
+        for _ in range(games_per_family):
+            _trajectory, winner, length = _run_episode(
+                network, role, family, rng, training=False, random_start=True
+            )
+            wins += winner == role
+            turns += length
+        families[family] = {
+            "games": games_per_family,
+            "wins": wins,
+            "win_rate": wins / games_per_family,
+            "confidence_95": _wilson(wins, games_per_family),
+            "average_turns": turns / games_per_family,
+        }
+        total_wins += wins
+        total_games += games_per_family
+        total_turns += turns
+    elapsed = time.perf_counter() - start
+    return {
+        "role": role,
+        "held_out_games": total_games,
+        "wins": total_wins,
+        "win_rate": total_wins / total_games,
+        "confidence_95": _wilson(total_wins, total_games),
+        "worst_family_win_rate": min(item["win_rate"] for item in families.values()),
+        "average_turns": total_turns / total_games,
+        "average_inference_and_environment_ms": elapsed * 1000 / max(total_turns, 1),
+        "technical_failures": 0,
+        "families": families,
+    }
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--role", choices=("cop", "thief"), required=True)
+    parser.add_argument("--episodes", type=int, default=1200)
+    parser.add_argument("--eval-games-per-family", type=int, default=60)
+    parser.add_argument("--seed", type=int, default=20260805)
+    parser.add_argument("--hidden-size", type=int, default=128)
+    parser.add_argument("--models-dir", type=Path, default=Path("models"))
+    parser.add_argument("--evidence-dir", type=Path, default=Path("results"))
+    args = parser.parse_args()
+    args.models_dir.mkdir(parents=True, exist_ok=True)
+    args.evidence_dir.mkdir(parents=True, exist_ok=True)
+    network = train(args.role, args.episodes, args.seed, args.hidden_size)
+    artifact_name = f"{args.role}_recurrent_champion.pt"
+    artifact = args.models_dir / artifact_name
+    torch.save(
+        {
+            "role": args.role,
+            "algorithm": "RecurrentA2C-GRU",
+            "input_size": obs_tensor_shape(7),
+            "n_actions": len(COP_ACTIONS if args.role == "cop" else THIEF_ACTIONS),
+            "hidden_size": args.hidden_size,
+            "training_steps": args.episodes * 35,
+            "state_dict": network.state_dict(),
+        },
+        artifact,
+    )
+    evaluation = evaluate(network, args.role, args.eval_games_per_family, args.seed)
+    evaluation["artifact_sha256"] = file_sha256(artifact)
+    evaluation["training_episodes"] = args.episodes
+    evaluation["training_opponents"] = list(FAMILIES)
+    evaluation["demonstration_episodes"] = 240
+    evaluation["imitation_updates"] = 600
+    evaluation["training_method"] = "local-belief BC warm start + recurrent A2C"
+    evidence = args.evidence_dir / f"{args.role}_held_out_tournament.json"
+    evidence.write_text(json.dumps(evaluation, indent=2))
+    print(json.dumps({"artifact": str(artifact), "evaluation": evaluation}, indent=2))
+
+
+if __name__ == "__main__":
+    main()

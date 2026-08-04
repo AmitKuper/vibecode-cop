@@ -21,10 +21,22 @@ class TestBilateralAuditSummary:
         rt.game_id = "test-game_g1"
         rt.game_dir = tmp_path
         rt._my_commits = {
-            1: {"nonce": "nonce-1", "h_commit": "aaa", "move": "N",
-                "hint": "", "intent": "truth", "state_hash": "s1"},
-            2: {"nonce": "nonce-2", "h_commit": "bbb", "move": "S",
-                "hint": "", "intent": "truth", "state_hash": "s2"},
+            1: {
+                "nonce": "nonce-1",
+                "h_commit": "aaa",
+                "move": "N",
+                "hint": "",
+                "intent": "truth",
+                "state_hash": "s1",
+            },
+            2: {
+                "nonce": "nonce-2",
+                "h_commit": "bbb",
+                "move": "S",
+                "hint": "",
+                "intent": "truth",
+                "state_hash": "s2",
+            },
         }
         return rt
 

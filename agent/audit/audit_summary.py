@@ -56,7 +56,11 @@ def create_signed_audit_summary(
     return SignedAuditSummary(summary, sig.hex())
 
 
-def verify_audit_summary(signed: SignedAuditSummary) -> bool:
+def verify_audit_summary(
+    signed: SignedAuditSummary, expected_public_key: bytes | None = None
+) -> bool:
     pub_bytes = bytes.fromhex(signed.summary.public_key_hex)
+    if expected_public_key is not None and pub_bytes != expected_public_key:
+        return False
     sig_bytes = bytes.fromhex(signed.signature_hex)
     return verify(pub_bytes, signed.summary.canonical_bytes(), sig_bytes)

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from unittest.mock import MagicMock, patch  # noqa: E402
+from unittest.mock import AsyncMock, MagicMock, patch  # noqa: E402
 
 import pytest  # noqa: E402
 
@@ -240,10 +240,15 @@ class TestRunSeriesCountedMode:
 
         mock_runtime = MagicMock()
         mock_runtime.run_game = _run_game
+        mock_runtime.orchestrator.send_report_via_gatekeeper.return_value = "delivery-fixture"
 
         with (
             patch("agent.config.shared_config.load_shared_config", return_value=_shared_cfg),
             patch("agent.peer_runtime.PeerRuntime", return_value=mock_runtime),
+            patch(
+                "agent.peer_result.exchange_series_result",
+                new=AsyncMock(return_value={"remote_signature_hex": "f" * 128}),
+            ),
         ):
             import tempfile
 

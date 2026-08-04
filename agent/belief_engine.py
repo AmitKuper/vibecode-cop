@@ -24,7 +24,7 @@ class BeliefEngine:
         old_prob = self._belief.prob
 
         # Set of passable cells
-        barrier_set = set(map(tuple, known_barriers))
+        barrier_set = {(y, x) for x, y in known_barriers}
 
         for r in range(n):
             for c in range(n):
