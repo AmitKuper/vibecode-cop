@@ -1,12 +1,24 @@
 {
-  "schema_version": "1.0",
-  "generated_by": "Phase 11",
-  "cop_sha": "b9c10bc",
-  "thief_sha": "166c324",
-  "cop_tests": 1095,
-  "thief_tests": 1094,
+  "schema_version": "2.0",
+  "package_version": "3.0.0",
+  "generated_by": "v8-phase5",
+  "cop_sha": "ac8cbdcd61ec3bfbe27c88836d88fc72dbf813b0",
+  "thief_sha": "5f62111f09fe812cde4cba8ee06283240778a955",
+  "cop_tests": 1173,
+  "thief_tests": 1143,
   "coverage_threshold": 85,
   "ruff_violations": 0,
+  "p0_bugs_fixed": [
+    "RuntimeMode.COUNTED not propagated to PeerRuntime (P0-1)",
+    "PLACE_* barrier actions silently converted to STAY on active side (P0-2)",
+    "thief_observation() included live cop position (hidden coord leak)",
+    "select_move() RL path leaked grid_state with both positions",
+    "generate_strategic_hint() hardcoded step=0",
+    "passive side always used truth intent (not symmetric)"
+  ],
+  "rules_pass": 43,
+  "rules_external_pending": 10,
+  "rules_fail": 2,
   "external_pending": [
     "real_opponent_match",
     "trained_rl_checkpoint",
@@ -14,6 +26,9 @@
     "public_tunnel_evidence",
     "group_id_8char",
     "gui_screenshots_browser",
-    "moodle_submission"
+    "moodle_submission",
+    "counted_match_two_groups",
+    "gmail_report_message_ids",
+    "moodle_pdf_layout"
   ]
 }

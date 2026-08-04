@@ -37,10 +37,10 @@ Hidden: opponent true position. `build_local_observation()` enforces this.
 uv run python scripts/run_series.py
 
 # Warmup (real transport, guards relaxed)
-uv run python scripts/run_series.py --mode warmup --cop-url <url>
+uv run python scripts/run_series.py --mode warmup --thief-url <url>
 
 # Counted (fail-closed — rejects dev secrets, placeholder models, etc.)
-uv run python scripts/run_series.py --mode counted --cop-url <url>
+uv run python scripts/run_series.py --mode counted --thief-url <url>
 ```
 
 ## Strategy
@@ -69,7 +69,7 @@ uv run uvicorn agent.replay.app:app --port 8081
 
 ## Test Evidence
 
-- Cop tests: 1163 passing, 0 failures
+- Cop tests: 1173 passing, 0 failures
 - Coverage: >=85% branch
 - Ruff: 0 violations
 
