@@ -104,7 +104,8 @@ class PeerRuntime(_CrewMixin):
         self._cop_barriers_remaining: int = 14  # reset per game in run_game()
         self.llm = self._init_llm(llm_dict)
         self.crews: dict = {}
-        self.protocol_adapter = None  # set after discovery in run_game()
+        self.protocol_adapter = None  # set after adaptive negotiation in run_game()
+        self._adaptive_profile = None  # ProtocolProfile set after negotiation
         self.orchestrator: AgentOrchestrator | None = None  # lazy-init in run_game()
 
     async def run_game(self, game_id: str, counted_mode: bool | None = None) -> dict:
@@ -285,6 +286,10 @@ class PeerRuntime(_CrewMixin):
         # 3C: Wire Step-0 validation into counted mode startup
         if counted_mode and self.orchestrator is not None:
             decl = self.orchestrator.build_step0_declaration(game_id)
+            # Attach adaptive protocol profile hash if negotiation succeeded
+            if self._adaptive_profile is not None:
+                decl.adapter_mapping_hash = self._adaptive_profile.profile_hash
+                decl.transport = self._adaptive_profile.remote_transport
             errors = self.orchestrator.validate_counted_declaration(decl)
             if errors:
                 raise RuntimeError(f"Step-0 validation failed for counted mode: {errors}")
@@ -348,36 +353,40 @@ class PeerRuntime(_CrewMixin):
     )
 
     async def _init_protocol_adapter(self) -> None:
-        """Discover opponent's MCP tools and build the protocol adapter crew."""
-        try:
-            from agent.mcp.discovery import ProtocolDiscovery
-            from agent.mcp.protocol_adapter import ProtocolAdapterCrew
+        """Pre-game adaptive MCP negotiation (LLM runs ONCE; no LLM per turn).
 
-            discovery = ProtocolDiscovery(self.opponent_client.peer_url)
-            ok = await discovery.discover()
-            if ok and discovery.tools:
-                # Strip pure utility tools so the LLM only sees action-relevant ones.
-                action_tools = {
-                    name: schema
-                    for name, schema in discovery.tools.items()
-                    if name.lower() not in self._UTILITY_TOOL_NAMES
-                }
-                if not action_tools:
-                    action_tools = discovery.tools  # safety: keep all if nothing remains
-                self.protocol_adapter = ProtocolAdapterCrew(
-                    action_tools, self.opponent_client, self.llm
-                )
-                logger.info(
-                    f"[PeerRuntime/{self.role}] Protocol adapter ready "
-                    f"({len(action_tools)}/{len(discovery.tools)} tools after filtering)"
-                )
-            else:
-                logger.warning(
-                    f"[PeerRuntime/{self.role}] Discovery found no tools — direct MCP fallback"
-                )
+        Replaces the legacy ProtocolAdapterCrew which called an LLM on every
+        turn. The new pipeline:
+          TransportProbe → MCPIntrospector → ProtocolUnderstandingAgent (once)
+          → StaticSemanticVerifier → ConformanceProbes → DeterministicProtocolAdapter
+        """
+        try:
+            from agent.adaptive.pipeline import native_adapter, run_adaptive_negotiation
+
+            opponent_base = self.opponent_client.peer_url.rstrip("/mcp").rstrip("/")
+            result = await run_adaptive_negotiation(
+                opponent_url=opponent_base,
+                llm=self.llm,
+            )
+            self.protocol_adapter = result.adapter
+            self._adaptive_profile = result.profile
+            logger.info(
+                "[PeerRuntime/%s] Adaptive negotiation complete: profile_hash=%s "
+                "transport=%s cache_hit=%s",
+                self.role,
+                result.profile_hash,
+                result.profile.remote_transport,
+                result.cache_hit,
+            )
         except Exception as exc:
-            logger.warning(f"[PeerRuntime/{self.role}] Protocol adapter init failed: {exc}")
-            self.protocol_adapter = None
+            logger.warning(
+                "[PeerRuntime/%s] Adaptive negotiation failed (%s) — using native identity adapter",
+                self.role, exc,
+            )
+            from agent.adaptive.pipeline import native_adapter
+            _nat = native_adapter()
+            self.protocol_adapter = _nat.adapter
+            self._adaptive_profile = _nat.profile
 
     def _init_llm(self, llm_dict: dict | None):
         try:

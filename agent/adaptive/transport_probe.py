@@ -1,0 +1,138 @@
+"""TransportProbe: discover which MCP transport an opponent server supports.
+
+Probes Streamable HTTP, legacy SSE, and stdio in that order, with bounded
+deadlines and no game mutation.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import enum
+import logging
+from dataclasses import dataclass
+
+import httpx
+
+logger = logging.getLogger(__name__)
+
+PROBE_TIMEOUT_S = 5.0
+
+
+class TransportType(enum.StrEnum):
+    STREAMABLE_HTTP = "streamable_http"
+    SSE = "sse"
+    STDIO = "stdio"
+    UNKNOWN = "unknown"
+
+
+@dataclass(frozen=True)
+class ProbeResult:
+    transport: TransportType
+    base_url: str
+    mcp_endpoint: str
+    latency_ms: float
+    probe_notes: str = ""
+
+
+async def _try_streamable_http(base_url: str, timeout: float) -> ProbeResult | None:
+    """POST /mcp with MCP initialize message — Streamable HTTP style."""
+    endpoint = base_url.rstrip("/") + "/mcp"
+    payload = {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "initialize",
+        "params": {
+            "protocolVersion": "2024-11-05",
+            "capabilities": {},
+            "clientInfo": {"name": "probe", "version": "1.0"},
+        },
+    }
+    try:
+        import time
+        t0 = time.monotonic()
+        async with httpx.AsyncClient(timeout=timeout) as c:
+            r = await c.post(endpoint, json=payload, headers={"Accept": "application/json"})
+        latency_ms = (time.monotonic() - t0) * 1000
+        if r.status_code in (200, 202):
+            return ProbeResult(
+                transport=TransportType.STREAMABLE_HTTP,
+                base_url=base_url,
+                mcp_endpoint=endpoint,
+                latency_ms=latency_ms,
+                probe_notes=f"HTTP {r.status_code}",
+            )
+    except Exception as exc:
+        logger.debug("Streamable HTTP probe failed for %s: %s", base_url, exc)
+    return None
+
+
+async def _try_sse(base_url: str, timeout: float) -> ProbeResult | None:
+    """GET /sse — legacy SSE transport handshake."""
+    endpoint = base_url.rstrip("/") + "/sse"
+    try:
+        import time
+        t0 = time.monotonic()
+        async with httpx.AsyncClient(timeout=timeout) as c:
+            r = await c.get(
+                endpoint,
+                headers={"Accept": "text/event-stream"},
+                follow_redirects=True,
+            )
+        latency_ms = (time.monotonic() - t0) * 1000
+        content_type = r.headers.get("content-type", "")
+        if r.status_code == 200 and "event-stream" in content_type:
+            return ProbeResult(
+                transport=TransportType.SSE,
+                base_url=base_url,
+                mcp_endpoint=endpoint,
+                latency_ms=latency_ms,
+                probe_notes="SSE event-stream confirmed",
+            )
+    except Exception as exc:
+        logger.debug("SSE probe failed for %s: %s", base_url, exc)
+    return None
+
+
+class TransportProbe:
+    """Discovers the MCP transport an opponent server speaks.
+
+    Tries Streamable HTTP first (preferred), then legacy SSE, then signals
+    UNKNOWN. Does not mutate game state.
+    """
+
+    def __init__(self, timeout_s: float = PROBE_TIMEOUT_S) -> None:
+        self._timeout = timeout_s
+
+    async def probe(self, base_url: str) -> ProbeResult:
+        """Return the first working transport, or UNKNOWN."""
+        result = await _try_streamable_http(base_url, self._timeout)
+        if result:
+            logger.info("TransportProbe: Streamable HTTP confirmed at %s", result.mcp_endpoint)
+            return result
+
+        result = await _try_sse(base_url, self._timeout)
+        if result:
+            logger.info("TransportProbe: SSE confirmed at %s", result.mcp_endpoint)
+            return result
+
+        logger.warning("TransportProbe: no known transport at %s", base_url)
+        return ProbeResult(
+            transport=TransportType.UNKNOWN,
+            base_url=base_url,
+            mcp_endpoint=base_url,
+            latency_ms=0.0,
+            probe_notes="no transport responded within deadline",
+        )
+
+    def probe_sync(self, base_url: str) -> ProbeResult:
+        return asyncio.run(self.probe(base_url))
+
+    @staticmethod
+    def stdio_result(local_command: str = "") -> ProbeResult:
+        return ProbeResult(
+            transport=TransportType.STDIO,
+            base_url="stdio",
+            mcp_endpoint="stdio",
+            latency_ms=0.0,
+            probe_notes=f"local stdio fixture: {local_command}",
+        )

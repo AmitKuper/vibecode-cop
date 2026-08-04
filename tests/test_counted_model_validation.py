@@ -90,14 +90,9 @@ def test_development_mode_skips_model_validation(tmp_path):
 
 def test_model_validated_on_orchestrator_init(tmp_path):
     """AgentOrchestrator in COUNTED mode with placeholder manifest raises ValueError."""
-    # The real MANIFEST.json has training_steps=0, so COUNTED mode should reject it
-    manifest_path = str(Path(__file__).parent.parent / "models" / "MANIFEST.json")
-    config = {
-        "secret": "real-production-secret-xyz",
-        "model_sha256": "abc123deadbeef",
-        "model_manifest_path": manifest_path,
-        "grid_size": 7,
-    }
+    # Use a temp manifest with training_steps=0 to test rejection logic
+    manifest_path = _make_manifest(tmp_path, training_steps=0, win_rate=0.0)
+    config = _counted_config(manifest_path)
     with pytest.raises(ValueError, match="COUNTED mode rejected"):
         AgentOrchestrator(
             role="thief",

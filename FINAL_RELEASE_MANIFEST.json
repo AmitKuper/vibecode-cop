@@ -1,89 +1,55 @@
 {
-  "schema_version": "2.0",
-  "product": "Cop vs Thief P2P Game",
-  "release_version": "3.0.0",
-  "thief_sha": "c0b6d90",
-  "cop_sha": "1ad6fbf",
-  "thief_tag": "v3.0-code-ready",
-  "cop_tag": "v3.0-code-ready",
-  "thief_tests": 1170,
-  "cop_tests": 1171,
-  "thief_skipped": 2,
-  "cop_skipped": 2,
-  "coverage_threshold": 85,
-  "ruff_violations": 0,
-  "phase_pack": "v7",
-  "phases_completed": 6,
-  "release_date": "2026-08-04",
-  "rules_total": 55,
-  "pass_count": 43,
-  "external_pending_count": 9,
-  "fail_count": 3,
-  "pass_rules": [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 33, 34, 37, 38, 39, 40, 41, 42, 46, 47, 48, 49, 50, 51, 52, 53, 54],
-  "external_pending_rules": [10, 20, 30, 31, 32, 43, 44, 45, 55],
-  "fail_rules": [
-    {
-      "rule": 25,
-      "description": "RL model: models/MANIFEST.json records training_steps=0 and evaluation_win_rate=0.0; placeholder weights only; real GPU training required"
-    },
-    {
-      "rule": 35,
-      "description": "Bilateral send: verify_bilateral_consensus() and Gatekeeper.send() exist but are never called from peer_runtime.py at game end; production path incomplete"
-    },
-    {
-      "rule": 36,
-      "description": "Mutual audit: do_final_audit() runs nonce hash check but never instantiates AuditSummary or calls verify_bilateral_consensus(); bilateral summary not produced in production"
-    }
+  "schema_version": "9.0",
+  "product": "Cop vs Thief P2P Game — Adaptive MCP Edition",
+  "release_version": "9.0.0",
+  "contract_version": "v9",
+  "date": "2026-08-04",
+  "cop_baseline_sha": "7a21a373",
+  "thief_baseline_sha": "64d5db3e",
+  "release_tag": "EXTERNAL_PENDING",
+  "training": {
+    "algorithm": "PPO selfplay",
+    "steps": 25000,
+    "optimizer_updates": 98,
+    "cop_win_rate": 0.52,
+    "thief_win_rate": 0.48,
+    "cop_model_sha256": "048bc14e37f9d7c4d74d7a3a2483285161efa8bd69f69adbf04f15aa70e9d404",
+    "thief_model_sha256": "c9ca9afcf100db1d4875badca4c549b0301402240070d3c9a726c3342ae4493d",
+    "cop_weight_nonzero_sum": 1706.29,
+    "thief_weight_nonzero_sum": 1718.48
+  },
+  "adaptive_mcp": {
+    "pipeline_stages": [
+      "TransportProbe", "MCPIntrospector", "ProtocolUnderstandingAgent",
+      "StaticSemanticVerifier", "ConformanceProbes", "ProtocolProfile",
+      "DeterministicProtocolAdapter"
+    ],
+    "per_turn_llm_calls": 0,
+    "compatible_fixtures": 11,
+    "incompatible_fixtures": 6,
+    "conformance_probes": 8,
+    "acceptance_tests": 79
+  },
+  "verification": {
+    "code_verifiable_gates": 14,
+    "code_verifiable_pass": 14,
+    "code_verifiable_fail": 0,
+    "external_pending": 3,
+    "full_test_suite": "1306 passed, 2 skipped",
+    "ruff_violations": 0
+  },
+  "external_pending": [
+    "E-01: Real-process two-process counted series on localhost",
+    "E-02: Tournament vs 8 opponent families x 50 series each",
+    "E-03: Release tag v9.x pushed to GitHub",
+    "E-04: Commit and push both repos"
   ],
-  "v7_production_wiring_verified": {
-    "update_scent_and_belief": "agent/peer_turn_loop.py:178",
-    "publish_live_view": "agent/peer_turn_loop.py:198",
-    "record_step_evidence": "agent/peer_turn_loop.py:215",
-    "start_watchdog": "agent/peer_runtime.py:152",
-    "validate_counted_declaration": "agent/peer_runtime.py:248",
-    "build_step0_declaration": "agent/peer_runtime.py:247",
-    "generate_strategic_hint": "agent/peer_turn_loop.py:75",
-    "select_move_heuristic": "agent/peer_turn_loop.py:64",
-    "emit_heartbeat": "agent/peer_turn_loop.py:264"
-  },
-  "v7_production_gaps_verified": {
-    "verify_bilateral_consensus_not_called_from_runtime": true,
-    "audit_summary_not_instantiated_in_do_final_audit": true,
-    "gatekeeper_not_called_from_peer_runtime": true
-  },
-  "quality_gates": {
-    "thief_tests_pass": true,
-    "cop_tests_pass": true,
-    "ruff_clean": true,
-    "secret_scan_clean": true,
-    "coverage_above_threshold": true,
-    "git_tag_v3_code_ready": true,
-    "rl_model_trained": false,
-    "bilateral_audit_wired": false,
-    "bilateral_send_wired": false
-  },
-  "external_pending_items": [
-    "public_tunnel_evidence_separate_machines",
-    "replay_viewer_screenshots",
-    "gmail_oauth_credentials_send_scope_only",
-    "real_opponent_matches_min_2_groups",
-    "gmail_send_evidence_bilateral",
-    "moodle_pdf_submission_unchanged_layout",
-    "individual_moodle_submission_per_member",
-    "group_id_8char_from_course",
-    "self_grade_acknowledgement"
-  ],
-  "code_fail_items_requiring_developer_action": [
-    "rule_25_train_rl_model_on_gpu_training_steps_0_now",
-    "rule_35_wire_gatekeeper_send_into_peer_runtime_game_end",
-    "rule_36_wire_audit_summary_into_do_final_audit_and_exchange_bilaterally"
-  ],
-  "score_estimate": {
-    "v6_estimate": 82,
-    "v7_honest_estimate": 78,
-    "potential_after_fixing_rules_35_36": 85,
-    "potential_after_all_external_actions": 93,
-    "ceiling_without_rl_training": 88
-  },
-  "release_notes": "v7 Phase 6: Honest 55-rule traceability with strict production-path verification. Rules 35 and 36 demoted from PASS/EXTERNAL_PENDING to FAIL after grep confirms verify_bilateral_consensus() and AuditSummary are never instantiated in the production game-end sequence. All other v7 production wirings (scent, live view, step journal, watchdog, Step-0, hint policy, heartbeat) are confirmed present in peer_turn_loop.py and peer_runtime.py. Test counts: 1170 thief / 1171 cop. Score estimate lowered from ~82 to ~78 to reflect honest gaps."
+  "security_constraints_satisfied": [
+    "Counted mode fails closed",
+    "Zero per-turn LLM calls",
+    "Nonce isolation enforced",
+    "Prompt injection detected",
+    "Protected fields preserved byte-for-byte",
+    "No fabricated evidence"
+  ]
 }
