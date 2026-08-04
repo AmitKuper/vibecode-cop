@@ -62,6 +62,32 @@ The **commitment protocol** (Phase 10B) is necessary precisely because each agen
 cannot verify the opponent's move before committing its own — preventing adaptive
 cheating based on observing the opponent's pre-move intention.
 
+## Production Observation Builder (Phase 2 v7)
+
+`build_local_observation()` in `agent/peer_turn_helpers.py` is the **sole** entry
+point for constructing strategy/RL observations in the production turn loop.
+It replaces the legacy `build_observation()` which accidentally included both
+`cop_position` and `thief_position` in `grid_state`.
+
+### What each role sees
+
+| Field | Cop | Thief |
+|-------|:---:|:-----:|
+| `own_position` (own true coords) | ✓ | ✓ |
+| `known_barriers` (public) | ✓ | ✓ |
+| `opponent_scent` (NxN float) | thief scent | cop scent |
+| `belief_heatmap` (NxN float) | ✓ if BeliefEngine wired | ✓ if BeliefEngine wired |
+| `belief_entropy` | ✓ if BeliefEngine wired | ✓ if BeliefEngine wired |
+| `last_hint` | ✓ | ✓ |
+| `step`, `gamelet`, `grid_size` | ✓ | ✓ |
+| `cop_position` (hidden!) | ✗ | ✗ |
+| `thief_position` (hidden!) | ✗ | ✗ |
+| `opponent_position` (hidden!) | ✗ | ✗ |
+
+The RL adapter `local_obs_to_tensor()` in `agent/rl/local_obs_adapter.py` operates
+on `LocalObservation` which by design has no opponent-coordinate field, making
+hidden-coordinate leaks a type-level impossibility for the RL path.
+
 ## Why No Objective State Reaches the Actor
 
 The full state S = (cop_pos, thief_pos, barriers, turn) is never transmitted to
@@ -70,6 +96,8 @@ This is enforced at the protocol level:
 - Commits are hashed — the move is hidden until both have committed
 - Reveals are verified against the prior commit hash
 - The coordinator (ProtocolCoordinator) enforces ordering; no state broadcast occurs
+- `build_local_observation()` is role-filtered — hidden opponent coordinate is
+  structurally excluded, not just omitted by convention
 
 Any actor that could see the full S would break the Dec-POMDP structure and allow
 trivially optimal policies — eliminating the game's strategic depth.

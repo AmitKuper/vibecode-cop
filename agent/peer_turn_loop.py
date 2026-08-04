@@ -147,6 +147,15 @@ async def run_peer_turn(
         f"[PeerTurn] step={step} cop={cop_move} thief={thief_move} "
         f"cop_pos={runtime.board.cop_position} thief_pos={runtime.board.thief_position}"
     )
+
+    # Wire symmetric scent and belief into AgentOrchestrator after each turn
+    if getattr(runtime, "orchestrator", None) is not None:
+        runtime.orchestrator.update_scent_and_belief(
+            tuple(runtime.board.cop_position),
+            tuple(runtime.board.thief_position),
+            [tuple(b) for b in runtime.board.barriers],
+        )
+
     outcome = rules.check_game_status()
     if outcome == GameOutcome.COP_WIN:
         return "cop", None

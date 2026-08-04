@@ -152,7 +152,8 @@ async def send_reveal(runtime: PeerRuntime, step: int, reveal_payload: dict) -> 
         try:
             return await asyncio.wait_for(
                 adapter.execute(
-                    _reveal_action_description(runtime, step, reveal_payload), known_values=known
+                    _reveal_action_description(runtime, step, reveal_payload),
+                    known_values=known,
                 ),
                 timeout=adapter_timeout,
             )
@@ -230,6 +231,40 @@ def build_board_state(runtime: PeerRuntime) -> dict:
         "gamelet": gamelet,
         "config_sha256": runtime.config_sha256,
     }
+
+
+def build_local_observation(
+    role: str,
+    own_position: tuple,
+    barriers: list,
+    opponent_scent: list,
+    last_hint: str,
+    step: int,
+    gamelet: int,
+    grid_size: int,
+    own_barriers_remaining: int,
+    belief_engine=None,
+) -> dict:
+    """Build role-filtered observation. No hidden opponent coordinate.
+
+    Cop sees its own position + thief scent. Thief sees its own position +
+    cop scent. Neither sees the opponent's true coordinates.
+    """
+    obs = {
+        "own_position": own_position,
+        "own_barriers_remaining": own_barriers_remaining,
+        "known_barriers": barriers,
+        "opponent_scent": opponent_scent,
+        "last_hint": last_hint,
+        "step": step,
+        "gamelet": gamelet,
+        "grid_size": grid_size,
+    }
+    if belief_engine is not None:
+        obs["belief_heatmap"] = belief_engine.belief.prob.tolist()
+        obs["belief_entropy"] = float(belief_engine.belief.entropy)
+    # NOTE: never include opponent_position, cop_position (for thief), or thief_position (for cop)
+    return obs
 
 
 def get_watchdog_timeout() -> float:

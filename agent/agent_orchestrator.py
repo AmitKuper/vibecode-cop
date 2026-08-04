@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from agent.audit.step_journal import StepJournal
+    from agent.domain.transition import TransitionResult
+    from agent.domain.types import DomainState
     from agent.runtime_mode import RuntimeMode
 
 logger = logging.getLogger(__name__)
@@ -175,6 +177,29 @@ class AgentOrchestrator:
         from agent.language.hint_policy import generate_hint
 
         return generate_hint(move, intent)
+
+    def apply_turn(
+        self,
+        state: DomainState,
+        cop_action: str,
+        thief_action: str,
+    ) -> TransitionResult:
+        """Apply a joint action through the canonical domain engine.
+
+        Returns the TransitionResult (immutable). Callers must check
+        result.outcome to detect terminal states — this method propagates
+        domain errors without converting illegal actions to STAY in counted mode.
+        """
+        from agent.domain.transition import apply_joint_action
+
+        result = apply_joint_action(state, cop_action, thief_action)
+        new = result.new_state
+        self.update_scent_and_belief(
+            new.cop_position,
+            new.thief_position,
+            list(new.barriers),
+        )
+        return result
 
     def is_counted(self) -> bool:
         from agent.runtime_mode import RuntimeMode
