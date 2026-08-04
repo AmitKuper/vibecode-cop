@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import tempfile
 from pathlib import Path
 
 import pytest
@@ -12,7 +11,9 @@ from agent.agent_orchestrator import AgentOrchestrator
 from agent.runtime_mode import RuntimeMode
 
 
-def _make_manifest(tmp_path: Path, training_steps: int = 0, win_rate: float = 0.0, role: str = "cop") -> str:
+def _make_manifest(
+    tmp_path: Path, training_steps: int = 0, win_rate: float = 0.0, role: str = "thief"
+) -> str:
     """Write a minimal MANIFEST.json to tmp_path and return its path string."""
     manifest = {
         "manifest_version": "1.0",
@@ -41,7 +42,7 @@ def _make_manifest(tmp_path: Path, training_steps: int = 0, win_rate: float = 0.
     return str(path)
 
 
-def _counted_config(manifest_path: str, role: str = "cop") -> dict:
+def _counted_config(manifest_path: str, role: str = "thief") -> dict:
     return {
         "secret": "real-production-secret-xyz",
         "model_sha256": "abc123deadbeef",
@@ -54,7 +55,7 @@ def test_counted_mode_rejects_missing_manifest(tmp_path):
     config = _counted_config(str(tmp_path / "nonexistent.json"))
     with pytest.raises(ValueError, match="manifest not found"):
         AgentOrchestrator(
-            role="cop",
+            role="thief",
             game_uid="test-missing",
             grid_size=7,
             mode=RuntimeMode.COUNTED,
@@ -67,7 +68,7 @@ def test_counted_mode_rejects_zero_training_steps(tmp_path):
     config = _counted_config(manifest_path)
     with pytest.raises(ValueError, match="training_steps=0"):
         AgentOrchestrator(
-            role="cop",
+            role="thief",
             game_uid="test-zero-steps",
             grid_size=7,
             mode=RuntimeMode.COUNTED,
@@ -78,7 +79,7 @@ def test_counted_mode_rejects_zero_training_steps(tmp_path):
 def test_development_mode_skips_model_validation(tmp_path):
     # DEVELOPMENT mode should not check manifest at all
     orch = AgentOrchestrator(
-        role="cop",
+        role="thief",
         game_uid="test-dev",
         grid_size=7,
         mode=RuntimeMode.DEVELOPMENT,
@@ -99,7 +100,7 @@ def test_model_validated_on_orchestrator_init(tmp_path):
     }
     with pytest.raises(ValueError, match="COUNTED mode rejected"):
         AgentOrchestrator(
-            role="cop",
+            role="thief",
             game_uid="test-placeholder",
             grid_size=7,
             mode=RuntimeMode.COUNTED,

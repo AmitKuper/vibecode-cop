@@ -155,7 +155,7 @@ class AgentOrchestrator:
             if not ok:
                 raise ValueError(f"COUNTED mode rejected: model incompatible — {reason}")
         except ModelLoadError as e:
-            raise ValueError(f"COUNTED mode rejected: {e}")
+            raise ValueError(f"COUNTED mode rejected: {e}") from e
 
     def get_journal(self, gamelet: int) -> StepJournal:
         """Get or create per-gamelet step journal."""
@@ -223,7 +223,8 @@ class AgentOrchestrator:
         """Generate free-language hint via language policy (legacy interface)."""
         from agent.language.deception_policy import DeceptionIntent
 
-        intent_enum = DeceptionIntent(intent) if intent in DeceptionIntent._value2member_map_ else DeceptionIntent.TRUTH
+        _member_map = DeceptionIntent._value2member_map_
+        intent_enum = DeceptionIntent(intent) if intent in _member_map else DeceptionIntent.TRUTH
         return self.language_policy.generate(move, intent_enum)
 
     def generate_strategic_hint(self, move: str) -> tuple[str, str]:

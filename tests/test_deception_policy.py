@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from agent.language.deception_policy import DeceptionIntent, NaturalLanguagePolicy
 
 

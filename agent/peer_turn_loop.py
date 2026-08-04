@@ -56,18 +56,24 @@ async def run_peer_turn(
     move = await select_move(runtime, {**board_state, "scent_field": rules.get_scent_field()})
 
     # 4C: Use belief-driven heuristic when orchestrator is available and no RL model loaded
-    if getattr(runtime, "orchestrator", None) is not None and not getattr(runtime, "rl_model_loaded", False):
+    _has_orch = getattr(runtime, "orchestrator", None) is not None
+    _no_rl = not getattr(runtime, "rl_model_loaded", False)
+    if _has_orch and _no_rl:
         try:
-            own_pos = tuple(runtime.board.cop_position if runtime.role == "cop" else runtime.board.thief_position)
-            barrier_list = [tuple(b) for b in runtime.board.barriers]
-            barriers_remaining = getattr(runtime.board, "cop_barriers_remaining", 0) if runtime.role == "cop" else 0
+            _board = runtime.board
+            _is_cop = runtime.role == "cop"
+            own_pos = tuple(_board.cop_position if _is_cop else _board.thief_position)
+            barrier_list = [tuple(b) for b in _board.barriers]
+            barriers_remaining = getattr(_board, "cop_barriers_remaining", 0) if _is_cop else 0
             move = runtime.orchestrator.select_move_heuristic(
                 own_position=own_pos,
                 barriers=barrier_list,
                 barriers_remaining=barriers_remaining,
             )
         except Exception as _heuristic_err:
-            logger.warning("[PeerTurn] Heuristic fallback failed at step %d: %s", step, _heuristic_err)
+            logger.warning(
+                "[PeerTurn] Heuristic fallback failed at step %d: %s", step, _heuristic_err
+            )
 
     # 4B: Use strategic language policy when orchestrator is available
     if getattr(runtime, "orchestrator", None) is not None:
