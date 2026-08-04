@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from agent.domain.transition import TransitionResult
     from agent.domain.types import DomainState
     from agent.runtime_mode import RuntimeMode
+    from agent.step0.declaration import PeerDeclaration
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +80,12 @@ class AgentOrchestrator:
         from agent.gui.live_view_model import LiveViewModel
 
         self.live_view: LiveViewModel = LiveViewModel(role, grid_size)
+
+        # Watchdog / gatekeeper (set by lifecycle methods)
+        self._watchdog_heartbeat_path: str = ""
+        self._watchdog_evidence_path: str = ""
+        self._watchdog_proc = None
+        self._gatekeeper = None
 
         logger.info(
             "AgentOrchestrator initialized role=%s mode=%s uid=%s",
@@ -205,3 +212,163 @@ class AgentOrchestrator:
         from agent.runtime_mode import RuntimeMode
 
         return self.mode == RuntimeMode.COUNTED
+
+    # ------------------------------------------------------------------
+    # Phase 3 v7: lifecycle methods wired into production path
+    # ------------------------------------------------------------------
+
+    def build_step0_declaration(self, game_uid: str, gamelet: int = 0) -> PeerDeclaration:
+        """Build a Step-0 declaration from current orchestrator state."""
+        import platform
+        import subprocess
+
+        from agent.step0.declaration import PeerDeclaration
+
+        try:
+            git_sha = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], capture_output=True, text=True
+            ).stdout.strip()
+        except Exception:
+            git_sha = "unknown"
+
+        return PeerDeclaration(
+            game_uid=game_uid,
+            model_role=self.role,
+            model_algorithm=self.config.get("model_algorithm", "heuristic"),
+            model_sha256=self.config.get("model_sha256", "placeholder"),
+            git_sha=git_sha,
+            os_info=platform.platform(),
+            cpu_info=platform.processor(),
+            counted_mode=self.is_counted(),
+            local_endpoint=self.config.get("my_endpoint", ""),
+            canonical_config_sha256=self.config.get("canonical_config_sha256", ""),
+            scent_model_hash=self.config.get("scent_model_hash", ""),
+        )
+
+    def validate_counted_declaration(self, decl: PeerDeclaration) -> list[str]:
+        """Validate declaration for counted mode. Returns list of errors."""
+        if not self.is_counted():
+            return []
+        from agent.step0.validator import validate_for_counted_mode
+
+        return validate_for_counted_mode(decl)
+
+    def record_step_evidence(
+        self,
+        gamelet: int,
+        step: int,
+        local_commitment: str = "",
+        local_move: str = "",
+        received_commitment: str = "",
+        received_move: str = "",
+        protocol_state_before: str = "",
+        protocol_state_after: str = "",
+    ) -> str:
+        """Append step evidence to journal. Returns new chain hash."""
+        import time
+
+        from agent.audit.step_journal import StepEvidence
+
+        evidence = StepEvidence(
+            game_uid=self.game_uid,
+            gamelet=gamelet,
+            step=step,
+            role=self.role,
+            local_commitment=local_commitment,
+            local_move=local_move,
+            received_commitment=received_commitment,
+            received_move=received_move,
+            protocol_state_before=protocol_state_before,
+            protocol_state_after=protocol_state_after,
+            timestamp_utc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        )
+        journal = self.get_journal(gamelet)
+        return journal.append(evidence)
+
+    def emit_heartbeat(self, step: int = 0) -> None:
+        """Emit watchdog heartbeat from main process."""
+        if self._watchdog_heartbeat_path:
+            import os
+
+            from agent.reliability.watchdog import write_heartbeat
+
+            write_heartbeat(
+                self._watchdog_heartbeat_path,
+                pid=os.getpid(),
+                game_uid=self.game_uid,
+                session_id=self.game_uid,
+                step=step,
+                state_path=f"{self.work_dir}/recovery_{self.game_uid}.json",
+            )
+
+    def start_watchdog(self) -> None:
+        """Launch independent watchdog subprocess."""
+        from agent.runtime_mode import RuntimeMode
+
+        self._watchdog_heartbeat_path = f"{self.work_dir}/heartbeat_{self.game_uid}.json"
+        self._watchdog_evidence_path = f"{self.work_dir}/watchdog_evidence_{self.game_uid}.json"
+        if self.mode != RuntimeMode.DEVELOPMENT:
+            try:
+                from agent.reliability.watchdog import launch_watchdog_subprocess
+
+                self._watchdog_proc = launch_watchdog_subprocess(
+                    self._watchdog_heartbeat_path,
+                    self._watchdog_evidence_path,
+                )
+            except Exception as e:
+                logger.warning("Failed to start watchdog: %s", e)
+        # Emit first heartbeat
+        self.emit_heartbeat(step=0)
+
+    def stop_watchdog(self) -> None:
+        """Terminate watchdog subprocess."""
+        import contextlib
+
+        proc = getattr(self, "_watchdog_proc", None)
+        if proc is not None:
+            with contextlib.suppress(Exception):
+                proc.terminate()
+
+    def record_match_in_ledger(
+        self,
+        opponent_id: str,
+        match_id: str,
+        counted: bool,
+        declaration_hash: str = "",
+        result_hash: str = "",
+    ) -> None:
+        """Append match to league ledger. Raises LeagueLedgerError on constraint violation."""
+        import time
+
+        from agent.step0.league_ledger import LedgerEntry
+
+        entry = LedgerEntry(
+            opponent_id=opponent_id,
+            match_id=match_id,
+            counted=counted,
+            declaration_hash=declaration_hash,
+            result_hash=result_hash,
+            timestamp_utc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        )
+        self.league_ledger.append(entry)
+
+    def send_report_via_gatekeeper(
+        self,
+        idempotency_key: str,
+        game_id: str,
+        result_json: str,
+    ) -> str:
+        """Send Gmail report through the full Gatekeeper pipeline."""
+        if self._gatekeeper is None:
+            from agent.gmail.gatekeeper import Gatekeeper
+
+            gmail_sender = self.config.get("gmail_sender")
+            if gmail_sender is None:
+                raise RuntimeError("No gmail_sender configured — cannot send report")
+            self._gatekeeper = Gatekeeper(gmail_sender)
+        return self._gatekeeper.send(
+            idempotency_key=idempotency_key,
+            game_id=game_id,
+            subject=f"Game Result — {game_id}",
+            body=result_json,
+        )

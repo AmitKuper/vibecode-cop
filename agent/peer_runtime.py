@@ -147,10 +147,20 @@ class PeerRuntime(_CrewMixin):
             {"step": 0, "turn": 0, "completed": False, "winner": None, "created_at": created_at},
         )
         logger.info(f"[PeerRuntime/{self.role}] Starting game {game_id}")
-        await self._init_protocol_adapter()
-        await self._send_start_game(game_id, counted_mode=effective_counted_mode)
-        rules = RulesEngine(self.board, max_turns=self.max_turns)
-        winner, abort_reason, final_step = await run_peer_turn_loop(self, rules, self.max_turns)
+
+        # 3A/3B: Start watchdog before gameplay
+        if self.orchestrator is not None:
+            self.orchestrator.start_watchdog()
+
+        try:
+            await self._init_protocol_adapter()
+            await self._send_start_game(game_id, counted_mode=effective_counted_mode)
+            rules = RulesEngine(self.board, max_turns=self.max_turns)
+            winner, abort_reason, final_step = await run_peer_turn_loop(self, rules, self.max_turns)
+        finally:
+            # 3B: Stop watchdog after gameplay
+            if self.orchestrator is not None:
+                self.orchestrator.stop_watchdog()
 
         gamelet = gamelet_from_game_id(game_id)
         audit_ok, audit_details = await do_final_audit(
@@ -233,6 +243,13 @@ class PeerRuntime(_CrewMixin):
         warning and gameplay continues (the turn loop will detect the ordering
         violation at the first COMMIT).
         """
+        # 3C: Wire Step-0 validation into counted mode startup
+        if counted_mode and self.orchestrator is not None:
+            decl = self.orchestrator.build_step0_declaration(game_id)
+            errors = self.orchestrator.validate_counted_declaration(decl)
+            if errors:
+                raise RuntimeError(f"Step-0 validation failed for counted mode: {errors}")
+
         from agent.mcp.messages import StartGameMessage
 
         gamelet = gamelet_from_game_id(game_id)

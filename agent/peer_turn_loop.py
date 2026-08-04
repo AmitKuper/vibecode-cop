@@ -156,6 +156,22 @@ async def run_peer_turn(
             [tuple(b) for b in runtime.board.barriers],
         )
 
+    # 3D: Record step evidence in StepJournal
+    if getattr(runtime, "orchestrator", None) is not None:
+        try:
+            runtime.orchestrator.record_step_evidence(
+                gamelet=gamelet,
+                step=step,
+                local_commitment=h_commit,
+                local_move=move,
+                received_commitment=opp_h_commit,
+                received_move=opp_move_short,
+                protocol_state_before=str(board_state),
+                protocol_state_after=str(build_board_state(runtime)),
+            )
+        except Exception as _journal_err:
+            logger.warning("[PeerTurn] StepJournal write failed at step %d: %s", step, _journal_err)
+
     outcome = rules.check_game_status()
     if outcome == GameOutcome.COP_WIN:
         return "cop", None
@@ -189,6 +205,12 @@ async def run_peer_turn_loop(
                 abort_reason = f"Watchdog timeout at step {step}"
                 logger.error(f"[PeerTurnLoop] {abort_reason}")
                 break
+            # 3B: emit heartbeat after each completed step
+            if getattr(runtime, "orchestrator", None) is not None:
+                try:
+                    runtime.orchestrator.emit_heartbeat(step=step)
+                except Exception as _hb_err:
+                    logger.debug("[PeerTurnLoop] Heartbeat emit failed: %s", _hb_err)
             if winner is not None or abort_reason is not None:
                 break
     except Exception as exc:

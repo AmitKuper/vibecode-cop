@@ -21,9 +21,16 @@ Test counts are measured at phase end (cop repo).
 | 10    | 8429f6f     | b9c10bc      | 1080+       | 1095       | TransportPort/GameProtocolPort abstraction, capability negotiation  |
 | 11    | b9c10bc     | (this commit) | 1095       | 1095       | Docs rewrite, CI pipeline, version bump to 2.0.0, release tag     |
 
+| v7 P3 | b5de5b1 (cop) / b4dba23 (thief) | (this commit) | 1120/1119 | 1151/1150 | Wire Step-0, StepJournal, Watchdog, LeagueLedger into production lifecycle |
+
 ## Notes
 
 - "Tests Before" for phases 1–10 are approximations based on git log context.
   The definitive count at Phase 10 end is 1095 (cop) / 1094 (thief).
 - Phases 2 and 2B share a single planning cycle but distinct commits.
 - Phase 11 adds no new test code; count remains 1095.
+- v7 Phase 3 wired: `build_step0_declaration`, `validate_counted_declaration`,
+  `record_step_evidence`, `emit_heartbeat`, `start_watchdog`, `stop_watchdog`,
+  `record_match_in_ledger`, `send_report_via_gatekeeper` into AgentOrchestrator;
+  `run_game` calls `start_watchdog`/`stop_watchdog`; `_send_start_game` validates
+  Step-0 in counted mode; `run_peer_turn` records step evidence and emits heartbeats.
