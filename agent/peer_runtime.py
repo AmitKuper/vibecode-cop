@@ -53,7 +53,6 @@ except Exception as _crew_import_err:
                 "turn": gs.get("turn", 0),
                 "scent_field": gs.get("scent_field", []),
                 "candidate_actions": [],
-                "grid_state": gs,
             }
 
         def _short_move(self, long):
@@ -231,6 +230,40 @@ class PeerRuntime(_CrewMixin):
             "abort_reason": abort_reason,
             "audit_ok": audit_ok,
         }
+
+        # Phase 3 v8: Wire LeagueLedger into counted mode terminal state
+        if effective_counted_mode and self.orchestrator is not None:
+            try:
+                import json
+
+                result_hash = __import__("hashlib").sha256(
+                    json.dumps(result, sort_keys=True, default=str).encode()
+                ).hexdigest()
+                self.orchestrator.record_match_in_ledger(
+                    opponent_id=game_id.split("_")[0] if "_" in game_id else game_id,
+                    match_id=game_id,
+                    counted=True,
+                    result_hash=result_hash,
+                )
+                logger.info("[PeerRuntime/%s] Match recorded in league ledger: %s", self.role, game_id)
+            except Exception as _ledger_err:
+                logger.warning("[PeerRuntime/%s] LeagueLedger record failed: %s", self.role, _ledger_err)
+
+        # Phase 3 v8: Wire Gatekeeper into counted mode terminal state (each peer sends report)
+        if effective_counted_mode and audit_ok and self.orchestrator is not None:
+            try:
+                import json
+
+                _result_json = json.dumps(result, sort_keys=True, default=str)
+                self.orchestrator.send_report_via_gatekeeper(
+                    idempotency_key=f"{game_id}_{self.role}",
+                    game_id=game_id,
+                    result_json=_result_json,
+                )
+                logger.info("[PeerRuntime/%s] Gmail report sent via Gatekeeper", self.role)
+            except Exception as _gk_err:
+                logger.warning("[PeerRuntime/%s] Gatekeeper send failed: %s", self.role, _gk_err)
+
         logger.info(f"[PeerRuntime/{self.role}] Game {game_id} done: {result}")
         return result
 

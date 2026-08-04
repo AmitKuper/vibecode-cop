@@ -188,22 +188,14 @@ async def send_reveal(runtime: PeerRuntime, step: int, reveal_payload: dict) -> 
 
 
 async def select_move(runtime: PeerRuntime, board_state: dict) -> str:
-    """Choose a move: RL policy → deterministic heuristic.
+    """Choose a move: RL policy (local obs) → deterministic heuristic.
 
-    LLM movement is forbidden unless both peers opted in via Step-0
-    allow_llm_movement=true. Use LLM only for hints and profiling.
+    RL selection via orchestrator is done through the orchestrator path in
+    peer_turn_loop.py (select_move_heuristic). This fallback uses only
+    legal-move enumeration to avoid leaking hidden coordinates via
+    _build_observation. LLM movement is forbidden unless both peers opted in
+    via Step-0 allow_llm_movement=true.
     """
-    obs = runtime._build_observation(board_state)
-
-    # RL policy path
-    try:
-        move = runtime._select_move_rl(obs)
-        if move:
-            return move
-    except Exception as exc:
-        logger.warning(f"[PeerTurn] RL move selection failed: {exc}")
-
-    # Deterministic heuristic fallback (always available, no LLM)
     from agent.board import Board
 
     moves = Board.from_dict(board_state).get_legal_moves(runtime.role)

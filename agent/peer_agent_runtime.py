@@ -13,6 +13,7 @@ from pathlib import Path
 from agent.mcp.server import AgentMCPServer
 from agent.peer_agent_passive import (
     handle_passive_commit,
+    handle_passive_final_audit,
     handle_passive_reveal,
     init_passive_game,
 )
@@ -105,8 +106,7 @@ class PeerAgentRuntime(_DiscoveryMixin):
         if phase == "reveal":
             return handle_passive_reveal(self._peer_runtime, game_id, message, self._rules_ref)
         if phase == "final_audit":
-            nonces = {str(s): p["nonce"] for s, p in self._peer_runtime._my_commits.items()}
-            return {"ok": True, "phase": "final_audit", "nonces": nonces}
+            return handle_passive_final_audit(self._peer_runtime, game_id, message)
         if phase == "game_end":
             return {"ok": True, "phase": "game_end"}
         return {"ok": False, "error": f"Unknown phase: {phase}"}

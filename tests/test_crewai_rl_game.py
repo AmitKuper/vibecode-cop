@@ -208,8 +208,12 @@ class TestCrewAIConstruction:
         with pytest.raises(RuntimeError, match="No LLM configured"):
             rt._create_crew("game_no_llm")
 
-    def test_select_move_rl_uses_policy(self, tmp_path):
-        """_select_move_rl on a PeerRuntime uses the loaded RL policy."""
+    def test_select_move_rl_returns_none_without_grid_state(self, tmp_path):
+        """_select_move_rl returns None when observation has no grid_state (Phase 2 v8).
+
+        The grid_state key was removed from _build_observation to prevent hidden-coordinate
+        leaks. RL selection now goes through the orchestrator path only.
+        """
         rt = _make_runtime("cop", tmp_path)
         board_state = {
             "cop_position": [0, 0],
@@ -218,10 +222,11 @@ class TestCrewAIConstruction:
             "scent_field": [],
         }
         obs = rt._build_observation(board_state)
+        assert "grid_state" not in obs, "_build_observation must not expose grid_state"
         move = rt._select_move_rl(obs)
-        assert move is not None
-        assert move in {"N", "S", "E", "W", "STAY", "PLACE_N", "PLACE_S", "PLACE_E", "PLACE_W"}
-        logger.info(f"PeerRuntime._select_move_rl → {move}")
+        # Without grid_state, RL path returns None (no hidden coords leak)
+        assert move is None
+        logger.info(f"PeerRuntime._select_move_rl (no grid_state) → {move}")
 
 
 # ---------------------------------------------------------------------------

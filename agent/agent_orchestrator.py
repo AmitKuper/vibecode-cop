@@ -133,20 +133,14 @@ class AgentOrchestrator:
 
         manifest_path = self.config.get("model_manifest_path", "models/MANIFEST.json")
         if not Path(manifest_path).exists():
-            raise ValueError(
-                f"COUNTED mode rejected: model manifest not found at {manifest_path}"
-            )
+            raise ValueError(f"COUNTED mode rejected: model manifest not found at {manifest_path}")
         try:
             manifest = load_manifest(manifest_path)
             if self.role not in manifest:
-                raise ValueError(
-                    f"COUNTED mode rejected: no model for role {self.role!r}"
-                )
+                raise ValueError(f"COUNTED mode rejected: no model for role {self.role!r}")
             entry = manifest[self.role]
             if entry.training_steps == 0:
-                raise ValueError(
-                    "COUNTED mode rejected: model has training_steps=0 (placeholder)"
-                )
+                raise ValueError("COUNTED mode rejected: model has training_steps=0 (placeholder)")
             if entry.evaluation_win_rate == 0.0:
                 raise ValueError(
                     "COUNTED mode rejected: model has evaluation_win_rate=0.0 (placeholder)"

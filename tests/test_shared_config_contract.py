@@ -28,13 +28,18 @@ _VALID_CONFIG = {
         "survival_thief": 10,
         "tie_score": 2,
         "technical_loss": 0,
+        "diversity_reward": 10,
     },
     "pheromones": {
         "pheromone_center_intensity": 0.9,
         "pheromone_decay": 0.10,
         "pheromone_grid_size": 5,
     },
-    "network_and_league": {"num_gamelets": 6},
+    "network_and_league": {
+        "num_gamelets": 6,
+        "minimum_games": 2,
+        "maximum_counted_games": 10,
+    },
     "rate_limiter_gatekeeper": {},
 }
 

@@ -1355,8 +1355,12 @@ class TestPeerAgentRuntime:
     def test_on_action_final_audit(self, tmp_path):
         rt = self._make_runtime(tmp_path)
         rt._peer_runtime._my_commits = {0: {"nonce": "abc123"}}
+        rt._peer_runtime.game_id = "g1"
+        rt._peer_runtime.game_dir = tmp_path
+        rt._peer_runtime.role = "thief"
         message = MagicMock()
         message.phase = "final_audit"
+        message.nonces = {}
         result = rt._on_action("g1", message)
         assert result["ok"] is True
         assert result["phase"] == "final_audit"

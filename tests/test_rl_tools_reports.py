@@ -409,12 +409,15 @@ class TestObservation:
         obs = thief_observation(b, 35)
         assert len(obs) == 4
 
-    def test_thief_observation_with_last_cop_pos(self):
+    def test_thief_observation_with_cop_scent(self):
         b, _ = self._board_and_rules()
-        obs = thief_observation(b, 35, last_revealed_cop_pos=[1, 1])
+        n = b.grid_size
+        scent = [[0.0] * n for _ in range(n)]
+        scent[1][1] = 0.9  # cop was around (1,1)
+        obs = thief_observation(b, 35, cop_scent_field=scent)
         assert len(obs) == 4
-        # Channel 1 should have 1.0 at [1][1]
-        assert obs[1][1][1] == 1.0
+        # Channel 1 should reflect the scent field
+        assert obs[1][1][1] == 0.9
 
     def test_observation_shape_thief(self):
         assert observation_shape(7, "thief", 0) == (4, 7, 7)
@@ -537,11 +540,14 @@ class TestRLPolicy:
         move = policy.select_move(b, r)
         assert move in ["NORTH", "SOUTH", "EAST", "WEST", "STAY"]
 
-    def test_select_move_with_last_revealed_cop_pos(self):
+    def test_select_move_with_cop_scent_field(self):
         policy = self._make_policy("thief", "dqn")
         b = _make_board()
         r = RulesEngine(b)
-        move = policy.select_move(b, r, last_revealed_cop_pos=[1, 1])
+        n = b.grid_size
+        scent = [[0.0] * n for _ in range(n)]
+        scent[1][1] = 0.5
+        move = policy.select_move(b, r, cop_scent_field=scent)
         assert move in ["NORTH", "SOUTH", "EAST", "WEST", "STAY"]
 
     def test_select_action_dqn(self):

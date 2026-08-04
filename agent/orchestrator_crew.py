@@ -116,7 +116,7 @@ class CrewMixin:
             "max_turns": getattr(self, "max_turns", 35),
             "candidate_actions": candidates,
             "scent_field": observation.get("scent_field", []),
-            "board_state": observation.get("grid_state", {}),
+            "board_state": {},
         }
 
     def _build_observation(self, game_state: dict) -> dict:

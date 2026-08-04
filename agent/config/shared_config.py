@@ -34,6 +34,9 @@ _FIXED_VALUES = {
     ("scoring", "survival_thief"): 10,
     ("scoring", "tie_score"): 2,
     ("network_and_league", "num_gamelets"): 6,
+    ("scoring", "diversity_reward"): 10,
+    ("network_and_league", "minimum_games"): 2,
+    ("network_and_league", "maximum_counted_games"): 10,
 }
 
 # Minimum values that must not go below PDF floor

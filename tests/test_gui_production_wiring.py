@@ -51,6 +51,7 @@ def test_live_view_no_thief_position_for_cop():
     view = orch.live_view.get_current()
     assert view is not None
     from dataclasses import asdict
+
     d = asdict(view)
     assert "thief_position" not in d
 
@@ -62,6 +63,7 @@ def test_live_view_no_cop_position_for_thief():
     view = orch.live_view.get_current()
     assert view is not None
     from dataclasses import asdict
+
     d = asdict(view)
     assert "cop_position" not in d
 
@@ -98,6 +100,7 @@ def test_protocol_port_stub_transport():
     assert isinstance(port, GameProtocolPort)
     # Verify stub is wired: connect and call start_game
     from agent.mcp.transport_port import StubTransportAdapter
+
     assert isinstance(port._transport, StubTransportAdapter)
 
     async def _run():

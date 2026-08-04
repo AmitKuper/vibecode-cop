@@ -15,9 +15,9 @@ Cop observation (4 or 5 channels):
     3  turns remaining     scalar broadcast, normalized 0–1
     4  barriers remaining  scalar broadcast, normalized 0–1 (only when quota > 0)
 
-Thief observation (4 channels, unchanged):
+Thief observation (4 channels):
     0  thief position      1-hot
-    1  cop position        1-hot (known from previous commit-reveal)
+    1  cop scent field     historical trail (not live cop position)
     2  barriers            1 where blocked, 0 elsewhere
     3  turns remaining     scalar broadcast, normalized 0–1
 """
@@ -78,13 +78,18 @@ def cop_observation(
 
     Returns:
         List of 4 or 5 channels, each a grid_size×grid_size float grid.
+          0  cop position        1-hot
+          1  barriers            1 where blocked, 0 elsewhere
+          2  thief scent field   accumulated/decayed historical thief trail (not live GPS)
+          3  turns remaining     scalar broadcast, normalized 0–1
+          4  barriers remaining  scalar broadcast, normalized 0–1 (only when quota > 0)
     """
     n = board.grid_size
     cx, cy = board.cop_position
     channels = [
         _one_hot(n, cx, cy),
         _barrier_grid(board),
-        rules.get_scent_field(),  # accumulated/decayed historical trail, not live GPS
+        rules.get_scent_field(),  # accumulated/decayed historical thief trail, not live GPS
         _turns_remaining_grid(board, max_steps),
     ]
     if barrier_quota > 0:
@@ -92,35 +97,64 @@ def cop_observation(
     return channels
 
 
-def thief_observation(
+def local_thief_observation(
     board: Board,
     max_steps: int,
-    last_revealed_cop_pos: list[int] | None = None,
+    cop_scent_field: list[list[float]] | None = None,
 ) -> list[list[list[float]]]:
-    """Build 4-channel observation for the thief agent.
+    """Build 4-channel observation for the thief agent. Preferred name.
+
+    The thief does NOT know the cop's current (live) position. Instead it
+    observes a cop scent field — a historical trail of where the cop has been.
 
     Args:
         board: Current board state.
         max_steps: Total step budget (for normalizing turns_remaining).
-        last_revealed_cop_pos: Cop position as of the last completed reveal step.
-            Falls back to live board cop_position if not provided (training mode).
+        cop_scent_field: NxN float grid representing cop historical trail.
+            None → all zeros (thief has no scent information yet).
 
     Returns:
         List of 4 channels, each a grid_size×grid_size float grid.
           0  thief position       1-hot
-          1  cop position         1-hot (last revealed, or live in training)
+          1  cop scent field      historical trail (not live cop position)
           2  barriers             1 where blocked
           3  turns remaining      scalar broadcast, normalized 0–1
     """
     n = board.grid_size
     tx, ty = board.thief_position
-    cx, cy = last_revealed_cop_pos if last_revealed_cop_pos is not None else board.cop_position
+    if cop_scent_field is None:
+        scent_ch = _empty_grid(n)
+    else:
+        scent_ch = cop_scent_field
     return [
         _one_hot(n, tx, ty),
-        _one_hot(n, cx, cy),
+        scent_ch,
         _barrier_grid(board),
         _turns_remaining_grid(board, max_steps),
     ]
+
+
+def thief_observation(
+    board: Board,
+    max_steps: int,
+    cop_scent_field: list[list[float]] | None = None,
+) -> list[list[list[float]]]:
+    """Build 4-channel observation for the thief agent. Alias for local_thief_observation().
+
+    Args:
+        board: Current board state.
+        max_steps: Total step budget (for normalizing turns_remaining).
+        cop_scent_field: NxN float grid representing cop historical trail.
+            None → all zeros. Channel 1 is cop scent field (historical trail, not live position).
+
+    Returns:
+        List of 4 channels, each a grid_size×grid_size float grid.
+          0  thief position       1-hot
+          1  cop scent field      historical trail (not live cop position)
+          2  barriers             1 where blocked
+          3  turns remaining      scalar broadcast, normalized 0–1
+    """
+    return local_thief_observation(board, max_steps, cop_scent_field=cop_scent_field)
 
 
 def observation_shape(

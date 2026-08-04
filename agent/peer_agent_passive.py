@@ -1,4 +1,7 @@
-"""Passive-mode (thief) helpers for PeerAgentRuntime."""
+"""Passive-mode (thief) helpers for PeerAgentRuntime.
+
+Handles commit, reveal, and final_audit phases for the passive side.
+"""
 
 from __future__ import annotations
 
@@ -140,4 +143,51 @@ def handle_passive_reveal(rt: PeerRuntime, game_id: str, message, rules_ref: lis
         "hint": payload["hint"],
         "intent": payload["intent"],
         "state_hash": payload["state_hash"],
+    }
+
+
+def handle_passive_final_audit(rt: PeerRuntime, game_id: str, message) -> dict:
+    """Handle final_audit on the passive side.
+
+    Runs local audit with received opponent nonces, creates and signs AuditSummary,
+    returns own nonces + signed AuditSummary for bilateral consensus.
+    """
+    import time
+
+    from agent.audit.audit_summary import AuditSummary, create_signed_audit_summary
+    from agent.peer_audit import run_final_audit
+    from agent.step0.signing import generate_key_pair
+
+    # 1. Return own nonces
+    my_nonces = {str(s): p["nonce"] for s, p in rt._my_commits.items()}
+
+    # 2. Run local audit with opponent's nonces
+    opp_role = "cop" if rt.role == "thief" else "thief"
+    opp_nonces_raw = getattr(message, "nonces", {}) or {}
+    opp_nonces = {int(k): v for k, v in opp_nonces_raw.items()}
+    audit_ok, details = run_final_audit(rt.game_dir, game_id, opp_role, opp_nonces)
+
+    # 3. Create signed AuditSummary
+    priv_key, pub_key = generate_key_pair()
+    pub_hex = pub_key.hex()
+    audit_status = details.get("audit_status", "NOT_APPLICABLE")
+    summary = AuditSummary(
+        game_uid=game_id,
+        gamelet=0,
+        expected_steps=len(rt._my_commits),
+        verified_steps=sum(1 for v in details.values() if v == "ok"),
+        audit_status=audit_status,
+        mismatch_evidence="" if audit_ok else str(details),
+        timestamp_utc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        public_key_hex=pub_hex,
+    )
+    signed = create_signed_audit_summary(summary, priv_key)
+
+    import json
+
+    return {
+        "ok": True,
+        "phase": "final_audit",
+        "nonces": my_nonces,
+        "signed_audit_summary": json.dumps(signed.to_dict()),
     }

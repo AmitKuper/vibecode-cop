@@ -113,6 +113,66 @@ def hash_game_state(board_state: dict) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
+def build_public_transition_root(
+    game_uid: str,
+    gamelet: int,
+    step: int,
+    declaration_hash: str,
+    config_hash: str,
+    protocol_hash: str,
+    public_barriers: list,
+    cop_barriers_quota: int,
+    revealed_cop_move: str,
+    revealed_thief_move: str,
+    previous_transcript_root: str,
+    public_outcome: str = "",
+) -> str:
+    """SHA-256 of all public/agreed state after one step. Non-enumerable (large domain)."""
+    import hashlib, json
+    payload = {
+        "game_uid": game_uid,
+        "gamelet": gamelet,
+        "step": step,
+        "declaration_hash": declaration_hash,
+        "config_hash": config_hash,
+        "protocol_hash": protocol_hash,
+        "public_barriers": sorted(str(b) for b in public_barriers),
+        "cop_barriers_quota": cop_barriers_quota,
+        "revealed_cop_move": revealed_cop_move,
+        "revealed_thief_move": revealed_thief_move,
+        "previous_transcript_root": previous_transcript_root,
+        "public_outcome": public_outcome,
+    }
+    blob = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(blob).hexdigest()
+
+
+def build_private_state_commitment(
+    own_position: tuple,
+    own_barriers_remaining: int,
+    local_nonce: str,
+    step: int,
+    gamelet: int,
+    game_uid: str,
+) -> str:
+    """Salted private local-state commitment. Salt = local_nonce (secret until audit).
+
+    Binds own position without exposing it. Non-enumerable because nonce is 32 random bytes.
+    Not just a hash of a small coordinate space (position alone would be enumerable in 7x7=49 cells).
+    """
+    import hashlib, json
+    payload = {
+        "game_uid": game_uid,
+        "gamelet": gamelet,
+        "step": step,
+        "own_position": list(own_position),
+        "own_barriers_remaining": own_barriers_remaining,
+        "local_nonce": local_nonce,  # secret salt — never revealed until final audit
+    }
+    blob = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+    return hashlib.sha256(blob).hexdigest()
+
+
 def public_transition_hash(
     game_id: str,
     gamelet: int,

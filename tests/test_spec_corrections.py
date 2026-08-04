@@ -260,15 +260,22 @@ class TestNoLLMMovementFallback:
         assert move in {"NORTH", "SOUTH", "EAST", "WEST", "STAY"}
 
     @pytest.mark.asyncio
-    async def test_select_move_returns_rl_move_when_available(self):
-        """When RL succeeds, its move is returned directly."""
+    async def test_select_move_returns_legal_heuristic_move(self):
+        """select_move now uses only heuristic (no RL path) to avoid hidden coord leaks."""
         from agent.peer_turn_helpers import select_move
 
         runtime = MagicMock()
         runtime.role = "thief"
-        runtime._build_observation.return_value = {}
-        runtime._select_move_rl.return_value = "SOUTH"
 
-        board_state = {"cop_position": [0, 0], "thief_position": [3, 3], "turn": 0}
+        board_state = {
+            "cop_position": [0, 0],
+            "thief_position": [3, 3],
+            "turn": 0,
+            "grid_size": 7,
+            "barriers": [],
+            "move_history": [],
+        }
         move = await select_move(runtime, board_state)
-        assert move == "SOUTH"
+        assert move in {"NORTH", "SOUTH", "EAST", "WEST", "STAY"}, (
+            "select_move must return a legal heuristic move"
+        )

@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import json
 import logging
+import time
 from pathlib import Path
 
 from agent.mcp.messages import ActionMessage
@@ -26,11 +28,16 @@ async def do_final_audit(
 ) -> tuple[bool, dict]:
     """Send FINAL_AUDIT to opponent, receive their nonces, verify locally.
 
+    Performs bilateral AuditSummary exchange: each peer signs its audit result
+    and verifies the opponent's signed summary for consensus.
+
     On the active (cop) side, advance the ProtocolCoordinator through
     on_audit_begin → on_final_audit_complete → on_done so that the SM
     reaches DONE rather than staying in STEP_VERIFIED indefinitely.
     """
+    from agent.audit.audit_summary import AuditSummary, SignedAuditSummary, create_signed_audit_summary, verify_audit_summary
     from agent.mcp.coordinator import get_coordinator
+    from agent.step0.signing import generate_key_pair
 
     coord = get_coordinator()
 
@@ -57,6 +64,39 @@ async def do_final_audit(
     opp_nonces = {int(k): v for k, v in opp_nonces_raw.items()}
     audit_ok, details = run_final_audit(game_dir, game_id, opponent_role, opp_nonces)
     logger.info(f"[PeerRuntime/{role}] Final audit: ok={audit_ok} details={details}")
+
+    # Create and sign own AuditSummary
+    priv_key, pub_key = generate_key_pair()
+    pub_hex = pub_key.hex()
+    audit_status = details.get("audit_status", "NOT_APPLICABLE")
+    my_summary = AuditSummary(
+        game_uid=game_id,
+        gamelet=gamelet,
+        expected_steps=len(my_commits),
+        verified_steps=sum(1 for v in details.values() if v == "ok"),
+        audit_status=audit_status,
+        mismatch_evidence="" if audit_ok else str(details),
+        timestamp_utc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        public_key_hex=pub_hex,
+    )
+    my_signed = create_signed_audit_summary(my_summary, priv_key)
+    details["my_audit_summary_hash"] = my_summary.summary_hash()
+
+    # Verify opponent's SignedAuditSummary if provided
+    opp_summary_json = resp.get("signed_audit_summary")
+    if opp_summary_json:
+        try:
+            opp_signed = SignedAuditSummary.from_dict(json.loads(opp_summary_json))
+            opp_valid = verify_audit_summary(opp_signed)
+            details["opponent_audit_summary_hash"] = opp_signed.summary.summary_hash()
+            details["opponent_audit_verified"] = opp_valid
+            details["opponent_audit_status"] = opp_signed.summary.audit_status
+            if not opp_valid:
+                logger.warning("[PeerRuntime/%s] Opponent AuditSummary signature invalid", role)
+                audit_ok = False
+        except Exception as exc:
+            logger.warning("[PeerRuntime/%s] Failed to parse opponent AuditSummary: %s", role, exc)
+            details["opponent_audit_parse_error"] = str(exc)
 
     if audit_ok:
         # Advance SM: AUDITING → RESULT_AGREEMENT → DONE

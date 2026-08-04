@@ -103,10 +103,11 @@ class RLPolicy:
         self,
         board: Board,
         rules: RulesEngine,
-        last_revealed_cop_pos: list[int] | None = None,
+        cop_scent_field: list[list[float]] | None = None,
+        last_revealed_cop_pos: list[int] | None = None,  # deprecated; ignored
     ) -> str:
         """Return the best move string for the current board state."""
-        obs = self._build_obs(board, rules, last_revealed_cop_pos=last_revealed_cop_pos)
+        obs = self._build_obs(board, rules, cop_scent_field=cop_scent_field)
         obs_t = torch.tensor(obs, dtype=torch.float32).unsqueeze(0).to(self.device)
         with torch.no_grad():
             if self.algo == "dqn":
@@ -147,19 +148,20 @@ class RLPolicy:
         self,
         board_state: dict,
         rules: RulesEngine | None = None,
-        last_revealed_cop_pos: list[int] | None = None,
+        cop_scent_field: list[list[float]] | None = None,
+        last_revealed_cop_pos: list[int] | None = None,  # deprecated; ignored
     ) -> str:
         """Convenience wrapper accepting a board_state dict (from MCP messages)."""
         board = Board.from_dict(board_state)
         if rules is None:
             rules = RulesEngine(board)
-        return self.select_move(board, rules, last_revealed_cop_pos=last_revealed_cop_pos)
+        return self.select_move(board, rules, cop_scent_field=cop_scent_field)
 
     def _build_obs(
         self,
         board: Board,
         rules: RulesEngine,
-        last_revealed_cop_pos: list[int] | None = None,
+        cop_scent_field: list[list[float]] | None = None,
     ) -> list:
         if self.role == "cop":
             return cop_observation(
@@ -169,4 +171,4 @@ class RLPolicy:
                 barriers_remaining=self.barriers_remaining,
                 barrier_quota=self.barrier_quota,
             )
-        return thief_observation(board, self.max_steps, last_revealed_cop_pos=last_revealed_cop_pos)
+        return thief_observation(board, self.max_steps, cop_scent_field=cop_scent_field)

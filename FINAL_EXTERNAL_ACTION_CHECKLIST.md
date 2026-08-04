@@ -94,9 +94,10 @@ These are CODE FAILS that require a developer action first, then the external ac
   Verify report body is valid JSON matching `ResultAgreement` schema:
   ```python
   import json
-  body = open('evidence/last_report_body.json').read()
+
+  body = open("evidence/last_report_body.json").read()
   data = json.loads(body)  # must not raise
-  assert 'token_totals' in data
+  assert "token_totals" in data
   ```
 
 ---
