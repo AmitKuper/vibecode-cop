@@ -221,10 +221,10 @@ class AgentOrchestrator:
         intent_enum = DeceptionIntent(intent) if intent in _member_map else DeceptionIntent.TRUTH
         return self.language_policy.generate(move, intent_enum)
 
-    def generate_strategic_hint(self, move: str) -> tuple[str, str]:
+    def generate_strategic_hint(self, move: str, step: int = 0) -> tuple[str, str]:
         """Generate a strategically chosen hint and its intent. Returns (hint, intent_str)."""
         entropy = self.belief_engine.belief.entropy
-        intent = self.language_policy.choose_intent(step=0, belief_entropy=entropy)
+        intent = self.language_policy.choose_intent(step=step, belief_entropy=entropy)
         hint = self.language_policy.generate(move, intent)
         return hint, intent.value
 

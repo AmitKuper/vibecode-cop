@@ -80,7 +80,7 @@ async def run_peer_turn(
     # 4B: Use strategic language policy when orchestrator is available
     if getattr(runtime, "orchestrator", None) is not None:
         try:
-            hint, intent = runtime.orchestrator.generate_strategic_hint(move)
+            hint, intent = runtime.orchestrator.generate_strategic_hint(move, step=step)
         except Exception as _lang_err:
             logger.warning("[PeerTurn] Strategic hint failed at step %d: %s", step, _lang_err)
             from agent.language.hint_policy import generate_hint as _gen_hint

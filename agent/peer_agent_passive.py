@@ -9,7 +9,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from agent.board import Board
-from agent.language.hints import generate_hint as _generate_hint_fn
+from agent.language.hints import generate_hint as _generate_hint_fallback
 from agent.peer_runtime_io import _load_start_positions
 from agent.rules_engine import RulesEngine
 
@@ -21,8 +21,17 @@ logger = logging.getLogger(__name__)
 _MOVE_ALIASES = {"N": "NORTH", "S": "SOUTH", "E": "EAST", "W": "WEST", "STAY": "STAY"}
 
 
-def _generate_hint(move: str, board=None) -> str:
-    return _generate_hint_fn(move)
+def _generate_hint(move: str, board=None, step: int = 0, belief_entropy: float = 1.0) -> str:
+    """Generate hint using NaturalLanguagePolicy (symmetric with active side)."""
+    try:
+        from agent.language.deception_policy import NaturalLanguagePolicy
+
+        role = "thief"  # passive side is thief in standard P2P config
+        policy = NaturalLanguagePolicy(role)
+        intent = policy.choose_intent(step=step, belief_entropy=belief_entropy)
+        return policy.generate(move, intent)
+    except Exception:
+        return _generate_hint_fallback(move)
 
 
 def init_passive_game(rt: PeerRuntime, game_id: str, rules_ref: list) -> None:
@@ -58,8 +67,17 @@ def handle_passive_commit(rt: PeerRuntime, game_id: str, message, rules_ref: lis
     if not move:
         legal = rt.board.get_legal_moves(rt.role)
         move = legal[0] if legal else "STAY"
-    hint = _generate_hint(move, rt.board)
-    intent = "truth"
+    # Use orchestrator's symmetric language policy if available
+    _orch = getattr(rt, "orchestrator", None)
+    if _orch is not None:
+        try:
+            hint, intent = _orch.generate_strategic_hint(move, step=message.step)
+        except Exception:
+            hint = _generate_hint(move, rt.board, step=message.step)
+            intent = "truth"
+    else:
+        hint = _generate_hint(move, rt.board, step=message.step)
+        intent = "truth"
     h_commit, nonce = create_commitment(
         game_id=game_id,
         step=message.step,
