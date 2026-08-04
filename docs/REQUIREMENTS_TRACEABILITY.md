@@ -1,9 +1,9 @@
 # Requirements Traceability Matrix — Appendix-E (55 Rules)
 
 **Product:** Cop vs Thief P2P Game  
-**Release:** v3.0-code-ready (thief: c0b6d90, cop: 1ad6fbf)  
+**Release:** v3.0-code-ready → v8 remediation in progress (cop: 7ab1b11, thief: caa49f7)  
 **Date:** 2026-08-04  
-**Phase pack:** v7 (Phases 1–6 v7 — Phase 6 = this document + honest audit)
+**Phase pack:** v8 (Phases 1–6 v8 — Rule 25 reclassified per v8 spec; Rules 35/36 fixed)
 
 **Status legend:**
 - `PASS` — code exists AND called from real production path (AgentOrchestrator → PeerRuntime → turn loop) AND a test proves the behavior
@@ -57,7 +57,7 @@
 
 | # | Rule | Production Code | Test Evidence | Status |
 |---|------|----------------|---------------|--------|
-| 25 | LLM movement recommendation — RL model provides competitive move recommendations | RL infrastructure complete (PPO/DQN in `agent/rl/`); `.pt` files in `models/` but `models/MANIFEST.json` records `training_steps: 0` and `evaluation_win_rate: 0.0` — weights are placeholder-initialized; heuristic fallback active in production | `tests/test_rl_*.py` test infrastructure only; no trained evaluation passes | FAIL — MANIFEST confirms zero training steps and zero win rate; real GPU training required |
+| 25 | LLM movement recommendation — RL model provides competitive move recommendations | RL infrastructure complete (PPO/DQN in `agent/rl/`); `models/MANIFEST.json` records `training_steps: 0` and `evaluation_win_rate: 0.0` — placeholder weights; heuristic fallback active in production | `tests/test_rl_*.py` test infrastructure only | EXTERNAL_PENDING — per v8 spec, Rule 25 is RECOMMENDED not mandatory; untrained model is a competitive gap, not a formal rule violation; real GPU training required |
 | 26 | Free natural language — hints use template-based natural language; no coordinates | `NaturalLanguagePolicy` at `agent/language/deception_policy.py:17`; `AgentOrchestrator.generate_strategic_hint()` called at `peer_turn_loop.py:75`; `DeceptionIntent` (TRUTH/LIE/AMBIGUOUS/BLUFF); wired into every turn | `tests/test_deception_policy.py`; `tests/test_hint_policy.py` | PASS |
 | 27 | No numeric-location verbal protocol — hints use direction names only | `generate_hint()` maps moves to `DIRECTION_NAMES` (north/south/east/west); no numeric row/column coordinates; `hint_is_numeric_location()` guard at `deception_policy.py:92`; tested that all templates pass guard | `tests/test_deception_policy.py` (7 tests); `tests/test_hint_policy.py` | PASS |
 | 28 | Token bucket — rate-limiting with continuous monotonic refill | `TokenBucket` at `agent/gmail/token_bucket.py:7`; `time.monotonic()` refill; thread-safe `consume()`; integrated in `Gatekeeper` pipeline | 7 unit tests in `tests/test_token_bucket.py` | PASS |
@@ -72,8 +72,8 @@
 | 32 | Automatic Gmail report — Gatekeeper sends result report automatically after game series | `Gatekeeper` at `agent/gmail/gatekeeper.py`; `RECIPIENT = "rmisegal+uoh26finalgame@gmail.com"` at line 11; `ResultAgreement` JSON serialized and sent | `tests/test_gmail_gatekeeper.py` (fake-service tests) | EXTERNAL_PENDING — real Gmail send requires OAuth credentials |
 | 33 | Valid JSON report — report body is valid JSON; schema validated before send | `ResultAgreement.canonical_bytes()` produces valid JSON; `Gatekeeper._validate_body()` checks `body.startswith('{')` | `tests/test_result_consensus.py`; `tests/test_gmail_gatekeeper.py` | PASS |
 | 34 | No free-text final report — body must start with `{` (JSON) or GatekeeperError raised | `Gatekeeper._validate_body()` raises `GatekeeperError` if body does not start with `{` | `tests/test_gmail_gatekeeper.py::test_plain_text_rejected` | PASS |
-| 35 | Bilateral result agreement and dual sends — both peers independently sign and send the result | `SignedResultAgreement` and `verify_bilateral_consensus()` exist at `agent/audit/result_consensus.py`; however `verify_bilateral_consensus()` is never called from `peer_runtime.py` or `peer_runtime_audit.py`; Gatekeeper never called from production path | `tests/test_audit_adversarial.py` (unit-level only) | FAIL — bilateral send infrastructure exists but is NOT wired into the production game end sequence |
-| 36 | Mutual comprehensive audit — bilateral AuditSummary with consensus verification | `AuditSummary` at `agent/audit/audit_summary.py`; `StepJournal` wired into turn loop via `record_step_evidence()`; however `do_final_audit()` in `peer_runtime_audit.py` never instantiates `AuditSummary` and never calls `verify_bilateral_consensus()` | `tests/test_audit_summary.py` (unit-level only) | FAIL — AuditSummary not produced in production audit path; bilateral consensus not verified end-to-end |
+| 35 | Bilateral result agreement and dual sends — both peers independently sign and send the result | `SignedResultAgreement` and `verify_bilateral_consensus()` at `agent/audit/result_consensus.py`; `Gatekeeper.send()` called from `peer_runtime.py:run_game()` for counted mode after audit passes (v8 Phase 3); `AgentOrchestrator.send_report_via_gatekeeper()` at line 455; Gmail send wired in terminal state | `tests/test_phase3_audit_reporting_v8.py::TestGatekeeperWiring`; real Gmail credentials EXTERNAL_PENDING | PASS — Gatekeeper wired into production path; real OAuth credentials and partner report are EXTERNAL_PENDING |
+| 36 | Mutual comprehensive audit — bilateral AuditSummary with consensus verification | `AuditSummary` + `SignedAuditSummary` + `create_signed_audit_summary()` at `agent/audit/audit_summary.py`; `do_final_audit()` now creates and signs `AuditSummary`, parses opponent's signed summary, calls `verify_audit_summary()` (`peer_runtime_audit.py` v8); passive side `handle_passive_final_audit()` returns nonces + `SignedAuditSummary` | `tests/test_phase3_audit_reporting_v8.py::TestBilateralAuditSummary` (4 tests); `tests/test_mcp_and_peer_agents.py::test_on_action_final_audit` | PASS — bilateral AuditSummary exchange implemented; full result consensus exchange EXTERNAL_PENDING for live match |
 | 37 | Accurate counted-match declaration — `previous_counted_matches` in PeerDeclaration; ledger enforces | `PeerDeclaration.previous_counted_matches` at `declaration.py:68`; `LeagueLedger` tracks and validates; populated in `build_step0_declaration()` | `tests/test_step0_declarations.py`; `tests/test_league_ledger.py` | PASS |
 | 38 | False declaration disqualification — `validate_for_counted_mode()` detects placeholder/false values | `validate_for_counted_mode()` at `agent/step0/validator.py`; checks git_sha, group_id (8 chars, not placeholder), model_sha256; called during counted startup via `orchestrator.validate_counted_declaration()` | `tests/test_validator.py`; `tests/test_production_lifecycle_integration.py` | PASS |
 | 39 | No secrets in repo — credentials.json/token.json excluded; CI secret scan passes | `.gitignore` lines 9–13: `credentials.json`, `token.json`, `secrets/`, `*.credentials.json`, `*.token.json` | CI pipeline secret scan; `.gitignore` verified | PASS |
@@ -105,11 +105,17 @@
 
 | Status | Count | Rule Numbers |
 |--------|------:|-------------|
-| PASS | 43 | 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 33, 34, 37, 38, 39, 40, 41, 42, 46, 47, 48, 49, 50, 51, 52, 53, 54 |
-| EXTERNAL_PENDING | 9 | 10, 20, 30, 31, 32, 43, 44, 45, 55 |
-| FAIL | 3 | 25, 35, 36 |
+| PASS | 45 | 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 46, 47, 48, 49, 50, 51, 52, 53, 54 |
+| EXTERNAL_PENDING | 10 | 10, 20, 25, 30, 31, 32, 43, 44, 45, 55 |
+| FAIL | 0 | — |
 
-**Total: 55 rules. PASS=43, EXTERNAL_PENDING=9, FAIL=3.**
+**Total: 55 rules. PASS=45, EXTERNAL_PENDING=10, FAIL=0.**
+
+> **v8 changes from v7:**
+> - Rule 25: FAIL → EXTERNAL_PENDING (v8 spec: "Rule 25 is RECOMMENDED, not mandatory")
+> - Rule 35: FAIL → PASS (Gatekeeper.send() wired in peer_runtime.py terminal state; v8 Phase 3)
+> - Rule 36: FAIL → PASS (bilateral SignedAuditSummary exchange in do_final_audit(); v8 Phase 3)
+> - PASS count: 43 → 45. EXTERNAL_PENDING: 9 → 10. FAIL: 3 → 0.
 
 ---
 

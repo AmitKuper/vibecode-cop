@@ -1,48 +1,53 @@
-# Final 100-Readiness Report — v7 Honest Assessment
+# Final 100-Readiness Report — v8 Updated Assessment
 
 ## Release Information
 
 | Field | Value |
 |-------|-------|
-| thief SHA | `c0b6d90` (tag: `v3.0-code-ready`) |
-| cop SHA | `1ad6fbf` (tag: `v3.0-code-ready`) |
+| thief SHA | `caa49f7` (v8 Phase 5 complete) |
+| cop SHA | `7ab1b11` (v8 Phase 5 complete) |
 | Date | 2026-08-04 |
-| Phase pack | v7 (Phases 1–6 v7 complete) |
-| Previous release | v6 (cop `49b991c`, thief `2e10b0e`, tag `v2.0-submission`) |
+| Phase pack | v8 (Phases 1–6 v8 complete) |
+| Previous release | v7 (cop `1ad6fbf`, thief `c0b6d90`, tag `v3.0-code-ready`) |
+| Package version | 3.0.0 |
 
 ## Score Estimate (Honest)
 
-| Area | v6 Estimate | v7 Honest Estimate | Notes |
-|------|------------:|--------------------|-------|
-| Requirements and design fidelity | 90+ | 82 | Rules 35, 36 demoted to FAIL after strict production-path check |
-| Core game mechanics | 90+ | 90 | Domain engine fully correct |
-| Production P2P protocol | 88 | 88 | Commit-reveal, watchdog, SM all wired |
-| Cryptographic integrity and audit | 90 | 78 | StepJournal wired; AuditSummary not produced in production (rule 36 FAIL) |
-| Competitive RL readiness | 20 | 15 | training_steps=0, win_rate=0.0 confirmed; heuristic only |
-| Reliability, reporting, Gmail | 85 | 72 | Gatekeeper ready but never invoked at game end (rule 35 FAIL) |
-| MCP adaptability | 82 | 82 | No change |
-| Documentation and release evidence | 90 | 88 | Honest traceability now accurate |
-| **Estimated weighted overall** | **~82** | **~78** | Lower because bilateral audit/send gaps are now FAIL not PASS |
+| Area | v7 Estimate | v8 Honest Estimate | v8 Notes |
+|------|------------:|--------------------|----------|
+| Requirements and design fidelity | 82 | 87 | Rules 35/36 fixed; Rule 25 reclassified as RECOMMENDED |
+| Core game mechanics | 90 | 90 | P0-2 barrier divergence fixed; domain engine canonical |
+| Production P2P protocol | 88 | 90 | P0-1 counted mode propagation fixed |
+| Cryptographic integrity and audit | 78 | 86 | Bilateral AuditSummary exchange now wired (Rule 36 PASS) |
+| Competitive RL readiness | 15 | 15 | Still EXTERNAL_PENDING; placeholder weights |
+| Reliability, reporting, Gmail | 72 | 82 | Gatekeeper wired in terminal state (Rule 35 PASS) |
+| Hidden-coord / local truth | 75 | 90 | RL observation fixed; no cop position reaches thief actor |
+| Language strategy | 78 | 85 | Symmetric policy; step propagation fixed |
+| MCP adaptability | 82 | 82 | Unchanged |
+| Documentation and release evidence | 88 | 90 | README fixed (--cop-url→--thief-url); version synced 3.0.0 |
+| **Estimated weighted overall** | **~78** | **~84** | All code-verifiable FAILs resolved |
 
-> **v7 honest floor:** Cannot reach 90+ without: (1) wiring AuditSummary + Gatekeeper into game-end sequence, (2) real GPU training, (3) real matches + Gmail sends, (4) Moodle submission.
+> **v8 floor:** Cannot reach 90+ without: (1) real GPU RL training, (2) real matches + Gmail sends against 2+ groups, (3) Moodle submission, (4) 8-char group ID.
 
 ## Quality Gate Evidence
 
-| Gate | thief (c0b6d90) | cop (1ad6fbf) |
+| Gate | thief (caa49f7) | cop (7ab1b11) |
 |------|-----------------|---------------|
-| Test count | **1170 passed**, 2 skipped, 0 failed | **1171 passed**, 2 skipped, 0 failed |
+| Test count | **1143 passed**, 2 skipped, 0 failed | **1189 passed**, 2 skipped, 0 failed |
 | Branch coverage | ≥85% | ≥85% |
 | Ruff violations | 0 | 0 |
 | Secret scan | clean | clean |
-| Git tag | v3.0-code-ready | v3.0-code-ready |
+| Package version | 3.0.0 | 3.0.0 |
 
-## 55-Rule Summary (v7 Honest)
+## 55-Rule Summary (v8 Honest)
 
 | Status | Count | Rule Numbers |
 |--------|------:|-------------|
-| PASS | 43 | 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 33, 34, 37, 38, 39, 40, 41, 42, 46, 47, 48, 49, 50, 51, 52, 53, 54 |
-| EXTERNAL_PENDING | 9 | 10, 20, 30, 31, 32, 43, 44, 45, 55 |
-| FAIL | 3 | 25, 35, 36 |
+| PASS | 45 | 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 26, 27, 28, 29, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 46, 47, 48, 49, 50, 51, 52, 53, 54 |
+| EXTERNAL_PENDING | 10 | 10, 20, 25, 30, 31, 32, 43, 44, 45, 55 |
+| FAIL | 0 | — |
+
+> v8 changes: Rule 25 FAIL→EXTERNAL_PENDING (RECOMMENDED per spec); Rules 35, 36 FAIL→PASS (wired in v8 Phase 3).
 
 Full traceability: [docs/REQUIREMENTS_TRACEABILITY.md](docs/REQUIREMENTS_TRACEABILITY.md)
 
@@ -65,21 +70,39 @@ All of the following were **verified by grep against the actual production path*
 | `emit_heartbeat()` | `agent/peer_turn_loop.py` | 264 |
 | `build_local_observation()` | `agent/peer_turn_helpers.py` | 236 (no hidden coords) |
 
-### Honest Downgrades vs v6 Report (Rules 35, 36)
+### v8 Fixes vs v7
 
-The v6 report counted rules 35 and 36 as PASS/EXTERNAL_PENDING based on component existence. The v7 review reveals:
+**Rule 35 (bilateral send) — now PASS (v8 Phase 3):**
+- `Gatekeeper.send()` wired into `peer_runtime.py::run_game()` terminal state for counted mode
+- `AgentOrchestrator.send_report_via_gatekeeper()` called after audit passes
+- Real Gmail credentials are EXTERNAL_PENDING; structure is complete
 
-**Rule 35 (bilateral send) — FAIL:**
-- `SignedResultAgreement` and `verify_bilateral_consensus()` exist in `agent/audit/result_consensus.py`
-- Neither is called from `agent/peer_runtime.py` or `agent/peer_runtime_audit.py`
-- `Gatekeeper.send()` is never invoked at game end
-- Result: bilateral send code exists but produces no real output
+**Rule 36 (mutual audit) — now PASS (v8 Phase 3):**
+- `do_final_audit()` in `peer_runtime_audit.py` now creates and signs `AuditSummary` using ephemeral Ed25519 key
+- Passive side `handle_passive_final_audit()` runs its own audit, creates signed summary, returns both nonces + summary
+- Active side verifies opponent's `SignedAuditSummary` via `verify_audit_summary()`
+- Bilateral consensus verified at protocol level
 
-**Rule 36 (mutual audit) — FAIL:**
-- `AuditSummary` exists in `agent/audit/audit_summary.py`
-- `do_final_audit()` in `agent/peer_runtime_audit.py` runs nonce verification but returns `(bool, dict)`, not `AuditSummary`
-- `verify_bilateral_consensus()` is never called
-- Result: StepJournal hash chain is verified per-step, but the bilateral summary is never produced or exchanged
+**Rule 25 (RL) — reclassified EXTERNAL_PENDING (per v8 spec):**
+- v8 spec: "Rule 25 is RECOMMENDED, not mandatory. Do not count an untrained model as a formal Rule-25 violation."
+- Real training requires GPU time — infrastructure is complete
+
+**P0-1 (v8 Phase 1) — FIXED:**
+- `RuntimeMode.COUNTED` now correctly propagated from CLI → `run_series.py` → `PeerRuntime` → `AgentOrchestrator`
+- Was: `PeerRuntime` always defaulted to `counted_mode=False`
+
+**P0-2 (v8 Phase 1) — FIXED:**
+- Cop `PLACE_*` barrier actions now applied by canonical `apply_joint_action()` on the active side
+- Was: legacy `RulesEngine` converted PLACE_* to STAY silently, causing active/passive board divergence
+
+**Hidden coordinate RL leak (v8 Phase 2) — FIXED:**
+- `thief_observation()` channel 1 replaced from cop 1-hot to cop scent field (historical trail)
+- `select_move()` RL path removed (`_build_observation` with grid_state exposed both positions)
+- `build_local_observation()` is now the sole actor input path
+
+**Language policy step constant (v8 Phase 4) — FIXED:**
+- `generate_strategic_hint()` now accepts and passes real `step` parameter
+- Passive side uses `NaturalLanguagePolicy` instead of always-truth template
 
 ## Phases Completed
 
@@ -90,25 +113,16 @@ The v6 report counted rules 35 and 36 as PASS/EXTERNAL_PENDING based on componen
 | Phase 3 v7 | Wire Step-0, StepJournal, Watchdog, LeagueLedger into production lifecycle | `1b5af13` | `07736ed` |
 | Phase 4 v7 | NaturalLanguagePolicy with DeceptionIntent, belief-driven heuristic, counted model validation | `abc300e` | `7fddd0d` |
 | Phase 5 v7 | SafeLiveView wired to production, GameProtocolPort, accurate README, v3.0-code-ready | `c0b6d90` | `1ad6fbf` |
-| Phase 6 v7 | Honest 55-rule RTM, corrected FINAL_100_READINESS_REPORT, external checklist, release manifest | *(this commit)* | *(this commit)* |
+| Phase 1 v8 | Fix P0-1 (counted_mode not passed to PeerRuntime) and P0-2 (PLACE_* barrier divergence) | `9a7667e` | `4c11016` |
+| Phase 2 v8 | Fix hidden-coord RL leak, config authority, public/private state commitments | `0b2d959` | `3168f60` |
+| Phase 3 v8 | Bilateral AuditSummary exchange, Gatekeeper wired in terminal state, LeagueLedger wired | `5f62111` | `ac8cbdc` |
+| Phase 4 v8 | Symmetric language policy, step propagation fix | `5f62111` | `ac8cbdc` |
+| Phase 5 v8 | Version sync 3.0.0, README --cop-url fix, manifest update | `caa49f7` | `7ab1b11` |
+| Phase 6 v8 | Updated 55-rule RTM (PASS=45, EP=10, FAIL=0), FINAL_100_READINESS_REPORT | *(this commit)* | *(this commit)* |
 
 ## Key Remaining Gaps — Priority Order for a Human Developer
 
-### Priority 1: Wire Bilateral Audit and Gmail Send (Rules 35, 36)
-
-These are two FAIL rules with complete component implementations. A single developer can fix both in one session:
-
-1. In `agent/peer_runtime_audit.py::do_final_audit()`:
-   - After `run_final_audit()` succeeds, instantiate `AuditSummary` from the result
-   - Exchange `SignedResultAgreement` with opponent via a new MCP call
-   - Call `verify_bilateral_consensus()` with both signed agreements
-2. In `agent/peer_runtime.py` after `do_final_audit()`:
-   - Construct `ResultAgreement` from audit result
-   - Call `Gatekeeper.send(RECIPIENT, subject, result_agreement.canonical_bytes())`
-
-This unblocks rules 35 and 36 and would raise the honest score from ~78 to ~85.
-
-### Priority 2: Real Opponents and Gmail Credentials (Rules 31, 32)
+### Priority 1: Real Opponents and Gmail Credentials (Rules 31, 32)
 
 - Obtain Gmail OAuth credentials with `gmail.send` scope only
 - Run `uv run python -m agent.gmail.auth` to generate `token.json`
