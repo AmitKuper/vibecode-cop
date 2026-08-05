@@ -92,6 +92,7 @@ class TestSymmetricLanguagePolicy:
         rt._select_move_rl.return_value = None  # force heuristic path
         rt._my_commits = {}
         rt._store_my_commit = MagicMock()
+        rt._gamelet_number.return_value = 1
 
         # Wire a mock orchestrator
         orch_mock = MagicMock()
@@ -99,14 +100,14 @@ class TestSymmetricLanguagePolicy:
         rt.orchestrator = orch_mock
 
         msg = MagicMock()
-        msg.step = 5
+        msg.step = 1
         msg.h_commit = "a" * 64
 
         with patch("agent.mcp.crypto.create_commitment", return_value=("h1", "n1")):
             result = handle_passive_commit(rt, "test_g1", msg, [])
 
         # Orchestrator language policy was invoked with correct step
-        orch_mock.generate_strategic_hint.assert_called_once_with("N", step=5)
+        orch_mock.generate_strategic_hint.assert_called_once_with("N", step=1)
         assert result["ok"] is True
 
     def test_language_policy_cop_and_thief_use_same_interface(self):

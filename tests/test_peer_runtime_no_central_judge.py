@@ -95,7 +95,7 @@ class TestVerifyOpponentReveal:
             "state_hash": state_hash,
             "nonce": nonce,
         }
-        assert verify_opponent_reveal(h_commit, reveal, game_id, step, role) is True
+        assert verify_opponent_reveal(h_commit, reveal, game_id, step, role, 1) is True
 
     def test_tampered_move_returns_false(self):
         game_id = "g2"
@@ -119,7 +119,7 @@ class TestVerifyOpponentReveal:
             "state_hash": state_hash,
             "nonce": nonce,
         }
-        assert verify_opponent_reveal(h_commit, tampered_reveal, game_id, step, role) is False
+        assert verify_opponent_reveal(h_commit, tampered_reveal, game_id, step, role, 1) is False
 
     def test_wrong_nonce_returns_false(self):
         game_id = "g3"
@@ -142,7 +142,7 @@ class TestVerifyOpponentReveal:
             "state_hash": state_hash,
             "nonce": "deadbeef" * 8,
         }
-        assert verify_opponent_reveal(h_commit, reveal, game_id, step, role) is False
+        assert verify_opponent_reveal(h_commit, reveal, game_id, step, role, 1) is False
 
 
 class TestAppendAndLoadOpponentData:
@@ -209,7 +209,9 @@ class TestRunFinalAudit:
     def test_all_steps_verified_ok(self, tmp_path):
         game_id = "audit_ok_001"
         game_dir, nonces = self._setup_game(tmp_path, game_id, steps=3)
-        ok, details = run_final_audit(game_dir, game_id, "thief", nonces)
+        ok, details = run_final_audit(
+            game_dir, game_id, "thief", nonces, gamelet=1, authoritative_final_step=3
+        )
         assert ok is True
         assert details.get("audit_status") == "PASSED"
         step_results = {k: v for k, v in details.items() if k.startswith("step_")}
@@ -219,7 +221,9 @@ class TestRunFinalAudit:
         game_id = "audit_missing_nonce"
         game_dir, nonces = self._setup_game(tmp_path, game_id, steps=2)
         del nonces[1]  # Remove nonce for step 1 — exact set check catches this
-        ok, details = run_final_audit(game_dir, game_id, "thief", nonces)
+        ok, details = run_final_audit(
+            game_dir, game_id, "thief", nonces, gamelet=1, authoritative_final_step=2
+        )
         assert ok is False
         assert details.get("audit_status") == "FAILED"
 
@@ -227,7 +231,9 @@ class TestRunFinalAudit:
         game_id = "audit_wrong_nonce"
         game_dir, nonces = self._setup_game(tmp_path, game_id, steps=2)
         nonces[1] = "00" * 32  # Replace with wrong nonce
-        ok, details = run_final_audit(game_dir, game_id, "thief", nonces)
+        ok, details = run_final_audit(
+            game_dir, game_id, "thief", nonces, gamelet=1, authoritative_final_step=2
+        )
         assert ok is False
         assert details["step_1"] == "commitment_mismatch"
 
@@ -235,7 +241,9 @@ class TestRunFinalAudit:
         """Zero-turn abort with no commits must yield NOT_APPLICABLE, not success."""
         game_dir = tmp_path / "audit_empty"
         game_dir.mkdir()
-        ok, details = run_final_audit(game_dir, "empty_game", "thief", {})
+        ok, details = run_final_audit(
+            game_dir, "empty_game", "thief", {}, gamelet=1, authoritative_final_step=0
+        )
         assert ok is False
         assert details.get("audit_status") == "NOT_APPLICABLE"
 
@@ -244,6 +252,7 @@ class TestRunFinalAudit:
         game_id = "audit_gap_steps"
         game_dir = tmp_path / game_id
         game_dir.mkdir()
+        commits = {}
         for step in [1, 3]:
             h_commit, nonce = create_commitment(
                 game_id=game_id,
@@ -254,8 +263,16 @@ class TestRunFinalAudit:
                 hint="h",
                 intent="truth",
             )
-            append_opponent_commit(game_dir, step, h_commit)
-        ok, details = run_final_audit(game_dir, game_id, "thief", {1: "n", 3: "n"})
+            commits[str(step)] = h_commit
+        (game_dir / "opponent_commitments.json").write_text(json.dumps(commits))
+        ok, details = run_final_audit(
+            game_dir,
+            game_id,
+            "thief",
+            {1: "n", 3: "n"},
+            gamelet=1,
+            authoritative_final_step=3,
+        )
         assert ok is False
         assert details.get("audit_status") == "FAILED"
         assert "commitment steps" in details.get("note", "")
@@ -264,9 +281,11 @@ class TestRunFinalAudit:
         """Empty nonces dict bypasses set-check; loop hits missing-nonce branch."""
         game_id = "audit_loop_nonce"
         game_dir, _ = self._setup_game(tmp_path, game_id, steps=1)
-        ok, details = run_final_audit(game_dir, game_id, "thief", {})
+        ok, details = run_final_audit(
+            game_dir, game_id, "thief", {}, gamelet=1, authoritative_final_step=1
+        )
         assert ok is False
-        assert details.get("step_1") == "missing_nonce"
+        assert "nonce steps" in details.get("note", "")
 
     def test_null_reveal_causes_missing_reveal_in_loop(self, tmp_path):
         """Null reveal value in file passes key set-check but triggers missing-reveal branch."""
@@ -284,7 +303,14 @@ class TestRunFinalAudit:
         )
         append_opponent_commit(game_dir, 1, h_commit)
         (game_dir / "opponent_reveals.json").write_text('{"1": null}', encoding="utf-8")
-        ok, details = run_final_audit(game_dir, game_id, "thief", {1: nonce})
+        ok, details = run_final_audit(
+            game_dir,
+            game_id,
+            "thief",
+            {1: nonce},
+            gamelet=1,
+            authoritative_final_step=1,
+        )
         assert ok is False
         assert details.get("step_1") == "missing_reveal"
 
@@ -810,6 +836,13 @@ class TestNoCentralJudgeInvariant:
         append_opponent_reveal(game_dir, 1, reveal)
 
         # No MCP call happens inside run_final_audit
-        ok, details = run_final_audit(game_dir, game_id, "thief", {1: nonce})
+        ok, details = run_final_audit(
+            game_dir,
+            game_id,
+            "thief",
+            {1: nonce},
+            gamelet=1,
+            authoritative_final_step=1,
+        )
         assert ok is True
         assert details["step_1"] == "ok"

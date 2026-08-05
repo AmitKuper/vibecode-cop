@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from agent.domain.config_validator import GameConfig
 from agent.domain.transition import TransitionResult, apply_joint_action
 from agent.domain.types import DomainState
 
@@ -21,7 +22,23 @@ class IllegalJointActionError(ValueError):
         )
 
 
+def locked_config(runtime) -> GameConfig:
+    """Return the immutable negotiated config, with explicit legacy-test compatibility."""
+    value = getattr(runtime, "game_config", None)
+    return value if isinstance(value, GameConfig) else GameConfig()
+
+
 def state_from_runtime(runtime, rules) -> DomainState:
+    existing = getattr(runtime, "_domain_state", None)
+    if (
+        isinstance(existing, DomainState)
+        and existing.turn == runtime.board.turn
+        and existing.cop_position == tuple(runtime.board.cop_position)
+        and existing.thief_position == tuple(runtime.board.thief_position)
+        and existing.barriers == [tuple(item) for item in runtime.board.barriers]
+        and existing.cop_barriers_remaining == runtime._cop_barriers_remaining
+    ):
+        return existing
     board = runtime.board
     return DomainState(
         turn=board.turn,
@@ -31,7 +48,7 @@ def state_from_runtime(runtime, rules) -> DomainState:
         barriers=[tuple(item) for item in board.barriers],
         cop_barriers_remaining=runtime._cop_barriers_remaining,
         move_history=board.move_history,
-        scent_grid=rules.get_scent_field(),
+        thief_scent=rules.get_scent_field(),
     )
 
 
@@ -39,7 +56,12 @@ def apply_runtime_transition(
     runtime, rules, cop_action: str, thief_action: str
 ) -> TransitionResult:
     """Validate once, then synchronize the canonical result into the runtime."""
-    result = apply_joint_action(state_from_runtime(runtime, rules), cop_action, thief_action)
+    result = apply_joint_action(
+        state_from_runtime(runtime, rules),
+        cop_action,
+        thief_action,
+        config=locked_config(runtime),
+    )
     illegal = tuple(
         role
         for role, legal in (("cop", result.cop_action_legal), ("thief", result.thief_action_legal))
@@ -54,7 +76,9 @@ def apply_runtime_transition(
     runtime.board.turn = state.turn
     runtime.board.move_history = [item.model_dump() for item in state.move_history]
     runtime._cop_barriers_remaining = state.cop_barriers_remaining
-    rules._scent_grid = [row[:] for row in state.scent_grid]
+    runtime._domain_state = state
+    runtime._last_transition_result = result
+    rules._scent_grid = [row[:] for row in state.thief_scent]
     return result
 
 
@@ -63,11 +87,12 @@ def legal_actions_for_role(runtime, rules, role: str) -> list[str]:
     from agent.rl.action_space import COP_ACTIONS, THIEF_ACTIONS
 
     state = state_from_runtime(runtime, rules)
+    config = locked_config(runtime)
     actions = COP_ACTIONS if role == "cop" else THIEF_ACTIONS
     results = (
-        apply_joint_action(state, action, "STAY")
+        apply_joint_action(state, action, "STAY", config=config)
         if role == "cop"
-        else apply_joint_action(state, "STAY", action)
+        else apply_joint_action(state, "STAY", action, config=config)
         for action in actions
     )
     return [

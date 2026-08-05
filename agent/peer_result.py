@@ -114,6 +114,18 @@ def _parse_and_verify_audits(runtime, payloads: list[dict]) -> list[SignedAuditS
             raise ResultExchangeError(f"non-passing audit for {game_id}")
         if signed.summary.config_hash != runtime.config_sha256:
             raise ResultExchangeError(f"audit config mismatch for {game_id}")
+        if runtime.counted_mode and (
+            not signed.summary.declaration_agreement_hash
+            or not signed.summary.protocol_profile_hash
+            or not signed.summary.public_transition_root
+            or not signed.summary.final_state_root
+            or signed.summary.authoritative_final_step < 1
+            or signed.summary.expected_steps != signed.summary.authoritative_final_step
+            or signed.summary.verified_steps != signed.summary.authoritative_final_step
+        ):
+            raise ResultExchangeError(f"incomplete counted audit summary for {game_id}")
+        if runtime.counted_mode:
+            _validate_token_totals(signed.summary.token_totals, f"audit {game_id}")
         verified.append(signed)
     if sorted(s.summary.gamelet for s in verified) != list(range(1, 7)):
         raise ResultExchangeError("audit bundle is not exactly gamelets 1..6")
@@ -149,6 +161,8 @@ def _validate_observed_outcomes(runtime, incoming, remote_audits) -> None:
             "thief_score": outcome.thief_score,
             "winner": outcome.winner,
             "turns_played": outcome.turns_played,
+            "final_state_root": outcome.final_state_root,
+            "public_transition_root": outcome.public_transition_root,
         }
         if local != expected:
             raise ResultExchangeError(
@@ -158,6 +172,24 @@ def _validate_observed_outcomes(runtime, incoming, remote_audits) -> None:
             raise ResultExchangeError(
                 f"gamelet {outcome.gamelet} transcript root is not audit-bound"
             )
+        if outcome.final_state_root != audit.summary.final_state_root:
+            raise ResultExchangeError(
+                f"gamelet {outcome.gamelet} final state root is not audit-bound"
+            )
+        if outcome.public_transition_root != audit.summary.public_transition_root:
+            raise ResultExchangeError(
+                f"gamelet {outcome.gamelet} public transition root is not audit-bound"
+            )
+        expected_audit_outcome = {
+            "cop": "cop_win",
+            "thief": "thief_win",
+            "draw": "draw",
+        }.get(outcome.winner, "")
+        if audit.summary.outcome != expected_audit_outcome or (
+            audit.summary.cop_score,
+            audit.summary.thief_score,
+        ) != (outcome.cop_score, outcome.thief_score):
+            raise ResultExchangeError(f"gamelet {outcome.gamelet} outcome/score is not audit-bound")
 
 
 def agreement_from_series(runtime, series_result: dict) -> ResultAgreement:
@@ -178,6 +210,12 @@ def agreement_from_series(runtime, series_result: dict) -> ResultAgreement:
                 transcript_root=runtime._local_audit_summaries[
                     record["game_id"]
                 ].summary.transcript_root,
+                final_state_root=runtime._local_audit_summaries[
+                    record["game_id"]
+                ].summary.final_state_root,
+                public_transition_root=runtime._local_audit_summaries[
+                    record["game_id"]
+                ].summary.public_transition_root,
                 token_totals=dict(record.get("token_totals", {})),
             )
         )
@@ -190,6 +228,9 @@ def agreement_from_series(runtime, series_result: dict) -> ResultAgreement:
     if runtime.counted_mode:
         _validate_counted_token_accounting(outcomes, series_token_totals)
     winner = series_result["series_winner"]
+    protocol_hashes = {audit.summary.protocol_profile_hash for audit in audits}
+    if len(protocol_hashes) != 1:
+        raise ResultExchangeError("audit summaries disagree on protocol profile hash")
     return ResultAgreement(
         game_uid=series_result["series_id"],
         gamelet_outcomes=outcomes,
@@ -198,6 +239,8 @@ def agreement_from_series(runtime, series_result: dict) -> ResultAgreement:
         series_winner="draw" if winner == "tie" else winner,
         counted_status=runtime.counted_mode,
         token_totals=series_token_totals,
+        config_hash=runtime.config_sha256,
+        combined_protocol_profile_hash=protocol_hashes.pop(),
         both_audit_summaries_hash=_audit_bundle_hash(audits),
         timestamp_utc=series_result["ended_at"],
     )
@@ -228,6 +271,24 @@ def accept_and_sign_result(runtime, game_id: str, message) -> dict:
             raise ResultExchangeError("local audit bundle contains a non-passing audit")
         if any(s.summary.config_hash != runtime.config_sha256 for s in local_audits):
             raise ResultExchangeError("local audit bundle contains a config mismatch")
+        if runtime.counted_mode:
+            local_by_gamelet = {summary.summary.gamelet: summary for summary in local_audits}
+            for remote_summary in remote_audits:
+                local_summary = local_by_gamelet[remote_summary.summary.gamelet]
+                if (
+                    local_summary.summary.consensus_fields_hash()
+                    != remote_summary.summary.consensus_fields_hash()
+                ):
+                    raise ResultExchangeError(
+                        f"audit consensus mismatch for gamelet {remote_summary.summary.gamelet}"
+                    )
+            if incoming.agreement.config_hash != runtime.config_sha256:
+                raise ResultExchangeError("result config hash mismatch")
+            protocol_hashes = {
+                s.summary.protocol_profile_hash for s in local_audits + remote_audits
+            }
+            if protocol_hashes != {incoming.agreement.combined_protocol_profile_hash}:
+                raise ResultExchangeError("result protocol profile hash mismatch")
         _validate_observed_outcomes(runtime, incoming, remote_audits)
         if runtime.counted_mode:
             _validate_counted_token_accounting(outcomes, incoming.agreement.token_totals)

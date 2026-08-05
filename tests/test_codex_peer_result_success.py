@@ -34,15 +34,26 @@ def _zero_tokens():
     return {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
 
 
-def _audit(gamelet, keypair, game_id, config_hash, *, root=None):
+def _audit(gamelet, keypair, game_id, config_hash, *, root=None, winner="cop", scores=(20, 5)):
     private, public = keypair
     return create_signed_audit_summary(
         AuditSummary(
             game_uid=game_id,
             gamelet=gamelet,
             transcript_root=root or f"root-{gamelet}",
+            declaration_agreement_hash=f"agreement-{gamelet}",
             config_hash=config_hash,
+            protocol_profile_hash="profile-hash",
+            public_transition_root=f"public-{gamelet}",
+            authoritative_final_step=10,
+            expected_steps=10,
+            verified_steps=10,
             audit_status="PASSED",
+            final_state_root=f"state-{gamelet}",
+            outcome={"cop": "cop_win", "thief": "thief_win", "draw": "draw"}[winner],
+            cop_score=scores[0],
+            thief_score=scores[1],
+            token_totals=_zero_tokens(),
             public_key_hex=public.hex(),
         ),
         private,
@@ -55,17 +66,33 @@ def _fixture(tmp_path, *, counted=True, winner="cop"):
     passive_key = generate_key_pair()
     series_id = f"series_{winner}"
     game_ids = [f"{series_id}_g{i:02d}" for i in range(1, 7)]
-    active_audits = [
-        _audit(i, active_key, game_id, config_hash) for i, game_id in enumerate(game_ids, start=1)
-    ]
-    passive_audits = [
-        _audit(i, passive_key, game_id, config_hash) for i, game_id in enumerate(game_ids, start=1)
-    ]
     active_points, passive_points = {
         "cop": (20, 5),
         "thief": (2, 10),
         "draw": (4, 4),
     }[winner]
+    active_audits = [
+        _audit(
+            i,
+            active_key,
+            game_id,
+            config_hash,
+            winner=winner,
+            scores=(active_points, passive_points),
+        )
+        for i, game_id in enumerate(game_ids, start=1)
+    ]
+    passive_audits = [
+        _audit(
+            i,
+            passive_key,
+            game_id,
+            config_hash,
+            winner=winner,
+            scores=(active_points, passive_points),
+        )
+        for i, game_id in enumerate(game_ids, start=1)
+    ]
     outcomes = [
         GameletOutcome(
             i,
@@ -74,6 +101,8 @@ def _fixture(tmp_path, *, counted=True, winner="cop"):
             winner,
             10,
             transcript_root=f"root-{i}",
+            final_state_root=f"state-{i}",
+            public_transition_root=f"public-{i}",
             token_totals=_zero_tokens(),
         )
         for i in range(1, 7)
@@ -112,6 +141,8 @@ def _fixture(tmp_path, *, counted=True, winner="cop"):
             "thief_score": passive_points,
             "winner": winner,
             "turns_played": 10,
+            "final_state_root": f"state-{i}",
+            "public_transition_root": f"public-{i}",
         }
         for i, game_id in enumerate(game_ids, start=1)
     }
@@ -142,6 +173,8 @@ def _fixture(tmp_path, *, counted=True, winner="cop"):
         counted_status=counted,
         both_audit_summaries_hash=_audit_bundle_hash(active_audits + passive_audits),
         token_totals=_zero_tokens(),
+        config_hash=config_hash,
+        combined_protocol_profile_hash="profile-hash",
         timestamp_utc="2026-01-01T00:00:00Z",
     )
     message = SimpleNamespace(

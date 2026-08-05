@@ -16,6 +16,8 @@ class GameletOutcome:
     turns_played: int
     technical_loss_role: str = ""  # "" | "cop" | "thief"
     transcript_root: str = ""
+    final_state_root: str = ""
+    public_transition_root: str = ""
     token_totals: dict = field(default_factory=dict)
 
 
@@ -29,6 +31,8 @@ class ResultAgreement:
     series_winner: str = ""  # "cop" | "thief" | "draw"
     counted_status: bool = False
     token_totals: dict = field(default_factory=dict)
+    config_hash: str = ""
+    combined_protocol_profile_hash: str = ""
     ledger_update_hash: str = ""
     both_audit_summaries_hash: str = ""  # SHA256(sorted(hash_a, hash_b))
     timestamp_utc: str = ""
@@ -55,6 +59,11 @@ class ResultAgreement:
             "thief_total_score": self.thief_total_score,
             "series_winner": self.series_winner,
             "counted_status": self.counted_status,
+            "token_totals": self.token_totals,
+            "config_hash": self.config_hash,
+            "combined_protocol_profile_hash": self.combined_protocol_profile_hash,
+            "ledger_update_hash": self.ledger_update_hash,
+            "both_audit_summaries_hash": self.both_audit_summaries_hash,
         }
         return hashlib.sha256(
             json.dumps(consensus, sort_keys=True, separators=(",", ":")).encode()

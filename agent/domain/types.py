@@ -40,7 +40,20 @@ class DomainState(BaseModel):
     barriers: list[tuple[int, int]] = Field(default_factory=list)
     cop_barriers_remaining: int = Field(ge=0, default=14)
     move_history: list[MoveRecord] = Field(default_factory=list)
-    scent_grid: list[list[float]] = Field(default_factory=list)
+    cop_scent: list[list[float]] = Field(default_factory=list)
+    thief_scent: list[list[float]] = Field(default_factory=list)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _migrate_legacy_scent(cls, value):
+        """Accept old serialized state while keeping one dual-scent authority."""
+        if isinstance(value, dict) and "scent_grid" in value:
+            migrated = dict(value)
+            legacy = migrated.pop("scent_grid")
+            migrated.setdefault("thief_scent", legacy)
+            migrated.setdefault("cop_scent", [])
+            return migrated
+        return value
 
     @model_validator(mode="after")
     def _validate_positions(self) -> DomainState:
@@ -54,6 +67,11 @@ class DomainState(BaseModel):
             if not (0 <= x < g and 0 <= y < g):
                 raise ValueError(f"barrier[{i}] {b} is out of bounds for grid_size={g}")
         return self
+
+    @property
+    def scent_grid(self) -> list[list[float]]:
+        """Read-only compatibility alias for the historical thief scent field."""
+        return self.thief_scent
 
     @classmethod
     def from_board(cls, board) -> DomainState:

@@ -100,3 +100,16 @@ Test counts are measured at phase end (cop repo).
 The legacy aggregate's 11 PASS is retained only as scoped evidence. Direct v11
 FAIL rules are 6, 7, 17, 19, 20, 21, 23, and 36. See
 `CODEX_BASELINE_AUDIT.md` and `docs/CODEX_100_EXECPLAN.md`.
+
+## 2026-08-06 M1/M2 authoritative evidence candidate
+
+| Change/gate | Evidence | Status |
+|---|---|---|
+| gamelet-bound commit/audit | live active/passive calls bind actual gamelet; audit requires authoritative final step and exact contiguous commit/reveal/nonce sets | PASS candidate |
+| journal/replay | one-based durable journal rejects gaps/conflicts/reordering; ReplayApp requires independently signed Step-0, both result signatures, trusted config, and reconstructs every transition/root/score | PASS candidate |
+| canonical state | locked `GameConfig`, dual exact Euclidean scent, outcome and scores flow from `TransitionResult`; no legacy live outcome | PASS candidate |
+| privacy | per-turn state commitment is nonce-salted; logs no longer print hidden coordinates; public transition root is separately audit-bound | PASS candidate |
+| bilateral consensus | signed summaries bind declaration agreement, config/profile, extent, public/final roots, outcome, score and token totals | PASS candidate |
+| full no-skip suite | 1,505 passed in 139.49 s; Ruff lint/format clean | PASS |
+
+Candidate remains unaccepted until committed clean-tree real-process evidence.

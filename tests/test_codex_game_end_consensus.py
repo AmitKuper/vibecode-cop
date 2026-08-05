@@ -11,9 +11,11 @@ import pytest
 
 from agent.audit.audit_summary import AuditSummary, create_signed_audit_summary
 from agent.board import Board
+from agent.domain.types import DomainState
+from agent.mcp.crypto import canonical_domain_state_root, combined_protocol_hash
 from agent.peer_agent_passive import handle_passive_game_end
 from agent.peer_runtime_audit import do_final_audit, notify_game_end
-from agent.rules_engine import RulesEngine
+from agent.rules_engine import GameOutcome, RulesEngine
 from agent.step0.signing import generate_key_pair
 
 
@@ -26,6 +28,8 @@ def test_passive_records_only_locally_derived_terminal_outcome(tmp_path):
             gamelet=1,
             config_hash="c" * 64,
             audit_status="PASSED",
+            final_state_root="state-root",
+            public_transition_root="public-root",
             public_key_hex=public.hex(),
         ),
         private,
@@ -38,6 +42,12 @@ def test_passive_records_only_locally_derived_terminal_outcome(tmp_path):
         _local_audit_summaries={game_id: audit},
         _observed_gamelet_outcomes={},
         _gamelet_number=lambda _: 1,
+        _last_transition_result=SimpleNamespace(
+            outcome=GameOutcome.COP_WIN,
+            cop_score=20,
+            thief_score=5,
+            token_totals={"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+        ),
     )
 
     response = handle_passive_game_end(
@@ -54,6 +64,8 @@ def test_passive_records_only_locally_derived_terminal_outcome(tmp_path):
         "cop_score": 20,
         "thief_score": 5,
         "turns_played": 4,
+        "final_state_root": "state-root",
+        "public_transition_root": "public-root",
     }
 
 
@@ -66,6 +78,8 @@ def test_passive_rejects_claimed_winner_that_disagrees_with_board():
             gamelet=1,
             config_hash="c" * 64,
             audit_status="PASSED",
+            final_state_root="state-root",
+            public_transition_root="public-root",
             public_key_hex=public.hex(),
         ),
         private,
@@ -76,6 +90,11 @@ def test_passive_rejects_claimed_winner_that_disagrees_with_board():
         board=board,
         _local_audit_summaries={game_id: audit},
         _observed_gamelet_outcomes={},
+        _last_transition_result=SimpleNamespace(
+            outcome=GameOutcome.COP_WIN,
+            cop_score=20,
+            thief_score=5,
+        ),
     )
 
     response = handle_passive_game_end(
@@ -142,12 +161,31 @@ def test_final_audit_runtime_identity_and_missing_summary_branches(tmp_path):
     local_private, local_public = generate_key_pair()
     remote_private, remote_public = generate_key_pair()
     game_id = "series_fixture_g01"
+    domain_state = DomainState(
+        turn=1,
+        cop_position=(1, 0),
+        thief_position=(3, 3),
+        barriers=[],
+        cop_barriers_remaining=14,
+    )
+    final_root = canonical_domain_state_root(domain_state, "c" * 64)
+    protocol_hash = combined_protocol_hash("local-profile", "remote-profile")
     remote_signed = create_signed_audit_summary(
         AuditSummary(
             game_uid=game_id,
             gamelet=1,
             config_hash="c" * 64,
+            declaration_agreement_hash="agreement",
+            protocol_profile_hash=protocol_hash,
+            public_transition_root="public-root",
+            authoritative_final_step=1,
+            expected_steps=1,
             audit_status="PASSED",
+            final_state_root=final_root,
+            outcome="cop_win",
+            cop_score=20,
+            thief_score=5,
+            token_totals={"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
             public_key_hex=remote_public.hex(),
         ),
         remote_private,
@@ -162,13 +200,19 @@ def test_final_audit_runtime_identity_and_missing_summary_branches(tmp_path):
             _signing_key_id="local",
             _local_step0={
                 game_id: SimpleNamespace(
-                    declaration=SimpleNamespace(declaration_hash=lambda: "declaration")
+                    declaration=SimpleNamespace(
+                        declaration_hash=lambda: "declaration",
+                        adapter_mapping_hash="local-profile",
+                    )
                 )
             },
             _remote_step0=(
                 {
                     game_id: SimpleNamespace(
-                        declaration=SimpleNamespace(public_key_hex=remote_public.hex())
+                        declaration=SimpleNamespace(
+                            public_key_hex=remote_public.hex(),
+                            adapter_mapping_hash="remote-profile",
+                        )
                     )
                 }
                 if remote_identity
@@ -176,10 +220,20 @@ def test_final_audit_runtime_identity_and_missing_summary_branches(tmp_path):
             ),
             _local_audit_summaries={},
             _remote_audit_summaries={},
+            _step0_agreements={game_id: SimpleNamespace(agreement_hash="agreement")},
             orchestrator=SimpleNamespace(
-                get_journal=lambda _gamelet: SimpleNamespace(transcript_root=lambda: "root")
+                get_journal=lambda _gamelet: SimpleNamespace(
+                    transcript_root=lambda: "root",
+                    seal_nonces=lambda *_args, **_kwargs: "root",
+                )
             ),
-            board=SimpleNamespace(to_dict=lambda: {"turn": 1}),
+            _domain_state=domain_state,
+            _public_transition_root="public-root",
+            _last_transition_result=SimpleNamespace(
+                outcome=GameOutcome.COP_WIN,
+                cop_score=20,
+                thief_score=5,
+            ),
         )
 
     coordinator = MagicMock()

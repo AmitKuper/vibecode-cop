@@ -98,11 +98,22 @@ class PeerRuntime(_CrewMixin):
         self.my_endpoint = my_endpoint or "http://localhost:5000/mcp"
         self.counted_mode = counted_mode
         self.orchestrator_config = dict(orchestrator_config or {})
+        from agent.config.shared_config import load_shared_config
+        from agent.domain.config_validator import game_config_from_dict
+        from agent.domain.types import DomainState
+
+        shared_config = self.orchestrator_config.get("shared_config") or load_shared_config()
+        self.game_config = game_config_from_dict(shared_config)
+        if self.counted_mode:
+            self.max_turns = self.game_config.max_moves
         self.opponent_client = GameMCPClient(opponent_url, secret)
         cop_start, thief_start = _load_start_positions()
         self.game_id: str = ""
         self.game_dir: Path = Path(".")
         self.board: Board = Board(cop_position=cop_start, thief_position=thief_start)
+        self._domain_state = DomainState.from_board(self.board)
+        self._last_transition_result = None
+        self._public_transition_root = ""
         self._my_commits: dict[int, dict] = {}
         self._cop_barriers_remaining: int = 14  # reset per game in run_game()
         self.llm = self._init_llm(llm_dict)
@@ -175,6 +186,8 @@ class PeerRuntime(_CrewMixin):
         if effective_counted_mode != self.counted_mode:
             raise RuntimeError("Runtime mode cannot change after PeerRuntime construction")
         self._ensure_orchestrator(game_id)
+        if self.orchestrator is not None:
+            self.orchestrator.game_uid = game_id
         if hasattr(self.orchestrator, "reset_movement_history"):
             self.orchestrator.reset_movement_history()
         self._last_opponent_hint = ""
@@ -182,6 +195,11 @@ class PeerRuntime(_CrewMixin):
         self.game_dir.mkdir(parents=True, exist_ok=True)
         cop_start, thief_start = _load_start_positions()
         self.board = Board(cop_position=cop_start, thief_position=thief_start)
+        from agent.domain.types import DomainState
+
+        self._domain_state = DomainState.from_board(self.board)
+        self._last_transition_result = None
+        self._public_transition_root = ""
         self._my_commits = {}
         self._cop_barriers_remaining = 14
         created_at = _now()
@@ -224,6 +242,16 @@ class PeerRuntime(_CrewMixin):
             abort_reason = "commitment_mismatch"
             logger.warning(f"[PeerRuntime/{self.role}] Audit failed — overriding winner")
 
+        transition = self._last_transition_result
+        if audit_ok and transition is not None and transition.outcome.value != "ongoing":
+            cop_score = transition.cop_score
+            thief_score = transition.thief_score
+        elif audit_ok and not self.counted_mode and winner == "thief":
+            cop_score = self.game_config.scoring.survival_cop
+            thief_score = self.game_config.scoring.survival_thief
+        else:
+            cop_score = thief_score = 0
+
         ended_at = _now()
         final_state = {
             "step": self.board.turn,
@@ -238,6 +266,8 @@ class PeerRuntime(_CrewMixin):
             "ended_at": ended_at,
             "final_step": final_step,
             "audit_ok": audit_ok,
+            "cop_score": cop_score,
+            "thief_score": thief_score,
             "audit_details": audit_details,
         }
         save_game_state(self.game_dir, final_state)
@@ -272,6 +302,8 @@ class PeerRuntime(_CrewMixin):
             "final_step": final_step,
             "abort_reason": abort_reason,
             "audit_ok": audit_ok,
+            "cop_score": cop_score,
+            "thief_score": thief_score,
         }
 
         logger.info(f"[PeerRuntime/{self.role}] Game {game_id} done: {result}")

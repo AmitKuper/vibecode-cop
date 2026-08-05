@@ -75,6 +75,11 @@ class GameConfig(BaseModel):
             errors.append(f"max_moves must be >= 35 (got {self.max_moves})")
         if self.survival_threshold < 35:
             errors.append(f"survival_threshold must be >= 35 (got {self.survival_threshold})")
+        if self.max_moves < self.survival_threshold:
+            errors.append(
+                "max_moves must be >= survival_threshold "
+                f"(got {self.max_moves} < {self.survival_threshold})"
+            )
         if self.network.num_gamelets != 6:
             errors.append(f"num_gamelets must be 6 (got {self.network.num_gamelets})")
         if self.network.diversity_reward != 10:
@@ -101,14 +106,8 @@ class GameConfig(BaseModel):
         return self
 
 
-def validate_game_config(config_path: Path | str) -> GameConfig:
-    """Load and validate config/game.json against Appendix-F constraints.
-
-    Raises ValueError if any binding constraint is violated.
-    """
-    path = Path(config_path)
-    raw = json.loads(path.read_text(encoding="utf-8"))
-
+def game_config_from_dict(raw: dict) -> GameConfig:
+    """Build the immutable canonical config from the negotiated shared object."""
     board = raw.get("board_and_agents", {})
     movement = raw.get("movement_and_barriers", {})
     world = raw.get("world", {})
@@ -130,3 +129,13 @@ def validate_game_config(config_path: Path | str) -> GameConfig:
         network=NetworkLeagueConfig(**network_raw),
         rate_limiter=RateLimiterConfig(**rate_raw),
     )
+
+
+def validate_game_config(config_path: Path | str) -> GameConfig:
+    """Load and validate config/game.json against Appendix-F constraints.
+
+    Raises ValueError if any binding constraint is violated.
+    """
+    path = Path(config_path)
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    return game_config_from_dict(raw)

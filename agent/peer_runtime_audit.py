@@ -78,28 +78,57 @@ async def do_final_audit(
 
     opp_nonces_raw = resp.get("nonces", {})
     opp_nonces = {int(k): v for k, v in opp_nonces_raw.items()}
-    audit_ok, details = run_final_audit(game_dir, game_id, opponent_role, opp_nonces)
+    audit_ok, details = run_final_audit(
+        game_dir,
+        game_id,
+        opponent_role,
+        opp_nonces,
+        gamelet=max(1, gamelet),
+        authoritative_final_step=last_step,
+    )
     logger.info(f"[PeerRuntime/{role}] Final audit: ok={audit_ok} details={details}")
+
+    if runtime is not None and audit_ok:
+        try:
+            runtime.orchestrator.get_journal(gamelet).seal_nonces(
+                {int(step): payload["nonce"] for step, payload in my_commits.items()},
+                opp_nonces,
+                expected_steps=last_step,
+            )
+        except Exception as exc:
+            details["journal_seal_error"] = str(exc)
+            details["audit_status"] = "FAILED"
+            audit_ok = False
 
     # Create and sign own AuditSummary
     if runtime is not None:
         priv_key = runtime._signing_private_key
         pub_key = runtime._signing_public_key
         signing_key_id = runtime._signing_key_id
+        from agent.mcp.crypto import canonical_domain_state_root, combined_protocol_hash
+
         local_step0 = runtime._local_step0.get(game_id)
+        remote_step0 = runtime._remote_step0.get(game_id)
         declaration_hash = local_step0.declaration.declaration_hash() if local_step0 else ""
-        transcript_root = runtime.orchestrator.get_journal(gamelet).transcript_root()
-        local_final_state_hash = (
-            __import__("hashlib")
-            .sha256(json.dumps(runtime.board.to_dict(), sort_keys=True).encode())
-            .hexdigest()
+        declaration_agreement_hash = getattr(
+            runtime._step0_agreements.get(game_id), "agreement_hash", ""
         )
+        protocol_profile_hash = combined_protocol_hash(
+            getattr(getattr(local_step0, "declaration", None), "adapter_mapping_hash", ""),
+            getattr(getattr(remote_step0, "declaration", None), "adapter_mapping_hash", ""),
+        )
+        transcript_root = runtime.orchestrator.get_journal(gamelet).transcript_root()
+        local_final_state_hash = canonical_domain_state_root(runtime._domain_state, config_sha256)
+        transition = runtime._last_transition_result
     else:
         priv_key, pub_key = generate_key_pair()
         signing_key_id = "legacy-ephemeral"
         declaration_hash = ""
+        declaration_agreement_hash = ""
+        protocol_profile_hash = ""
         transcript_root = ""
         local_final_state_hash = ""
+        transition = None
     pub_hex = pub_key.hex()
     audit_status = details.get("audit_status", "NOT_APPLICABLE")
     my_summary = AuditSummary(
@@ -107,12 +136,21 @@ async def do_final_audit(
         gamelet=gamelet,
         transcript_root=transcript_root,
         declaration_hash=declaration_hash,
+        declaration_agreement_hash=declaration_agreement_hash,
         config_hash=config_sha256,
-        expected_steps=len(load_opponent_commits(game_dir)),
+        protocol_profile_hash=protocol_profile_hash,
+        public_transition_root=(runtime._public_transition_root if runtime is not None else ""),
+        authoritative_final_step=last_step,
+        expected_steps=last_step,
         verified_steps=sum(1 for k, v in details.items() if k.startswith("step_") and v == "ok"),
         audit_status=audit_status,
         mismatch_evidence="" if audit_ok else str(details),
         local_final_state_hash=local_final_state_hash,
+        final_state_root=local_final_state_hash,
+        outcome=(transition.outcome.value if transition is not None else ""),
+        cop_score=(transition.cop_score if transition is not None else 0),
+        thief_score=(transition.thief_score if transition is not None else 0),
+        token_totals={"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
         timestamp_utc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         signing_key_id=signing_key_id,
         public_key_hex=pub_hex,
@@ -143,6 +181,11 @@ async def do_final_audit(
             if runtime is not None:
                 opp_valid = opp_valid and opp_signed.summary.config_hash == config_sha256
                 opp_valid = opp_valid and opp_signed.summary.audit_status == "PASSED"
+                if runtime.counted_mode:
+                    opp_valid = opp_valid and (
+                        opp_signed.summary.consensus_fields_hash()
+                        == my_summary.consensus_fields_hash()
+                    )
             details["opponent_audit_summary_hash"] = opp_signed.summary.summary_hash()
             details["opponent_audit_verified"] = opp_valid
             details["opponent_audit_status"] = opp_signed.summary.audit_status

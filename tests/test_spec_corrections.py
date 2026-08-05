@@ -121,7 +121,9 @@ class TestAuditCompleteness:
 
         game_dir = tmp_path / "game"
         game_dir.mkdir()
-        ok, details = run_final_audit(game_dir, "g001", "thief", {})
+        ok, details = run_final_audit(
+            game_dir, "g001", "thief", {}, gamelet=1, authoritative_final_step=0
+        )
         assert ok is False
         assert details.get("audit_status") == "NOT_APPLICABLE"
 
@@ -134,7 +136,9 @@ class TestAuditCompleteness:
         game_dir = tmp_path / "game"
         game_dir.mkdir()
         (game_dir / "opponent_commitments.json").write_text(json.dumps({"1": "abc123"}))
-        ok, details = run_final_audit(game_dir, "g001", "thief", {})
+        ok, details = run_final_audit(
+            game_dir, "g001", "thief", {}, gamelet=1, authoritative_final_step=1
+        )
         assert ok is False
         assert details.get("audit_status") == "FAILED"
 
@@ -169,7 +173,14 @@ class TestAuditCompleteness:
         (game_dir / "opponent_commitments.json").write_text(json.dumps(commits))
         (game_dir / "opponent_reveals.json").write_text(json.dumps(reveals))
 
-        ok, details = run_final_audit(game_dir, "g001", "thief", {1: nonce})
+        ok, details = run_final_audit(
+            game_dir,
+            "g001",
+            "thief",
+            {1: nonce},
+            gamelet=1,
+            authoritative_final_step=1,
+        )
         assert ok is True
         assert details.get("audit_status") == "PASSED"
 

@@ -38,6 +38,9 @@ class AgentOrchestrator:
         self.mode = mode if mode is not None else RuntimeMode.DEVELOPMENT
         self.work_dir = work_dir
         self.config = config or {}
+        from agent.domain.config_validator import game_config_from_dict
+
+        self.game_config = game_config_from_dict(self.config.get("shared_config", {}))
 
         # Validate mode requirements before instantiating anything
         if self.mode == RuntimeMode.COUNTED:
@@ -216,6 +219,29 @@ class AgentOrchestrator:
             obs_scent = self.scent_fields.thief_observation_scent()
         self.belief_engine = self.belief_engine.predict(barriers).observe_scent(obs_scent, barriers)
 
+    def synchronize_domain_state(self, state: DomainState) -> None:
+        """Mirror canonical dual scent into local observation/belief consumers."""
+        import numpy as np
+
+        from agent.scent import ScentFields
+
+        def normalized(field: list[list[float]]) -> list[list[float]]:
+            return field or [[0.0] * self.grid_size for _ in range(self.grid_size)]
+
+        self.scent_fields = ScentFields(
+            cop_scent=np.asarray(normalized(state.cop_scent), dtype=float),
+            thief_scent=np.asarray(normalized(state.thief_scent), dtype=float),
+            grid_size=self.grid_size,
+        )
+        observed = (
+            self.scent_fields.cop_observation_scent()
+            if self.role == "cop"
+            else self.scent_fields.thief_observation_scent()
+        )
+        self.belief_engine = self.belief_engine.predict(list(state.barriers)).observe_scent(
+            observed, list(state.barriers)
+        )
+
     def get_legal_mask(
         self,
         own_position: tuple[int, int],
@@ -328,13 +354,8 @@ class AgentOrchestrator:
         """
         from agent.domain.transition import apply_joint_action
 
-        result = apply_joint_action(state, cop_action, thief_action)
-        new = result.new_state
-        self.update_scent_and_belief(
-            new.cop_position,
-            new.thief_position,
-            list(new.barriers),
-        )
+        result = apply_joint_action(state, cop_action, thief_action, config=self.game_config)
+        self.synchronize_domain_state(result.new_state)
         return result
 
     def is_counted(self) -> bool:
@@ -409,8 +430,21 @@ class AgentOrchestrator:
         local_move: str = "",
         received_commitment: str = "",
         received_move: str = "",
+        local_nonce: str = "",
+        local_hint: str = "",
+        local_intent: str = "",
+        local_state_hash: str = "",
+        received_hint: str = "",
+        received_intent: str = "",
+        received_state_hash: str = "",
         protocol_state_before: str = "",
         protocol_state_after: str = "",
+        public_transition_root: str = "",
+        state_before_root: str = "",
+        state_after_root: str = "",
+        outcome: str = "",
+        cop_score: int = 0,
+        thief_score: int = 0,
     ) -> str:
         """Append step evidence to journal. Returns new chain hash."""
         import time
@@ -423,11 +457,24 @@ class AgentOrchestrator:
             step=step,
             role=self.role,
             local_commitment=local_commitment,
+            local_nonce=local_nonce,
             local_move=local_move,
+            local_hint=local_hint,
+            local_intent=local_intent,
+            local_state_hash=local_state_hash,
             received_commitment=received_commitment,
             received_move=received_move,
+            received_hint=received_hint,
+            received_intent=received_intent,
+            received_state_hash=received_state_hash,
             protocol_state_before=protocol_state_before,
             protocol_state_after=protocol_state_after,
+            public_transition_root=public_transition_root,
+            state_before_root=state_before_root,
+            state_after_root=state_after_root,
+            outcome=outcome,
+            cop_score=cop_score,
+            thief_score=thief_score,
             timestamp_utc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         )
         journal = self.get_journal(gamelet)

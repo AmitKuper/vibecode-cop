@@ -1191,6 +1191,7 @@ class TestHandlePassiveCommit:
         rt = MagicMock()
         rt.game_id = "g1"
         rt.role = "thief"
+        rt._gamelet_number.return_value = 1
         rt.counted_mode = False
         rt.orchestrator = None
         rt.board = board
@@ -1200,7 +1201,7 @@ class TestHandlePassiveCommit:
         rt._store_my_commit = MagicMock()
 
         message = MagicMock()
-        message.step = 0
+        message.step = 1
         message.h_commit = SHA256
 
         with (
@@ -1224,6 +1225,7 @@ class TestHandlePassiveCommit:
         rt = MagicMock()
         rt.game_id = ""  # not set
         rt.role = "thief"
+        rt._gamelet_number.return_value = 1
         rt.counted_mode = False
         rt.orchestrator = None
         rt.board = board
@@ -1234,7 +1236,7 @@ class TestHandlePassiveCommit:
         rt._store_my_commit = MagicMock()
 
         message = MagicMock()
-        message.step = 0
+        message.step = 1
         message.h_commit = SHA256
 
         with (
@@ -1278,13 +1280,18 @@ class TestHandlePassiveReveal:
 
         rt = MagicMock()
         rt.role = "thief"
+        rt._gamelet_number.return_value = 1
+        rt.game_id = "g1"
+        rt.config_sha256 = "c" * 64
+        rt._public_transition_root = ""
         rt._my_commits = {
-            0: {
+            1: {
                 "h_commit": SHA256,
                 "move": "N",
                 "hint": "going north",
                 "intent": "truth",
                 "state_hash": SHA256,
+                "nonce": "n" * 32,
             }
         }
         rt.orchestrator = None
@@ -1294,7 +1301,7 @@ class TestHandlePassiveReveal:
         rt.max_turns = 35
 
         message = MagicMock()
-        message.step = 0
+        message.step = 1
         message.move = "S"
         message.hint = "hint"
         message.intent = "truth"
@@ -1368,17 +1375,16 @@ class TestPeerAgentRuntime:
 
     def test_on_action_final_audit(self, tmp_path):
         rt = self._make_runtime(tmp_path)
-        rt._peer_runtime._my_commits = {0: {"nonce": "abc123"}}
-        rt._peer_runtime.game_id = "g1"
-        rt._peer_runtime.game_dir = tmp_path
-        rt._peer_runtime.role = "thief"
         message = MagicMock()
         message.phase = "final_audit"
-        message.nonces = {}
-        result = rt._on_action("g1", message)
+        with patch(
+            "agent.peer_agent_runtime.handle_passive_final_audit",
+            return_value={"ok": True, "phase": "final_audit", "nonces": {"1": "abc123"}},
+        ):
+            result = rt._on_action("g1", message)
         assert result["ok"] is True
         assert result["phase"] == "final_audit"
-        assert "0" in result["nonces"]
+        assert "1" in result["nonces"]
 
     def test_on_start_game_thief_init(self, tmp_path):
         rt = self._make_runtime(tmp_path, role="thief")

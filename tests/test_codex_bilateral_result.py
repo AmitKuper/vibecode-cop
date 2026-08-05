@@ -28,8 +28,19 @@ def _audit(gamelet, role_key, game_id, config_hash, status="PASSED"):
         game_uid=game_id,
         gamelet=gamelet,
         transcript_root=f"root-{gamelet}",
+        declaration_agreement_hash=f"agreement-{gamelet}",
         config_hash=config_hash,
+        protocol_profile_hash="profile-hash",
+        public_transition_root=f"public-{gamelet}",
+        authoritative_final_step=10,
+        expected_steps=10,
+        verified_steps=10,
         audit_status=status,
+        final_state_root=f"state-{gamelet}",
+        outcome="cop_win",
+        cop_score=20,
+        thief_score=5,
+        token_totals={"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
         public_key_hex=public.hex(),
     )
     return create_signed_audit_summary(summary, private)
@@ -62,7 +73,17 @@ def test_passive_signs_only_byte_identical_six_gamelet_result():
         counted_mode=False,
     )
     outcomes = [
-        GameletOutcome(i, 20, 5, "cop", 10, transcript_root=f"root-{i}") for i in range(1, 7)
+        GameletOutcome(
+            i,
+            20,
+            5,
+            "cop",
+            10,
+            transcript_root=f"root-{i}",
+            final_state_root=f"state-{i}",
+            public_transition_root=f"public-{i}",
+        )
+        for i in range(1, 7)
     ]
     agreement = ResultAgreement(
         game_uid=series_id,
@@ -213,7 +234,17 @@ def test_counted_result_rejects_gamelet_not_independently_observed():
         _audit(i, passive_key, game_id, config_hash) for i, game_id in enumerate(game_ids, start=1)
     ]
     outcomes = [
-        GameletOutcome(i, 20, 5, "cop", 10, transcript_root=f"root-{i}") for i in range(1, 7)
+        GameletOutcome(
+            i,
+            20,
+            5,
+            "cop",
+            10,
+            transcript_root=f"root-{i}",
+            final_state_root=f"state-{i}",
+            public_transition_root=f"public-{i}",
+        )
+        for i in range(1, 7)
     ]
     observed = {
         game_id: {
@@ -222,6 +253,8 @@ def test_counted_result_rejects_gamelet_not_independently_observed():
             "thief_score": 5,
             "winner": "cop",
             "turns_played": 10,
+            "final_state_root": f"state-{i}",
+            "public_transition_root": f"public-{i}",
         }
         for i, game_id in enumerate(game_ids, start=1)
     }
@@ -247,6 +280,8 @@ def test_counted_result_rejects_gamelet_not_independently_observed():
         thief_total_score=30,
         series_winner="cop",
         counted_status=True,
+        config_hash=config_hash,
+        combined_protocol_profile_hash="profile-hash",
         both_audit_summaries_hash=_audit_bundle_hash(active_audits + passive_audits),
     )
     signed = create_signed_result_agreement(agreement, active_key[0])

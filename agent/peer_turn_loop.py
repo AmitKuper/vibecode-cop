@@ -12,6 +12,7 @@ Phase sequence per turn:
 
 import asyncio
 import logging
+import secrets
 from typing import TYPE_CHECKING
 
 from agent.domain.runtime_transition import (
@@ -21,7 +22,13 @@ from agent.domain.runtime_transition import (
 )
 from agent.language.hint_policy import generate_hint
 from agent.mcp.coordinator import gamelet_from_game_id, get_coordinator
-from agent.mcp.crypto import create_commitment, hash_game_state
+from agent.mcp.crypto import (
+    build_private_state_commitment,
+    build_public_transition_root,
+    canonical_domain_state_root,
+    combined_protocol_hash,
+    create_commitment,
+)
 from agent.peer_audit import append_opponent_commit, append_opponent_reveal
 from agent.peer_turn_helpers import (
     _MOVE_ALIASES,
@@ -39,6 +46,56 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+def build_transition_evidence(runtime, before, transition, cop_move, thief_move, step, gamelet):
+    """Build deterministic public/private roots from the canonical transition."""
+    local_map = getattr(runtime, "_local_step0", {})
+    remote_map = getattr(runtime, "_remote_step0", {})
+    agreement_map = getattr(runtime, "_step0_agreements", {})
+    local_step0 = local_map.get(runtime.game_id) if isinstance(local_map, dict) else None
+    remote_step0 = remote_map.get(runtime.game_id) if isinstance(remote_map, dict) else None
+    agreement = agreement_map.get(runtime.game_id) if isinstance(agreement_map, dict) else None
+    local_profile = getattr(getattr(local_step0, "declaration", None), "adapter_mapping_hash", "")
+    remote_profile = getattr(getattr(remote_step0, "declaration", None), "adapter_mapping_hash", "")
+    profile_hash = combined_protocol_hash(
+        local_profile if isinstance(local_profile, str) else "",
+        remote_profile if isinstance(remote_profile, str) else "",
+    )
+    outcome = transition.outcome.value
+    public_root = build_public_transition_root(
+        game_uid=runtime.game_id,
+        gamelet=max(1, gamelet),
+        step=step,
+        declaration_hash=(
+            agreement.agreement_hash
+            if agreement is not None and isinstance(agreement.agreement_hash, str)
+            else ""
+        ),
+        config_hash=runtime.config_sha256,
+        protocol_hash=profile_hash,
+        public_barriers=list(transition.new_state.barriers),
+        cop_barriers_quota=transition.new_state.cop_barriers_remaining,
+        revealed_cop_move=cop_move,
+        revealed_thief_move=thief_move,
+        previous_transcript_root=(
+            runtime._public_transition_root
+            if isinstance(getattr(runtime, "_public_transition_root", ""), str)
+            else ""
+        ),
+        public_outcome=outcome,
+    )
+    runtime._public_transition_root = public_root
+    return {
+        "public_transition_root": public_root,
+        "state_before_root": canonical_domain_state_root(before, runtime.config_sha256),
+        "state_after_root": canonical_domain_state_root(
+            transition.new_state, runtime.config_sha256
+        ),
+        "outcome": outcome,
+        "cop_score": transition.cop_score,
+        "thief_score": transition.thief_score,
+    }
+
+
 async def run_peer_turn(
     runtime: "PeerRuntime",
     step: int,
@@ -53,7 +110,6 @@ async def run_peer_turn(
     coord = get_coordinator()
 
     board_state = build_board_state(runtime)
-    state_hash = hash_game_state(board_state)
 
     # Advance SM: READY/STEP_VERIFIED → COMPUTING_MOVE
     coord.begin_step(runtime.game_id, gamelet, runtime.role, step)
@@ -133,6 +189,18 @@ async def run_peer_turn(
         intent = "truth"
         hint = generate_hint(move, intent)
 
+    nonce = secrets.token_hex(32)
+    own_position = tuple(
+        runtime.board.cop_position if runtime.role == "cop" else runtime.board.thief_position
+    )
+    state_hash = build_private_state_commitment(
+        own_position=own_position,
+        own_barriers_remaining=(runtime._cop_barriers_remaining if runtime.role == "cop" else 0),
+        local_nonce=nonce,
+        step=step,
+        gamelet=max(1, gamelet),
+        game_uid=runtime.game_id,
+    )
     h_commit, nonce = create_commitment(
         game_id=runtime.game_id,
         step=step,
@@ -141,6 +209,8 @@ async def run_peer_turn(
         move=move,
         hint=hint,
         intent=intent,
+        gamelet=max(1, gamelet),
+        nonce=nonce,
     )
     runtime._store_my_commit(
         step,
@@ -211,6 +281,9 @@ async def run_peer_turn(
     opp_move = _MOVE_ALIASES.get(opp_move_short, opp_move_short)
     cop_move, thief_move = (my_move, opp_move) if runtime.role == "cop" else (opp_move, my_move)
 
+    from agent.domain.runtime_transition import state_from_runtime
+
+    domain_before = state_from_runtime(runtime, rules)
     try:
         transition = apply_runtime_transition(runtime, rules, cop_move, thief_move)
     except IllegalJointActionError as exc:
@@ -221,19 +294,15 @@ async def run_peer_turn(
         logger.info(
             "[PeerTurn] step=%d cop placed barrier at %s", step, transition.barrier_position
         )
-
-    logger.info(
-        f"[PeerTurn] step={step} cop={cop_move} thief={thief_move} "
-        f"cop_pos={runtime.board.cop_position} thief_pos={runtime.board.thief_position}"
+    transition_evidence = build_transition_evidence(
+        runtime, domain_before, transition, cop_move, thief_move, step, gamelet
     )
+
+    logger.info("[PeerTurn] step=%d canonical transition applied", step)
 
     # Wire symmetric scent and belief into AgentOrchestrator after each turn
     if getattr(runtime, "orchestrator", None) is not None:
-        runtime.orchestrator.update_scent_and_belief(
-            tuple(runtime.board.cop_position),
-            tuple(runtime.board.thief_position),
-            [tuple(b) for b in runtime.board.barriers],
-        )
+        runtime.orchestrator.synchronize_domain_state(transition.new_state)
 
     # 5A: Publish SafeLiveView after each turn
     if getattr(runtime, "orchestrator", None) is not None:
@@ -269,8 +338,16 @@ async def run_peer_turn(
                 local_move=move,
                 received_commitment=opp_h_commit,
                 received_move=opp_move_short,
+                local_nonce=nonce,
+                local_hint=hint,
+                local_intent=intent,
+                local_state_hash=state_hash,
+                received_hint=opp_reveal["hint"],
+                received_intent=opp_reveal["intent"],
+                received_state_hash=opp_reveal["state_hash"],
                 protocol_state_before=str(board_state),
                 protocol_state_after=str(build_board_state(runtime)),
+                **transition_evidence,
             )
         except Exception as _journal_err:
             if getattr(runtime, "counted_mode", False):
@@ -279,7 +356,7 @@ async def run_peer_turn(
                 ) from _journal_err
             logger.warning("[PeerTurn] StepJournal write failed at step %d: %s", step, _journal_err)
 
-    outcome = rules.check_game_status()
+    outcome = transition.outcome
     if outcome == GameOutcome.COP_WIN:
         return "cop", None
     if outcome == GameOutcome.THIEF_WIN:
@@ -302,7 +379,6 @@ async def run_peer_turn_loop(
     watchdog_timeout = get_watchdog_timeout()
     try:
         for step in range(1, max_turns + 1):
-            final_step = step
             try:
                 winner, abort_reason = await asyncio.wait_for(
                     run_peer_turn(runtime, step, rules),
@@ -312,12 +388,24 @@ async def run_peer_turn_loop(
                 abort_reason = f"Watchdog timeout at step {step}"
                 logger.error(f"[PeerTurnLoop] {abort_reason}")
                 break
+            final_step = int(runtime.board.turn)
             # 3B: emit heartbeat after each completed step
             if getattr(runtime, "orchestrator", None) is not None:
                 try:
                     runtime.orchestrator.emit_heartbeat(step=step)
                 except Exception as _hb_err:
-                    logger.debug("[PeerTurnLoop] Heartbeat emit failed: %s", _hb_err)
+                    if runtime.counted_mode:
+                        abort_reason = f"counted heartbeat persistence failed: {_hb_err}"
+                        gamelet = gamelet_from_game_id(runtime.game_id)
+                        coord = get_coordinator()
+                        coord.on_technical_loss(
+                            runtime.game_id,
+                            gamelet,
+                            runtime.role,
+                            reason=abort_reason,
+                        )
+                        break
+                    logger.warning("[PeerTurnLoop] Heartbeat emit failed: %s", _hb_err)
             if winner is not None or abort_reason is not None:
                 break
     except Exception as exc:

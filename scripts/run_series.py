@@ -193,6 +193,9 @@ async def run_series(
 
             if winner == "TECHNICAL_LOSS" or not audit_ok:
                 cop_pts = thief_pts = 0
+            elif "cop_score" in result and "thief_score" in result:
+                cop_pts = int(result["cop_score"])
+                thief_pts = int(result["thief_score"])
             elif winner == "cop":
                 cop_pts, thief_pts = capture_cop, capture_thief
             elif winner == "thief":

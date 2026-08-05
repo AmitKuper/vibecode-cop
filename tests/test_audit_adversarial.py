@@ -49,7 +49,7 @@ def _make_evidence(step: int, role: str = "cop") -> StepEvidence:
 def _make_journal(tmp_path: Path, steps: int = 3) -> tuple[StepJournal, Path]:
     p = tmp_path / "journal.json"
     j = StepJournal(str(p))
-    for s in range(steps):
+    for s in range(1, steps + 1):
         j.append(_make_evidence(s))
     return j, p
 
@@ -253,7 +253,7 @@ def test_atomic_write(tmp_path):
     """Journal write should use a tmp file then replace atomically; no .tmp leftover."""
     p = tmp_path / "journal.json"
     j = StepJournal(str(p))
-    j.append(_make_evidence(0))
+    j.append(_make_evidence(1))
 
     # After save, no .tmp file should remain
     tmp_file = Path(str(p) + ".tmp")
@@ -267,7 +267,7 @@ def test_journal_persistence(tmp_path):
 
     # Write
     j1 = StepJournal(str(p))
-    for s in range(4):
+    for s in range(1, 5):
         j1.append(_make_evidence(s))
     root_before = j1.transcript_root()
 

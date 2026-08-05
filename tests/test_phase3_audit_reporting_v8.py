@@ -16,10 +16,21 @@ class TestBilateralAuditSummary:
     def _make_runtime(self, tmp_path):
         from unittest.mock import MagicMock
 
+        from agent.domain.types import DomainState
+
         rt = MagicMock()
         rt.role = "thief"
         rt.game_id = "test-game_g1"
         rt.game_dir = tmp_path
+        rt.counted_mode = False
+        rt.config_sha256 = "c" * 64
+        rt._gamelet_number.return_value = 1
+        rt._local_step0 = {}
+        rt._remote_step0 = {}
+        rt._step0_agreements = {}
+        rt._public_transition_root = ""
+        rt._last_transition_result = None
+        rt._domain_state = DomainState(turn=0, cop_position=(0, 0), thief_position=(3, 3))
         rt._my_commits = {
             1: {
                 "nonce": "nonce-1",
@@ -46,6 +57,7 @@ class TestBilateralAuditSummary:
         rt = self._make_runtime(tmp_path)
         msg = MagicMock()
         msg.nonces = {}
+        msg.step = 0
 
         resp = handle_passive_final_audit(rt, "test-game_g1", msg)
 
@@ -60,6 +72,7 @@ class TestBilateralAuditSummary:
         rt = self._make_runtime(tmp_path)
         msg = MagicMock()
         msg.nonces = {}
+        msg.step = 0
 
         resp = handle_passive_final_audit(rt, "test-game_g1", msg)
 
@@ -76,6 +89,7 @@ class TestBilateralAuditSummary:
         rt = self._make_runtime(tmp_path)
         msg = MagicMock()
         msg.nonces = {}
+        msg.step = 0
 
         resp = handle_passive_final_audit(rt, "test-game_g1", msg)
         signed = SignedAuditSummary.from_dict(json.loads(resp["signed_audit_summary"]))

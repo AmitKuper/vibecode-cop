@@ -67,7 +67,10 @@ champion -> belief/legal mask -> canonical transition`.
 - [x] 2026-08-06 required v11 authority read; exact starting state captured.
 - [x] Frozen install/test/coverage/Ruff/CLI/tournament/real-process baseline.
 - [x] All v11 findings classified; baseline matrix corrected.
-- [ ] M0 commit; [ ] M1; [ ] M2; [ ] M3; [ ] M4; [ ] M5.
+- [x] M0 commit; [x] M1 candidate; [ ] M2 reliability remainder; [ ] M3; [ ] M4; [ ] M5.
+
+M1/M2 candidate validation: cop 1,505 PASS, thief 1,380 PASS, both Ruff
+clean. Clean-tree real-process/replay acceptance follows the coherent commit.
 
 ## 8. Decisions
 

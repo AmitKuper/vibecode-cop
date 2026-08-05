@@ -18,7 +18,6 @@ for the same inputs (verified by cross-repo conformance tests).
 
 from __future__ import annotations
 
-import copy
 import logging
 from dataclasses import dataclass
 
@@ -61,6 +60,8 @@ class TransitionResult:
     barrier_position: tuple[int, int] | None
     capture: bool
     trapped: bool
+    cop_score: int
+    thief_score: int
     error: str | None
 
 
@@ -100,7 +101,8 @@ def apply_joint_action(
     Returns:
         TransitionResult with new state and outcome.
     """
-    max_turns = config.max_moves if config else 35
+    effective_config = config or GameConfig()
+    survival_threshold = effective_config.survival_threshold
     g = state.grid_size
 
     barrier_set = list(state.barriers)
@@ -163,7 +165,8 @@ def apply_joint_action(
             barriers=barrier_set,
             cop_barriers_remaining=cop_barriers_remaining,
             move_history=new_history,
-            scent_grid=copy.deepcopy(state.scent_grid),
+            cop_scent=_update_scent(state.cop_scent, cop_pos, g),
+            thief_scent=_update_scent(state.thief_scent, thief_pos, g),
         )
         return TransitionResult(
             new_state=new_state,
@@ -174,6 +177,8 @@ def apply_joint_action(
             barrier_position=barrier_position,
             capture=True,
             trapped=False,
+            cop_score=effective_config.scoring.capture_cop,
+            thief_score=effective_config.scoring.capture_thief,
             error=None,
         )
 
@@ -234,7 +239,8 @@ def apply_joint_action(
             barriers=barrier_set,
             cop_barriers_remaining=cop_barriers_remaining,
             move_history=new_history,
-            scent_grid=_update_scent(state.scent_grid, new_thief_pos, g),
+            cop_scent=_update_scent(state.cop_scent, new_cop_pos, g),
+            thief_scent=_update_scent(state.thief_scent, new_thief_pos, g),
         )
         return TransitionResult(
             new_state=new_state,
@@ -245,11 +251,13 @@ def apply_joint_action(
             barrier_position=barrier_position,
             capture=True,
             trapped=False,
+            cop_score=effective_config.scoring.capture_cop,
+            thief_score=effective_config.scoring.capture_thief,
             error=error,
         )
 
     # --- 7. Check survival threshold ---
-    if new_turn >= max_turns:
+    if new_turn >= survival_threshold:
         new_state = DomainState(
             turn=new_turn,
             grid_size=g,
@@ -258,7 +266,8 @@ def apply_joint_action(
             barriers=barrier_set,
             cop_barriers_remaining=cop_barriers_remaining,
             move_history=new_history,
-            scent_grid=_update_scent(state.scent_grid, new_thief_pos, g),
+            cop_scent=_update_scent(state.cop_scent, new_cop_pos, g),
+            thief_scent=_update_scent(state.thief_scent, new_thief_pos, g),
         )
         return TransitionResult(
             new_state=new_state,
@@ -269,12 +278,15 @@ def apply_joint_action(
             barrier_position=barrier_position,
             capture=False,
             trapped=False,
+            cop_score=effective_config.scoring.survival_cop,
+            thief_score=effective_config.scoring.survival_thief,
             error=error,
         )
 
     # --- 8. Check trapping (STAY excluded) ---
     trapped = not _has_orthogonal_escape(new_thief_pos, g, barriers_as_tuples)
-    new_scent = _update_scent(state.scent_grid, new_thief_pos, g)
+    new_cop_scent = _update_scent(state.cop_scent, new_cop_pos, g)
+    new_thief_scent = _update_scent(state.thief_scent, new_thief_pos, g)
     new_state = DomainState(
         turn=new_turn,
         grid_size=g,
@@ -283,10 +295,13 @@ def apply_joint_action(
         barriers=barrier_set,
         cop_barriers_remaining=cop_barriers_remaining,
         move_history=new_history,
-        scent_grid=new_scent,
+        cop_scent=new_cop_scent,
+        thief_scent=new_thief_scent,
     )
 
     outcome = GameOutcome.COP_WIN if trapped else GameOutcome.ONGOING
+    cop_score = effective_config.scoring.capture_cop if trapped else 0
+    thief_score = effective_config.scoring.capture_thief if trapped else 0
 
     return TransitionResult(
         new_state=new_state,
@@ -297,6 +312,8 @@ def apply_joint_action(
         barrier_position=barrier_position,
         capture=False,
         trapped=trapped,
+        cop_score=cop_score,
+        thief_score=thief_score,
         error=error,
     )
 

@@ -48,6 +48,7 @@ def create_commitment(
     hint: str,
     intent: str,
     gamelet: int = 1,
+    nonce: str | None = None,
 ) -> tuple[str, str]:
     """Create a commitment hash. Returns (h_commit, nonce).
 
@@ -55,7 +56,9 @@ def create_commitment(
                state_hash, move, hint, intent, nonce}))
     Nonce is withheld from opponent until final_audit.
     """
-    nonce = secrets.token_hex(32)
+    nonce = nonce or secrets.token_hex(32)
+    if len(nonce) < 32:
+        raise ValueError("commitment nonce must contain at least 128 bits")
     commit_payload = {
         "game_id": game_id,
         "gamelet": gamelet,
@@ -208,3 +211,19 @@ def public_transition_hash(
         "previous_transcript_root": previous_transcript_root,
     }
     return hashlib.sha256(canonical_json(payload).encode("utf-8")).hexdigest()
+
+
+def canonical_domain_state_root(state: Any, config_sha256: str) -> str:
+    """Commit to a complete canonical domain state for final-audit replay."""
+    state_payload = state.model_dump(mode="json") if hasattr(state, "model_dump") else state
+    return hashlib.sha256(
+        canonical_json({"config_sha256": config_sha256, "state": state_payload}).encode("utf-8")
+    ).hexdigest()
+
+
+def combined_protocol_hash(*profile_hashes: str) -> str:
+    """Order-independent binding for both peers' locked protocol profiles."""
+    values = sorted(value for value in profile_hashes if value)
+    if not values:
+        return hashlib.sha256(b"native-protocol-profile-v1").hexdigest()
+    return hashlib.sha256(canonical_json(values).encode("utf-8")).hexdigest()
