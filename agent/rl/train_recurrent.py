@@ -21,7 +21,13 @@ from agent.rl.local_obs_adapter import local_obs_to_tensor, obs_tensor_shape
 from agent.rl.recurrent_policy import RecurrentActorCritic, file_sha256
 from agent.scent import ScentFields
 
-FAMILIES = ("random", "pursuit_evasion", "wall", "adversarial")
+FAMILIES = (
+    "random",
+    "pursuit_evasion",
+    "wall",
+    "adversarial",
+    "historical_checkpoint",
+)
 
 
 def _initial_state(rng: random.Random, random_start: bool = True) -> DomainState:
@@ -65,8 +71,41 @@ def _distance(state: DomainState) -> int:
     )
 
 
-def _opponent_action(state: DomainState, role: str, family: str, rng: random.Random) -> str:
+def _opponent_action(
+    state: DomainState,
+    role: str,
+    family: str,
+    rng: random.Random,
+    historical_policy=None,
+    opponent_scent: list[list[float]] | None = None,
+) -> str:
     legal = _legal(state, role)
+    if family == "historical_checkpoint":
+        if historical_policy is None:
+            raise RuntimeError("historical-checkpoint opponent was not loaded")
+        from agent.board import Board
+        from agent.rules_engine import RulesEngine
+
+        board = Board(
+            cop_position=list(state.cop_position),
+            thief_position=list(state.thief_position),
+            turn=state.turn,
+            barriers=[list(item) for item in state.barriers],
+            grid_size=state.grid_size,
+        )
+        rules = RulesEngine(board, max_turns=35)
+        rules._scent_grid = [row[:] for row in state.scent_grid]
+        historical_policy.barriers_remaining = state.cop_barriers_remaining
+        observation = historical_policy._build_obs(
+            board,
+            rules,
+            cop_scent_field=opponent_scent if role == "thief" else None,
+        )
+        action_index, _log_prob, _value = historical_policy.select_action(
+            observation, training=False
+        )
+        action = (COP_ACTIONS if role == "cop" else THIEF_ACTIONS)[action_index]
+        return action if action in legal else legal[0]
     if family == "random":
         return rng.choice(legal)
     if family == "wall":
@@ -169,6 +208,7 @@ def _run_episode(
     training: bool,
     random_start: bool,
     expert_probability: float = 0.0,
+    historical_policy=None,
 ) -> tuple[list, str, int]:
     state = _initial_state(rng, random_start)
     scent = ScentFields.zeros(7)
@@ -190,7 +230,19 @@ def _run_episode(
         action_index = torch.tensor(expert_index) if use_expert else policy_index
         action = (COP_ACTIONS if role == "cop" else THIEF_ACTIONS)[int(action_index)]
         opponent_role = "thief" if role == "cop" else "cop"
-        opponent = _opponent_action(state, opponent_role, family, rng)
+        opponent_scent = (
+            scent.thief_observation_scent()
+            if opponent_role == "thief"
+            else scent.cop_observation_scent()
+        )
+        opponent = _opponent_action(
+            state,
+            opponent_role,
+            family,
+            rng,
+            historical_policy=historical_policy,
+            opponent_scent=opponent_scent,
+        )
         cop_action, thief_action = (action, opponent) if role == "cop" else (opponent, action)
         previous_distance = _distance(state)
         result = apply_joint_action(state, cop_action, thief_action)
@@ -226,7 +278,7 @@ def _run_episode(
 
 
 def _collect_demonstrations(
-    role: str, rng: random.Random, episodes: int
+    role: str, rng: random.Random, episodes: int, historical_policy
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """Collect strictly local-observation labels from the belief expert."""
     features: list[torch.Tensor] = []
@@ -247,7 +299,19 @@ def _collect_demonstrations(
             action = _belief_expert_action(own_position, role, belief, legal)
             features.append(observation)
             labels.append(actions.index(action))
-            opponent = _opponent_action(state, opponent_role, family, rng)
+            opponent_scent = (
+                scent.thief_observation_scent()
+                if opponent_role == "thief"
+                else scent.cop_observation_scent()
+            )
+            opponent = _opponent_action(
+                state,
+                opponent_role,
+                family,
+                rng,
+                historical_policy=historical_policy,
+                opponent_scent=opponent_scent,
+            )
             cop_action, thief_action = (action, opponent) if role == "cop" else (opponent, action)
             result = apply_joint_action(state, cop_action, thief_action)
             state = result.new_state
@@ -266,11 +330,12 @@ def _pretrain_imitation(
     network: RecurrentActorCritic,
     role: str,
     rng: random.Random,
+    historical_policy,
     demonstration_episodes: int = 240,
     updates: int = 600,
 ) -> None:
     """Warm-start the recurrent network on local-only expert demonstrations."""
-    features, labels = _collect_demonstrations(role, rng, demonstration_episodes)
+    features, labels = _collect_demonstrations(role, rng, demonstration_episodes, historical_policy)
     optimizer = torch.optim.Adam(network.parameters(), lr=1e-3)
     network.train()
     batch_size = min(128, len(labels))
@@ -284,14 +349,20 @@ def _pretrain_imitation(
         optimizer.step()
 
 
-def train(role: str, episodes: int, seed: int, hidden_size: int) -> RecurrentActorCritic:
+def train(
+    role: str,
+    episodes: int,
+    seed: int,
+    hidden_size: int,
+    historical_policy,
+) -> RecurrentActorCritic:
     torch.manual_seed(seed)
     np.random.seed(seed)
     rng = random.Random(seed)
     network = RecurrentActorCritic(
         obs_tensor_shape(7), len(COP_ACTIONS if role == "cop" else THIEF_ACTIONS), hidden_size
     )
-    _pretrain_imitation(network, role, rng)
+    _pretrain_imitation(network, role, rng, historical_policy)
     optimizer = torch.optim.Adam(network.parameters(), lr=3e-4)
     for episode in range(episodes):
         family = FAMILIES[episode % len(FAMILIES)]
@@ -305,6 +376,7 @@ def train(role: str, episodes: int, seed: int, hidden_size: int) -> RecurrentAct
             training=True,
             random_start=True,
             expert_probability=expert_probability,
+            historical_policy=historical_policy,
         )
         returns = []
         total = 0.0
@@ -347,37 +419,94 @@ def _wilson(wins: int, games: int) -> list[float]:
     return [max(0.0, center - margin), min(1.0, center + margin)]
 
 
-def evaluate(network, role: str, games_per_family: int, seed: int) -> dict:
+def evaluate(
+    network,
+    role: str,
+    series_per_family: int,
+    seed: int,
+    historical_policy,
+) -> dict:
+    """Run held-out tournaments composed only of exact six-gamelet series."""
     families = {}
-    total_wins = total_games = total_turns = 0
+    total_wins = total_games = total_turns = total_series_wins = 0
+    total_role_score = total_opponent_score = 0
     start = time.perf_counter()
     for family_index, family in enumerate(FAMILIES):
         rng = random.Random(seed + 10_000 + family_index)
-        wins = turns = 0
-        for _ in range(games_per_family):
-            _trajectory, winner, length = _run_episode(
-                network, role, family, rng, training=False, random_start=True
+        wins = turns = series_wins = family_role_score = family_opponent_score = 0
+        series_results = []
+        for series_index in range(series_per_family):
+            series_role_score = series_opponent_score = series_gamelet_wins = 0
+            for _gamelet in range(6):
+                _trajectory, winner, length = _run_episode(
+                    network,
+                    role,
+                    family,
+                    rng,
+                    training=False,
+                    random_start=True,
+                    historical_policy=historical_policy,
+                )
+                won = winner == role
+                wins += int(won)
+                series_gamelet_wins += int(won)
+                turns += length
+                if role == "cop":
+                    role_score, opponent_score = (20, 5) if won else (5, 10)
+                else:
+                    role_score, opponent_score = (10, 5) if won else (5, 20)
+                series_role_score += role_score
+                series_opponent_score += opponent_score
+            series_won = series_role_score > series_opponent_score
+            series_wins += int(series_won)
+            family_role_score += series_role_score
+            family_opponent_score += series_opponent_score
+            series_results.append(
+                {
+                    "series": series_index + 1,
+                    "gamelet_wins": series_gamelet_wins,
+                    "role_score": series_role_score,
+                    "opponent_score": series_opponent_score,
+                    "series_won": series_won,
+                }
             )
-            wins += winner == role
-            turns += length
+        games = series_per_family * 6
         families[family] = {
-            "games": games_per_family,
+            "series": series_per_family,
+            "games": games,
             "wins": wins,
-            "win_rate": wins / games_per_family,
-            "confidence_95": _wilson(wins, games_per_family),
-            "average_turns": turns / games_per_family,
+            "win_rate": wins / games,
+            "confidence_95": _wilson(wins, games),
+            "series_wins": series_wins,
+            "series_win_rate": series_wins / series_per_family,
+            "series_confidence_95": _wilson(series_wins, series_per_family),
+            "official_role_score": family_role_score,
+            "official_opponent_score": family_opponent_score,
+            "average_turns": turns / games,
+            "series_results": series_results,
         }
         total_wins += wins
-        total_games += games_per_family
+        total_games += games
         total_turns += turns
+        total_series_wins += series_wins
+        total_role_score += family_role_score
+        total_opponent_score += family_opponent_score
     elapsed = time.perf_counter() - start
+    total_series = series_per_family * len(FAMILIES)
     return {
         "role": role,
+        "held_out_series": total_series,
         "held_out_games": total_games,
         "wins": total_wins,
         "win_rate": total_wins / total_games,
         "confidence_95": _wilson(total_wins, total_games),
+        "series_wins": total_series_wins,
+        "series_win_rate": total_series_wins / total_series,
+        "series_confidence_95": _wilson(total_series_wins, total_series),
+        "official_role_score": total_role_score,
+        "official_opponent_score": total_opponent_score,
         "worst_family_win_rate": min(item["win_rate"] for item in families.values()),
+        "worst_family_series_win_rate": min(item["series_win_rate"] for item in families.values()),
         "average_turns": total_turns / total_games,
         "average_inference_and_environment_ms": elapsed * 1000 / max(total_turns, 1),
         "technical_failures": 0,
@@ -389,15 +518,26 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--role", choices=("cop", "thief"), required=True)
     parser.add_argument("--episodes", type=int, default=1200)
-    parser.add_argument("--eval-games-per-family", type=int, default=60)
+    parser.add_argument("--eval-series-per-family", type=int, default=20)
     parser.add_argument("--seed", type=int, default=20260805)
     parser.add_argument("--hidden-size", type=int, default=128)
     parser.add_argument("--models-dir", type=Path, default=Path("models"))
     parser.add_argument("--evidence-dir", type=Path, default=Path("results"))
+    parser.add_argument("--historical-checkpoint", type=Path, required=True)
     args = parser.parse_args()
     args.models_dir.mkdir(parents=True, exist_ok=True)
     args.evidence_dir.mkdir(parents=True, exist_ok=True)
-    network = train(args.role, args.episodes, args.seed, args.hidden_size)
+    from agent.rl.policy_loader import load_checkpoint
+
+    opponent_role = "thief" if args.role == "cop" else "cop"
+    historical_policy = load_checkpoint(args.historical_checkpoint, opponent_role, max_steps=35)
+    network = train(
+        args.role,
+        args.episodes,
+        args.seed,
+        args.hidden_size,
+        historical_policy,
+    )
     artifact_name = f"{args.role}_recurrent_champion.pt"
     artifact = args.models_dir / artifact_name
     torch.save(
@@ -412,10 +552,18 @@ def main() -> None:
         },
         artifact,
     )
-    evaluation = evaluate(network, args.role, args.eval_games_per_family, args.seed)
+    evaluation = evaluate(
+        network,
+        args.role,
+        args.eval_series_per_family,
+        args.seed,
+        historical_policy,
+    )
     evaluation["artifact_sha256"] = file_sha256(artifact)
     evaluation["training_episodes"] = args.episodes
     evaluation["training_opponents"] = list(FAMILIES)
+    evaluation["historical_checkpoint"] = str(args.historical_checkpoint)
+    evaluation["historical_checkpoint_sha256"] = file_sha256(args.historical_checkpoint)
     evaluation["demonstration_episodes"] = 240
     evaluation["imitation_updates"] = 600
     evaluation["training_method"] = "local-belief BC warm start + recurrent A2C"

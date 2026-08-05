@@ -13,7 +13,10 @@ secrets/
 *.token.json
 .env
 .env.local
-models/
+models/*
+!models/MANIFEST.json
+!models/cop_recurrent_champion.pt
+!models/thief_ppo_best.pt
 agent/skills/game_*.py
 cop/games/
 thief/games/
