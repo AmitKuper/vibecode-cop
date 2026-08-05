@@ -1,10 +1,26 @@
 # TODO — vibecode-cop Development Checklist
 
-Last updated: 2026-07-30
+Last updated: 2026-08-05
 
 ---
 
-## Completed ✅
+## Codex Stage B/C — ✅ Complete
+
+Verified source commit: `b9f672381fb3c456a0a6fdb3f99a113750333548`
+
+Final readiness evidence commit: `037f5b675a65999586dff85e2b6599dcdb9cb667`
+
+- [x] Fail-closed counted CLI and sole AgentOrchestrator composition.
+- [x] Signed Step-0, adaptive profile, canonical turns, audit/result, reciprocal
+  ledgers, token totals, and independent Gatekeeper paths.
+- [x] Checksum-bound recurrent cop champion and paired tournament promotion.
+- [x] Strict verifier: 11/11 code gates PASS; no failures or accepted skips.
+- [x] Full pytest: cop 1,467; thief 1,340; branch coverage 85.8130% / 85.1753%.
+- [x] Real two-process six-gamelet series `series_20260805_064801_ea4d7c38`.
+- [x] Final reports, 55-rule trace, manifests, score JSON, ExecPlan, and ledger.
+- [x] Cost ledger, sensitivity notebook, and counted-lifecycle architecture asset.
+
+## Historical completed phases
 
 ### Phase 1: Board + Rules Engine ✅
 - [x] 7×7 board, orthogonal movement, barriers (`agent/board.py`)
@@ -25,7 +41,7 @@ Last updated: 2026-07-30
 - [x] CrewAI GameManager + StrategyAgent crew (`agent/orchestrator_crew.py`)
 - [x] Orchestrator phase management (`agent/orchestrator_phase.py`)
 - [x] Game-level orchestration (`agent/orchestrator_game.py`)
-- [x] LLM fallback for cold start (no RL model required)
+- [x] LLM fallback for development/warmup cold start; counted mode requires RL
 
 ### Phase 4: P2P Runtime ✅
 - [x] `PeerRuntime` — no central judge; cop verifies thief locally (`agent/peer_runtime.py`)
@@ -68,7 +84,7 @@ Last updated: 2026-07-30
 - [x] Minimum values enforced (max_barriers, max_moves)
 - [x] `[reports]` section forbidden in shared config
 
-### Phase 9: Tests (121 passing) ✅
+### Phase 9: Historical Test Baseline ✅
 - [x] `tests/test_shared_config_contract.py` (19 tests) — SHA-256 config lock
 - [x] `tests/test_peer_runtime_no_central_judge.py` (32 tests) — P2P invariants
 - [x] `tests/test_replay_audit.py` (8 tests) — tamper detection
@@ -83,7 +99,8 @@ Last updated: 2026-07-30
 - [x] `tests/test_report_uses_authoritative_files.py` (1 test)
 - [x] `tests/test_gmail_config_driven.py`
 - [x] `tests/test_compliance.py`
-- [x] Total: 121 tests, all passing (2 skipped for live network only)
+- [x] Superseded final totals: cop 1,467; thief 1,340; zero skipped
+- [x] Final branch coverage: cop 85.8130%; thief 85.1753%
 
 ### Phase 10: Docs + Submission ✅
 - [x] `README.md` — quick start, architecture, runbook
@@ -91,6 +108,8 @@ Last updated: 2026-07-30
 - [x] `PLAN.md` — C4 model, MCP sequence diagrams, strategy flowchart
 - [x] `TODO.md` — this file
 - [x] `docs/PRD_agent.md`, `docs/PRD_rl.md`, `docs/rules.md`
+- [x] `docs/cost.md` and `notebooks/cost_sensitivity.ipynb`
+- [x] `assets/counted_lifecycle.svg` architecture diagram
 - [x] `scripts/replay_viewer.py` — offline audit CLI
 - [x] `config.toml.example` and `.env.example` (no secrets committed)
 - [x] `pyproject.toml` with all dependencies pinned
@@ -100,6 +119,8 @@ Last updated: 2026-07-30
 ## Open Items
 
 - [ ] **Public tunnel match**: Not yet tested against an opponent over a public tunnel (ngrok/cloudflare). The P2P runtime is implemented and tested locally; live cross-network match is pending.
-- [ ] **Jupyter notebooks**: Cost-analysis and sensitivity notebooks not yet submitted.
-- [ ] **Architecture diagram images**: C4 diagrams are text-only; PNG renders not yet generated.
+- [x] **Jupyter notebook**: Cost and sensitivity analysis is tracked.
+- [x] **Architecture diagram**: Counted lifecycle SVG is tracked.
 - [ ] **Gmail live send**: Integration tested via `dry_run`/`draft` modes. A live `send` requires active `credentials.json`; documented in README runbook.
+- [ ] **Course identity and submission**: real group ID, official PDF/screenshots,
+  individual Moodle submissions, and pushed final tags remain EXTERNAL_PENDING.

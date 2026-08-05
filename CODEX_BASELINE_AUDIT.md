@@ -133,4 +133,3 @@ IDs, real group ID, unchanged-layout Moodle PDF, individual submissions, real-ma
 screenshots, and pushing the final annotated tags are `EXTERNAL_PENDING`. Local
 subprocess, transport fixture, tournament, fake-Gmail, model, replay, Watchdog,
 secret, coverage, and documentation gates are code-verifiable and are not external.
-

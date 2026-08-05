@@ -70,4 +70,3 @@ evidence; the strict verifier re-runs that evidence with no accepted skips.
 This is a code-readiness trace, not proof of completed external course actions.
 Real Gmail, public/outside matches, the final pushed tag, actual group identity,
 and Moodle evidence remain pending until genuine artifacts exist.
-

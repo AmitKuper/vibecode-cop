@@ -30,7 +30,9 @@ Each agent observes ONLY:
 
 Hidden: opponent true position. `build_local_observation()` enforces this.
 
-## Runtime Modes
+## Quick Start
+
+### Runtime Modes
 
 ```bash
 # Development (heuristic fallback is explicit and permitted)
@@ -95,3 +97,52 @@ failed code-verifiable gate makes the verifier fail.
 
 Local fake-Gmail output and localhost transport are acceptance evidence only; they
 are never presented as real Gmail or public-network evidence.
+
+## Configuration
+
+- `config/game.json`: byte-identical canonical game and scoring values.
+- `cop/config.toml`: role-local runtime, model, reporting, and timeout settings.
+- `models/MANIFEST.json`: selected recurrent champion, checksum, schemas, and inference mode.
+- Environment: `GROUP_ID` and runtime secrets are supplied outside Git. Gmail OAuth
+  credentials remain local and must request only `gmail.send`.
+- `--peer-url`: the thief MCP endpoint. Counted mode locks the negotiated profile
+  before the first commitment.
+
+## Module Reference
+
+- `agent/role_cli.py`: package CLI and counted dependency preflight.
+- `agent/agent_orchestrator.py`: sole counted subsystem composition root.
+- `agent/adaptive/`: pre-game discovery, semantic mapping, conformance, and
+  deterministic gameplay adaptation.
+- `agent/domain/transition.py`: canonical authority for every physical action.
+- `agent/rl/recurrent_policy.py`: checksum-verified inference and legal mask.
+- `agent/peer_runtime*.py`: P2P lifecycle, audit, result, ledger, and reporting.
+- `scripts/verify_100_readiness.py`: strict cross-repository release verifier.
+
+## Troubleshooting
+
+- **Counted mode rejects the worktree:** commit or intentionally remove local changes;
+  counted provenance requires a clean, resolvable Git HEAD.
+- **Champion fails to load:** run `uv sync --frozen` and compare the artifact
+  SHA-256 with `models/MANIFEST.json`; counted mode never substitutes a heuristic.
+- **Peer negotiation fails:** confirm the peer URL exposes SSE/MCP tools and inspect
+  the incompatibility report; rejection before commitment is intentional.
+- **Gmail fails:** keep send-only OAuth files outside Git. The fake-outbox option is
+  local acceptance only and never evidence of real delivery.
+- **A series aborts:** preserve both logs/audits and inspect the stable opponent's
+  league entry before attempting another counted match.
+
+## Project Structure
+
+```text
+agent/       orchestration, protocol, domain, RL, audit, reliability, reporting
+cop/         role package CLI
+config/      canonical and role-independent configuration
+models/      tracked selected champion manifest and artifact
+tests/       unit, integration, hostile, and production-lifecycle evidence
+scripts/     series, evaluation, Gmail, replay, and strict verification tools
+docs/        requirements, plans, ledger, cost, and external-action records
+notebooks/   reproducible cost and sensitivity analysis
+assets/      architecture and sample/replay visuals
+results/     tournament and executable score evidence
+```
