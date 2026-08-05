@@ -156,8 +156,32 @@ def _verify_artifacts(output: Path, cop_sha: str, thief_sha: str) -> dict:
     peer_ledgers = list((output / "thief").rglob("league_ledger.json"))
     if len(ledgers) != 1 or len(peer_ledgers) != 1:
         raise RuntimeError("expected one independent league ledger per process")
-    if _sha256(ledgers[0]) != _sha256(peer_ledgers[0]):
-        raise RuntimeError("independent league ledgers differ")
+    cop_entries = json.loads(ledgers[0].read_text(encoding="utf-8")).get("entries", [])
+    thief_entries = json.loads(peer_ledgers[0].read_text(encoding="utf-8")).get("entries", [])
+    if len(cop_entries) != 1 or len(thief_entries) != 1:
+        raise RuntimeError("expected one counted ledger entry per role")
+    cop_entry, thief_entry = cop_entries[0], thief_entries[0]
+    if cop_entry.get("opponent_id") != "THIF1234":
+        raise RuntimeError("cop ledger does not identify the independent thief peer")
+    if thief_entry.get("opponent_id") != "COPP1234":
+        raise RuntimeError("thief ledger does not identify the independent cop peer")
+    shared_fields = (
+        "match_id",
+        "counted",
+        "declaration_hash",
+        "result_hash",
+        "timestamp_utc",
+        "both_result_signatures",
+        "report_delivery_ids",
+        "previous_entry_hash",
+    )
+    cop_consensus = {key: cop_entry.get(key) for key in shared_fields}
+    thief_consensus = {key: thief_entry.get(key) for key in shared_fields}
+    if cop_consensus != thief_consensus:
+        raise RuntimeError("independent league ledgers disagree on shared match facts")
+    ledger_consensus_sha256 = hashlib.sha256(
+        json.dumps(cop_consensus, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
 
     cop_mail = (output / "cop_fake_gmail.jsonl").read_text(encoding="utf-8").splitlines()
     thief_mail = (output / "thief_fake_gmail.jsonl").read_text(encoding="utf-8").splitlines()
@@ -183,7 +207,9 @@ def _verify_artifacts(output: Path, cop_sha: str, thief_sha: str) -> dict:
         "active_artifact_sha256": _sha256(active_path),
         "passive_artifact": str(passive_path),
         "passive_artifact_sha256": _sha256(passive_path),
-        "ledger_sha256": _sha256(ledgers[0]),
+        "cop_ledger_sha256": _sha256(ledgers[0]),
+        "thief_ledger_sha256": _sha256(peer_ledgers[0]),
+        "ledger_consensus_sha256": ledger_consensus_sha256,
         "fake_gmail_records": 2,
         "real_gmail_status": "EXTERNAL_PENDING",
         "public_nonce_value_keys": 0,

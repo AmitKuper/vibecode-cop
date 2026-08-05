@@ -312,7 +312,7 @@ def check_two_process() -> str:
             raise RuntimeError(f"invalid two-process evidence: {payload}")
         return (
             f"series={payload['series_id']}, gamelets=6, agreement={payload['agreement_hash']}, "
-            f"ledger={payload['ledger_sha256']}"
+            f"ledger_consensus={payload['ledger_consensus_sha256']}"
         )
 
 
