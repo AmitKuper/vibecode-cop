@@ -412,6 +412,9 @@ def train(
     hidden_size: int,
     historical_policy,
     resume_checkpoint: dict | None = None,
+    resume_learning_rate: float = 3e-4,
+    resume_expert_probability: float = 0.0,
+    resume_imitation_weight: float = 0.0,
 ) -> RecurrentActorCritic:
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -432,14 +435,15 @@ def train(
             int(resume_checkpoint["hidden_size"]),
         )
         network.load_state_dict(resume_checkpoint["state_dict"])
-    optimizer = torch.optim.Adam(network.parameters(), lr=3e-4)
+    learning_rate = resume_learning_rate if resume_checkpoint is not None else 3e-4
+    optimizer = torch.optim.Adam(network.parameters(), lr=learning_rate)
     for episode in range(episodes):
         schedule = THIEF_TRAINING_SCHEDULE if role == "thief" else FAMILIES
         family = schedule[episode % len(schedule)]
         progress = episode / max(episodes - 1, 1)
         if resume_checkpoint is not None:
-            expert_probability = 0.0
-            imitation_weight = 0.0
+            expert_probability = resume_expert_probability
+            imitation_weight = resume_imitation_weight
         elif role == "thief":
             expert_probability = max(0.0, 0.60 * (1.0 - 2.0 * progress))
             imitation_weight = max(0.0, 1.0 - 1.5 * progress)
@@ -672,6 +676,9 @@ def main() -> None:
     parser.add_argument("--inference-temperature", type=float, default=0.0)
     parser.add_argument("--evaluate-only-artifact", type=Path)
     parser.add_argument("--resume-artifact", type=Path)
+    parser.add_argument("--resume-learning-rate", type=float, default=3e-4)
+    parser.add_argument("--resume-expert-probability", type=float, default=0.0)
+    parser.add_argument("--resume-imitation-weight", type=float, default=0.0)
     args = parser.parse_args()
     args.models_dir.mkdir(parents=True, exist_ok=True)
     args.evidence_dir.mkdir(parents=True, exist_ok=True)
@@ -709,6 +716,9 @@ def main() -> None:
             args.hidden_size,
             historical_policy,
             resume_checkpoint,
+            args.resume_learning_rate,
+            args.resume_expert_probability,
+            args.resume_imitation_weight,
         )
         artifact_name = f"{args.role}_recurrent_champion.pt"
         artifact = args.models_dir / artifact_name
@@ -758,6 +768,12 @@ def main() -> None:
     evaluation["training_method"] = "local-belief BC warm start + recurrent A2C"
     if not args.evaluate_only_artifact:
         evaluation["resumed_from_sha256"] = resumed_from_sha256
+        if args.resume_artifact:
+            evaluation["resume_hyperparams"] = {
+                "learning_rate": args.resume_learning_rate,
+                "expert_probability": args.resume_expert_probability,
+                "imitation_weight": args.resume_imitation_weight,
+            }
     evaluation["strongest_heuristic_baseline"] = heuristic_baseline
     evaluation["promotion_gate"] = promotion
     evidence = args.evidence_dir / f"{args.role}_held_out_tournament.json"
