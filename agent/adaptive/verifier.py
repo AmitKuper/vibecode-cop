@@ -40,8 +40,10 @@ class StaticSemanticVerifier:
         warnings: list[str] = []
 
         # 1. Verdict check
-        if plan.verdict == CompatibilityVerdict.INCOMPATIBLE:
-            errors.append(f"Plan verdict is INCOMPATIBLE: {plan.capability_gaps}")
+        if plan.verdict != CompatibilityVerdict.COMPATIBLE:
+            errors.append(f"Plan verdict is {plan.verdict.value}: {plan.capability_gaps}")
+        if plan.capability_gaps:
+            errors.append(f"Unresolved capability gaps: {plan.capability_gaps}")
 
         # 2. All required phases mapped
         if not plan.has_required_phases():
@@ -60,6 +62,23 @@ class StaticSemanticVerifier:
             )
             if not has_commitment and not signed_envelope:
                 errors.append("commit phase has no commitment field — cannot bind commit-reveal")
+
+        # 3B. Each security-critical phase must carry its semantic payload or a
+        # complete signed canonical envelope.
+        required_by_phase = {
+            "start_game": {"game_id", "role"},
+            "commit": {"game_id", "step", "role", "commitment"},
+            "reveal": {"game_id", "step", "role", "move"},
+            "final_audit": {"game_id", "role", "nonces"},
+            "game_end": {"game_id", "role"},
+            "result_agreement": {"game_id", "role"},
+        }
+        for pm in plan.phase_mappings:
+            fields = {fm.canonical_field for fm in pm.field_mappings}
+            signed_envelope = fields.issuperset({"message_json", "signature"})
+            missing = required_by_phase.get(pm.phase, set()) - fields
+            if missing and not signed_envelope:
+                errors.append(f"{pm.phase} cannot transport required fields: {sorted(missing)}")
 
         # 4. Nonce must NOT appear in commit or reveal phases (only final_audit)
         for pm in plan.phase_mappings:
@@ -81,7 +100,7 @@ class StaticSemanticVerifier:
                 if fm.canonical_field in protected and (
                     fm.transform not in ("identity", "rename") and fm.transform != ""
                 ):
-                    warnings.append(
+                    errors.append(
                         f"Protected field {fm.canonical_field!r} has non-identity "
                         f"transform {fm.transform!r} in phase {pm.phase!r}"
                     )
@@ -92,7 +111,7 @@ class StaticSemanticVerifier:
 
         # 7. Low confidence warning
         if plan.confidence < 0.7:
-            warnings.append(f"Low mapping confidence: {plan.confidence:.2f}")
+            errors.append(f"Low mapping confidence: {plan.confidence:.2f}")
 
         passed = len(errors) == 0
         if not passed:

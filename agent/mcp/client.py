@@ -4,8 +4,9 @@ import asyncio
 import logging
 
 from fastmcp import Client
-from fastmcp.client.transports import SSETransport
+from fastmcp.client.transports import SSETransport, StdioTransport, StreamableHttpTransport
 
+from agent.adaptive.transport_probe import normalize_mcp_base_url
 from agent.mcp.crypto import canonical_json, sign_message
 from agent.mcp.messages import ActionMessage, StartGameMessage
 
@@ -32,8 +33,21 @@ class GameMCPClient:
         self.secret = secret
         self.timeout = timeout_seconds
         # SSE transport connects to /sse endpoint
-        sse_url = peer_url.rstrip("/").replace("/mcp", "") + "/sse"
+        sse_url = normalize_mcp_base_url(peer_url) + "/sse"
         self._transport = SSETransport(sse_url)
+
+    def configure_transport(
+        self, transport: str, endpoint: str, stdio_command: tuple[str, ...] = ()
+    ) -> None:
+        """Use the exact endpoint selected by pre-game transport discovery."""
+        if transport == "sse":
+            self._transport = SSETransport(endpoint)
+        elif transport == "streamable_http":
+            self._transport = StreamableHttpTransport(endpoint)
+        elif transport == "stdio" and stdio_command:
+            self._transport = StdioTransport(stdio_command[0], list(stdio_command[1:]))
+        else:
+            raise ValueError(f"Unsupported remote gameplay transport: {transport}")
 
     async def start_game(self, msg: StartGameMessage) -> dict:
         """Call opponent's start_game tool.
@@ -120,11 +134,13 @@ class GameMCPClient:
 
                     item = result.content[0]
                     text = item.text if hasattr(item, "text") else str(item)
+                    if getattr(result, "is_error", False) is True:
+                        return {"ok": False, "error": text}
                     try:
                         return json.loads(text)
                     except (json.JSONDecodeError, TypeError):
                         return {"ok": True, "raw": text}
-                return {"ok": True}
+                return {"ok": getattr(result, "is_error", False) is not True}
 
         except Exception as e:
             logger.error(f"MCP call to {tool_name} failed: {e}")

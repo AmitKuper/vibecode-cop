@@ -96,7 +96,20 @@ def check_dependencies() -> str:
         require_success(sync, f"{role} uv sync --frozen")
         lock = run(["uv", "lock", "--check"], repo, 120)
         require_success(lock, f"{role} uv lock --check")
-        evidence.append(f"{role}=sync+lock")
+        isolated = run(
+            [
+                "uv",
+                "run",
+                "--isolated",
+                "python",
+                "-c",
+                "import numpy, torch; assert torch.__version__ and numpy.__version__",
+            ],
+            repo,
+            900,
+        )
+        require_success(isolated, f"{role} isolated production dependency import")
+        evidence.append(f"{role}=sync+lock+isolated-torch")
     return ", ".join(evidence)
 
 
@@ -111,6 +124,8 @@ def _coverage_omission_check(repo: Path) -> None:
         "agent/reliability",
         "agent/reports/gmail",
         "agent/rl/recurrent",
+        "agent/rl/train*.py",
+        "agent/rl/strategies*.py",
     )
     present = [item for item in forbidden if item in config]
     if present:
@@ -212,7 +227,7 @@ def check_models() -> str:
             f"p=load_recurrent_policy(r'{manifest_path}', r'{role}'); "
             "assert p.network.training is False"
         )
-        loaded = run(["uv", "run", "python", "-c", code], repo, 180)
+        loaded = run(["uv", "run", "--isolated", "python", "-c", code], repo, 900)
         require_success(loaded, f"{role} checksum/inference load")
         evidence.append(f"{role}={actual}")
     if len(config_hashes) != 1:
@@ -220,49 +235,122 @@ def check_models() -> str:
     return "; ".join(evidence)
 
 
-def check_tournaments() -> str:
-    evidence: list[str] = []
-    for role, repo in REPOS.items():
-        path = repo / "results" / f"{role}_held_out_tournament.json"
-        data = json.loads(path.read_text(encoding="utf-8"))
-        required = (
-            "held_out_games",
+def _stable_tournament_payload(data: dict) -> dict:
+    """Return only deterministic competitive evidence for exact rerun comparison."""
+    baseline = dict(data["strongest_heuristic_baseline"])
+    baseline.pop("average_inference_and_environment_ms", None)
+    baseline.pop("inference_latency_ms", None)
+    return {
+        key: data[key]
+        for key in (
+            "role",
             "held_out_series",
+            "held_out_games",
+            "wins",
             "win_rate",
             "confidence_95",
-            "worst_family_win_rate",
-            "inference_latency_ms",
-            "technical_failures",
+            "series_wins",
+            "series_win_rate",
+            "series_confidence_95",
             "official_role_score",
             "official_opponent_score",
+            "worst_family_win_rate",
+            "worst_family_series_win_rate",
+            "average_turns",
+            "technical_failures",
+            "illegal_action_rate",
+            "action_correction_rate",
+            "inference_mode",
+            "inference_temperature",
+            "families",
             "promotion_gate",
         )
-        missing = [key for key in required if key not in data]
-        if missing:
-            raise RuntimeError(f"{role} tournament missing {missing}")
-        if data.get("role") != role or int(data["held_out_games"]) != 6 * int(
-            data["held_out_series"]
-        ):
-            raise RuntimeError(f"{role} tournament is not paired six-gamelet evidence")
-        if len(data.get("families", {})) < 4 or int(data["technical_failures"]) != 0:
-            raise RuntimeError(f"{role} tournament lacks diverse zero-failure families")
-        if not data["promotion_gate"].get("passed"):
-            raise RuntimeError(f"{role} champion did not pass paired promotion")
-        manifest = json.loads((repo / "models" / "MANIFEST.json").read_text(encoding="utf-8"))
-        artifact = next(entry for entry in manifest["models"] if entry["role"] == role)
-        if data.get("artifact_sha256") != artifact["sha256"]:
-            raise RuntimeError(f"{role} tournament targets a different artifact")
-        evidence.append(
-            f"{role}={data['held_out_series']} series/{data['held_out_games']} games, "
-            f"win={100 * float(data['win_rate']):.2f}%, "
-            f"worst={100 * float(data['worst_family_win_rate']):.2f}%"
-        )
+    } | {"strongest_heuristic_baseline": baseline}
+
+
+def check_tournaments() -> str:
+    evidence: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="vibecode-tournament-") as temp:
+        for role, repo in REPOS.items():
+            path = repo / "results" / f"{role}_held_out_tournament.json"
+            data = json.loads(path.read_text(encoding="utf-8"))
+            required = (
+                "held_out_games",
+                "held_out_series",
+                "win_rate",
+                "confidence_95",
+                "worst_family_win_rate",
+                "inference_latency_ms",
+                "technical_failures",
+                "official_role_score",
+                "official_opponent_score",
+                "promotion_gate",
+                "evaluation_seed",
+            )
+            missing = [key for key in required if key not in data]
+            if missing:
+                raise RuntimeError(f"{role} tournament missing {missing}")
+            if data.get("role") != role or int(data["held_out_games"]) != 6 * int(
+                data["held_out_series"]
+            ):
+                raise RuntimeError(f"{role} tournament is not paired six-gamelet evidence")
+            if len(data.get("families", {})) < 4 or int(data["technical_failures"]) != 0:
+                raise RuntimeError(f"{role} tournament lacks diverse zero-failure families")
+            if not data["promotion_gate"].get("passed"):
+                raise RuntimeError(f"{role} champion did not pass paired promotion")
+            manifest = json.loads((repo / "models" / "MANIFEST.json").read_text(encoding="utf-8"))
+            artifact_entry = next(entry for entry in manifest["models"] if entry["role"] == role)
+            if data.get("artifact_sha256") != artifact_entry["sha256"]:
+                raise RuntimeError(f"{role} tournament targets a different artifact")
+
+            output_dir = Path(temp) / role
+            opponent_role = "thief" if role == "cop" else "cop"
+            command = [
+                "uv",
+                "run",
+                "python",
+                "-m",
+                "agent.rl.train_recurrent",
+                "--role",
+                role,
+                "--eval-series-per-family",
+                str(int(data["held_out_series"]) // len(data["families"])),
+                "--seed",
+                str(int(data["evaluation_seed"])),
+                "--historical-checkpoint",
+                str(repo / "models" / f"{opponent_role}_ppo_best.pt"),
+                "--evaluate-only-artifact",
+                str(repo / "models" / artifact_entry["artifact"]),
+                "--evidence-dir",
+                str(output_dir),
+            ]
+            if data.get("inference_temperature") is not None:
+                command.extend(["--inference-temperature", str(data["inference_temperature"])])
+            rerun = run(command, repo, 1200)
+            require_success(rerun, f"{role} exact held-out tournament rerun")
+            reproduced = json.loads(
+                (output_dir / f"{role}_held_out_tournament.json").read_text(encoding="utf-8")
+            )
+            stable_expected = _stable_tournament_payload(data)
+            stable_actual = _stable_tournament_payload(reproduced)
+            if stable_actual != stable_expected:
+                raise RuntimeError(f"{role} tournament rerun does not reproduce frozen evidence")
+            stable_hash = hashlib.sha256(
+                json.dumps(stable_actual, sort_keys=True, separators=(",", ":")).encode()
+            ).hexdigest()
+            evidence.append(
+                f"{role}={data['held_out_series']} series/{data['held_out_games']} games, "
+                f"win={100 * float(data['win_rate']):.2f}%, "
+                f"worst={100 * float(data['worst_family_win_rate']):.2f}%, "
+                f"reproduced={stable_hash}"
+            )
     return "; ".join(evidence)
 
 
 FOCUSED_TESTS = (
     "tests/test_codex_adaptive_transport.py",
     "tests/test_codex_adaptive_contract_coverage.py",
+    "tests/test_adaptive_discovery_hardening.py",
     "tests/test_codex_counted_composition.py",
     "tests/test_codex_bilateral_result.py",
     "tests/test_codex_game_end_consensus.py",
@@ -272,6 +360,7 @@ FOCUSED_TESTS = (
     "tests/test_codex_pipeline_gmail_contract.py",
     "tests/test_codex_process_gmail.py",
     "tests/test_codex_recurrent_failure_contract.py",
+    "tests/test_codex_recurrent_training.py",
     "tests/test_codex_token_accounting.py",
 )
 
@@ -361,7 +450,14 @@ def check_documents() -> str:
         "docs/PROGRAM_EXECUTION_LEDGER.md",
         "docs/REQUIREMENTS_TRACEABILITY.md",
     )
-    stale_claims = ("14/14 PASS", "2 skipped", "placeholder weights", "PPO model weights")
+    stale_claims = (
+        "14/14 PASS",
+        "2 skipped",
+        "placeholder weights",
+        "PPO model weights",
+        "script not yet implemented",
+        "TOURNAMENT_EXTERNAL_PENDING",
+    )
     for role, repo in REPOS.items():
         missing = [relative for relative in required if not (repo / relative).is_file()]
         if missing:
@@ -372,6 +468,11 @@ def check_documents() -> str:
         final_report = (repo / "FINAL_100_READINESS_REPORT.md").read_text(encoding="utf-8")
         if any(claim in final_report for claim in stale_claims):
             raise RuntimeError(f"{role} final report retains obsolete readiness claims")
+        reproduction = (repo / "docs" / "RL_REPRODUCTION.md").read_text(encoding="utf-8")
+        if "agent.rl.train_recurrent" not in reproduction or any(
+            claim in reproduction for claim in stale_claims
+        ):
+            raise RuntimeError(f"{role} RL reproduction guide is stale")
         matrix = (repo / "docs" / "REQUIREMENTS_TRACEABILITY.md").read_text(encoding="utf-8")
         rows = re.findall(r"^\|\s*(\d+)\s*\|", matrix, flags=re.MULTILINE)
         if sorted(map(int, rows)) != list(range(1, 56)):

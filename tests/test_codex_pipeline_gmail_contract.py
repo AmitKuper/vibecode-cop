@@ -11,7 +11,7 @@ from agent.adaptive.adapter import (
     ProtocolCompatibilityError,
 )
 from agent.adaptive.conformance import ConformanceProbes, ConformanceReport, ProbeOutcome
-from agent.adaptive.introspector import IntrospectionResult
+from agent.adaptive.introspector import IntrospectionResult, ToolSchema
 from agent.adaptive.mapping_plan import (
     CompatibilityVerdict,
     FieldMapping,
@@ -32,7 +32,13 @@ def _probe(transport=TransportType.STREAMABLE_HTTP):
 
 
 def _intro(digest="native"):
-    return IntrospectionResult("peer", "1", "p", [], [], [], {}, digest)
+    action = ToolSchema(
+        "action",
+        "safe",
+        {"properties": {"game_id": {}, "message_json": {}, "signature": {}}},
+    )
+    start = ToolSchema("start_game", "safe", {"properties": {"message_json": {}, "signature": {}}})
+    return IntrospectionResult("peer", "1", "p", [action, start], [], [], {}, digest)
 
 
 async def _patch_transport(monkeypatch, probe=None, intro=None):
@@ -47,6 +53,13 @@ async def _patch_transport(monkeypatch, probe=None, intro=None):
 
     monkeypatch.setattr("agent.adaptive.pipeline.TransportProbe.probe", fake_probe)
     monkeypatch.setattr("agent.adaptive.pipeline.MCPIntrospector.introspect", fake_intro)
+
+    async def reject_probe(_tool_name, params):
+        return {"ok": False, "error": "invalid probe signature", "game_id": params.get("game_id")}
+
+    monkeypatch.setattr(
+        "agent.adaptive.pipeline._discovered_tool_caller", lambda _probe: reject_probe
+    )
 
 
 @pytest.mark.asyncio
@@ -105,6 +118,13 @@ def test_negotiation_sync_native_and_result_accessors(monkeypatch, tmp_path) -> 
 
     monkeypatch.setattr("agent.adaptive.pipeline.TransportProbe.probe", fake_probe)
     monkeypatch.setattr("agent.adaptive.pipeline.MCPIntrospector.introspect", fake_intro)
+
+    async def reject_probe(_tool_name, params):
+        return {"ok": False, "error": "invalid probe signature", "game_id": params.get("game_id")}
+
+    monkeypatch.setattr(
+        "agent.adaptive.pipeline._discovered_tool_caller", lambda _probe: reject_probe
+    )
     sync = run_adaptive_negotiation_sync("http://peer", cache_dir=tmp_path)
     assert isinstance(sync, AdaptiveNegotiationResult)
     native = native_adapter()

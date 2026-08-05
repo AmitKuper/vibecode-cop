@@ -75,3 +75,14 @@ Test counts are measured at phase end (cop repo).
 | M4 adaptive MCP | Live SSE introspection, declarative protected mappings, static verification, conformance probes, locked profile, incompatible pre-commit rejection, deterministic gameplay adapter | PASS |
 | Final clean quality | Verified sources cop `b9f672381fb3c456a0a6fdb3f99a113750333548`, thief `aedbcb854a2e20579a1540732693d4c721955814`; 1,467/1,340 tests, zero skips; branch 1,615/1,882 = 85.8130% and 1,603/1,882 = 85.1753%; frozen sync/locks and Ruff pass. | PASS |
 | Strict release verifier | 11/11 code gates PASS. Fresh real process series `series_20260805_064801_ea4d7c38`; agreement `d731f5be…3ce3`; ledger consensus `99b5f6d5…7c93`. Four external gate groups remain pending. | PASS |
+
+## Independent hardening follow-up — 2026-08-05
+
+| Gate | Evidence | Status |
+|---|---|---|
+| Frozen/isolated dependency | Frozen sync/lock plus isolated Torch 2.13.0+cpu and NumPy 2.5.1 imports in both repos | PASS |
+| Adaptive discovery | 227 focused tests per repo before final HTTP/stdio additions; real process discovery, remote conformance, schema-derived fixtures, cache tamper, and schema drift | PASS |
+| Full suites / coverage | Zero skips; cop 1,794/2,082 = 86.1671%; thief 1,784/2,082 = 85.6868%; current trainer measured | PASS |
+| Tournament reproduction | Cop stable `959872ca…1b72`; thief `a0e2bb3d…5003`; frozen series/family results match | PASS |
+| Current collection | 1,509 cop tests / 1,384 thief tests after final stdio additions | PASS |
+| Clean production process | Requires coherent commit because counted mode refuses dirty trees | PENDING |

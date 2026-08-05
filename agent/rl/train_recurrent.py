@@ -756,6 +756,7 @@ def main() -> None:
     )
     promotion = _promotion_comparison(evaluation, heuristic_baseline, args.seed)
     evaluation["artifact_sha256"] = file_sha256(artifact)
+    evaluation["evaluation_seed"] = args.seed
     evaluation["training_episodes"] = training_episodes
     evaluation["training_opponents"] = list(FAMILIES)
     evaluation["training_schedule"] = list(

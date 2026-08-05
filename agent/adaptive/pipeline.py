@@ -13,7 +13,9 @@ may occur until this function returns successfully.
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
+from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import Any
 
@@ -59,6 +61,7 @@ async def run_adaptive_negotiation(
     cache_dir: Path | None = None,
     probe_timeout_s: float = 5.0,
     introspect_timeout_s: float = 10.0,
+    tool_caller: Callable[[str, dict], Awaitable[dict]] | None = None,
 ) -> AdaptiveNegotiationResult:
     """Perform full adaptive MCP negotiation. Must complete before first commitment.
 
@@ -95,6 +98,12 @@ async def run_adaptive_negotiation(
     if cached_profile is not None:
         logger.info("[AdaptiveMCP] Cache hit for schema_digest=%s", intro.schema_digest)
         adapter = DeterministicProtocolAdapter(cached_profile.mapping_plan)
+        await _verify_conformance(
+            adapter,
+            cached_profile.mapping_plan,
+            probe,
+            tool_caller,
+        )
         return AdaptiveNegotiationResult(cached_profile, adapter, cache_hit=True)
 
     # Step 4: Run ProtocolUnderstandingAgent (LLM, ONCE, pre-game only)
@@ -119,12 +128,7 @@ async def run_adaptive_negotiation(
 
     # Step 6: Build adapter and run conformance probes
     adapter = DeterministicProtocolAdapter(plan)
-    probes = ConformanceProbes(adapter, plan)
-    conformance = probes.run_all()
-    if not conformance.all_passed:
-        raise ProtocolCompatibilityError(
-            f"Conformance probes failed: {conformance.failed_probes()}"
-        )
+    conformance = await _verify_conformance(adapter, plan, probe, tool_caller)
 
     # Step 7: Build and cache the ProtocolProfile
     profile = ProtocolProfile.build(probe, plan)
@@ -137,6 +141,61 @@ async def run_adaptive_negotiation(
         profile.remote_transport,
     )
     return AdaptiveNegotiationResult(profile, adapter)
+
+
+async def _verify_conformance(
+    adapter: DeterministicProtocolAdapter,
+    plan: ProtocolMappingPlan,
+    probe,
+    tool_caller: Callable[[str, dict], Awaitable[dict]] | None,
+):
+    probes = ConformanceProbes(adapter, plan)
+    local = probes.run_all()
+    if not local.all_passed:
+        raise ProtocolCompatibilityError(f"Conformance probes failed: {local.failed_probes()}")
+    if probe.transport != TransportType.STDIO or tool_caller is not None or probe.stdio_command:
+        caller = tool_caller or _discovered_tool_caller(probe)
+        remote = await probes.run_remote(caller)
+        if not remote.all_passed:
+            raise ProtocolCompatibilityError(
+                f"Remote conformance probes failed: {remote.failed_probes()}"
+            )
+        local.probes.extend(remote.probes)
+    return local
+
+
+def _discovered_tool_caller(probe):
+    """Build a caller for the transport that was actually negotiated."""
+    from fastmcp import Client
+    from fastmcp.client.transports import SSETransport, StreamableHttpTransport
+
+    if probe.transport == TransportType.SSE:
+        transport = SSETransport(probe.mcp_endpoint)
+    elif probe.transport == TransportType.STREAMABLE_HTTP:
+        transport = StreamableHttpTransport(probe.mcp_endpoint)
+    elif probe.transport == TransportType.STDIO and probe.stdio_command:
+        from fastmcp.client.transports import StdioTransport
+
+        transport = StdioTransport(probe.stdio_command[0], list(probe.stdio_command[1:]))
+    else:
+        raise ProtocolCompatibilityError(f"No remote caller for {probe.transport}")
+
+    async def call(tool_name: str, params: dict) -> dict:
+        async with Client(transport) as client:
+            result = await client.call_tool(tool_name, params)
+        if not result.content:
+            return {"ok": getattr(result, "is_error", False) is not True}
+        item = result.content[0]
+        value = item.text if hasattr(item, "text") else str(item)
+        if getattr(result, "is_error", False) is True:
+            return {"ok": False, "error": value}
+        try:
+            parsed = json.loads(value)
+        except (json.JSONDecodeError, TypeError):
+            return {"ok": True, "raw": value}
+        return parsed if isinstance(parsed, dict) else {"ok": True, "raw": parsed}
+
+    return call
 
 
 def run_adaptive_negotiation_sync(
@@ -154,3 +213,23 @@ def native_adapter() -> AdaptiveNegotiationResult:
     profile = ProtocolProfile.native()
     adapter = DeterministicProtocolAdapter(plan)
     return AdaptiveNegotiationResult(profile, adapter)
+
+
+async def verify_locked_schema(profile: ProtocolProfile, timeout_s: float = 10.0) -> None:
+    """Re-introspect without an LLM and abort if a locked peer schema changed."""
+    from agent.adaptive.transport_probe import ProbeResult
+
+    probe = ProbeResult(
+        transport=TransportType(profile.remote_transport),
+        base_url=profile.remote_endpoint,
+        mcp_endpoint=profile.remote_endpoint,
+        latency_ms=0.0,
+        probe_notes="locked-profile recheck",
+        stdio_command=profile.remote_stdio_command,
+    )
+    current = await MCPIntrospector(timeout_s=timeout_s).introspect(probe)
+    if current.schema_digest != profile.remote_schema_digest:
+        raise ProtocolCompatibilityError(
+            "Remote schema changed after ProtocolProfile lock: "
+            f"{profile.remote_schema_digest} != {current.schema_digest}"
+        )

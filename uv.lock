@@ -618,10 +618,12 @@ dependencies = [
     { name = "google-auth" },
     { name = "google-auth-oauthlib" },
     { name = "httpx" },
+    { name = "numpy" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "python-jose", extra = ["cryptography"] },
     { name = "sympy" },
+    { name = "torch" },
 ]
 
 [package.optional-dependencies]
@@ -641,10 +643,6 @@ ollama = [
 ]
 openai = [
     { name = "langchain-openai" },
-]
-rl = [
-    { name = "numpy" },
-    { name = "torch" },
 ]
 
 [package.dev-dependencies]
@@ -673,14 +671,14 @@ requires-dist = [
     { name = "langchain-openai", marker = "extra == 'all-llms'", specifier = ">=0.1.0" },
     { name = "langchain-openai", marker = "extra == 'azure'", specifier = ">=0.1.0" },
     { name = "langchain-openai", marker = "extra == 'openai'", specifier = ">=0.1.0" },
-    { name = "numpy", marker = "extra == 'rl'", specifier = ">=1.26" },
+    { name = "numpy", specifier = ">=1.26" },
     { name = "pydantic", specifier = ">=2.0" },
     { name = "pydantic-settings", specifier = ">=2.6" },
     { name = "python-jose", extras = ["cryptography"], specifier = ">=3.3" },
     { name = "sympy", specifier = ">=1.14.0" },
-    { name = "torch", marker = "extra == 'rl'", specifier = ">=2.2" },
+    { name = "torch", specifier = ">=2.2" },
 ]
-provides-extras = ["ollama", "openai", "anthropic", "azure", "all-llms", "rl"]
+provides-extras = ["ollama", "openai", "anthropic", "azure", "all-llms"]
 
 [package.metadata.requires-dev]
 dev = [

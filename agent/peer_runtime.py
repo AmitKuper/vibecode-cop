@@ -400,6 +400,9 @@ class PeerRuntime(_CrewMixin):
           → StaticSemanticVerifier → ConformanceProbes → DeterministicProtocolAdapter
         """
         if self.protocol_adapter is not None and self._adaptive_profile is not None:
+            from agent.adaptive.pipeline import verify_locked_schema
+
+            await verify_locked_schema(self._adaptive_profile)
             logger.info(
                 "[PeerRuntime/%s] Reusing series-locked ProtocolProfile %s",
                 self.role,
@@ -410,11 +413,17 @@ class PeerRuntime(_CrewMixin):
             raise RuntimeError("incomplete adaptive profile state cannot be reused")
         try:
             from agent.adaptive.pipeline import native_adapter, run_adaptive_negotiation
+            from agent.adaptive.transport_probe import normalize_mcp_base_url
 
-            opponent_base = self.opponent_client.peer_url.rstrip("/mcp").rstrip("/")
+            opponent_base = normalize_mcp_base_url(self.opponent_client.peer_url)
             result = await run_adaptive_negotiation(
                 opponent_url=opponent_base,
                 llm=self.llm,
+            )
+            self.opponent_client.configure_transport(
+                result.profile.remote_transport,
+                result.profile.remote_endpoint,
+                result.profile.remote_stdio_command,
             )
             self.protocol_adapter = result.adapter
             self._adaptive_profile = result.profile

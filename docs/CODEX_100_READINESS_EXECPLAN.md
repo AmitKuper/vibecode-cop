@@ -322,3 +322,29 @@ evidence.
 `docs/REQUIREMENTS_TRACEABILITY.md` is the live 55-row rule map. Each
 code-verifiable final PASS must name a production symbol, an exact test, and a
 runtime evidence artifact. External-only rows must remain `EXTERNAL_PENDING`.
+
+## 2026-08-05 independent hardening follow-up
+
+Starting from cop `eb64f4cda64893735909adbeef48b2d25878296f` and thief
+`8b120ede7c04e310748032616373766513ec5844`, this follow-up independently
+re-read Appendix E/F and the guidelines and did not rely on the prior score.
+
+- [x] Torch and NumPy are mandatory locked dependencies; isolated base installs
+  import the counted recurrent policy stack in both repositories.
+- [x] The recurrent trainer/evaluator and branch suite are self-contained in
+  both repositories. Exact frozen reruns reproduce cop 600 series/3,600
+  gamelets at 89.00% and thief 150/900 at 76.11%.
+- [x] Coverage no longer hides the current trainer behind `train*.py` or hides
+  broad strategy groups. Candidate branch measurements are cop 1,794/2,082 =
+  86.1671% and thief 1,784/2,082 = 85.6868%.
+- [x] Adaptive negotiation performs schema-derived split/nested/packed/enum
+  mapping, protected-field verification, safe remote conformance, profile/plan
+  integrity checks, schema-drift checks, and deterministic SSE, Streamable HTTP,
+  or stdio gameplay transport selection.
+- [x] Real stdio MCP discovery/conformance is tested; a generic HTTP 200 can no
+  longer masquerade as an MCP initialize response.
+- [ ] Run the strict verifier and a fresh six-gamelet process test after the
+  coherent commit, because counted mode correctly refuses dirty worktrees.
+
+External tunnel/opponent, real Gmail, real group identity, Moodle artifacts,
+and release-tag push remain honestly `EXTERNAL_PENDING`.

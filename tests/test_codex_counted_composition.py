@@ -156,7 +156,10 @@ async def test_counted_series_locks_one_adaptive_profile_for_all_gamelets(tmp_pa
 
     runtime = _runtime(tmp_path)
     negotiation = AsyncMock(return_value=native_adapter())
-    with patch("agent.adaptive.pipeline.run_adaptive_negotiation", new=negotiation):
+    with (
+        patch("agent.adaptive.pipeline.run_adaptive_negotiation", new=negotiation),
+        patch("agent.adaptive.pipeline.verify_locked_schema", new=AsyncMock()),
+    ):
         await runtime._init_protocol_adapter()
         profile_hash = runtime._adaptive_profile.profile_hash
         await runtime._init_protocol_adapter()

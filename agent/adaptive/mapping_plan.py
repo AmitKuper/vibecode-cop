@@ -75,12 +75,10 @@ class ProtocolMappingPlan:
         return self.REQUIRED_PHASES.issubset(mapped)
 
     def plan_hash(self) -> str:
-        payload = {
-            "remote_tool": self.remote_tool_name,
-            "schema_digest": self.remote_schema_digest,
-            "phases": [pm.phase for pm in self.phase_mappings],
-            "verdict": self.verdict.value,
-        }
+        # Hash every executable mapping detail.  Hashing only phase names lets
+        # an attacker change field paths/transforms while retaining the same
+        # allegedly locked plan hash.
+        payload = self.to_dict()
         return hashlib.sha256(
             json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
         ).hexdigest()
@@ -195,7 +193,7 @@ class ProtocolMappingPlan:
                     field_mappings=_base + _phase_extra.get(phase, []),
                     response_extraction={"ok": "ok", "phase": "phase"},
                 )
-                for phase in cls.REQUIRED_PHASES
+                for phase in sorted(cls.REQUIRED_PHASES)
             ],
             verdict=CompatibilityVerdict.COMPATIBLE,
             confidence=1.0,
@@ -254,4 +252,36 @@ class ProtocolMappingPlan:
             verdict=CompatibilityVerdict.COMPATIBLE,
             confidence=1.0,
             agent_model="deterministic-signed-envelope",
+        )
+
+    @classmethod
+    def packed_envelope_plan(
+        cls,
+        *,
+        schema_digest: str,
+        server_name: str,
+        tool_name: str = "action",
+    ) -> ProtocolMappingPlan:
+        """Plan carrying the complete signed canonical JSON in a renamed field."""
+        fields = [
+            FieldMapping("game_id", "game_id"),
+            FieldMapping("message_json", "packed_message"),
+            FieldMapping("signature", "signature"),
+        ]
+        return cls(
+            remote_tool_name=tool_name,
+            remote_server_name=server_name,
+            remote_schema_digest=schema_digest,
+            phase_mappings=[
+                PhaseMapping(
+                    phase=phase,
+                    remote_tool=tool_name,
+                    field_mappings=list(fields),
+                    response_extraction={"ok": "ok", "phase": "phase"},
+                )
+                for phase in sorted(cls.REQUIRED_PHASES)
+            ],
+            verdict=CompatibilityVerdict.COMPATIBLE,
+            confidence=1.0,
+            agent_model="deterministic-packed-envelope",
         )

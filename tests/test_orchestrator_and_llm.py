@@ -22,9 +22,11 @@ Covers:
 
 from __future__ import annotations
 
+import asyncio
 import json
 import sys
 import threading
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -791,6 +793,40 @@ class TestAuditMixin:
         msg = _make_action_msg("game_end", reason="thief")
         obj._handle_game_end("g2", msg)
         assert "g2" in cleanup_called
+
+    def test_generate_reports_configured_results_and_no_plugins(self, tmp_path, monkeypatch):
+        mixin = self._make_mixin(tmp_path)
+        config_dir = tmp_path / "cop"
+        config_dir.mkdir()
+        (config_dir / "config.toml").write_text("[reports]\nenabled = true\n")
+        monkeypatch.chdir(tmp_path)
+        good = SimpleNamespace(ok=True, status="sent", destination="mail", error_code="", error="")
+        bad = SimpleNamespace(
+            ok=False, status="failed", destination=None, error_code="SEND", error="failure"
+        )
+        with (
+            patch("agent.reports.bundle.ReportBundleBuilder") as builder,
+            patch(
+                "agent.reports.plugin_factory.ReportPluginFactory.from_config",
+                new=AsyncMock(return_value=[object()]),
+            ),
+            patch("agent.reports.manager.ReportManager") as manager,
+        ):
+            builder.return_value.build = AsyncMock(return_value=object())
+            manager.return_value.generate_all = AsyncMock(return_value={"good": good, "bad": bad})
+            asyncio.run(mixin.generate_reports("g1", {"winner": "cop", "step": 1}))
+            manager.return_value.generate_all.assert_awaited_once()
+
+        (config_dir / "config.toml").unlink()
+        with (
+            patch("agent.reports.bundle.ReportBundleBuilder") as builder,
+            patch(
+                "agent.reports.plugin_factory.ReportPluginFactory.from_config",
+                new=AsyncMock(return_value=[]),
+            ),
+        ):
+            builder.return_value.build = AsyncMock(return_value=object())
+            asyncio.run(mixin.generate_reports("g2", {}))
 
 
 # ===========================================================================

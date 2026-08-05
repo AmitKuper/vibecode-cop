@@ -3,6 +3,7 @@
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import httpx
 import pytest
 
 
@@ -28,6 +29,34 @@ async def test_sse_probe_accepts_streaming_handshake_without_reading_body() -> N
     assert result is not None
     assert result.transport is TransportType.SSE
     client.stream.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_streamable_probe_requires_a_real_initialize_response() -> None:
+    from agent.adaptive.transport_probe import TransportType, _try_streamable_http
+
+    request = httpx.Request("POST", "http://peer.example/mcp")
+    valid = httpx.Response(
+        200,
+        json={
+            "jsonrpc": "2.0",
+            "id": 1,
+            "result": {"protocolVersion": "2024-11-05", "serverInfo": {"name": "peer"}},
+        },
+        request=request,
+    )
+    invalid = httpx.Response(
+        200, text="ordinary web page", headers={"content-type": "text/html"}, request=request
+    )
+    client = MagicMock()
+    client.__aenter__ = AsyncMock(return_value=client)
+    client.__aexit__ = AsyncMock(return_value=None)
+    with patch("agent.adaptive.transport_probe.httpx.AsyncClient", return_value=client):
+        client.post = AsyncMock(return_value=invalid)
+        assert await _try_streamable_http("http://peer.example", 0.5) is None
+        client.post = AsyncMock(return_value=valid)
+        result = await _try_streamable_http("http://peer.example", 0.5)
+    assert result is not None and result.transport is TransportType.STREAMABLE_HTTP
 
 
 def test_known_signed_envelope_is_mapped_before_untrusted_llm() -> None:

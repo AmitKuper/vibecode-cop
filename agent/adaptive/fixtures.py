@@ -90,13 +90,20 @@ class Fixture:
 def _tool(
     name: str, description: str, props: dict, required: list[str] | None = None
 ) -> ToolSchema:
+    props = {
+        **props,
+        "gamelet": props.get("gamelet", "integer"),
+        "reason": props.get("reason", "string"),
+        "result_hash": props.get("result_hash", "string"),
+        "signed_agreement": props.get("signed_agreement", "object"),
+    }
     return ToolSchema(
         name=name,
         description=description,
         input_schema={
             "type": "object",
             "properties": {k: {"type": v} for k, v in props.items()},
-            "required": required or list(props.keys()),
+            "required": required or ["game_id", "role"],
         },
     )
 
@@ -465,60 +472,9 @@ def fixture_packed_json() -> Fixture:
         description="Canonical message packed as JSON string + signature",
         compatible=True,
         introspection=_intro("packed-server", tools),
-        expected_plan=ProtocolMappingPlan(
-            remote_tool_name="action",
-            remote_server_name="packed-server",
-            remote_schema_digest=_intro("packed-server", tools).schema_digest,
-            phase_mappings=[
-                PhaseMapping(
-                    "commit",
-                    "action",
-                    [
-                        FieldMapping("game_id", "game_id"),
-                        FieldMapping("commitment", "packed_message", transform="pack_json"),
-                        FieldMapping("signature", "signature"),
-                    ],
-                    {"ok": "ok"},
-                ),
-                PhaseMapping(
-                    "reveal",
-                    "action",
-                    [
-                        FieldMapping("game_id", "game_id"),
-                        FieldMapping("move", "packed_message", transform="pack_json"),
-                    ],
-                    {"ok": "ok"},
-                ),
-                PhaseMapping(
-                    "start_game",
-                    "action",
-                    [
-                        FieldMapping("game_id", "game_id"),
-                        FieldMapping("phase", "packed_message", transform="pack_json"),
-                    ],
-                    {"ok": "ok"},
-                ),
-                PhaseMapping(
-                    "final_audit",
-                    "action",
-                    [
-                        FieldMapping("game_id", "game_id"),
-                        FieldMapping("nonces", "packed_message", transform="pack_json"),
-                    ],
-                    {"ok": "ok"},
-                ),
-                PhaseMapping(
-                    "result_agreement",
-                    "action",
-                    [
-                        FieldMapping("game_id", "game_id"),
-                        FieldMapping("result_hash", "packed_message", transform="pack_json"),
-                    ],
-                    {"ok": "ok"},
-                ),
-            ],
-            verdict=CompatibilityVerdict.COMPATIBLE,
-            confidence=0.9,
+        expected_plan=ProtocolMappingPlan.packed_envelope_plan(
+            schema_digest=_intro("packed-server", tools).schema_digest,
+            server_name="packed-server",
         ),
     )
 

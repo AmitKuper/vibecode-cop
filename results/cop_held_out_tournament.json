@@ -1,5 +1,6 @@
 {
   "role": "cop",
+  "evaluation_seed": 20260805,
   "held_out_series": 600,
   "held_out_games": 3600,
   "wins": 3204,

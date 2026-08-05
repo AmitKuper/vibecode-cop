@@ -31,7 +31,8 @@ _INJECTION_PATTERNS = [
 _INJECTION_RE = re.compile("|".join(_INJECTION_PATTERNS), re.IGNORECASE)
 
 
-def _sanitize(text: str) -> str:
+def _sanitize(text: str | None) -> str:
+    text = text or ""
     if _INJECTION_RE.search(text):
         raise ValueError(f"Prompt injection detected in remote description: {text[:120]!r}")
     return text
@@ -42,11 +43,16 @@ class ToolSchema:
     name: str
     description: str
     input_schema: dict
+    output_schema: dict = field(default_factory=dict)
     raw: dict = field(default_factory=dict)
 
     def schema_digest(self) -> str:
         blob = json.dumps(
-            {"name": self.name, "input_schema": self.input_schema},
+            {
+                "name": self.name,
+                "input_schema": self.input_schema,
+                "output_schema": self.output_schema,
+            },
             sort_keys=True,
             separators=(",", ":"),
         ).encode()
@@ -82,7 +88,7 @@ class MCPIntrospector:
 
     async def introspect(self, probe: ProbeResult) -> IntrospectionResult:
         if probe.transport == TransportType.STDIO:
-            return self._stdio_fallback()
+            return await self._stdio_introspect(probe)
         if probe.transport == TransportType.SSE:
             return await self._sse_introspect(probe)
         return await self._http_introspect(probe)
@@ -118,52 +124,26 @@ class MCPIntrospector:
         return self._build_result(init_body, raw_tools, resources, prompts)
 
     async def _http_introspect(self, probe: ProbeResult) -> IntrospectionResult:
-        endpoint = probe.mcp_endpoint
-        is_sse = probe.transport == TransportType.SSE
+        from fastmcp import Client
+        from fastmcp.client.transports import StreamableHttpTransport
 
-        # For SSE transport, MCP messages go to the messages endpoint
-        post_url = endpoint if not is_sse else endpoint.replace("/sse", "/messages")
-
-        async with httpx.AsyncClient(timeout=self._timeout) as c:
-            # Step 1: initialize
-            init_resp = await c.post(
-                post_url if not is_sse else endpoint,
-                json={
-                    "jsonrpc": "2.0",
-                    "id": 1,
-                    "method": "initialize",
-                    "params": {
-                        "protocolVersion": "2024-11-05",
-                        "capabilities": {"tools": {}},
-                        "clientInfo": {"name": "introspector", "version": "1.0"},
-                    },
-                },
-                headers={"Accept": "application/json, text/event-stream"},
-            )
-            init_body = self._parse_response(init_resp)
-
-            # Step 2: tools/list
-            tools_resp = await c.post(
-                post_url if not is_sse else endpoint,
-                json={"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}},
-                headers={"Accept": "application/json, text/event-stream"},
-            )
-            tools_body = self._parse_response(tools_resp)
-            raw_tools = tools_body.get("tools", [])
-
-            # Step 3: resources/list (optional)
+        async with Client(StreamableHttpTransport(probe.mcp_endpoint)) as client:
+            raw_tool_models = await asyncio.wait_for(client.list_tools(), self._timeout)
             resources: list[dict] = []
             prompts: list[dict] = []
             try:
-                res_resp = await c.post(
-                    post_url if not is_sse else endpoint,
-                    json={"jsonrpc": "2.0", "id": 3, "method": "resources/list", "params": {}},
-                    headers={"Accept": "application/json"},
-                )
-                resources = self._parse_response(res_resp).get("resources", [])
+                models = await asyncio.wait_for(client.list_resources(), self._timeout)
+                resources = [item.model_dump(by_alias=True) for item in models]
             except Exception:
                 pass
-
+            try:
+                models = await asyncio.wait_for(client.list_prompts(), self._timeout)
+                prompts = [item.model_dump(by_alias=True) for item in models]
+            except Exception:
+                pass
+            init_model = client.initialize_result
+            init_body = init_model.model_dump(by_alias=True) if init_model is not None else {}
+        raw_tools = [item.model_dump(by_alias=True) for item in raw_tool_models]
         return self._build_result(init_body, raw_tools, resources, prompts)
 
     def _build_result(
@@ -177,18 +157,16 @@ class MCPIntrospector:
         capabilities = init_body.get("capabilities", {})
         tools = []
         for rt in raw_tools:
-            try:
-                desc = _sanitize(rt.get("description", ""))
-                tools.append(
-                    ToolSchema(
-                        name=rt["name"],
-                        description=desc,
-                        input_schema=rt.get("inputSchema", {}),
-                        raw=rt,
-                    )
+            desc = _sanitize(rt.get("description", ""))
+            tools.append(
+                ToolSchema(
+                    name=rt["name"],
+                    description=desc,
+                    input_schema=rt.get("inputSchema", {}),
+                    output_schema=rt.get("outputSchema", {}),
+                    raw=rt,
                 )
-            except ValueError as exc:
-                logger.warning("Skipping tool %s: %s", rt.get("name"), exc)
+            )
 
         all_digests = "|".join(sorted(t.schema_digest() for t in tools))
         schema_digest = hashlib.sha256(all_digests.encode()).hexdigest()
@@ -233,6 +211,20 @@ class MCPIntrospector:
             raw_capabilities={},
             schema_digest="stdio-fixture",
         )
+
+    async def _stdio_introspect(self, probe: ProbeResult) -> IntrospectionResult:
+        if not probe.stdio_command:
+            return self._stdio_fallback()
+        from fastmcp import Client
+        from fastmcp.client.transports import StdioTransport
+
+        transport = StdioTransport(probe.stdio_command[0], list(probe.stdio_command[1:]))
+        async with Client(transport) as client:
+            models = await asyncio.wait_for(client.list_tools(), self._timeout)
+            init_model = client.initialize_result
+            init_body = init_model.model_dump(by_alias=True) if init_model is not None else {}
+        raw_tools = [item.model_dump(by_alias=True) for item in models]
+        return self._build_result(init_body, raw_tools, [], [])
 
     def introspect_sync(self, probe: ProbeResult) -> IntrospectionResult:
         import asyncio

@@ -7,6 +7,7 @@ invalidated when digest changes.
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import time
 from dataclasses import dataclass, field
@@ -31,6 +32,7 @@ class ProtocolProfile:
     plan_hash: str
     profile_hash: str
     timestamp_utc: str
+    remote_stdio_command: tuple[str, ...] = ()
     agent_model: str = "heuristic"
     agent_version: str = "1.0"
     probe_notes: str = ""
@@ -39,6 +41,46 @@ class ProtocolProfile:
 
     def is_compatible(self) -> bool:
         return self.mapping_plan.is_compatible()
+
+    def verify_integrity(self, expected_schema_digest: str | None = None) -> bool:
+        """Verify the cached profile, full plan hash, and schema binding."""
+        if expected_schema_digest and self.remote_schema_digest != expected_schema_digest:
+            return False
+        if self.mapping_plan.remote_schema_digest != self.remote_schema_digest:
+            return False
+        expected_plan_hash = self.mapping_plan.plan_hash()
+        if not hmac.compare_digest(expected_plan_hash, self.plan_hash):
+            return False
+        expected_profile_hash = self._hash_profile(
+            self.remote_endpoint,
+            self.remote_transport,
+            self.remote_schema_digest,
+            expected_plan_hash,
+            self.timestamp_utc,
+            self.remote_stdio_command,
+        )
+        return hmac.compare_digest(expected_profile_hash, self.profile_hash)
+
+    @staticmethod
+    def _hash_profile(
+        endpoint: str,
+        transport: str,
+        schema_digest: str,
+        plan_hash: str,
+        timestamp: str,
+        stdio_command: tuple[str, ...] = (),
+    ) -> str:
+        payload = {
+            "remote_endpoint": endpoint,
+            "remote_transport": transport,
+            "remote_schema_digest": schema_digest,
+            "plan_hash": plan_hash,
+            "timestamp_utc": timestamp,
+            "remote_stdio_command": list(stdio_command),
+        }
+        return hashlib.sha256(
+            json.dumps(payload, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
 
     def to_dict(self) -> dict:
         return {
@@ -50,6 +92,7 @@ class ProtocolProfile:
             "plan_hash": self.plan_hash,
             "profile_hash": self.profile_hash,
             "timestamp_utc": self.timestamp_utc,
+            "remote_stdio_command": list(self.remote_stdio_command),
             "agent_model": self.agent_model,
             "agent_version": self.agent_version,
             "probe_notes": self.probe_notes,
@@ -68,6 +111,7 @@ class ProtocolProfile:
             plan_hash=d["plan_hash"],
             profile_hash=d["profile_hash"],
             timestamp_utc=d.get("timestamp_utc", ""),
+            remote_stdio_command=tuple(d.get("remote_stdio_command", ())),
             agent_model=d.get("agent_model", "unknown"),
             agent_version=d.get("agent_version", "1.0"),
             probe_notes=d.get("probe_notes", ""),
@@ -91,16 +135,14 @@ class ProtocolProfile:
     ) -> ProtocolProfile:
         plan_hash = plan.plan_hash()
         ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-        profile_payload = {
-            "remote_endpoint": probe.mcp_endpoint,
-            "remote_transport": probe.transport.value,
-            "remote_schema_digest": plan.remote_schema_digest,
-            "plan_hash": plan_hash,
-            "timestamp_utc": ts,
-        }
-        profile_hash = hashlib.sha256(
-            json.dumps(profile_payload, sort_keys=True, separators=(",", ":")).encode()
-        ).hexdigest()
+        profile_hash = cls._hash_profile(
+            probe.mcp_endpoint,
+            probe.transport.value,
+            plan.remote_schema_digest,
+            plan_hash,
+            ts,
+            probe.stdio_command,
+        )
         return cls(
             remote_endpoint=probe.mcp_endpoint,
             remote_transport=probe.transport.value,
@@ -110,6 +152,7 @@ class ProtocolProfile:
             plan_hash=plan_hash,
             profile_hash=profile_hash,
             timestamp_utc=ts,
+            remote_stdio_command=probe.stdio_command,
             agent_model=plan.agent_model,
             agent_version=plan.agent_version,
             probe_notes=probe.probe_notes,
@@ -140,12 +183,15 @@ class ProfileCache:
 
     def get(self, schema_digest: str) -> ProtocolProfile | None:
         if schema_digest in self._cache:
-            return self._cache[schema_digest]
+            profile = self._cache[schema_digest]
+            return profile if profile.verify_integrity(schema_digest) else None
         if self._cache_dir:
             p = self._cache_dir / f"profile_{schema_digest[:16]}.json"
             if p.exists():
                 try:
                     profile = ProtocolProfile.load(p)
+                    if not profile.verify_integrity(schema_digest):
+                        return None
                     self._cache[schema_digest] = profile
                     return profile
                 except Exception:

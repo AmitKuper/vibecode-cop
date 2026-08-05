@@ -9,6 +9,8 @@ VerificationResult.passed=False) before any counted commitment.
 
 from __future__ import annotations
 
+import json
+
 import pytest
 
 import agent.adaptive.introspector as _introspector_mod
@@ -40,6 +42,7 @@ _COMMIT_MSG = {
     "role": "cop",
     "phase": "commit",
     "commitment": "a" * 64,
+    "message_json": json.dumps({"commitment": "a" * 64}, separators=(",", ":")),
     "signature": "sig_placeholder_hex",
     "config_sha256": "cfg_sha_placeholder",
     "timestamp": "2026-01-01T00:00:00Z",
@@ -50,6 +53,8 @@ _REVEAL_MSG = {
     "role": "cop",
     "phase": "reveal",
     "move": "N",
+    "message_json": '{"probe":true}',
+    "signature": "sig_placeholder_hex",
     "config_sha256": "cfg_sha_placeholder",
     "timestamp": "2026-01-01T00:00:01Z",
 }
@@ -59,6 +64,8 @@ _FINAL_AUDIT_MSG = {
     "role": "cop",
     "phase": "final_audit",
     "nonces": {"1": "nonce_placeholder_abc123"},
+    "message_json": '{"probe":true}',
+    "signature": "sig_placeholder_hex",
     "config_sha256": "cfg_sha_placeholder",
     "timestamp": "2026-01-01T00:00:02Z",
 }

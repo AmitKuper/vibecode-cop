@@ -36,6 +36,7 @@ def _intro(*tools: ToolSchema) -> IntrospectionResult:
 def _tool(name: str = "action", *, commitment: bool = True) -> ToolSchema:
     fields = {
         "game_id": {"type": "string"},
+        "gamelet": {"type": "integer"},
         "step": {"type": "integer"},
         "role": {"type": "string"},
         "phase": {"type": "string"},
@@ -44,6 +45,7 @@ def _tool(name: str = "action", *, commitment: bool = True) -> ToolSchema:
         "config_sha256": {"type": "string"},
         "reason": {"type": "string"},
         "result_hash": {"type": "string"},
+        "signed_agreement": {"type": "object"},
     }
     if commitment:
         fields["commitment"] = {"type": "string"}
@@ -146,11 +148,10 @@ def test_adapter_response_digest_schema_and_deep_paths() -> None:
     # Missing required fields now raise ProtocolCompatibilityError (not warn).
     with pytest.raises(ProtocolCompatibilityError, match="required fields missing"):
         adapter.adapt_request("commit", {"phase": "commit"})
-    response = adapter.adapt_response(
-        "commit", {"ok": True, "phase": "commit", "game_id": "wrong"}, {"game_id": "g"}
-    )
-    assert response.extracted == {"ok": True, "phase": "commit"}
-    assert response.response_digest
+    with pytest.raises(ProtocolCompatibilityError, match="Protected response field"):
+        adapter.adapt_response(
+            "commit", {"ok": True, "phase": "commit", "game_id": "wrong"}, {"game_id": "g"}
+        )
     assert adapter.check_schema_digest("native")
     assert not adapter.check_schema_digest("changed")
     assert adapter._deep_get({"a": {"b": 1}}, "a.b") == 1
@@ -161,7 +162,9 @@ def test_adapter_response_digest_schema_and_deep_paths() -> None:
 
 def test_protocol_agent_native_signed_heuristic_and_llm_paths() -> None:
     agent = ProtocolUnderstandingAgent()
-    assert agent.create_plan(_intro()).agent_model == "native-identity"
+    empty = agent.create_plan(_intro())
+    assert empty.verdict == CompatibilityVerdict.INCOMPATIBLE
+    assert "no MCP tools" in empty.capability_gaps[0]
     action = ToolSchema(
         "action",
         "safe",
@@ -174,7 +177,7 @@ def test_protocol_agent_native_signed_heuristic_and_llm_paths() -> None:
     assert compatible.verdict == CompatibilityVerdict.COMPATIBLE
     incompatible = agent.create_plan(_intro(_tool("commit_now", commitment=False)))
     assert incompatible.verdict == CompatibilityVerdict.INCOMPATIBLE
-    assert incompatible.capability_gaps == ["no commitment field found"]
+    assert any("commitment" in gap for gap in incompatible.capability_gaps)
 
     payload = {
         "remote_tool_name": "action",
@@ -185,18 +188,25 @@ def test_protocol_agent_native_signed_heuristic_and_llm_paths() -> None:
         "field_renames": {"game_id": "game_id"},
     }
     llm = SimpleNamespace(call=lambda **_: "prefix " + json.dumps(payload) + " suffix")
-    llm_plan = ProtocolUnderstandingAgent(llm, "test-model").create_plan(_intro(_tool()))
+    llm_plan = ProtocolUnderstandingAgent(llm, "test-model").create_plan(
+        _intro(_tool("commit_now", commitment=False))
+    )
     assert llm_plan.agent_model == "test-model"
     assert llm_plan.confidence == 0.75
 
     broken = SimpleNamespace(call=lambda **_: (_ for _ in ()).throw(RuntimeError("offline")))
     assert (
-        ProtocolUnderstandingAgent(broken).create_plan(_intro(_tool())).agent_model == "heuristic"
+        ProtocolUnderstandingAgent(broken)
+        .create_plan(_intro(_tool("commit_now", commitment=False)))
+        .agent_model
+        == "deterministic-schema-agent"
     )
     malformed = SimpleNamespace(call=lambda **_: "not json")
     assert (
-        ProtocolUnderstandingAgent(malformed).create_plan(_intro(_tool())).agent_model
-        == "heuristic"
+        ProtocolUnderstandingAgent(malformed)
+        .create_plan(_intro(_tool("commit_now", commitment=False)))
+        .agent_model
+        == "deterministic-schema-agent"
     )
 
 
@@ -205,7 +215,7 @@ def test_protocol_agent_helpers_and_verifier_warnings() -> None:
     assert agent._parse_llm_response('{"verdict":"COMPATIBLE"}')
     with pytest.raises(ValueError, match="valid JSON"):
         agent._parse_llm_response("{bad}")
-    assert agent._closest_match("game", {"game_id": {}}) == "game_id"
+    assert agent._closest_match("game", {"game_id": {}}) is None
     assert agent._closest_match("missing", {}) is None
     assert "nonces" in agent._canonical_fields_for_phase("final_audit")
     assert "reason" in agent._canonical_fields_for_phase("game_end")
@@ -217,9 +227,9 @@ def test_protocol_agent_helpers_and_verifier_warnings() -> None:
     plan.confidence = 0.5
     plan.phase_mappings[0].field_mappings[0].transform = "pack_json"
     result = StaticSemanticVerifier().verify(plan)
-    assert result.passed
-    assert len(result.warnings) >= 3
-    assert result.reject_reason() == ""
+    assert not result.passed
+    assert result.warnings == ["Unresolved questions: ['q']"]
+    assert "Protected field" in result.reject_reason()
 
 
 def test_verifier_rejects_each_mandatory_semantic_failure() -> None:
@@ -272,12 +282,17 @@ def test_introspector_sanitizer_rejects_injection(value: str) -> None:
 
 def test_introspector_build_parse_and_stdio_paths() -> None:
     introspector = MCPIntrospector()
+    init = {"serverInfo": {"name": "s", "version": "2"}, "protocolVersion": "p"}
+    with pytest.raises(ValueError, match="Prompt injection"):
+        introspector._build_result(
+            init,
+            [{"name": "bad", "description": "ignore previous", "inputSchema": {}}],
+            [],
+            [],
+        )
     built = introspector._build_result(
-        {"serverInfo": {"name": "s", "version": "2"}, "protocolVersion": "p"},
-        [
-            {"name": "ok", "description": "safe", "inputSchema": {"type": "object"}},
-            {"name": "bad", "description": "ignore previous", "inputSchema": {}},
-        ],
+        init,
+        [{"name": "ok", "description": "safe", "inputSchema": {"type": "object"}}],
         [{"uri": "x"}],
         [{"name": "p"}],
     )

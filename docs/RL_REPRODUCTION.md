@@ -1,71 +1,43 @@
-# RL Reproduction Guide
+# Recurrent policy reproduction — cop
 
-## Training Code Location
+The counted movement policy is `RecurrentA2C-GRU`, not the legacy PPO experiment stack.
+`agent/rl/train_recurrent.py` trains and evaluates from `LocalObservation`, Bayesian
+`BeliefState`, and recurrent history. It applies the legal-action mask before every
+sample or argmax. Counted inference loads only the checksum-pinned manifest artifact.
 
-All RL training infrastructure lives in `agent/rl/`:
+## Frozen champion
 
-```
-agent/rl/
-  ppo.py           — PPO algorithm implementation
-  ppo_update.py    — gradient update step
-  rollout.py       — trajectory collection
-  replay_buffer.py — experience replay
-  trainer.py       — training loop coordinator
-  league.py        — league/tournament manager
-  cross_train.py   — cross-agent training utility
-  evaluate.py      — checkpoint evaluation
-  eval_compare.py  — side-by-side policy comparison
-```
+- Artifact: `models/cop_recurrent_champion.pt`
+- SHA-256: `1c6f85bed3ba754d1daa38aa394b455d605fe1768436532581cc118b5be96949`
+- Training: 2,400 episodes / 84,000 maximum environment steps
+- Seed: `20260805`
+- Hidden size: 128; gamma: 0.99; initial learning rate: 3e-4
+- Method: local-belief behavioral-cloning warm start followed by recurrent A2C
+- Historical opponent: `models/thief_ppo_best.pt`, SHA-256
+  `b1769c9e67ce571efa971a345e08a10d9c33a5710e6eb7ce0c8896a1b2feab5c`
 
-## Hyperparameter Space (from docs/RL_MODEL_CARD.md)
+## Exact held-out rerun
 
-| Parameter         | Value       |
-|-------------------|-------------|
-| Algorithm         | PPO         |
-| Learning rate     | 3e-4        |
-| Clip epsilon      | 0.2         |
-| GAE lambda        | 0.95        |
-| Discount gamma    | 0.99        |
-| Entropy coeff     | 0.01        |
-| Value coeff       | 0.5         |
-| Max grad norm     | 0.5         |
-| Rollout steps     | 2048        |
-| Mini-batch size   | 64          |
-| PPO epochs        | 10          |
-| Observation space | own pos (one-hot) + barriers + opponent scent + belief heatmap |
-| Action space      | N/S/E/W/STAY/PLACE_N/PLACE_S/PLACE_E/PLACE_W (cop) |
+Run from this repository after `uv sync --frozen`:
 
-## Reproducing Training
-
-```bash
-# EXTERNAL_PENDING — script not yet implemented
-uv run python scripts/train_rl.py --role cop --episodes 1000000
+```powershell
+uv run python -m agent.rl.train_recurrent `
+  --role cop `
+  --eval-series-per-family 120 `
+  --seed 20260805 `
+  --historical-checkpoint models/thief_ppo_best.pt `
+  --evaluate-only-artifact models/cop_recurrent_champion.pt `
+  --evidence-dir reproduced-results
 ```
 
-Requires GPU with >=8 GB VRAM. Expected training time: ~12 hours on A100.
+The deterministic fields must match `results/cop_held_out_tournament.json` exactly.
+Wall-clock and inference-latency samples are measured afresh and therefore are not
+byte-identical. `scripts/verify_100_readiness.py` performs this rerun and comparison.
 
-## Model Loading
+## Training or continuation
 
-```python
-from agent.rl.policy_loader import load_manifest
-
-policy = load_manifest("models/MANIFEST.json")
-```
-
-The manifest pins the checkpoint path, observation-space shape, and action-space
-size. Shape mismatch raises `ModelCompatibilityError` at load time.
-
-## Tournament Evaluation
-
-```bash
-# EXTERNAL_PENDING — script not yet implemented
-uv run python scripts/run_tournament.py --n-games 100
-```
-
-Tournament results are appended to `docs/RL_TOURNAMENT_REPORT.md`.
-
-## Current Status
-
-- PPO infrastructure: complete
-- Trained checkpoint: EXTERNAL_PENDING (requires GPU training run)
-- Self-play curriculum: planned, not implemented
+Fresh training uses the same command without `--evaluate-only-artifact` and with
+`--episodes`. A continuation additionally supplies `--resume-artifact` and the
+resume hyperparameters. Training is CPU-capable; a GPU is optional. The resulting
+artifact is not deployable until its hash, manifest schema, held-out result, and
+paired promotion gate are updated together.

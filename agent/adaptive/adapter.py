@@ -150,14 +150,23 @@ class DeterministicProtocolAdapter:
         extracted: dict = {}
         for canonical_key, remote_path in pm.response_extraction.items():
             value = AdapterDSL.identity().apply_all(self._deep_get(raw_response, remote_path))
-            extracted[canonical_key] = value
+            # A response mapping describes where a field may be found; it must not
+            # manufacture a ``None`` value that then overwrites a valid canonical
+            # field already present in the raw response.
+            if value is not None:
+                extracted[canonical_key] = value
 
         # Verify protected response fields
         if expected_protected:
             for k, expected_v in expected_protected.items():
-                actual_v = extracted.get(k) or raw_response.get(k)
+                actual_v = extracted.get(k)
+                if actual_v is None:
+                    actual_v = raw_response.get(k)
                 if actual_v is not None and actual_v != expected_v:
-                    logger.error("DeterministicAdapter: protected response field %r mismatch", k)
+                    raise ProtocolCompatibilityError(
+                        f"Protected response field {k!r} mismatch: "
+                        f"expected {expected_v!r}, got {actual_v!r}"
+                    )
 
         digest = hashlib.sha256(
             json.dumps(raw_response, sort_keys=True, default=str).encode()

@@ -16,6 +16,7 @@ from __future__ import annotations
 import json
 import logging
 import uuid
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 
 from agent.adaptive.adapter import DeterministicProtocolAdapter
@@ -89,6 +90,73 @@ class ConformanceProbes:
         else:
             logger.error("ConformanceProbes: FAILED — %s", report.failed_probes())
         return report
+
+    async def run_remote(
+        self,
+        tool_caller: Callable[[str, dict], Awaitable[dict]],
+    ) -> ConformanceReport:
+        """Exercise mapped tools with inert, deliberately invalid envelopes.
+
+        A conforming course peer must reject these probes before mutating game
+        state because the game id, configuration hash, and signature are
+        placeholders. Repeating each call also checks stable/idempotent failure
+        behavior without revealing a real nonce, move, key, or commitment.
+        """
+        outcomes: list[ProbeOutcome] = []
+        for phase in sorted(ProtocolMappingPlan.REQUIRED_PHASES):
+            try:
+                canonical = self._remote_placeholder(phase)
+                request = self._adapter.adapt_request(phase, canonical)
+                first = await tool_caller(request.tool_name, request.params)
+                second = await tool_caller(request.tool_name, request.params)
+                if not isinstance(first, dict) or not isinstance(second, dict):
+                    raise TypeError("remote probe response must be an object")
+                if first.get("ok") is True or second.get("ok") is True:
+                    raise ValueError("peer accepted an invalid conformance envelope")
+                first_shape = self._stable_response_shape(first)
+                second_shape = self._stable_response_shape(second)
+                if first_shape != second_shape:
+                    raise ValueError("non-idempotent response to identical inert probe")
+                self._adapter.adapt_response(phase, first)
+                outcomes.append(
+                    ProbeOutcome(
+                        f"remote_{phase}",
+                        True,
+                        notes="mapped tool reached and invalid envelope rejected stably",
+                    )
+                )
+            except Exception as exc:
+                outcomes.append(ProbeOutcome(f"remote_{phase}", False, error=str(exc)))
+        return ConformanceReport(all(p.passed for p in outcomes), outcomes)
+
+    @staticmethod
+    def _stable_response_shape(response: dict) -> tuple:
+        return tuple(
+            (key, type(value).__name__, str(value))
+            for key, value in sorted(response.items())
+            if key not in {"timestamp", "request_id", "trace_id"}
+        )
+
+    @staticmethod
+    def _remote_placeholder(phase: str) -> dict:
+        payload = {
+            "game_id": _PLACEHOLDER_GAME_ID,
+            "gamelet": 1,
+            "step": 1,
+            "role": "cop",
+            "phase": phase,
+            "config_sha256": "0" * 64,
+            "timestamp": "2026-01-01T00:00:00Z",
+            "commitment": "0" * 64,
+            "move": "STAY",
+            "hint": "Protocol conformance probe.",
+            "intent": "TRUTH",
+            "nonces": {"1": "PROBE_NONCE_NOT_REAL"},
+            "reason": "probe",
+            "result_hash": "0" * 64,
+            "signed_agreement": {"probe": True},
+        }
+        return _signed_placeholder_envelope(payload)
 
     def _probe_schema_validation(self) -> ProbeOutcome:
         """Verify plan has all required phases."""

@@ -15,7 +15,9 @@ dependencies = [
     "google-auth-oauthlib>=1.0",
     "google-api-python-client>=2.0",
     "fastapi>=0.110",
+    "numpy>=1.26",
     "sympy>=1.14.0",
+    "torch>=2.2",
 ]
 
 [project.optional-dependencies]
@@ -27,10 +29,6 @@ all-llms = [
     "langchain-community>=0.0.15",
     "langchain-openai>=0.1.0",
     "langchain-anthropic>=0.1.0",
-]
-rl = [
-    "numpy>=1.26",
-    "torch>=2.2",
 ]
 
 [dependency-groups]
@@ -62,7 +60,14 @@ pythonpath = ["."]
 
 [tool.coverage.run]
 omit = [
-    "agent/rl/train*.py",
+    # Superseded pre-GRU experiment stack; the counted RecurrentA2C trainer,
+    # evaluator, loader, and inference path are deliberately measured.
+    "agent/rl/train.py",
+    "agent/rl/train_advanced.py",
+    "agent/rl/train_cli.py",
+    "agent/rl/train_config.py",
+    "agent/rl/train_multi.py",
+    "agent/rl/train_selfplay.py",
     "agent/rl/trainer.py",
     "agent/rl/league.py",
     "agent/rl/ppo.py",
@@ -73,8 +78,17 @@ omit = [
     "agent/rl/cross_train.py",
     "agent/rl/eval_compare.py",
     "agent/rl/evaluate.py",
-    "agent/rl/strategies*.py",
-    "agent/skills/game_*.py",
+    "agent/rl/strategies.py",
+    "agent/rl/strategies_base.py",
+    "agent/rl/strategies_combo.py",
+    "agent/rl/strategies_qtable.py",
+    # Historical generated discovery snapshots, never imported by the composition root.
+    "agent/skills/game_game_20260801_011757_f0450bda_mcp.py",
+    "agent/skills/game_game_20260801_012126_eafdb10d_mcp.py",
+    "agent/skills/game_game_20260801_045923_2cd89753_mcp.py",
+    "agent/skills/game_game_20260801_050125_2ddba68d_mcp.py",
+    "agent/skills/game_game_20260801_135945_3abcf9a7_mcp.py",
+    # Disabled legacy SMTP plugin; counted reporting uses gmail_*.py through Gatekeeper.
     "agent/reports/email_report.py",
 ]
 
