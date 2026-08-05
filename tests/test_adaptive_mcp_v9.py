@@ -40,6 +40,7 @@ _COMMIT_MSG = {
     "role": "cop",
     "phase": "commit",
     "commitment": "a" * 64,
+    "signature": "sig_placeholder_hex",
     "config_sha256": "cfg_sha_placeholder",
     "timestamp": "2026-01-01T00:00:00Z",
 }

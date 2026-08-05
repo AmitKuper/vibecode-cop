@@ -133,7 +133,7 @@ class TestAuditCompleteness:
 
         game_dir = tmp_path / "game"
         game_dir.mkdir()
-        (game_dir / "opponent_commitments.json").write_text(json.dumps({"0": "abc123"}))
+        (game_dir / "opponent_commitments.json").write_text(json.dumps({"1": "abc123"}))
         ok, details = run_final_audit(game_dir, "g001", "thief", {})
         assert ok is False
         assert details.get("audit_status") == "FAILED"
@@ -150,16 +150,16 @@ class TestAuditCompleteness:
 
         h_commit, nonce = create_commitment(
             game_id="g001",
-            step=0,
+            step=1,
             role="thief",
             state_hash="s" * 64,
             move="SOUTH",
             hint="heading south",
             intent="truth",
         )
-        commits = {"0": h_commit}
+        commits = {"1": h_commit}
         reveals = {
-            "0": {
+            "1": {
                 "move": "SOUTH",
                 "hint": "heading south",
                 "intent": "truth",
@@ -169,7 +169,7 @@ class TestAuditCompleteness:
         (game_dir / "opponent_commitments.json").write_text(json.dumps(commits))
         (game_dir / "opponent_reveals.json").write_text(json.dumps(reveals))
 
-        ok, details = run_final_audit(game_dir, "g001", "thief", {0: nonce})
+        ok, details = run_final_audit(game_dir, "g001", "thief", {1: nonce})
         assert ok is True
         assert details.get("audit_status") == "PASSED"
 

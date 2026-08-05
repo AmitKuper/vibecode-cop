@@ -71,6 +71,9 @@ async def run_peer_turn(
             own_pos = tuple(_board.cop_position if _is_cop else _board.thief_position)
             barrier_list = [tuple(b) for b in _board.barriers]
             barriers_remaining = runtime._cop_barriers_remaining if _is_cop else 0
+            # Use the rules-engine scent (the training-time authority) for the cop.
+            # Thief uses ScentFields which tracks the cop trail (no rules_engine equivalent).
+            opp_scent = rules.get_scent_field() if _is_cop else None
             move = runtime.orchestrator.select_trained_move(
                 own_position=own_pos,
                 barriers=barrier_list,
@@ -79,6 +82,7 @@ async def run_peer_turn(
                 step=step,
                 gamelet=gamelet,
                 last_hint=runtime._last_opponent_hint,
+                opponent_scent=opp_scent,
             )
         except Exception as policy_error:
             reason = f"counted recurrent policy inference failed: {policy_error}"
@@ -269,6 +273,10 @@ async def run_peer_turn(
                 protocol_state_after=str(build_board_state(runtime)),
             )
         except Exception as _journal_err:
+            if getattr(runtime, "counted_mode", False):
+                raise RuntimeError(
+                    f"StepJournal write failed in counted mode at step {step}"
+                ) from _journal_err
             logger.warning("[PeerTurn] StepJournal write failed at step %d: %s", step, _journal_err)
 
     outcome = rules.check_game_status()

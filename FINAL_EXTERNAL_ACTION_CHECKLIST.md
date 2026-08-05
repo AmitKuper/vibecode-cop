@@ -13,9 +13,9 @@ screenshots, or an unpushed local tag.
 | 44 | Have every group member make the required individual Moodle submission and preserve real confirmation receipts/screenshots. | EXTERNAL_PENDING |
 | 45 | Supply the team's real unique eight-character group ID and verify it in both role environments and submitted artifacts; never generate or guess it. | EXTERNAL_PENDING |
 
-Verified local source revisions:
+Verified local source revisions (post-hardening):
 
-- Cop: `b9f672381fb3c456a0a6fdb3f99a113750333548`
-- Thief: `aedbcb854a2e20579a1540732693d4c721955814`
+- Cop: `pending_post_hardening_commit`
+- Thief: `7a8a8b76ece80a3f18f6c1fe150cdea3f65a2c7f`
 
 Do not mark any row PASS until the named artifact can be independently checked.

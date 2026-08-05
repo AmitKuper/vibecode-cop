@@ -251,17 +251,19 @@ class AgentOrchestrator:
         step: int,
         gamelet: int,
         last_hint: str = "",
+        opponent_scent: list[list[float]] | None = None,
     ) -> str:
         """Run the role policy on local observation + belief + recurrent history."""
         if self.movement_policy is None:
             raise RuntimeError("trained recurrent movement policy is unavailable")
         from agent.observation import LocalObservation
 
-        scent = (
-            self.scent_fields.cop_observation_scent()
-            if self.role == "cop"
-            else self.scent_fields.thief_observation_scent()
-        )
+        if opponent_scent is not None:
+            scent = opponent_scent
+        elif self.role == "cop":
+            scent = self.scent_fields.cop_observation_scent()
+        else:
+            scent = self.scent_fields.thief_observation_scent()
         observation = LocalObservation(
             own_position=own_position,
             own_barriers_remaining=barriers_remaining,

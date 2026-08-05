@@ -61,7 +61,16 @@ class ReplayApp:
             self._tamper_reason = f"Signature verification failed: {e}"
             return False
 
-        # Load and verify each gamelet journal
+        # Counted matches require exactly 6 gamelet journals.
+        if len(journal_paths) != 6:
+            self._tamper_reason = f"Expected exactly 6 gamelet journals, got {len(journal_paths)}"
+            return False
+
+        # Load and verify each gamelet journal; compare transcript root to signed result.
+        gamelet_outcomes = {
+            go.gamelet: go
+            for go in (self._result.agreement.gamelet_outcomes if self._result else [])
+        }
         for gamelet, path in journal_paths.items():
             try:
                 journal = StepJournal(path)
@@ -69,6 +78,15 @@ class ReplayApp:
                 if not ok:
                     self._tamper_reason = f"Gamelet {gamelet} chain broken: {err}"
                     return False
+                outcome = gamelet_outcomes.get(gamelet)
+                if outcome is not None and outcome.transcript_root:
+                    journal_root = journal.transcript_root()
+                    if journal_root != outcome.transcript_root:
+                        self._tamper_reason = (
+                            f"Gamelet {gamelet} transcript_root mismatch: "
+                            f"journal={journal_root} signed={outcome.transcript_root}"
+                        )
+                        return False
                 self._journals[gamelet] = journal
             except Exception as e:
                 self._tamper_reason = f"Failed to load gamelet {gamelet}: {e}"

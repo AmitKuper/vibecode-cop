@@ -201,7 +201,9 @@ class DeterministicProtocolAdapter:
         required = [fm.remote_field for fm in pm.field_mappings if fm.required]
         missing = [f for f in required if self._deep_get(params, f) is None]
         if missing:
-            logger.warning("DeterministicAdapter: required fields missing in request: %s", missing)
+            raise ProtocolCompatibilityError(
+                f"DeterministicAdapter: required fields missing in request: {missing}"
+            )
 
     @staticmethod
     def _deep_get(d: dict, path: str) -> object:

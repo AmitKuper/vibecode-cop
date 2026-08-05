@@ -98,9 +98,15 @@ class StepJournal:
 
     def verify_chain(self) -> tuple[bool, str]:
         """Verify entire chain. Returns (ok, error_msg)."""
+        if len(self._entries) != len(self._chain_hashes):
+            return (
+                False,
+                f"journal corrupted: {len(self._entries)} entries but "
+                f"{len(self._chain_hashes)} chain hashes",
+            )
         prev = self._genesis_hash
         for i, (entry, stored_hash) in enumerate(
-            zip(self._entries, self._chain_hashes, strict=False)
+            zip(self._entries, self._chain_hashes, strict=True)
         ):
             computed = entry.event_hash(prev)
             if computed != stored_hash:

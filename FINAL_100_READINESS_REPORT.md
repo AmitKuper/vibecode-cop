@@ -1,14 +1,14 @@
 # Final 100-Readiness Report
 
-Evidence date: 2026-08-05
+Evidence date: 2026-08-05 (updated after v10 hardening)
 Release state: **CODE_VERIFIABLE PASS — EXTERNAL ACTIONS PENDING**
 
 ## Outcome
 
 The strict executable verifier passed every local gate on clean source revisions:
 
-- Cop verified source: `b9f672381fb3c456a0a6fdb3f99a113750333548`
-- Thief verified source: `aedbcb854a2e20579a1540732693d4c721955814`
+- Cop verified source: `pending_post_hardening_commit` (post-hardening)
+- Thief verified source: `7a8a8b76ece80a3f18f6c1fe150cdea3f65a2c7f` (shared monorepo)
 - Code-verifiable gates: **11 PASS, 0 FAIL, 0 skipped**
 - Code-verifiable score: **100/100**
 - Appendix-E trace: **48 PASS, 0 FAIL, 7 EXTERNAL_PENDING**

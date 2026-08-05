@@ -78,6 +78,29 @@ def run_final_audit(
             "note": "zero-turn abort; not a counted match",
         }
 
+    # Exact evidence-set check: every step from 1..final_step must be present,
+    # with no gaps, no extras, and no non-contiguous steps.
+    final_step = max(h_commits.keys())
+    expected = set(range(1, final_step + 1))
+    if set(h_commits.keys()) != expected:
+        missing = expected - set(h_commits.keys())
+        extra = set(h_commits.keys()) - expected
+        logger.warning(f"[PeerAudit] Commitment step mismatch: missing={missing} extra={extra}")
+        return False, {
+            "audit_status": "FAILED",
+            "note": f"commitment steps do not form contiguous range 1..{final_step}",
+        }
+    if set(reveals.keys()) != expected:
+        return False, {
+            "audit_status": "FAILED",
+            "note": f"reveal steps do not match commitment steps 1..{final_step}",
+        }
+    if opponent_nonces and set(opponent_nonces.keys()) != expected:
+        return False, {
+            "audit_status": "FAILED",
+            "note": f"nonce steps do not match commitment steps 1..{final_step}",
+        }
+
     verified = failed = 0
     details: dict[str, str] = {}
 

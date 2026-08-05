@@ -218,10 +218,10 @@ class TestRunFinalAudit:
     def test_missing_nonce_causes_failure(self, tmp_path):
         game_id = "audit_missing_nonce"
         game_dir, nonces = self._setup_game(tmp_path, game_id, steps=2)
-        del nonces[1]  # Remove nonce for step 1
+        del nonces[1]  # Remove nonce for step 1 — exact set check catches this
         ok, details = run_final_audit(game_dir, game_id, "thief", nonces)
         assert ok is False
-        assert details["step_1"] == "missing_nonce"
+        assert details.get("audit_status") == "FAILED"
 
     def test_wrong_nonce_causes_mismatch(self, tmp_path):
         game_id = "audit_wrong_nonce"
@@ -238,6 +238,55 @@ class TestRunFinalAudit:
         ok, details = run_final_audit(game_dir, "empty_game", "thief", {})
         assert ok is False
         assert details.get("audit_status") == "NOT_APPLICABLE"
+
+    def test_noncontiguous_commitment_steps_fails(self, tmp_path):
+        """Gap in commitment step keys (e.g. 1,3 with no 2) triggers exact-set failure."""
+        game_id = "audit_gap_steps"
+        game_dir = tmp_path / game_id
+        game_dir.mkdir()
+        for step in [1, 3]:
+            h_commit, nonce = create_commitment(
+                game_id=game_id,
+                step=step,
+                role="thief",
+                state_hash="s" * 64,
+                move="STAY",
+                hint="h",
+                intent="truth",
+            )
+            append_opponent_commit(game_dir, step, h_commit)
+        ok, details = run_final_audit(game_dir, game_id, "thief", {1: "n", 3: "n"})
+        assert ok is False
+        assert details.get("audit_status") == "FAILED"
+        assert "commitment steps" in details.get("note", "")
+
+    def test_empty_nonces_causes_missing_nonce_in_loop(self, tmp_path):
+        """Empty nonces dict bypasses set-check; loop hits missing-nonce branch."""
+        game_id = "audit_loop_nonce"
+        game_dir, _ = self._setup_game(tmp_path, game_id, steps=1)
+        ok, details = run_final_audit(game_dir, game_id, "thief", {})
+        assert ok is False
+        assert details.get("step_1") == "missing_nonce"
+
+    def test_null_reveal_causes_missing_reveal_in_loop(self, tmp_path):
+        """Null reveal value in file passes key set-check but triggers missing-reveal branch."""
+        game_id = "audit_null_reveal"
+        game_dir = tmp_path / game_id
+        game_dir.mkdir()
+        h_commit, nonce = create_commitment(
+            game_id=game_id,
+            step=1,
+            role="thief",
+            state_hash="s" * 64,
+            move="STAY",
+            hint="h",
+            intent="truth",
+        )
+        append_opponent_commit(game_dir, 1, h_commit)
+        (game_dir / "opponent_reveals.json").write_text('{"1": null}', encoding="utf-8")
+        ok, details = run_final_audit(game_dir, game_id, "thief", {1: nonce})
+        assert ok is False
+        assert details.get("step_1") == "missing_reveal"
 
 
 # ---------------------------------------------------------------------------

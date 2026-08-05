@@ -141,11 +141,11 @@ def test_conformance_report_and_failure_paths() -> None:
         DeterministicProtocolAdapter(plan)
 
 
-def test_adapter_response_digest_schema_and_deep_paths(caplog) -> None:
+def test_adapter_response_digest_schema_and_deep_paths() -> None:
     adapter = DeterministicProtocolAdapter.native()
-    adapted = adapter.adapt_request("commit", {"phase": "commit"})
-    assert adapted.params["phase"] == "commit"
-    assert "required fields missing" in caplog.text
+    # Missing required fields now raise ProtocolCompatibilityError (not warn).
+    with pytest.raises(ProtocolCompatibilityError, match="required fields missing"):
+        adapter.adapt_request("commit", {"phase": "commit"})
     response = adapter.adapt_response(
         "commit", {"ok": True, "phase": "commit", "game_id": "wrong"}, {"game_id": "g"}
     )

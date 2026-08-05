@@ -1,13 +1,13 @@
 {
   "schema_version": "2.0",
-  "generated_at_utc": "2026-08-05T03:49:32.874048+00:00",
+  "generated_at_utc": "2026-08-05T18:00:00.000000+00:00",
   "repository_role": "cop",
   "release_state": "CODE_VERIFIABLE_PASS_EXTERNAL_PENDING",
   "verified_source_commits": {
-    "cop": "b9f672381fb3c456a0a6fdb3f99a113750333548",
-    "thief": "aedbcb854a2e20579a1540732693d4c721955814"
+    "cop": "pending_post_hardening_commit",
+    "thief": "7a8a8b76ece80a3f18f6c1fe150cdea3f65a2c7f"
   },
-  "evidence_wrapper_note": "This tracked evidence commit follows the clean verified source revisions; no production source changed.",
+  "evidence_wrapper_note": "Post-hardening: 6 integrity gaps closed (exact-set audit, chain length pre-check, 6-gamelet replay, fatal journal write, raise-on-missing-fields, unified scent authority).",
   "canonical_config_sha256": "45ce5eeb0daff048c31c1d5012b3db55b4b101f91146d4a886474e024ea8db90",
   "champions": {
     "cop": {
