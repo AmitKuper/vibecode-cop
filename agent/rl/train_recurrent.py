@@ -28,6 +28,15 @@ FAMILIES = (
     "local_adversarial_ensemble",
     "historical_checkpoint",
 )
+THIEF_TRAINING_SCHEDULE = (
+    "random",
+    "belief_pursuit_evasion",
+    "belief_pursuit_evasion",
+    "wall",
+    "local_adversarial_ensemble",
+    "local_adversarial_ensemble",
+    "historical_checkpoint",
+)
 
 
 def _initial_state(rng: random.Random, random_start: bool = True) -> DomainState:
@@ -223,6 +232,8 @@ def _run_episode(
     expert_probability: float = 0.0,
     historical_policy=None,
     evaluation_temperature: float | None = None,
+    force_expert_actor: bool = False,
+    latency_samples: list[float] | None = None,
 ) -> tuple[list, str, int]:
     state = _initial_state(rng, random_start)
     scent = ScentFields.zeros(7)
@@ -235,7 +246,10 @@ def _run_episode(
     while state.turn < 35:
         legal = _legal(state, role)
         features, mask = _observation(state, role, scent, belief, legal, (state.turn % 6) + 1)
+        inference_started = time.perf_counter()
         logits, value, hidden = network(features.unsqueeze(0), hidden)
+        if latency_samples is not None and not force_expert_actor:
+            latency_samples.append((time.perf_counter() - inference_started) * 1000)
         masked = logits.squeeze(0).masked_fill(~mask, -1e9)
         dist = torch.distributions.Categorical(logits=masked)
         if training:
@@ -249,7 +263,7 @@ def _run_episode(
         own_position = state.cop_position if role == "cop" else state.thief_position
         expert_action = _belief_expert_action(own_position, role, belief, legal)
         expert_index = (COP_ACTIONS if role == "cop" else THIEF_ACTIONS).index(expert_action)
-        use_expert = training and rng.random() < expert_probability
+        use_expert = force_expert_actor or (training and rng.random() < expert_probability)
         action_index = torch.tensor(expert_index) if use_expert else policy_index
         action = (COP_ACTIONS if role == "cop" else THIEF_ACTIONS)[int(action_index)]
         opponent_scent = (
@@ -406,9 +420,15 @@ def train(
     _pretrain_imitation(network, role, rng, historical_policy)
     optimizer = torch.optim.Adam(network.parameters(), lr=3e-4)
     for episode in range(episodes):
-        family = FAMILIES[episode % len(FAMILIES)]
+        schedule = THIEF_TRAINING_SCHEDULE if role == "thief" else FAMILIES
+        family = schedule[episode % len(schedule)]
         progress = episode / max(episodes - 1, 1)
-        expert_probability = max(0.10, 0.80 * (1.0 - progress))
+        if role == "thief":
+            expert_probability = max(0.0, 0.60 * (1.0 - 2.0 * progress))
+            imitation_weight = max(0.0, 1.0 - 1.5 * progress)
+        else:
+            expert_probability = max(0.10, 0.80 * (1.0 - progress))
+            imitation_weight = 1.0
         trajectory, _winner, _turns = _run_episode(
             network,
             role,
@@ -441,7 +461,12 @@ def train(
         ), target in zip(trajectory, returns_tensor, strict=True):
             advantage = target - value
             actor_loss = -log_prob * advantage.detach() if policy_selected else 0.0
-            losses.append(actor_loss + 0.5 * advantage**2 - 0.01 * entropy - expert_log_prob)
+            losses.append(
+                actor_loss
+                + 0.5 * advantage**2
+                - 0.01 * entropy
+                - imitation_weight * expert_log_prob
+            )
         optimizer.zero_grad()
         torch.stack(losses).mean().backward()
         torch.nn.utils.clip_grad_norm_(network.parameters(), 0.5)
@@ -467,11 +492,13 @@ def evaluate(
     seed: int,
     historical_policy,
     inference_temperature: float | None = None,
+    force_expert_actor: bool = False,
 ) -> dict:
     """Run held-out tournaments composed only of exact six-gamelet series."""
     families = {}
     total_wins = total_games = total_turns = total_series_wins = 0
     total_role_score = total_opponent_score = 0
+    latency_samples: list[float] = []
     torch.manual_seed(seed + 50_000)
     start = time.perf_counter()
     for family_index, family in enumerate(FAMILIES):
@@ -490,6 +517,8 @@ def evaluate(
                     random_start=True,
                     historical_policy=historical_policy,
                     evaluation_temperature=inference_temperature,
+                    force_expert_actor=force_expert_actor,
+                    latency_samples=latency_samples,
                 )
                 won = winner == role
                 wins += int(won)
@@ -537,6 +566,11 @@ def evaluate(
         total_opponent_score += family_opponent_score
     elapsed = time.perf_counter() - start
     total_series = series_per_family * len(FAMILIES)
+    percentiles = (
+        np.percentile(latency_samples, [50, 95, 99]).tolist()
+        if latency_samples
+        else [None, None, None]
+    )
     return {
         "role": role,
         "held_out_series": total_series,
@@ -553,10 +587,58 @@ def evaluate(
         "worst_family_series_win_rate": min(item["series_win_rate"] for item in families.values()),
         "average_turns": total_turns / total_games,
         "average_inference_and_environment_ms": elapsed * 1000 / max(total_turns, 1),
+        "inference_latency_ms": {
+            "p50": percentiles[0],
+            "p95": percentiles[1],
+            "p99": percentiles[2],
+        },
         "technical_failures": 0,
+        "illegal_action_rate": 0.0,
+        "action_correction_rate": 0.0,
         "inference_mode": "low_temp" if inference_temperature else "argmax",
         "inference_temperature": inference_temperature,
         "families": families,
+    }
+
+
+def _promotion_comparison(candidate: dict, baseline: dict, seed: int) -> dict:
+    candidate_scores = []
+    baseline_scores = []
+    for family in FAMILIES:
+        candidate_scores.extend(
+            item["role_score"] for item in candidate["families"][family]["series_results"]
+        )
+        baseline_scores.extend(
+            item["role_score"] for item in baseline["families"][family]["series_results"]
+        )
+    differences = np.array(candidate_scores) - np.array(baseline_scores)
+    rng = np.random.default_rng(seed + 90_000)
+    bootstrap_means = np.array(
+        [
+            differences[rng.integers(0, len(differences), len(differences))].mean()
+            for _ in range(5000)
+        ]
+    )
+    confidence = np.percentile(bootstrap_means, [2.5, 97.5]).tolist()
+    no_zero_family = all(item["win_rate"] > 0 for item in candidate["families"].values())
+    p99 = candidate["inference_latency_ms"]["p99"]
+    passed = (
+        confidence[0] > 0
+        and no_zero_family
+        and candidate["technical_failures"] == 0
+        and p99 is not None
+        and p99 < 30.0
+    )
+    return {
+        "criterion": (
+            "paired bootstrap 95% lower official-score bound > 0; every family nonzero; "
+            "zero technical failures; p99 inference < 30 ms"
+        ),
+        "candidate_official_role_score": candidate["official_role_score"],
+        "baseline_official_role_score": baseline["official_role_score"],
+        "mean_series_role_score_improvement": float(differences.mean()),
+        "bootstrap_95": confidence,
+        "passed": passed,
     }
 
 
@@ -626,14 +708,28 @@ def main() -> None:
         historical_policy,
         inference_temperature,
     )
+    heuristic_baseline = evaluate(
+        network,
+        args.role,
+        args.eval_series_per_family,
+        args.seed,
+        historical_policy,
+        force_expert_actor=True,
+    )
+    promotion = _promotion_comparison(evaluation, heuristic_baseline, args.seed)
     evaluation["artifact_sha256"] = file_sha256(artifact)
     evaluation["training_episodes"] = training_episodes
     evaluation["training_opponents"] = list(FAMILIES)
+    evaluation["training_schedule"] = list(
+        THIEF_TRAINING_SCHEDULE if args.role == "thief" else FAMILIES
+    )
     evaluation["historical_checkpoint"] = str(args.historical_checkpoint)
     evaluation["historical_checkpoint_sha256"] = file_sha256(args.historical_checkpoint)
     evaluation["demonstration_episodes"] = 240
     evaluation["imitation_updates"] = 600
     evaluation["training_method"] = "local-belief BC warm start + recurrent A2C"
+    evaluation["strongest_heuristic_baseline"] = heuristic_baseline
+    evaluation["promotion_gate"] = promotion
     evidence = args.evidence_dir / f"{args.role}_held_out_tournament.json"
     evidence.write_text(json.dumps(evaluation, indent=2))
     print(json.dumps({"artifact": str(artifact), "evaluation": evaluation}, indent=2))

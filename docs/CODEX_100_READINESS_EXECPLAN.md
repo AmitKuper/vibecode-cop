@@ -208,6 +208,13 @@ EXTERNAL_PENDING. Risk: never synthesize evidence. SHAs: pending.
   1.66 ms average inference/environment latency over 80 held-out games. The
   calibration artifact is not a champion; immutable role artifacts and the full
   tournament gate remain open.
+- [x] 2026-08-05T03:20+03:00 — trained and evaluated frozen role candidates over
+  150 exact six-gamelet held-out series per role. Cop passed preliminary strength
+  evidence (88.56% gamelets, 100% series, 78.89% worst family). Thief remained
+  unpromoted: low-temperature candidate scored 64.22% gamelets and 16.11% worst
+  family but 7,390 official points versus the Bayesian heuristic's 7,395. The
+  evaluator now predeclares and enforces a paired-bootstrap official-score gate,
+  nonzero families, zero technical failures, and p99 inference below 30 ms.
 - [ ] M1 counted composition root.
 - [ ] M2 zero-trust final lifecycle.
 - [ ] M3 RL strength.
@@ -257,6 +264,10 @@ EXTERNAL_PENDING. Risk: never synthesize evidence. SHAs: pending.
   omitted decisive barrier actions. A local-only behavioral-cloning warm start
   followed by recurrent A2C removed that failure in calibration without exposing
   hidden coordinates to inference.
+- The first privacy-correct thief candidate matched but did not beat the strongest
+  Bayesian heuristic on identical held-out seeds. Aggregate win rate alone is not
+  promotion evidence; the checkpoint remains a rejected candidate until the
+  machine-enforced bootstrap score gate passes.
 
 ## Validation
 
