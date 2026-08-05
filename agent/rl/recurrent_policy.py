@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import secrets
 from pathlib import Path
 
 import torch
@@ -40,11 +41,22 @@ class RecurrentPolicyLoadError(RuntimeError):
 class RecurrentRolePolicy:
     """Stateful deterministic inference wrapper, one instance per OS process."""
 
-    def __init__(self, network: RecurrentActorCritic, role: str, device: torch.device):
+    def __init__(
+        self,
+        network: RecurrentActorCritic,
+        role: str,
+        device: torch.device,
+        inference_mode: str = "argmax",
+        temperature: float | None = None,
+    ):
         self.network = network.eval()
         self.role = role
         self.device = device
         self.action_names = COP_ACTIONS if role == "cop" else THIEF_ACTIONS
+        self.inference_mode = inference_mode
+        self.temperature = temperature
+        self._generator = torch.Generator(device="cpu")
+        self._generator.manual_seed(secrets.randbits(63))
         self._hidden: torch.Tensor | None = None
 
     def reset(self) -> None:
@@ -73,7 +85,13 @@ class RecurrentRolePolicy:
         if not bool(mask.any()):
             raise RuntimeError("legal-action mask has no deployable action")
         masked = logits.masked_fill(~mask, torch.finfo(logits.dtype).min)
-        action_index = int(masked.argmax(dim=-1).item())
+        if self.inference_mode == "low_temp":
+            probabilities = torch.softmax(masked.squeeze(0) / self.temperature, dim=-1)
+            action_index = int(
+                torch.multinomial(probabilities, 1, generator=self._generator).item()
+            )
+        else:
+            action_index = int(masked.argmax(dim=-1).item())
         self._hidden = hidden.detach()
         return self.action_names[action_index]
 
@@ -119,8 +137,21 @@ def load_recurrent_policy(manifest_path: str | Path, role: str) -> RecurrentRole
     expected_actions = len(COP_ACTIONS if role == "cop" else THIEF_ACTIONS)
     if int(checkpoint["n_actions"]) != expected_actions:
         raise RecurrentPolicyLoadError("checkpoint action schema is incompatible")
+    if entry.inference_mode not in {"argmax", "low_temp"}:
+        raise RecurrentPolicyLoadError("manifest inference mode is unsupported")
+    temperature = None
+    if entry.inference_mode == "low_temp":
+        temperature = float(entry.hyperparams.get("inference_temperature", 0.0))
+        if not 0 < temperature <= 1:
+            raise RecurrentPolicyLoadError("low_temp inference temperature must be in (0, 1]")
     network.eval()
-    return RecurrentRolePolicy(network, role, device)
+    return RecurrentRolePolicy(
+        network,
+        role,
+        device,
+        inference_mode=entry.inference_mode,
+        temperature=temperature,
+    )
 
 
 def file_sha256(path: str | Path) -> str:

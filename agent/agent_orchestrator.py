@@ -170,10 +170,16 @@ class AgentOrchestrator:
                 raise ValueError(
                     "COUNTED mode rejected: model training config SHA does not match counted config"
                 )
-            if entry.inference_mode != "argmax":
+            if entry.inference_mode not in {"argmax", "low_temp"}:
                 raise ValueError(
-                    "COUNTED mode rejected: recurrent policy inference must be deterministic argmax"
+                    "COUNTED mode rejected: recurrent policy inference mode is unsupported"
                 )
+            if entry.inference_mode == "low_temp":
+                temperature = float(entry.hyperparams.get("inference_temperature", 0.0))
+                if not 0 < temperature <= 1:
+                    raise ValueError(
+                        "COUNTED mode rejected: low_temp inference temperature is invalid"
+                    )
         except ModelLoadError as e:
             raise ValueError(f"COUNTED mode rejected: {e}") from e
 

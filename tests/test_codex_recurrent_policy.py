@@ -58,6 +58,23 @@ def test_canonical_legal_mask_overrides_illegal_highest_logit():
     assert selected == "STAY"
 
 
+def test_low_temperature_sampling_never_escapes_canonical_mask():
+    network = RecurrentActorCritic(obs_tensor_shape(7), len(COP_ACTIONS), hidden_size=8)
+    policy = RecurrentRolePolicy(
+        network,
+        "cop",
+        torch.device("cpu"),
+        inference_mode="low_temp",
+        temperature=0.5,
+    )
+
+    selected = {
+        policy.select_action(_observation(), BeliefState.uniform(7), ["STAY"]) for _ in range(20)
+    }
+
+    assert selected == {"STAY"}
+
+
 def test_manifest_checksum_mismatch_fails_closed(tmp_path):
     artifact = tmp_path / "cop.pt"
     artifact.write_bytes(b"tampered checkpoint")

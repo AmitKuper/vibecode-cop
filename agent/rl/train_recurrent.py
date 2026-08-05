@@ -222,6 +222,7 @@ def _run_episode(
     random_start: bool,
     expert_probability: float = 0.0,
     historical_policy=None,
+    evaluation_temperature: float | None = None,
 ) -> tuple[list, str, int]:
     state = _initial_state(rng, random_start)
     scent = ScentFields.zeros(7)
@@ -237,7 +238,14 @@ def _run_episode(
         logits, value, hidden = network(features.unsqueeze(0), hidden)
         masked = logits.squeeze(0).masked_fill(~mask, -1e9)
         dist = torch.distributions.Categorical(logits=masked)
-        policy_index = dist.sample() if training else masked.argmax()
+        if training:
+            policy_index = dist.sample()
+        elif evaluation_temperature is not None:
+            policy_index = torch.distributions.Categorical(
+                logits=masked / evaluation_temperature
+            ).sample()
+        else:
+            policy_index = masked.argmax()
         own_position = state.cop_position if role == "cop" else state.thief_position
         expert_action = _belief_expert_action(own_position, role, belief, legal)
         expert_index = (COP_ACTIONS if role == "cop" else THIEF_ACTIONS).index(expert_action)
@@ -458,11 +466,13 @@ def evaluate(
     series_per_family: int,
     seed: int,
     historical_policy,
+    inference_temperature: float | None = None,
 ) -> dict:
     """Run held-out tournaments composed only of exact six-gamelet series."""
     families = {}
     total_wins = total_games = total_turns = total_series_wins = 0
     total_role_score = total_opponent_score = 0
+    torch.manual_seed(seed + 50_000)
     start = time.perf_counter()
     for family_index, family in enumerate(FAMILIES):
         rng = random.Random(seed + 10_000 + family_index)
@@ -479,6 +489,7 @@ def evaluate(
                     training=False,
                     random_start=True,
                     historical_policy=historical_policy,
+                    evaluation_temperature=inference_temperature,
                 )
                 won = winner == role
                 wins += int(won)
@@ -543,6 +554,8 @@ def evaluate(
         "average_turns": total_turns / total_games,
         "average_inference_and_environment_ms": elapsed * 1000 / max(total_turns, 1),
         "technical_failures": 0,
+        "inference_mode": "low_temp" if inference_temperature else "argmax",
+        "inference_temperature": inference_temperature,
         "families": families,
     }
 
@@ -557,6 +570,8 @@ def main() -> None:
     parser.add_argument("--models-dir", type=Path, default=Path("models"))
     parser.add_argument("--evidence-dir", type=Path, default=Path("results"))
     parser.add_argument("--historical-checkpoint", type=Path, required=True)
+    parser.add_argument("--inference-temperature", type=float, default=0.0)
+    parser.add_argument("--evaluate-only-artifact", type=Path)
     args = parser.parse_args()
     args.models_dir.mkdir(parents=True, exist_ok=True)
     args.evidence_dir.mkdir(parents=True, exist_ok=True)
@@ -564,36 +579,55 @@ def main() -> None:
 
     opponent_role = "thief" if args.role == "cop" else "cop"
     historical_policy = load_checkpoint(args.historical_checkpoint, opponent_role, max_steps=35)
-    network = train(
-        args.role,
-        args.episodes,
-        args.seed,
-        args.hidden_size,
-        historical_policy,
-    )
-    artifact_name = f"{args.role}_recurrent_champion.pt"
-    artifact = args.models_dir / artifact_name
-    torch.save(
-        {
-            "role": args.role,
-            "algorithm": "RecurrentA2C-GRU",
-            "input_size": obs_tensor_shape(7),
-            "n_actions": len(COP_ACTIONS if args.role == "cop" else THIEF_ACTIONS),
-            "hidden_size": args.hidden_size,
-            "training_steps": args.episodes * 35,
-            "state_dict": network.state_dict(),
-        },
-        artifact,
-    )
+    if args.evaluate_only_artifact:
+        artifact = args.evaluate_only_artifact
+        checkpoint = torch.load(artifact, map_location="cpu", weights_only=True)
+        if checkpoint.get("role") != args.role:
+            raise RuntimeError("evaluation artifact role does not match --role")
+        network = RecurrentActorCritic(
+            int(checkpoint["input_size"]),
+            int(checkpoint["n_actions"]),
+            int(checkpoint["hidden_size"]),
+        )
+        network.load_state_dict(checkpoint["state_dict"])
+        network.eval()
+        training_episodes = int(checkpoint["training_steps"]) // 35
+    else:
+        network = train(
+            args.role,
+            args.episodes,
+            args.seed,
+            args.hidden_size,
+            historical_policy,
+        )
+        artifact_name = f"{args.role}_recurrent_champion.pt"
+        artifact = args.models_dir / artifact_name
+        torch.save(
+            {
+                "role": args.role,
+                "algorithm": "RecurrentA2C-GRU",
+                "input_size": obs_tensor_shape(7),
+                "n_actions": len(COP_ACTIONS if args.role == "cop" else THIEF_ACTIONS),
+                "hidden_size": args.hidden_size,
+                "training_steps": args.episodes * 35,
+                "state_dict": network.state_dict(),
+            },
+            artifact,
+        )
+        training_episodes = args.episodes
+    inference_temperature = args.inference_temperature or None
+    if inference_temperature is not None and not 0 < inference_temperature <= 1:
+        raise RuntimeError("inference temperature must be in (0, 1]")
     evaluation = evaluate(
         network,
         args.role,
         args.eval_series_per_family,
         args.seed,
         historical_policy,
+        inference_temperature,
     )
     evaluation["artifact_sha256"] = file_sha256(artifact)
-    evaluation["training_episodes"] = args.episodes
+    evaluation["training_episodes"] = training_episodes
     evaluation["training_opponents"] = list(FAMILIES)
     evaluation["historical_checkpoint"] = str(args.historical_checkpoint)
     evaluation["historical_checkpoint_sha256"] = file_sha256(args.historical_checkpoint)
