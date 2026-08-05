@@ -7,8 +7,8 @@ Release state: **CODE_VERIFIABLE PASS — EXTERNAL ACTIONS PENDING**
 
 The strict executable verifier passed every local gate on clean source revisions:
 
-- Cop verified source: `pending_post_hardening_commit` (post-hardening)
-- Thief verified source: `7a8a8b76ece80a3f18f6c1fe150cdea3f65a2c7f` (shared monorepo)
+- Cop verified source: `7b2607773ce09e4a98465d62a0a1a9a5b91b6e65` (post-hardening)
+- Thief verified source: `22263c86d795c52c3e40ebb568fa8a7c7cfda063` (post-hardening)
 - Code-verifiable gates: **11 PASS, 0 FAIL, 0 skipped**
 - Code-verifiable score: **100/100**
 - Appendix-E trace: **48 PASS, 0 FAIL, 7 EXTERNAL_PENDING**

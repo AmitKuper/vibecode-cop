@@ -15,7 +15,7 @@ screenshots, or an unpushed local tag.
 
 Verified local source revisions (post-hardening):
 
-- Cop: `pending_post_hardening_commit`
-- Thief: `7a8a8b76ece80a3f18f6c1fe150cdea3f65a2c7f`
+- Cop: `7b2607773ce09e4a98465d62a0a1a9a5b91b6e65`
+- Thief: `22263c86d795c52c3e40ebb568fa8a7c7cfda063`
 
 Do not mark any row PASS until the named artifact can be independently checked.

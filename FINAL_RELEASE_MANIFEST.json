@@ -4,8 +4,8 @@
   "repository_role": "cop",
   "release_state": "CODE_VERIFIABLE_PASS_EXTERNAL_PENDING",
   "verified_source_commits": {
-    "cop": "pending_post_hardening_commit",
-    "thief": "7a8a8b76ece80a3f18f6c1fe150cdea3f65a2c7f"
+    "cop": "7b2607773ce09e4a98465d62a0a1a9a5b91b6e65",
+    "thief": "22263c86d795c52c3e40ebb568fa8a7c7cfda063"
   },
   "evidence_wrapper_note": "Post-hardening: 6 integrity gaps closed (exact-set audit, chain length pre-check, 6-gamelet replay, fatal journal write, raise-on-missing-fields, unified scent authority).",
   "canonical_config_sha256": "45ce5eeb0daff048c31c1d5012b3db55b4b101f91146d4a886474e024ea8db90",
