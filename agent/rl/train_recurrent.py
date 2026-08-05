@@ -36,6 +36,7 @@ THIEF_TRAINING_SCHEDULE = (
     "local_adversarial_ensemble",
     "local_adversarial_ensemble",
     "historical_checkpoint",
+    "historical_checkpoint",
 )
 
 
@@ -410,20 +411,36 @@ def train(
     seed: int,
     hidden_size: int,
     historical_policy,
+    resume_checkpoint: dict | None = None,
 ) -> RecurrentActorCritic:
     torch.manual_seed(seed)
     np.random.seed(seed)
     rng = random.Random(seed)
-    network = RecurrentActorCritic(
-        obs_tensor_shape(7), len(COP_ACTIONS if role == "cop" else THIEF_ACTIONS), hidden_size
-    )
-    _pretrain_imitation(network, role, rng, historical_policy)
+    if resume_checkpoint is None:
+        network = RecurrentActorCritic(
+            obs_tensor_shape(7),
+            len(COP_ACTIONS if role == "cop" else THIEF_ACTIONS),
+            hidden_size,
+        )
+        _pretrain_imitation(network, role, rng, historical_policy)
+    else:
+        if resume_checkpoint.get("role") != role:
+            raise RuntimeError("resume checkpoint role does not match training role")
+        network = RecurrentActorCritic(
+            int(resume_checkpoint["input_size"]),
+            int(resume_checkpoint["n_actions"]),
+            int(resume_checkpoint["hidden_size"]),
+        )
+        network.load_state_dict(resume_checkpoint["state_dict"])
     optimizer = torch.optim.Adam(network.parameters(), lr=3e-4)
     for episode in range(episodes):
         schedule = THIEF_TRAINING_SCHEDULE if role == "thief" else FAMILIES
         family = schedule[episode % len(schedule)]
         progress = episode / max(episodes - 1, 1)
-        if role == "thief":
+        if resume_checkpoint is not None:
+            expert_probability = 0.0
+            imitation_weight = 0.0
+        elif role == "thief":
             expert_probability = max(0.0, 0.60 * (1.0 - 2.0 * progress))
             imitation_weight = max(0.0, 1.0 - 1.5 * progress)
         else:
@@ -654,6 +671,7 @@ def main() -> None:
     parser.add_argument("--historical-checkpoint", type=Path, required=True)
     parser.add_argument("--inference-temperature", type=float, default=0.0)
     parser.add_argument("--evaluate-only-artifact", type=Path)
+    parser.add_argument("--resume-artifact", type=Path)
     args = parser.parse_args()
     args.models_dir.mkdir(parents=True, exist_ok=True)
     args.evidence_dir.mkdir(parents=True, exist_ok=True)
@@ -675,12 +693,22 @@ def main() -> None:
         network.eval()
         training_episodes = int(checkpoint["training_steps"]) // 35
     else:
+        resume_checkpoint = None
+        resumed_from_sha256 = None
+        previous_training_steps = 0
+        if args.resume_artifact:
+            resumed_from_sha256 = file_sha256(args.resume_artifact)
+            resume_checkpoint = torch.load(
+                args.resume_artifact, map_location="cpu", weights_only=True
+            )
+            previous_training_steps = int(resume_checkpoint["training_steps"])
         network = train(
             args.role,
             args.episodes,
             args.seed,
             args.hidden_size,
             historical_policy,
+            resume_checkpoint,
         )
         artifact_name = f"{args.role}_recurrent_champion.pt"
         artifact = args.models_dir / artifact_name
@@ -691,12 +719,12 @@ def main() -> None:
                 "input_size": obs_tensor_shape(7),
                 "n_actions": len(COP_ACTIONS if args.role == "cop" else THIEF_ACTIONS),
                 "hidden_size": args.hidden_size,
-                "training_steps": args.episodes * 35,
+                "training_steps": previous_training_steps + args.episodes * 35,
                 "state_dict": network.state_dict(),
             },
             artifact,
         )
-        training_episodes = args.episodes
+        training_episodes = (previous_training_steps // 35) + args.episodes
     inference_temperature = args.inference_temperature or None
     if inference_temperature is not None and not 0 < inference_temperature <= 1:
         raise RuntimeError("inference temperature must be in (0, 1]")
@@ -728,6 +756,8 @@ def main() -> None:
     evaluation["demonstration_episodes"] = 240
     evaluation["imitation_updates"] = 600
     evaluation["training_method"] = "local-belief BC warm start + recurrent A2C"
+    if not args.evaluate_only_artifact:
+        evaluation["resumed_from_sha256"] = resumed_from_sha256
     evaluation["strongest_heuristic_baseline"] = heuristic_baseline
     evaluation["promotion_gate"] = promotion
     evidence = args.evidence_dir / f"{args.role}_held_out_tournament.json"
