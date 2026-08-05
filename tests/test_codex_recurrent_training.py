@@ -2,7 +2,12 @@
 
 from unittest.mock import patch
 
-from agent.rl.train_recurrent import FAMILIES, evaluate
+import numpy as np
+
+from agent.belief_engine import BeliefEngine
+from agent.domain.types import DomainState
+from agent.observation import BeliefState
+from agent.rl.train_recurrent import FAMILIES, _opponent_action, evaluate
 
 
 def test_evaluation_uses_exact_six_gamelet_series_and_official_scores():
@@ -30,3 +35,39 @@ def test_evaluation_uses_exact_six_gamelet_series_and_official_scores():
     assert result["official_role_score"] == expected_gamelets * 20
     assert result["official_opponent_score"] == expected_gamelets * 5
     assert all(item["games"] == 12 for item in result["families"].values())
+
+
+def test_belief_opponent_action_is_independent_of_hidden_target_coordinate():
+    belief = BeliefEngine(7, "cop")
+    probability = np.zeros((7, 7))
+    probability[2][5] = 1.0
+    belief._belief = BeliefState(7, probability, confidence=1.0)
+
+    def state_with_hidden_thief(thief_position):
+        return DomainState(
+            turn=4,
+            grid_size=7,
+            cop_position=(3, 3),
+            thief_position=thief_position,
+            barriers=[],
+            cop_barriers_remaining=14,
+            move_history=[],
+            scent_grid=[[0.0] * 7 for _ in range(7)],
+        )
+
+    first = _opponent_action(
+        state_with_hidden_thief((0, 0)),
+        "cop",
+        "belief_pursuit_evasion",
+        np.random.default_rng(17),
+        opponent_belief=belief,
+    )
+    second = _opponent_action(
+        state_with_hidden_thief((6, 6)),
+        "cop",
+        "belief_pursuit_evasion",
+        np.random.default_rng(17),
+        opponent_belief=belief,
+    )
+
+    assert first == second

@@ -23,9 +23,9 @@ from agent.scent import ScentFields
 
 FAMILIES = (
     "random",
-    "pursuit_evasion",
+    "belief_pursuit_evasion",
     "wall",
-    "adversarial",
+    "local_adversarial_ensemble",
     "historical_checkpoint",
 )
 
@@ -78,6 +78,7 @@ def _opponent_action(
     rng: random.Random,
     historical_policy=None,
     opponent_scent: list[list[float]] | None = None,
+    opponent_belief: BeliefEngine | None = None,
 ) -> str:
     legal = _legal(state, role)
     if family == "historical_checkpoint":
@@ -122,19 +123,31 @@ def _opponent_action(
             wall_score = min(pos[0], pos[1], 6 - pos[0], 6 - pos[1])
             scored.append((wall_score, action))
         return min(scored)[1]
-    scored = []
-    for action in legal:
-        result = (
-            apply_joint_action(state, action, "STAY")
-            if role == "cop"
-            else apply_joint_action(state, "STAY", action)
-        )
-        distance = _distance(result.new_state)
-        score = -distance if role == "cop" else distance
-        if family == "adversarial" and action == "STAY":
-            score += 0.25
-        scored.append((score, rng.random(), action))
-    return max(scored)[2]
+    if opponent_belief is None:
+        raise RuntimeError(f"{family} opponent requires a local Bayesian belief")
+    own_position = state.cop_position if role == "cop" else state.thief_position
+    belief_action = _belief_expert_action(own_position, role, opponent_belief, legal)
+    if family == "belief_pursuit_evasion":
+        return belief_action
+    if family == "local_adversarial_ensemble":
+        # Alternate a belief-optimal action with a wall-biased branch. Both use
+        # local/public information only, but the mixture resists overfitting.
+        if state.turn % 4:
+            return belief_action
+        wall_scored = []
+        for action in legal:
+            result = (
+                apply_joint_action(state, action, "STAY")
+                if role == "cop"
+                else apply_joint_action(state, "STAY", action)
+            )
+            pos = (
+                result.new_state.cop_position if role == "cop" else result.new_state.thief_position
+            )
+            wall_distance = min(pos[0], pos[1], 6 - pos[0], 6 - pos[1])
+            wall_scored.append((-wall_distance, rng.random(), action))
+        return max(wall_scored)[2]
+    raise RuntimeError(f"unknown opponent family {family!r}")
 
 
 def _observation(
@@ -213,6 +226,8 @@ def _run_episode(
     state = _initial_state(rng, random_start)
     scent = ScentFields.zeros(7)
     belief = BeliefEngine(7, role)
+    opponent_role = "thief" if role == "cop" else "cop"
+    opponent_belief = BeliefEngine(7, opponent_role)
     hidden = None
     trajectory = []
     winner = "thief"
@@ -229,7 +244,6 @@ def _run_episode(
         use_expert = training and rng.random() < expert_probability
         action_index = torch.tensor(expert_index) if use_expert else policy_index
         action = (COP_ACTIONS if role == "cop" else THIEF_ACTIONS)[int(action_index)]
-        opponent_role = "thief" if role == "cop" else "cop"
         opponent_scent = (
             scent.thief_observation_scent()
             if opponent_role == "thief"
@@ -242,6 +256,7 @@ def _run_episode(
             rng,
             historical_policy=historical_policy,
             opponent_scent=opponent_scent,
+            opponent_belief=opponent_belief,
         )
         cop_action, thief_action = (action, opponent) if role == "cop" else (opponent, action)
         previous_distance = _distance(state)
@@ -272,6 +287,14 @@ def _run_episode(
             scent.cop_observation_scent() if role == "cop" else scent.thief_observation_scent()
         )
         belief = belief.predict(barriers).observe_scent(observed_scent, barriers)
+        updated_opponent_scent = (
+            scent.thief_observation_scent()
+            if opponent_role == "thief"
+            else scent.cop_observation_scent()
+        )
+        opponent_belief = opponent_belief.predict(barriers).observe_scent(
+            updated_opponent_scent, barriers
+        )
         if terminal:
             break
     return trajectory, winner, state.turn
@@ -290,6 +313,7 @@ def _collect_demonstrations(
         state = _initial_state(rng, random_start=True)
         scent = ScentFields.zeros(7)
         belief = BeliefEngine(7, role)
+        opponent_belief = BeliefEngine(7, opponent_role)
         while state.turn < 35:
             legal = _legal(state, role)
             observation, _mask = _observation(
@@ -311,6 +335,7 @@ def _collect_demonstrations(
                 rng,
                 historical_policy=historical_policy,
                 opponent_scent=opponent_scent,
+                opponent_belief=opponent_belief,
             )
             cop_action, thief_action = (action, opponent) if role == "cop" else (opponent, action)
             result = apply_joint_action(state, cop_action, thief_action)
@@ -321,6 +346,14 @@ def _collect_demonstrations(
                 scent.cop_observation_scent() if role == "cop" else scent.thief_observation_scent()
             )
             belief = belief.predict(barriers).observe_scent(observed_scent, barriers)
+            updated_opponent_scent = (
+                scent.thief_observation_scent()
+                if opponent_role == "thief"
+                else scent.cop_observation_scent()
+            )
+            opponent_belief = opponent_belief.predict(barriers).observe_scent(
+                updated_opponent_scent, barriers
+            )
             if result.outcome.value != "ongoing":
                 break
     return torch.stack(features), torch.tensor(labels, dtype=torch.long)
