@@ -105,6 +105,7 @@ def apply_joint_action(
 
     barrier_set = list(state.barriers)
     barriers_as_tuples = [tuple(b) for b in barrier_set]
+    preexisting_barriers = list(barriers_as_tuples)
     cop_pos = state.cop_position
     thief_pos = state.thief_position
     cop_barriers_remaining = state.cop_barriers_remaining
@@ -198,8 +199,13 @@ def apply_joint_action(
 
     tdx, tdy = _MOVE_DELTAS[thief_norm]
     ntx, nty = thief_pos[0] + tdx, thief_pos[1] + tdy
-    if thief_norm != "STAY" and not _is_valid(ntx, nty, g, barriers_as_tuples):
+    if thief_norm != "STAY" and not _is_valid(ntx, nty, g, preexisting_barriers):
         thief_action_legal = False
+        ntx, nty = thief_pos
+    elif thief_norm != "STAY" and barrier_position == (ntx, nty):
+        # Both actions were legal when committed. A simultaneously placed
+        # barrier blocks the destination deterministically; it does not turn
+        # the thief's already-committed move into a protocol violation.
         ntx, nty = thief_pos
     elif thief_norm == "STAY":
         ntx, nty = thief_pos

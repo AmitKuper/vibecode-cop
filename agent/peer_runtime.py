@@ -124,6 +124,7 @@ class PeerRuntime(_CrewMixin):
         self._step0_agreements: dict = {}
         self._local_audit_summaries: dict = {}
         self._remote_audit_summaries: dict = {}
+        self._observed_gamelet_outcomes: dict[str, dict] = {}
 
     def _gamelet_number(self, game_id: str) -> int:
         """Parse and enforce the counted six-gamelet API boundary."""
@@ -261,6 +262,7 @@ class PeerRuntime(_CrewMixin):
             final_step,
             winner or "unknown",
             _now,
+            runtime=self,
         )
         result = {
             "ok": True,
@@ -289,6 +291,7 @@ class PeerRuntime(_CrewMixin):
             Step0ExchangeError,
             accept_remote_signed_declaration,
             build_local_signed_declaration,
+            persist_step0_evidence,
         )
 
         gamelet = gamelet_from_game_id(game_id)
@@ -336,6 +339,7 @@ class PeerRuntime(_CrewMixin):
                     remote_hash = resp.get("declaration_agreement_hash")
                     if remote_hash and remote_hash != agreement.agreement_hash:
                         raise Step0ExchangeError("bilateral declaration agreement hash mismatch")
+                    persist_step0_evidence(self, game_id)
                 except Step0ExchangeError:
                     if counted_mode:
                         raise
@@ -395,6 +399,15 @@ class PeerRuntime(_CrewMixin):
           TransportProbe → MCPIntrospector → ProtocolUnderstandingAgent (once)
           → StaticSemanticVerifier → ConformanceProbes → DeterministicProtocolAdapter
         """
+        if self.protocol_adapter is not None and self._adaptive_profile is not None:
+            logger.info(
+                "[PeerRuntime/%s] Reusing series-locked ProtocolProfile %s",
+                self.role,
+                self._adaptive_profile.profile_hash,
+            )
+            return
+        if self.protocol_adapter is not None or self._adaptive_profile is not None:
+            raise RuntimeError("incomplete adaptive profile state cannot be reused")
         try:
             from agent.adaptive.pipeline import native_adapter, run_adaptive_negotiation
 

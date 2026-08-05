@@ -44,6 +44,48 @@ class Fixture:
     expected_plan: ProtocolMappingPlan | None = None
     reject_reason: str = ""
 
+    def __post_init__(self) -> None:
+        """Keep compatible fixture plans aligned with the full lifecycle contract."""
+        plan = self.expected_plan
+        if not self.compatible or plan is None:
+            return
+        if any(mapping.phase == "game_end" for mapping in plan.phase_mappings):
+            return
+        template = next(
+            (mapping for mapping in plan.phase_mappings if mapping.phase == "result_agreement"),
+            None,
+        )
+        if template is None:
+            return
+        fields: list[FieldMapping] = []
+        packed_reason = False
+        for mapping in template.field_mappings:
+            if mapping.canonical_field in {"result_hash", "signed_agreement"}:
+                if not packed_reason:
+                    fields.append(
+                        FieldMapping(
+                            "reason",
+                            mapping.remote_field,
+                            transform=mapping.transform,
+                            transform_args=dict(mapping.transform_args),
+                            required=False,
+                        )
+                    )
+                    packed_reason = True
+                continue
+            fields.append(mapping)
+        if not packed_reason:
+            fields.append(FieldMapping("reason", "reason", required=False))
+        game_end = PhaseMapping(
+            "game_end",
+            template.remote_tool,
+            fields,
+            dict(template.response_extraction),
+            "fixture lifecycle completion",
+        )
+        result_index = plan.phase_mappings.index(template)
+        plan.phase_mappings.insert(result_index, game_end)
+
 
 def _tool(
     name: str, description: str, props: dict, required: list[str] | None = None

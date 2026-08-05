@@ -35,6 +35,22 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+_TOKEN_KEYS = ("prompt_tokens", "completion_tokens", "total_tokens")
+
+
+def _validated_token_totals(value: dict | None = None) -> dict[str, int]:
+    """Return explicit non-negative LLM token accounting for final JSON."""
+    source = value or {}
+    totals: dict[str, int] = {}
+    for key in _TOKEN_KEYS:
+        raw = source.get(key, 0)
+        if isinstance(raw, bool) or not isinstance(raw, int) or raw < 0:
+            raise ValueError(f"invalid {key} token total: {raw!r}")
+        totals[key] = raw
+    if totals["total_tokens"] != totals["prompt_tokens"] + totals["completion_tokens"]:
+        raise ValueError("total_tokens must equal prompt_tokens + completion_tokens")
+    return totals
+
 
 def _parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Run a P2P series via cop PeerRuntime.")
@@ -194,6 +210,7 @@ async def run_series(
                 "cop_pts": cop_pts,
                 "thief_pts": thief_pts,
                 "final_step": result.get("final_step"),
+                "token_totals": _validated_token_totals(result.get("token_totals")),
             }
         except Exception as exc:
             if mode == RuntimeMode.COUNTED:
@@ -207,6 +224,7 @@ async def run_series(
                 "cop_pts": 0,
                 "thief_pts": 0,
                 "error": str(exc),
+                "token_totals": _validated_token_totals(),
             }
 
         gamelets.append(gamelet_record)
@@ -228,6 +246,9 @@ async def run_series(
         "series_winner": series_winner,
         "started_at": started_at,
         "ended_at": datetime.now(UTC).isoformat(),
+        "token_totals": {
+            key: sum(record["token_totals"][key] for record in gamelets) for key in _TOKEN_KEYS
+        },
     }
 
     if mode == RuntimeMode.COUNTED:

@@ -84,13 +84,12 @@ class TestValidateCountedDeclaration:
         assert errors == []
 
     def test_validate_counted_declaration_dev_secret_blocked(self, tmp_path):
-        # COUNTED mode requires real model_sha256 — build orchestrator without triggering
-        # the precondition check by giving a valid config
-        cfg = {"model_sha256": "abc" * 21, "secret": "real-secret-12345"}
-        try:
-            orch = _make_orchestrator(tmp_path, mode_str="COUNTED", config=cfg)
-        except ValueError:
-            pytest.skip("Precondition check blocks counted mode creation in test env")
+        from agent.runtime_mode import RuntimeMode
+
+        # Counted construction is covered by test_codex_counted_composition. This
+        # unit isolates declaration validation without weakening its preconditions.
+        orch = _make_orchestrator(tmp_path)
+        orch.mode = RuntimeMode.COUNTED
 
         from agent.step0.declaration import PeerDeclaration
 
@@ -193,6 +192,34 @@ class TestWatchdog:
         orch.start_watchdog()
         assert "heartbeat" in orch._watchdog_heartbeat_path
         assert "watchdog_evidence" in orch._watchdog_evidence_path
+
+    def test_counted_watchdog_uses_negotiated_threshold_and_fails_closed(self, tmp_path):
+        from agent.runtime_mode import RuntimeMode
+
+        orch = _make_orchestrator(tmp_path)
+        orch.mode = RuntimeMode.COUNTED
+        orch.config = {"private_config": {"timeouts": {"watchdog_threshold_seconds": 60}}}
+        proc = MagicMock()
+        with patch(
+            "agent.reliability.watchdog.launch_watchdog_subprocess", return_value=proc
+        ) as launch:
+            orch.start_watchdog()
+
+        launch.assert_called_once_with(
+            orch._watchdog_heartbeat_path,
+            orch._watchdog_evidence_path,
+            threshold_s=60.0,
+        )
+        orch.stop_watchdog()
+
+        with (
+            patch(
+                "agent.reliability.watchdog.launch_watchdog_subprocess",
+                side_effect=OSError("spawn denied"),
+            ),
+            pytest.raises(RuntimeError, match="COUNTED watchdog failed to start"),
+        ):
+            orch.start_watchdog()
 
     def test_stop_watchdog_terminates_proc(self, tmp_path):
         orch = _make_orchestrator(tmp_path)

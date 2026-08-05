@@ -75,7 +75,6 @@ omit = [
     "agent/rl/evaluate.py",
     "agent/rl/strategies*.py",
     "agent/skills/game_*.py",
-    "agent/reports/gmail*.py",
     "agent/reports/email_report.py",
 ]
 

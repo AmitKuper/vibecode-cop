@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 import torch
@@ -106,3 +107,17 @@ def test_manifest_checksum_mismatch_fails_closed(tmp_path):
 
     with pytest.raises(ValueError, match="hash mismatch"):
         load_recurrent_policy(manifest, "cop")
+
+
+def test_tracked_cop_champion_loads_from_clean_clone_contract():
+    manifest = Path(__file__).parents[1] / "models" / "MANIFEST.json"
+
+    policy = load_recurrent_policy(manifest, "cop")
+    action = policy.select_action(
+        _observation(),
+        BeliefState.uniform(7),
+        ["N", "S", "E", "W", "STAY"],
+    )
+
+    assert policy.inference_mode == "argmax"
+    assert action in {"N", "S", "E", "W", "STAY"}

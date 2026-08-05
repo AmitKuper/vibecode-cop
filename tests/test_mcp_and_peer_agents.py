@@ -1194,12 +1194,14 @@ class TestHandlePassiveCommit:
         rt.counted_mode = False
         rt.orchestrator = None
         rt.board = board
+        rt.game_dir = tmp_path
         rt._select_move_rl.return_value = "N"
         rt._build_observation.return_value = {}
         rt._store_my_commit = MagicMock()
 
         message = MagicMock()
         message.step = 0
+        message.h_commit = SHA256
 
         with (
             patch("agent.mcp.crypto.hash_game_state", return_value=SHA256),
@@ -1233,6 +1235,7 @@ class TestHandlePassiveCommit:
 
         message = MagicMock()
         message.step = 0
+        message.h_commit = SHA256
 
         with (
             patch("agent.peer_runtime._load_start_positions", return_value=([0, 0], [3, 3])),
@@ -1360,8 +1363,8 @@ class TestPeerAgentRuntime:
         message = MagicMock()
         message.phase = "game_end"
         result = rt._on_action("g1", message)
-        assert result["ok"] is True
-        assert result["phase"] == "game_end"
+        assert result["ok"] is False
+        assert "initialized game" in result["error"]
 
     def test_on_action_final_audit(self, tmp_path):
         rt = self._make_runtime(tmp_path)

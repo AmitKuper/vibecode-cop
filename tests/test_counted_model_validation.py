@@ -48,6 +48,7 @@ def _counted_config(manifest_path: str, role: str = "thief") -> dict:
         "model_sha256": "abc123deadbeef",
         "model_manifest_path": manifest_path,
         "grid_size": 7,
+        "gmail_sender": lambda *_args: "fake-test-message-id",
     }
 
 

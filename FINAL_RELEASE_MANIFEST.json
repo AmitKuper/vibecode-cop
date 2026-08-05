@@ -1,55 +1,37 @@
 {
-  "schema_version": "9.0",
-  "product": "Cop vs Thief P2P Game — Adaptive MCP Edition",
-  "release_version": "9.0.0",
-  "contract_version": "v9",
-  "date": "2026-08-04",
-  "cop_baseline_sha": "7a21a373",
-  "thief_baseline_sha": "64d5db3e",
-  "release_tag": "EXTERNAL_PENDING",
-  "training": {
-    "algorithm": "PPO selfplay",
-    "steps": 25000,
-    "optimizer_updates": 98,
-    "cop_win_rate": 0.52,
-    "thief_win_rate": 0.48,
-    "cop_model_sha256": "048bc14e37f9d7c4d74d7a3a2483285161efa8bd69f69adbf04f15aa70e9d404",
-    "thief_model_sha256": "c9ca9afcf100db1d4875badca4c549b0301402240070d3c9a726c3342ae4493d",
-    "cop_weight_nonzero_sum": 1706.29,
-    "thief_weight_nonzero_sum": 1718.48
-  },
-  "adaptive_mcp": {
-    "pipeline_stages": [
-      "TransportProbe", "MCPIntrospector", "ProtocolUnderstandingAgent",
-      "StaticSemanticVerifier", "ConformanceProbes", "ProtocolProfile",
-      "DeterministicProtocolAdapter"
-    ],
-    "per_turn_llm_calls": 0,
-    "compatible_fixtures": 11,
-    "incompatible_fixtures": 6,
-    "conformance_probes": 8,
-    "acceptance_tests": 79
+  "schema_version": "2.0",
+  "generated_at_utc": "2026-08-05T00:00:00Z",
+  "repository_role": "cop",
+  "release_state": "CODE_VERIFICATION_IN_PROGRESS",
+  "verified_source_commits": null,
+  "canonical_config_sha256": "45ce5eeb0daff048c31c1d5012b3db55b4b101f91146d4a886474e024ea8db90",
+  "champions": {
+    "cop": {
+      "path": "models/cop_recurrent_champion.pt",
+      "sha256": "1c6f85bed3ba754d1daa38aa394b455d605fe1768436532581cc118b5be96949"
+    },
+    "thief": {
+      "path": "models/thief_recurrent_champion.pt",
+      "sha256": "477c56ad7348dfc6dd9130e3ed371be8afbc912ef34635ee0fb56ef2427d6151"
+    }
   },
   "verification": {
-    "code_verifiable_gates": 14,
-    "code_verifiable_pass": 14,
-    "code_verifiable_fail": 0,
-    "external_pending": 3,
-    "full_test_suite": "1306 passed, 2 skipped",
-    "ruff_violations": 0
+    "script": "scripts/verify_100_readiness.py",
+    "mandatory_skips_allowed": false,
+    "code_verifiable_score": null,
+    "submission_ready": false
+  },
+  "rule_totals": {
+    "PASS": 48,
+    "FAIL": 0,
+    "EXTERNAL_PENDING": 7
   },
   "external_pending": [
-    "E-01: Real-process two-process counted series on localhost",
-    "E-02: Tournament vs 8 opponent families x 50 series each",
-    "E-03: Release tag v9.x pushed to GitHub",
-    "E-04: Commit and push both repos"
-  ],
-  "security_constraints_satisfied": [
-    "Counted mode fails closed",
-    "Zero per-turn LLM calls",
-    "Nonce isolation enforced",
-    "Prompt injection detected",
-    "Protected fields preserved byte-for-byte",
-    "No fabricated evidence"
+    "public_tunnel_and_outside_groups",
+    "real_gmail_delivery",
+    "final_tag_push",
+    "official_moodle_pdf",
+    "individual_submissions",
+    "real_group_id"
   ]
 }

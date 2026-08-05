@@ -215,10 +215,39 @@ EXTERNAL_PENDING. Risk: never synthesize evidence. SHAs: pending.
   family but 7,390 official points versus the Bayesian heuristic's 7,395. The
   evaluator now predeclares and enforces a paired-bootstrap official-score gate,
   nonzero families, zero technical failures, and p99 inference below 30 ms.
-- [ ] M1 counted composition root.
-- [ ] M2 zero-trust final lifecycle.
-- [ ] M3 RL strength.
-- [ ] M4 adaptive MCP.
+- [x] 2026-08-05T04:50+03:00 — promoted immutable recurrent champions. Cop:
+  SHA-256 `1c6f85bed3ba754d1daa38aa394b455d605fe1768436532581cc118b5be96949`,
+  3,204/3,600 held-out gamelets (89.0%), 66,060–64,980 official score,
+  paired-bootstrap delta CI [0.35, 3.30], 79.03% worst family. Thief:
+  SHA-256 `477c56ad7348dfc6dd9130e3ed371be8afbc912ef34635ee0fb56ef2427d6151`,
+  685/900 (76.11%), 7,925–7,395 official score, paired-bootstrap delta CI
+  [2.50, 4.63], 34.44% worst family. Both have zero technical failures and
+  sub-millisecond p99 policy inference.
+- [x] 2026-08-05T05:15+03:00 — completed a diagnostic real two-process
+  counted six-gamelet run (`series_20260805_051121_be17182b`): six gamelets,
+  12 signed passing audits, two byte-identical signed agreements, identical
+  ledger hashes, two explicit fake acceptance Gmail records, one locked profile,
+  and no nonce-value keys in public evidence. Because it ran from a dirty tree,
+  it is not final release-provenance evidence.
+- [x] 2026-08-05T06:25+03:00 — counted CLI now rejects dirty/unverifiable Git
+  state before construction; removed the unused forbidden per-turn LLM adapter;
+  locked `game_end` into the deterministic profile; passive outcomes, audits,
+  consensus, ledger, and reporting now fail closed.
+- [x] 2026-08-05T07:05+03:00 — both complete suites pass with zero skips and
+  Ruff lint/format clean. Measured actual branch coverage: cop 1,560/1,832 =
+  85.1528%; thief was 1,548/1,832 = 84.4978%, after which the passing bilateral
+  tamper matrix raised `peer_result` by 17 branches. The final merged clean-tree
+  rerun remains required before M5 closes.
+- [x] 2026-08-05T06:28+03:00 — replaced the obsolete skip-accepting verifier,
+  removed the mandatory Gmail-report coverage omission, added strict token-total
+  validation, and reran both full branch suites. Candidate measurements are cop
+  1,615/1,882 = 85.8130% and thief 1,603/1,882 = 85.1753%; the final clean
+  verifier and fresh release-provenance subprocess remain open.
+
+- [x] M1 counted composition root.
+- [x] M2 zero-trust final lifecycle.
+- [x] M3 RL strength.
+- [x] M4 adaptive MCP.
 - [ ] M5 complete quality/verifier gates.
 - [ ] M6 final release evidence.
 

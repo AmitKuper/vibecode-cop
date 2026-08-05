@@ -9,6 +9,11 @@
 | M3 RL calibration | `71b99f3` / `2a0c139` | IN_PROGRESS | Rejected checkpoints: 3.33%, 10%, 20%, 43.75%, and weighted 20% due zero worst-family results. After canonical geometry and local-only BC warm start + recurrent A2C: 73/80 wins (91.25%, Wilson 95% 83.02–95.70%), worst family 70%, 1.66 ms average inference/environment, zero technical failures. Temporary calibration only; production role champions and full evidence pending. | pending training-code commit |
 | M3 frozen candidates | `f2fc52d` trainer / `264389a` thief inference | FAIL | 150 six-gamelet series and 900 gamelets per role, five privacy-correct held-out families. Cop argmax: 797/900 (88.56%), 150/150 series, official 16455–5015, worst 78.89%, zero technical. Thief low-temp 0.5: 578/900 (64.22%), 75/150 series, official 7390–9330, worst 16.11%, zero technical. Exact-seed Bayesian heuristic scored 7395 official thief points, so the thief candidate failed promotion and is not a champion. | cop `fd8e004`; thief `264389a`; artifacts unpromoted |
 
++| M3 champion promotion | `97ec919` / `cebb267` | PASS | Cop champion SHA `1c6f85...6949`: 600 series/3,600 gamelets, 89.0%, official 66,060–64,980, bootstrap delta CI [0.35,3.30], worst family 79.03%, p99 0.3854 ms. Thief champion SHA `477c56...6151`: 150 series/900 gamelets, 76.11%, official 7,925–7,395, CI [2.50,4.63], worst family 34.44%, p99 0.3818 ms. Both manifests and artifacts load with exact checksums and zero technical failures. | pending implementation commit |
+| M1/M2 diagnostic subprocess | `97ec919` / `cebb267` plus implementation worktree | PASS (diagnostic only) | Real independent OS processes completed `series_20260805_051121_be17182b`: exit 0, exactly six gamelets, 12 valid PASSED audit signatures, 12 valid Step-0 signatures, two byte-identical result signatures, locked profile `f21ea43f...c59c`, audit bundle `277443e7...c7c`, identical ledger SHA `329f2407...12e0`, and two explicitly fake Gmail records. Active agreement SHA `db941087...b333`; passive SHA `fe94d6d7...2ef3`. Not final provenance because the tree was dirty; this defect triggered the counted CLI clean-tree guard. | pending implementation commit |
+| M4 adaptive MCP | implementation worktree | PASS | Live FastMCP SSE probe/introspection and locked profile pass; 11 compatible and 6 incompatible fixtures, protected transforms, signed envelopes, schema/cache/agent fallbacks, conformance probes, prompt-injection rejection, and zero per-turn LLM calls are covered. Dormant LLM-per-turn adapter deleted. | pending implementation commit |
+| M5 quality measurement | implementation worktree | IN_PROGRESS | Full pytest: cop 1,439 pass, thief 1,312 pass, zero skips; Ruff lint/format PASS. Actual branch coverage: cop 1,560/1,832 = 85.1528%; thief 1,548/1,832 = 84.4978%, followed by focused `peer_result` improvement from 51/72 to 68/72 branches. Final merged rerun, frozen sync warning resolution, verifier, secret/doc claims, and clean final subprocess evidence remain open. | pending implementation commit |
+
 Active plan: `docs/CODEX_100_READINESS_EXECPLAN.md`. Baseline audit:
 `CODEX_BASELINE_AUDIT.md`. Traceability:
 `docs/REQUIREMENTS_TRACEABILITY.md`.
@@ -57,3 +62,15 @@ Test counts are measured at phase end (cop repo).
   AgentOrchestrator after each turn in `run_peer_turn`; `create_protocol_port` creates
   deterministic GameProtocolPort with locked ProtocolMapping; README rewritten with
   accurate EXTERNAL_PENDING claims; REQUIREMENTS_TRACEABILITY updated.
+
+
+## Codex Stage-B / Stage-C execution (2026-08-05)
+
+| Milestone | Exact evidence | Status |
+|---|---|---|
+| M1 counted root | Explicit role CLIs, clean-worktree guard, `RuntimeMode.COUNTED`, one configured Orchestrator, exact-six checks, active/passive composition tests | PASS |
+| M2 zero-trust lifecycle | Bilateral signed Step-0, nonce-safe commit/reveal, canonical transitions, signed mutual audits/result, stable ledger identity, independent Gatekeeper path, token totals | PASS |
+| M3 role champions | Cop `1c6f85…6949`; thief `477c56…151`; both paired held-out promotion gates pass with zero technical failures | PASS |
+| M4 adaptive MCP | Live SSE introspection, declarative protected mappings, static verification, conformance probes, locked profile, incompatible pre-commit rejection, deterministic gameplay adapter | PASS |
+| Candidate full quality | Cop 1,466 passed after the sole README assertion was corrected; branch 1,615/1,882 = 85.8130%. Thief full run branch 1,603/1,882 = 85.1753%. Zero broad Gmail coverage omission. Final clean rerun pending. | IN_PROGRESS |
+| Strict release verifier | Replaced obsolete verifier; mandatory gates have no skip path and localhost/tournaments are code-verifiable. Real-world actions remain external. | IN_PROGRESS |

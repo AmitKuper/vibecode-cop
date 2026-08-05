@@ -53,9 +53,13 @@ def init_passive_game(rt: PeerRuntime, game_id: str, rules_ref: list) -> None:
 def handle_passive_commit(rt: PeerRuntime, game_id: str, message, rules_ref: list) -> dict:
     """Generate own commitment when cop sends its commit (thief passive mode)."""
     from agent.mcp.crypto import create_commitment, hash_game_state
+    from agent.peer_audit import append_opponent_commit
 
     if rt.game_id != game_id:
         init_passive_game(rt, game_id, rules_ref)
+    if not message.h_commit:
+        return {"ok": False, "error": f"Missing opponent commitment at step {message.step}"}
+    append_opponent_commit(rt.game_dir, message.step, message.h_commit)
 
     board_state = {
         "cop_position": rt.board.cop_position,
@@ -257,3 +261,43 @@ def handle_passive_final_audit(rt: PeerRuntime, game_id: str, message) -> dict:
         "signed_audit_summary": json.dumps(signed.to_dict()),
         "audit_ok": audit_ok,
     }
+
+
+def handle_passive_game_end(rt: PeerRuntime, game_id: str, message, rules_ref: list) -> dict:
+    """Record the passive process's independently derived gamelet outcome."""
+    from agent.config.shared_config import load_shared_config
+    from agent.rules_engine import GameOutcome
+
+    if rt.game_id != game_id or not rules_ref:
+        return {"ok": False, "error": "game_end received without an initialized game"}
+    local_audit = rt._local_audit_summaries.get(game_id)
+    if local_audit is None or local_audit.summary.audit_status != "PASSED":
+        return {"ok": False, "error": "game_end received before a passing local audit"}
+    outcome = rules_ref[0].check_game_status()
+    winner_by_outcome = {
+        GameOutcome.COP_WIN: "cop",
+        GameOutcome.THIEF_WIN: "thief",
+    }
+    winner = winner_by_outcome.get(outcome)
+    if winner is None:
+        return {"ok": False, "error": f"game_end board is not terminal: {outcome.value}"}
+    if message.reason != winner:
+        return {
+            "ok": False,
+            "error": f"game_end winner mismatch: observed={winner} received={message.reason}",
+        }
+    scoring = load_shared_config().get("scoring", {})
+    if winner == "cop":
+        cop_score = int(scoring["capture_cop"])
+        thief_score = int(scoring["capture_thief"])
+    else:
+        cop_score = int(scoring["survival_cop"])
+        thief_score = int(scoring["survival_thief"])
+    rt._observed_gamelet_outcomes[game_id] = {
+        "gamelet": rt._gamelet_number(game_id),
+        "winner": winner,
+        "cop_score": cop_score,
+        "thief_score": thief_score,
+        "turns_played": int(rt.board.turn),
+    }
+    return {"ok": True, "phase": "game_end", "observed_winner": winner}

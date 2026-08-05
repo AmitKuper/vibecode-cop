@@ -139,6 +139,16 @@ class AgentOrchestrator:
         if model_sha in ("placeholder", "", "unknown"):
             raise ValueError("COUNTED mode rejected: placeholder/missing model SHA")
 
+        gmail_sender = self.config.get("gmail_sender")
+        if gmail_sender is None or not callable(gmail_sender):
+            raise ValueError("COUNTED mode rejected: Gmail sender is not configured")
+        validate_sender = getattr(gmail_sender, "validate", None)
+        if callable(validate_sender):
+            try:
+                validate_sender()
+            except Exception as exc:
+                raise ValueError(f"COUNTED mode rejected: Gmail sender unavailable: {exc}") from exc
+
         # Validate RL model manifest
         from pathlib import Path
 
@@ -294,10 +304,13 @@ class AgentOrchestrator:
 
     def generate_strategic_hint(self, move: str, step: int = 0) -> tuple[str, str]:
         """Generate a strategically chosen hint and its intent. Returns (hint, intent_str)."""
+        from agent.language.deception_policy import DeceptionIntent
+
         entropy = self.belief_engine.belief.entropy
         intent = self.language_policy.choose_intent(step=step, belief_entropy=entropy)
         hint = self.language_policy.generate(move, intent)
-        return hint, intent.value
+        wire_intent = "truth" if intent is DeceptionIntent.TRUTH else "lie"
+        return hint, wire_intent
 
     def apply_turn(
         self,
@@ -444,11 +457,24 @@ class AgentOrchestrator:
             try:
                 from agent.reliability.watchdog import launch_watchdog_subprocess
 
+                private_timeouts = self.config.get("private_config", {}).get("timeouts", {})
+                shared_network = self.config.get("shared_config", {}).get("network_and_league", {})
+                threshold = float(
+                    private_timeouts.get(
+                        "watchdog_threshold_seconds",
+                        shared_network.get("watchdog_timeout_sec", 60.0),
+                    )
+                )
+                if threshold <= 0:
+                    raise ValueError("watchdog threshold must be positive")
                 self._watchdog_proc = launch_watchdog_subprocess(
                     self._watchdog_heartbeat_path,
                     self._watchdog_evidence_path,
+                    threshold_s=threshold,
                 )
             except Exception as e:
+                if self.mode == RuntimeMode.COUNTED:
+                    raise RuntimeError(f"COUNTED watchdog failed to start: {e}") from e
                 logger.warning("Failed to start watchdog: %s", e)
         # Emit first heartbeat
         self.emit_heartbeat(step=0)

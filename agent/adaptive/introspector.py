@@ -6,6 +6,7 @@ untrusted data and defends against prompt injection.
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
 import logging
@@ -82,7 +83,39 @@ class MCPIntrospector:
     async def introspect(self, probe: ProbeResult) -> IntrospectionResult:
         if probe.transport == TransportType.STDIO:
             return self._stdio_fallback()
+        if probe.transport == TransportType.SSE:
+            return await self._sse_introspect(probe)
         return await self._http_introspect(probe)
+
+    async def _sse_introspect(self, probe: ProbeResult) -> IntrospectionResult:
+        """Use the MCP client's negotiated SSE message endpoint.
+
+        The `/sse` URL is only the long-lived receive stream. A session-specific
+        POST endpoint is announced inside that stream, so posting JSON-RPC
+        directly to `/sse` is invalid on compliant legacy servers.
+        """
+        from fastmcp import Client
+        from fastmcp.client.transports import SSETransport
+
+        async with Client(SSETransport(probe.mcp_endpoint)) as client:
+            raw_tool_models = await asyncio.wait_for(client.list_tools(), self._timeout)
+            resources: list[dict] = []
+            prompts: list[dict] = []
+            try:
+                resource_models = await asyncio.wait_for(client.list_resources(), self._timeout)
+                resources = [item.model_dump(by_alias=True) for item in resource_models]
+            except Exception:
+                pass
+            try:
+                prompt_models = await asyncio.wait_for(client.list_prompts(), self._timeout)
+                prompts = [item.model_dump(by_alias=True) for item in prompt_models]
+            except Exception:
+                pass
+            init_model = client.initialize_result
+            init_body = init_model.model_dump(by_alias=True) if init_model is not None else {}
+
+        raw_tools = [item.model_dump(by_alias=True) for item in raw_tool_models]
+        return self._build_result(init_body, raw_tools, resources, prompts)
 
     async def _http_introspect(self, probe: ProbeResult) -> IntrospectionResult:
         endpoint = probe.mcp_endpoint
@@ -108,8 +141,6 @@ class MCPIntrospector:
                 headers={"Accept": "application/json, text/event-stream"},
             )
             init_body = self._parse_response(init_resp)
-            server_info = init_body.get("serverInfo", {})
-            capabilities = init_body.get("capabilities", {})
 
             # Step 2: tools/list
             tools_resp = await c.post(
@@ -133,6 +164,17 @@ class MCPIntrospector:
             except Exception:
                 pass
 
+        return self._build_result(init_body, raw_tools, resources, prompts)
+
+    def _build_result(
+        self,
+        init_body: dict,
+        raw_tools: list[dict],
+        resources: list[dict],
+        prompts: list[dict],
+    ) -> IntrospectionResult:
+        server_info = init_body.get("serverInfo", {})
+        capabilities = init_body.get("capabilities", {})
         tools = []
         for rt in raw_tools:
             try:

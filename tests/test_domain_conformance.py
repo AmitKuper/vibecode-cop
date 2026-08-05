@@ -89,6 +89,23 @@ class TestTranscriptConformance:
                 f"[{vector['id']}] cop_barriers_remaining mismatch"
             )
 
+    def test_simultaneous_barrier_blocks_legal_thief_move_without_protocol_loss(self):
+        state = DomainState(
+            turn=23,
+            grid_size=7,
+            cop_position=(5, 1),
+            thief_position=(6, 0),
+            cop_barriers_remaining=14,
+        )
+
+        result = apply_joint_action(state, "PLACE_E", "SOUTH")
+
+        assert result.cop_action_legal is True
+        assert result.thief_action_legal is True
+        assert result.barrier_position == (6, 1)
+        assert result.new_state.thief_position == (6, 0)
+        assert result.capture is False
+
 
 # ---------------------------------------------------------------------------
 # 2. Board.from_dict() strict validation

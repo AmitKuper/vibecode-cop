@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import json
 import time
+from dataclasses import asdict
 
 from agent.step0.declaration import DeclarationAgreement, SignedDeclaration
 from agent.step0.signing import sign, verify
@@ -10,6 +12,27 @@ from agent.step0.signing import sign, verify
 
 class Step0ExchangeError(RuntimeError):
     """The peer's declaration is missing, invalid, or incompatible."""
+
+
+def persist_step0_evidence(runtime, game_id: str) -> None:
+    """Persist the signed bilateral declaration and locked profile without secrets."""
+    local = runtime._local_step0.get(game_id)
+    remote = runtime._remote_step0.get(game_id)
+    agreement = runtime._step0_agreements.get(game_id)
+    if local is None or remote is None or agreement is None:
+        raise Step0ExchangeError("cannot persist incomplete bilateral Step-0 evidence")
+    evidence = {
+        "local_signed_declaration": local.to_dict(),
+        "remote_signed_declaration": remote.to_dict(),
+        "declaration_agreement": asdict(agreement),
+        "adaptive_protocol_profile": (
+            runtime._adaptive_profile.to_dict() if runtime._adaptive_profile is not None else None
+        ),
+        "inbound_profile_hash": runtime._inbound_profile_hash,
+    }
+    path = runtime.games_dir / game_id / "step0_evidence.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(evidence, indent=2), encoding="utf-8")
 
 
 def build_local_signed_declaration(runtime, game_id: str) -> SignedDeclaration:

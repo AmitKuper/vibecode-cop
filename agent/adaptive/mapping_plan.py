@@ -64,7 +64,7 @@ class ProtocolMappingPlan:
 
     # Canonical phases that must be mappable for gameplay
     REQUIRED_PHASES = frozenset(
-        ["start_game", "commit", "reveal", "final_audit", "result_agreement"]
+        ["start_game", "commit", "reveal", "final_audit", "game_end", "result_agreement"]
     )
 
     def is_compatible(self) -> bool:
@@ -178,6 +178,7 @@ class ProtocolMappingPlan:
             ],
             "reveal": [FieldMapping("move", "move")],
             "final_audit": [FieldMapping("nonces", "nonces")],
+            "game_end": [FieldMapping("reason", "reason")],
             "result_agreement": [
                 FieldMapping("result_hash", "result_hash", required=False),
                 FieldMapping("signed_agreement", "signed_agreement", required=False),
@@ -241,7 +242,13 @@ class ProtocolMappingPlan:
                             "winner": "winner",
                         },
                     )
-                    for phase in ("commit", "reveal", "final_audit", "result_agreement")
+                    for phase in (
+                        "commit",
+                        "reveal",
+                        "final_audit",
+                        "game_end",
+                        "result_agreement",
+                    )
                 ],
             ],
             verdict=CompatibilityVerdict.COMPATIBLE,

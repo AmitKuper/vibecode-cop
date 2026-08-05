@@ -16,6 +16,7 @@ class GameletOutcome:
     turns_played: int
     technical_loss_role: str = ""  # "" | "cop" | "thief"
     transcript_root: str = ""
+    token_totals: dict = field(default_factory=dict)
 
 
 @dataclass

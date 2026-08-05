@@ -39,6 +39,7 @@ REQUIRED PHASES:
                 nonce (only at final_audit), config_sha256, timestamp
   final_audit — bilateral audit; fields: game_id, step, role, nonces (dict step→nonce),
                 config_sha256, timestamp
+  game_end — independently checked gamelet outcome; fields: game_id, step, role, reason
   result_agreement — signed result; fields: game_id, role, result_hash, signed_agreement
 
 PROTECTED FIELDS (must not be mutated by mapping):
@@ -47,7 +48,8 @@ PROTECTED FIELDS (must not be mutated by mapping):
 BINDING RULES:
   - nonce is secret until final_audit
   - commitment = SHA-256(canonical_message_bytes)
-  - phase ordering: start_game → (commit → reveal)* → final_audit → result_agreement
+  - phase ordering: start_game → (commit → reveal)* → final_audit → game_end;
+    after exactly six gamelets → result_agreement
   - no canonicalization change is allowed mid-series
 """
 
@@ -80,6 +82,11 @@ class ProtocolUnderstandingAgent:
             logger.info("ProtocolAgent: no tools discovered, using native identity plan")
             return ProtocolMappingPlan.native_plan(server_name=introspection.server_name)
 
+        signed_envelope = self._signed_envelope_plan(introspection)
+        if signed_envelope is not None:
+            logger.info("ProtocolAgent: verified canonical signed-envelope schema")
+            return signed_envelope
+
         if self._llm is None:
             logger.info("ProtocolAgent: no LLM, using heuristic plan")
             return self._heuristic_plan(introspection)
@@ -92,20 +99,9 @@ class ProtocolUnderstandingAgent:
 
     def _heuristic_plan(self, intro: IntrospectionResult) -> ProtocolMappingPlan:
         """Deterministic heuristic: look for action-like tools by name."""
-        action = intro.get_tool("action")
-        start = intro.get_tool("start_game")
-        if action is not None:
-            action_props = action.input_schema.get("properties", {})
-            start_props = start.input_schema.get("properties", {}) if start else {}
-            envelope = {"game_id", "message_json", "signature"}.issubset(action_props)
-            signed_start = start is not None and {"message_json", "signature"}.issubset(start_props)
-            if envelope and signed_start:
-                return ProtocolMappingPlan.signed_envelope_plan(
-                    schema_digest=intro.schema_digest,
-                    server_name=intro.server_name,
-                    action_tool=action.name,
-                    start_tool=start.name,
-                )
+        signed_envelope = self._signed_envelope_plan(intro)
+        if signed_envelope is not None:
+            return signed_envelope
 
         # Find best tool: prefer "action", then anything with "action"/"commit" in name
         tool = (
@@ -152,6 +148,25 @@ class ProtocolUnderstandingAgent:
             agent_version="1.0",
         )
 
+    @staticmethod
+    def _signed_envelope_plan(intro: IntrospectionResult) -> ProtocolMappingPlan | None:
+        """Recognize the course's protected HMAC envelope from its schemas."""
+        action = intro.get_tool("action")
+        start = intro.get_tool("start_game")
+        if action is not None:
+            action_props = action.input_schema.get("properties", {})
+            start_props = start.input_schema.get("properties", {}) if start else {}
+            envelope = {"game_id", "message_json", "signature"}.issubset(action_props)
+            signed_start = start is not None and {"message_json", "signature"}.issubset(start_props)
+            if envelope and signed_start:
+                return ProtocolMappingPlan.signed_envelope_plan(
+                    schema_digest=intro.schema_digest,
+                    server_name=intro.server_name,
+                    action_tool=action.name,
+                    start_tool=start.name,
+                )
+        return None
+
     def _map_canonical_fields(self, phase: str, props: dict) -> list[FieldMapping]:
         """Map canonical fields to remote props by name matching."""
         canonical = ["game_id", "step", "role", "phase", "config_sha256", "timestamp"]
@@ -161,6 +176,8 @@ class ProtocolUnderstandingAgent:
             canonical += ["move"]
         elif phase == "final_audit":
             canonical += ["nonces"]
+        elif phase == "game_end":
+            canonical += ["reason"]
         elif phase == "result_agreement":
             canonical += ["result_hash", "signed_agreement"]
 
@@ -288,6 +305,7 @@ class ProtocolUnderstandingAgent:
             "commit": ["commitment", "hint"],
             "reveal": ["move"],
             "final_audit": ["nonces"],
+            "game_end": ["reason"],
             "result_agreement": ["result_hash", "signed_agreement"],
         }
         return base + extras.get(phase, [])

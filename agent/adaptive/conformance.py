@@ -13,6 +13,7 @@ No counted commitment occurs until all probes pass.
 
 from __future__ import annotations
 
+import json
 import logging
 import uuid
 from dataclasses import dataclass, field
@@ -23,6 +24,12 @@ from agent.adaptive.mapping_plan import ProtocolMappingPlan
 logger = logging.getLogger(__name__)
 
 _PLACEHOLDER_GAME_ID = "PROBE_GAME_" + uuid.uuid4().hex[:8]
+
+
+def _signed_placeholder_envelope(message: dict) -> dict:
+    """Add inert envelope fields used by signed-wrapper MCP protocols."""
+    canonical = json.dumps(message, sort_keys=True, separators=(",", ":"))
+    return {**message, "message_json": canonical, "signature": "a" * 64}
 
 
 @dataclass
@@ -106,15 +113,17 @@ class ConformanceProbes:
             return ProbeOutcome("commitment_binding", False, error="No commit phase")
 
         # Simulate mapping with a placeholder commitment
-        canonical = {
-            "game_id": _PLACEHOLDER_GAME_ID,
-            "step": 1,
-            "role": "cop",
-            "phase": "commit",
-            "commitment": "placeholder_commitment_hash_" + "a" * 32,
-            "config_sha256": "config_placeholder",
-            "timestamp": "2026-01-01T00:00:00Z",
-        }
+        canonical = _signed_placeholder_envelope(
+            {
+                "game_id": _PLACEHOLDER_GAME_ID,
+                "step": 1,
+                "role": "cop",
+                "phase": "commit",
+                "commitment": "placeholder_commitment_hash_" + "a" * 32,
+                "config_sha256": "config_placeholder",
+                "timestamp": "2026-01-01T00:00:00Z",
+            }
+        )
         try:
             adapted = self._adapter.adapt_request("commit", canonical)
             has_commitment = canonical["commitment"] in str(adapted.params)
@@ -150,15 +159,17 @@ class ConformanceProbes:
 
     def _probe_protected_field_integrity(self) -> ProbeOutcome:
         """Verify protected fields pass through unchanged."""
-        canonical = {
-            "game_id": "EXACT_GAME_ID_999",
-            "step": 7,
-            "role": "thief",
-            "phase": "commit",
-            "commitment": "EXACT_COMMITMENT_HASH_abc123",
-            "config_sha256": "EXACT_CONFIG_SHA",
-            "timestamp": "2026-01-01T00:00:00Z",
-        }
+        canonical = _signed_placeholder_envelope(
+            {
+                "game_id": "EXACT_GAME_ID_999",
+                "step": 7,
+                "role": "thief",
+                "phase": "commit",
+                "commitment": "EXACT_COMMITMENT_HASH_abc123",
+                "config_sha256": "EXACT_CONFIG_SHA",
+                "timestamp": "2026-01-01T00:00:00Z",
+            }
+        )
         protected = {
             "game_id": "EXACT_GAME_ID_999",
             "commitment": "EXACT_COMMITMENT_HASH_abc123",
@@ -191,15 +202,17 @@ class ConformanceProbes:
 
     def _probe_idempotency_structure(self) -> ProbeOutcome:
         """Verify that adapting the same message twice produces the same result."""
-        canonical = {
-            "game_id": _PLACEHOLDER_GAME_ID,
-            "step": 1,
-            "role": "cop",
-            "phase": "commit",
-            "commitment": "idempotency_test_hash",
-            "config_sha256": "config_test",
-            "timestamp": "2026-01-01T00:00:00Z",
-        }
+        canonical = _signed_placeholder_envelope(
+            {
+                "game_id": _PLACEHOLDER_GAME_ID,
+                "step": 1,
+                "role": "cop",
+                "phase": "commit",
+                "commitment": "idempotency_test_hash",
+                "config_sha256": "config_test",
+                "timestamp": "2026-01-01T00:00:00Z",
+            }
+        )
         try:
             r1 = self._adapter.adapt_request("commit", canonical)
             r2 = self._adapter.adapt_request("commit", canonical)
@@ -216,25 +229,29 @@ class ConformanceProbes:
 
     def _probe_placeholder_commit_reveal(self) -> ProbeOutcome:
         """Full placeholder commit → reveal without any real secrets."""
-        commit_msg = {
-            "game_id": _PLACEHOLDER_GAME_ID,
-            "step": 1,
-            "role": "cop",
-            "phase": "commit",
-            "commitment": "probe_commit_hash_" + "b" * 40,
-            "hint": "I am watching you.",
-            "config_sha256": "probe_config_sha",
-            "timestamp": "2026-01-01T00:00:00Z",
-        }
-        reveal_msg = {
-            "game_id": _PLACEHOLDER_GAME_ID,
-            "step": 1,
-            "role": "cop",
-            "phase": "reveal",
-            "move": "N",
-            "config_sha256": "probe_config_sha",
-            "timestamp": "2026-01-01T00:00:01Z",
-        }
+        commit_msg = _signed_placeholder_envelope(
+            {
+                "game_id": _PLACEHOLDER_GAME_ID,
+                "step": 1,
+                "role": "cop",
+                "phase": "commit",
+                "commitment": "probe_commit_hash_" + "b" * 40,
+                "hint": "I am watching you.",
+                "config_sha256": "probe_config_sha",
+                "timestamp": "2026-01-01T00:00:00Z",
+            }
+        )
+        reveal_msg = _signed_placeholder_envelope(
+            {
+                "game_id": _PLACEHOLDER_GAME_ID,
+                "step": 1,
+                "role": "cop",
+                "phase": "reveal",
+                "move": "N",
+                "config_sha256": "probe_config_sha",
+                "timestamp": "2026-01-01T00:00:01Z",
+            }
+        )
         try:
             c = self._adapter.adapt_request("commit", commit_msg)
             r = self._adapter.adapt_request("reveal", reveal_msg)

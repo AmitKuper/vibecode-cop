@@ -73,6 +73,7 @@ def _counted_config(tmp_path, role="cop"):
         "canonical_config_sha256": "c" * 64,
         "config_sha256": "c" * 64,
         "scent_model_hash": "d" * 64,
+        "gmail_sender": lambda *_args: "fake-test-message-id",
     }
 
 
@@ -147,6 +148,21 @@ async def test_counted_adaptive_negotiation_failure_is_not_identity_fallback(tmp
     ):
         await runtime._init_protocol_adapter()
     assert runtime.protocol_adapter is None
+
+
+@pytest.mark.asyncio
+async def test_counted_series_locks_one_adaptive_profile_for_all_gamelets(tmp_path):
+    from agent.adaptive.pipeline import native_adapter
+
+    runtime = _runtime(tmp_path)
+    negotiation = AsyncMock(return_value=native_adapter())
+    with patch("agent.adaptive.pipeline.run_adaptive_negotiation", new=negotiation):
+        await runtime._init_protocol_adapter()
+        profile_hash = runtime._adaptive_profile.profile_hash
+        await runtime._init_protocol_adapter()
+
+    assert negotiation.await_count == 1
+    assert runtime._adaptive_profile.profile_hash == profile_hash
 
 
 @pytest.mark.asyncio

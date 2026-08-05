@@ -25,6 +25,10 @@ def _parser(role: str) -> argparse.ArgumentParser:
     parser.add_argument("--secret", default=os.getenv("SHARED_SECRET", ""))
     parser.add_argument("--games-dir")
     parser.add_argument("--n-gamelets", type=int, default=6)
+    parser.add_argument(
+        "--acceptance-fake-gmail-outbox",
+        help="Explicit local-test fake; never evidence of real Gmail delivery",
+    )
     return parser
 
 
@@ -53,6 +57,23 @@ def _model_record(role: str, manifest_path: Path) -> dict:
     return next((item for item in data.get("models", []) if item["role"] == role), {})
 
 
+def _assert_counted_worktree_clean() -> None:
+    """Bind counted Step-0 provenance to an exact committed worktree."""
+    import subprocess
+
+    try:
+        status = subprocess.check_output(
+            ["git", "status", "--porcelain=v1", "--untracked-files=all"],
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise RuntimeError("COUNTED mode rejected: unable to verify clean git worktree") from exc
+    if status.strip():
+        paths = ", ".join(line[3:] for line in status.splitlines()[:5])
+        raise RuntimeError(f"COUNTED mode rejected: git worktree is dirty ({paths})")
+
+
 def _resolved(role: str, args: argparse.Namespace) -> tuple[dict, dict]:
     from agent.config.shared_config import config_sha256, load_shared_config
 
@@ -70,6 +91,9 @@ def _resolved(role: str, args: argparse.Namespace) -> tuple[dict, dict]:
         json.dumps(pheromones, sort_keys=True, separators=(",", ":")).encode()
     ).hexdigest()
     my_endpoint = role_cfg.get("mcp_url") or role_cfg.get("public_url", "")
+    if args.port is not None:
+        advertised_host = "127.0.0.1" if args.host in {"0.0.0.0", "::"} else args.host
+        my_endpoint = f"http://{advertised_host}:{args.port}/mcp"
     runtime = {
         "role": role,
         "secret": secret,
@@ -109,6 +133,17 @@ def _resolved(role: str, args: argparse.Namespace) -> tuple[dict, dict]:
         "private_config": private,
         "shared_config": shared,
     }
+    gmail_cfg = private.get("reports", {}).get("gmail", {})
+    if args.acceptance_fake_gmail_outbox:
+        from agent.gmail.sender import AcceptanceFileGmailSender
+
+        orchestrator["gmail_sender"] = AcceptanceFileGmailSender(args.acceptance_fake_gmail_outbox)
+    elif gmail_cfg.get("mode") == "send":
+        from agent.gmail.sender import GmailApiSender
+
+        orchestrator["gmail_sender"] = GmailApiSender(
+            gmail_cfg.get("token_path", "secrets/gmail/token.json")
+        )
     return runtime, orchestrator
 
 
@@ -116,6 +151,8 @@ async def _run(role: str, args: argparse.Namespace) -> int:
     from agent.peer_agent_runtime import PeerAgentRuntime
 
     mode = RuntimeMode(args.mode)
+    if mode is RuntimeMode.COUNTED:
+        _assert_counted_worktree_clean()
     runtime, orchestrator = _resolved(role, args)
     if args.command == "series":
         if role != "cop":

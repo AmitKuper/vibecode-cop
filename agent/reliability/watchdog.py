@@ -92,7 +92,11 @@ def run_watchdog(heartbeat_path: str, evidence_path: str, threshold_s: float | N
             time.sleep(threshold_s)
 
 
-def launch_watchdog_subprocess(heartbeat_path: str, evidence_path: str):
+def launch_watchdog_subprocess(
+    heartbeat_path: str,
+    evidence_path: str,
+    threshold_s: float | None = None,
+):
     """Launch watchdog as a separate OS process. Returns subprocess.Popen."""
     import subprocess
 
@@ -100,6 +104,6 @@ def launch_watchdog_subprocess(heartbeat_path: str, evidence_path: str):
 import sys
 sys.path.insert(0, ".")
 from agent.reliability.watchdog import run_watchdog
-run_watchdog({heartbeat_path!r}, {evidence_path!r})
+run_watchdog({heartbeat_path!r}, {evidence_path!r}, threshold_s={threshold_s!r})
 """
     return subprocess.Popen([sys.executable, "-c", script])

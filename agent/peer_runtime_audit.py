@@ -142,11 +142,12 @@ async def do_final_audit(
             opp_valid = opp_valid and opp_signed.summary.gamelet == gamelet
             if runtime is not None:
                 opp_valid = opp_valid and opp_signed.summary.config_hash == config_sha256
+                opp_valid = opp_valid and opp_signed.summary.audit_status == "PASSED"
             details["opponent_audit_summary_hash"] = opp_signed.summary.summary_hash()
             details["opponent_audit_verified"] = opp_valid
             details["opponent_audit_status"] = opp_signed.summary.audit_status
             if not opp_valid:
-                logger.warning("[PeerRuntime/%s] Opponent AuditSummary signature invalid", role)
+                logger.warning("[PeerRuntime/%s] Opponent AuditSummary is not passing", role)
                 audit_ok = False
             elif runtime is not None:
                 runtime._remote_audit_summaries[game_id] = opp_signed
@@ -176,7 +177,9 @@ async def notify_game_end(
     step: int,
     winner: str,
     now_fn,
-) -> None:
+    *,
+    runtime=None,
+) -> dict:
     """Notify opponent that game has ended."""
     msg = ActionMessage(
         game_id=game_id,
@@ -188,9 +191,25 @@ async def notify_game_end(
         reason=winner,
     )
     try:
-        await opponent_client.action(game_id, msg)
+        if runtime is not None and runtime.protocol_adapter is not None:
+            from agent.peer_turn_helpers import _call_adapted_phase
+
+            response = await _call_adapted_phase(
+                runtime,
+                "game_end",
+                msg.to_dict(),
+                {"winner": winner, "reason": winner},
+            )
+        else:
+            response = await opponent_client.action(game_id, msg)
+        if not response.get("ok"):
+            raise RuntimeError(f"peer rejected game_end: {response}")
+        return response
     except Exception as exc:
+        if runtime is not None and runtime.counted_mode:
+            raise RuntimeError(f"COUNTED game_end notification failed: {exc}") from exc
         logger.warning(f"[PeerRuntime] game_end notification failed: {exc}")
+        return {"ok": False, "error": str(exc)}
 
 
 def count_opponent_commits(game_dir: Path) -> int:

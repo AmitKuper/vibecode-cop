@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from dataclasses import asdict
 from pathlib import Path
 
 from agent.audit.audit_summary import SignedAuditSummary, verify_audit_summary
@@ -21,6 +22,67 @@ from agent.peer_runtime_io import _now
 
 class ResultExchangeError(RuntimeError):
     pass
+
+
+_TOKEN_KEYS = ("prompt_tokens", "completion_tokens", "total_tokens")
+
+
+def _validate_token_totals(totals: dict, label: str) -> None:
+    if set(totals) != set(_TOKEN_KEYS):
+        raise ResultExchangeError(f"{label} token totals are incomplete")
+    if any(
+        isinstance(totals[key], bool) or not isinstance(totals[key], int) for key in _TOKEN_KEYS
+    ):
+        raise ResultExchangeError(f"{label} token totals must be integers")
+    if any(totals[key] < 0 for key in _TOKEN_KEYS):
+        raise ResultExchangeError(f"{label} token totals must be non-negative")
+    if totals["total_tokens"] != totals["prompt_tokens"] + totals["completion_tokens"]:
+        raise ResultExchangeError(f"{label} total_tokens is inconsistent")
+
+
+def _validate_counted_token_accounting(outcomes, series_totals: dict) -> None:
+    for outcome in outcomes:
+        _validate_token_totals(outcome.token_totals, f"gamelet {outcome.gamelet}")
+    _validate_token_totals(series_totals, "series")
+    for key in _TOKEN_KEYS:
+        if sum(outcome.token_totals[key] for outcome in outcomes) != series_totals[key]:
+            raise ResultExchangeError(f"series {key} does not equal gamelet totals")
+
+
+def _serializable_agreement_artifact(local, remote) -> dict:
+    """Return a JSON-native artifact, including nested gamelet outcomes."""
+    return {
+        "agreement": asdict(local.agreement),
+        "local_signature_hex": local.signature_hex,
+        "remote_signature_hex": remote.signature_hex,
+    }
+
+
+def _series_verification_evidence(runtime, local, remote) -> dict:
+    """Collect public, independently verifiable series evidence; never include nonces."""
+    game_ids = sorted(runtime._step0_agreements)
+    return {
+        "local_signed_result_agreement": local.to_dict(),
+        "remote_signed_result_agreement": remote.to_dict(),
+        "local_signed_audit_summaries": [
+            runtime._local_audit_summaries[game_id].to_dict() for game_id in game_ids
+        ],
+        "remote_signed_audit_summaries": [
+            runtime._remote_audit_summaries[game_id].to_dict() for game_id in game_ids
+        ],
+        "step0": [
+            {
+                "local_signed_declaration": runtime._local_step0[game_id].to_dict(),
+                "remote_signed_declaration": runtime._remote_step0[game_id].to_dict(),
+                "declaration_agreement": asdict(runtime._step0_agreements[game_id]),
+            }
+            for game_id in game_ids
+        ],
+        "adaptive_protocol_profile": (
+            runtime._adaptive_profile.to_dict() if runtime._adaptive_profile is not None else None
+        ),
+        "inbound_profile_hash": runtime._inbound_profile_hash,
+    }
 
 
 def _series_id(game_id: str) -> str:
@@ -58,6 +120,46 @@ def _parse_and_verify_audits(runtime, payloads: list[dict]) -> list[SignedAuditS
     return verified
 
 
+def _validate_observed_outcomes(runtime, incoming, remote_audits) -> None:
+    """Bind counted result fields to what the passive process independently saw."""
+    if incoming.agreement.counted_status != runtime.counted_mode:
+        raise ResultExchangeError("result counted status does not match runtime mode")
+    if not runtime.counted_mode:
+        return
+    series_id = incoming.agreement.game_uid
+    observed = {
+        game_id: value
+        for game_id, value in runtime._observed_gamelet_outcomes.items()
+        if game_id.startswith(f"{series_id}_g")
+    }
+    if len(observed) != 6:
+        raise ResultExchangeError(
+            f"independent outcome evidence is incomplete: expected 6, got {len(observed)}"
+        )
+    audits_by_gamelet = {audit.summary.gamelet: audit for audit in remote_audits}
+    for outcome in incoming.agreement.gamelet_outcomes:
+        audit = audits_by_gamelet[outcome.gamelet]
+        game_id = audit.summary.game_uid
+        local = observed.get(game_id)
+        if local is None:
+            raise ResultExchangeError(f"missing independent outcome for {game_id}")
+        expected = {
+            "gamelet": outcome.gamelet,
+            "cop_score": outcome.cop_score,
+            "thief_score": outcome.thief_score,
+            "winner": outcome.winner,
+            "turns_played": outcome.turns_played,
+        }
+        if local != expected:
+            raise ResultExchangeError(
+                f"gamelet {outcome.gamelet} disagrees with independent observation"
+            )
+        if outcome.transcript_root != audit.summary.transcript_root:
+            raise ResultExchangeError(
+                f"gamelet {outcome.gamelet} transcript root is not audit-bound"
+            )
+
+
 def agreement_from_series(runtime, series_result: dict) -> ResultAgreement:
     records = series_result.get("gamelets", [])
     if len(records) != 6:
@@ -76,6 +178,7 @@ def agreement_from_series(runtime, series_result: dict) -> ResultAgreement:
                 transcript_root=runtime._local_audit_summaries[
                     record["game_id"]
                 ].summary.transcript_root,
+                token_totals=dict(record.get("token_totals", {})),
             )
         )
     audits = list(runtime._local_audit_summaries.values()) + list(
@@ -83,6 +186,9 @@ def agreement_from_series(runtime, series_result: dict) -> ResultAgreement:
     )
     if len(audits) != 12:
         raise ResultExchangeError(f"expected twelve bilateral audit summaries, got {len(audits)}")
+    series_token_totals = dict(series_result.get("token_totals", {}))
+    if runtime.counted_mode:
+        _validate_counted_token_accounting(outcomes, series_token_totals)
     winner = series_result["series_winner"]
     return ResultAgreement(
         game_uid=series_result["series_id"],
@@ -91,6 +197,7 @@ def agreement_from_series(runtime, series_result: dict) -> ResultAgreement:
         thief_total_score=int(series_result["thief_total"]),
         series_winner="draw" if winner == "tie" else winner,
         counted_status=runtime.counted_mode,
+        token_totals=series_token_totals,
         both_audit_summaries_hash=_audit_bundle_hash(audits),
         timestamp_utc=series_result["ended_at"],
     )
@@ -115,6 +222,15 @@ def accept_and_sign_result(runtime, game_id: str, message) -> dict:
         local_audits = list(runtime._local_audit_summaries.values())
         if len(local_audits) != 6:
             raise ResultExchangeError("local six-gamelet audit bundle is incomplete")
+        if sorted(s.summary.gamelet for s in local_audits) != list(range(1, 7)):
+            raise ResultExchangeError("local audit bundle is not exactly gamelets 1..6")
+        if any(s.summary.audit_status != "PASSED" for s in local_audits):
+            raise ResultExchangeError("local audit bundle contains a non-passing audit")
+        if any(s.summary.config_hash != runtime.config_sha256 for s in local_audits):
+            raise ResultExchangeError("local audit bundle contains a config mismatch")
+        _validate_observed_outcomes(runtime, incoming, remote_audits)
+        if runtime.counted_mode:
+            _validate_counted_token_accounting(outcomes, incoming.agreement.token_totals)
         if _audit_bundle_hash(local_audits + remote_audits) != (
             incoming.agreement.both_audit_summaries_hash
         ):
@@ -123,12 +239,29 @@ def accept_and_sign_result(runtime, game_id: str, message) -> dict:
             raise ResultExchangeError("cop total is inconsistent")
         if sum(o.thief_score for o in outcomes) != incoming.agreement.thief_total_score:
             raise ResultExchangeError("thief total is inconsistent")
+        if incoming.agreement.cop_total_score > incoming.agreement.thief_total_score:
+            expected_winner = "cop"
+        elif incoming.agreement.thief_total_score > incoming.agreement.cop_total_score:
+            expected_winner = "thief"
+        else:
+            expected_winner = "draw"
+        if incoming.agreement.series_winner != expected_winner:
+            raise ResultExchangeError("series winner is inconsistent with totals")
         local = create_signed_result_agreement(incoming.agreement, runtime._signing_private_key)
         verify_bilateral_consensus(local, incoming)
         runtime._remote_audit_summaries.update({s.summary.game_uid: s for s in remote_audits})
         runtime._signed_series_result = local
         response = {"ok": True, "signed_result_agreement": local.to_dict()}
         if runtime.counted_mode:
+            passive_artifact = {
+                **_serializable_agreement_artifact(local, incoming),
+                "verification_evidence": _series_verification_evidence(runtime, local, incoming),
+            }
+            passive_path = (
+                Path(runtime.games_dir)
+                / f"result_agreement_{incoming.agreement.game_uid}_passive.json"
+            )
+            passive_path.write_text(json.dumps(passive_artifact, indent=2), encoding="utf-8")
             step0 = runtime._step0_agreements[game_id]
             runtime.orchestrator.record_match_in_ledger(
                 opponent_id=remote_decl.declaration.group_id,
@@ -184,12 +317,9 @@ async def exchange_series_result(runtime, series_result: dict) -> dict:
     if not verify_result_agreement_signature(remote, remote_key):
         raise ResultExchangeError("peer result signature is not bound to Step-0")
     verify_bilateral_consensus(local, remote)
-    artifact = {
-        "agreement": local.agreement.__dict__,
-        "local_signature_hex": local.signature_hex,
-        "remote_signature_hex": remote.signature_hex,
-    }
+    artifact = _serializable_agreement_artifact(local, remote)
+    artifact["verification_evidence"] = _series_verification_evidence(runtime, local, remote)
     path = Path(runtime.games_dir) / f"result_agreement_{agreement.game_uid}.json"
-    path.write_text(json.dumps(artifact, indent=2, default=lambda o: o.__dict__))
+    path.write_text(json.dumps(artifact, indent=2))
     runtime._signed_series_result = local
     return artifact

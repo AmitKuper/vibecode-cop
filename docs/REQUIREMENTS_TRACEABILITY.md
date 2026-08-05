@@ -1,73 +1,73 @@
-# Appendix-E Requirements Traceability — Stage-A Baseline
+# Appendix-E Requirements Traceability — Final Code-Readiness
 
-Evidence date: 2026-08-05. Status vocabulary is restricted to `PASS`, `FAIL`, and
-`EXTERNAL_PENDING`. A class/import/unit test is not enough: a code-verifiable rule
-is PASS only when the counted production composition invokes it and an end-to-end
-test proves it. Appendix F controls every quantitative value.
+Evidence date: 2026-08-05. Appendix E supplies the rules and Appendix F supplies
+the quantitative values. Status is restricted to `PASS`, `FAIL`, and
+`EXTERNAL_PENDING`. A PASS below requires production wiring plus executable
+evidence; the strict verifier re-runs that evidence with no accepted skips.
 
-| # | Binding rule | Class | Production/test/runtime evidence | Baseline status |
+| # | Binding rule | Class | Production and executable evidence | Status |
 |---:|---|---|---|---|
-| 1 | Police and thief are separate processes | Mandatory | Role servers can run separately, but neither CLI enters a proven counted six-gamelet route; current two-process tests do not prove the required CLI lifecycle. | FAIL |
-| 2 | No shared memory/variables | Forbidden | Counted path is absent and the alternative `GameSeries` is explicitly in-process/central; no real counted isolation artifact. | FAIL |
-| 3 | Orchestrator is the single subsystem entry | Mandatory | `PeerRuntime.run_game()` catches failed `AgentOrchestrator` construction and continues; CLI constructs `PeerAgentRuntime` directly. | FAIL |
-| 4 | Proper game state machine | Mandatory | `agent/mcp/coordinator.py::ProtocolCoordinator`; transition suites including `tests/test_protocol_state_machine.py`. | PASS |
-| 5 | Reject illegal state transitions | Mandatory | Coordinator guards in `agent/mcp/server_handlers.py`; adversarial/order tests pass. | PASS |
-| 6 | Deadline tracking prevents deadlock | Mandatory | `DeadlineTracker` exists, but production turn waits use a different timeout and the counted Orchestrator may be absent; no counted deadline trace. | FAIL |
-| 7 | Independent Watchdog/recovery | Mandatory | Watchdog exists, but Orchestrator may be absent and startup failure is only a warning. | FAIL |
-| 8 | Live GUI shows local truth only | Mandatory | `SafeLiveView` filters fields, but live publishing is conditional on the bypassed Orchestrator; no counted GUI trace. | FAIL |
-| 9 | Never show objective board | Forbidden | Unit leak tests pass, but counted CLI/GUI production evidence is absent. | FAIL |
-| 10 | Public tunnel exposure | Mandatory | Runbook only; genuine public endpoint/match must be produced externally. | EXTERNAL_PENDING |
-| 11 | Byte-identical shared config | Mandatory | Raw `config_sha256` checked by `handle_start_game`; mismatch tests in config/transport suites. | PASS |
-| 12 | Minimums only increase by agreement | Mandatory | `agent/config/canonical_config.py` field kinds and config conformance tests enforce Appendix-F fixed/minimum semantics. | PASS |
-| 13 | Orthogonal or stand movement only | Mandatory | Canonical domain enforces it, but ordinary production movement bypasses the canonical transition. | FAIL |
-| 14 | No diagonal movement | Forbidden | Same production bypass as Rule 13; no one-authority counted proof. | FAIL |
-| 15 | Declare every barrier placement openly | Mandatory | `PLACE_*` is the committed/revealed action and placement tests cover disclosure. | PASS |
-| 16 | Never lie about barrier location | Forbidden | Barrier target is derived deterministically from disclosed action and position; no independent location field can differ. | PASS |
-| 17 | SHA-256 Commit-Reveal | Mandatory | `agent/mcp/crypto.py::create_commitment`; commit/audit tests pass and live turn invokes it. | PASS |
-| 18 | Nonce secret until final audit | Mandatory | `run_peer_turn()` includes `nonce` in ordinary reveal payload. | FAIL |
-| 19 | Audit mismatch causes technical loss | Mandatory | `do_final_audit()` overrides outcome on mismatch; adversarial commitment tests pass. | PASS |
-| 20 | Replay reconstruction and verification | Mandatory | Replay classes/tests exist, but production emits no agreed signed result trust anchor; no counted replay artifact. | FAIL |
-| 21 | Truthfully declare capture | Mandatory | Capture derives from board/domain state rather than peer assertion; outcome tests pass. | PASS |
-| 22 | Reject false capture | Forbidden | Domain/rules engine requires geometric capture/trap; adversarial tests pass. | PASS |
-| 23 | Lock scent model before game | Mandatory | Hash fields exist, but complete signed Step-0 declarations are not bilaterally exchanged in live handshake. | FAIL |
-| 24 | Signed hardware declaration before game | Mandatory | Declaration types/builders exist, but live start message does not carry/verify bilateral signed declarations. | FAIL |
-| 25 | Keep LLM from movement; project uses RL primary | Recommended + project mandatory | Counted-intended turn uses heuristic whenever `rl_model_loaded` is false; champions are ignored local files. | FAIL |
-| 26 | Free natural language | Mandatory | `NaturalLanguagePolicy` is invoked in active/passive turns; language tests pass. | PASS |
-| 27 | No numeric-location verbal protocol | Forbidden | Natural-language templates and numeric-location guard have direct tests. | PASS |
-| 28 | Gmail token bucket | Mandatory | `agent/gmail/token_bucket.py`, integrated Gatekeeper, fake-service tests. | PASS |
-| 29 | Gmail DOS detector | Mandatory | `agent/gmail/dos_detector.py` and circuit breaker are in Gatekeeper; tests pass. | PASS |
-| 30 | Send-only Gmail authorization | Mandatory | Gmail setup/runtime code specifies `gmail.send`; no broader scope found. Real auth remains external but code contract passes. | PASS |
-| 31 | Minimum outside groups | Mandatory | Requires at least two real different groups and cannot be fabricated. | EXTERNAL_PENDING |
-| 32 | Automatic result report via Gmail API | Mandatory | Counted send is conditional on an Orchestrator that may be absent and send failure is swallowed; code side not ready. Real delivery also remains external. | FAIL |
-| 33 | Final report is valid signed JSON | Mandatory | Live code sends a small unsigned `result` dict, not the bilateral signed `ResultAgreement`/required report schema. | FAIL |
-| 34 | No free-text final report | Forbidden | `Gatekeeper._validate_body()` rejects non-JSON-looking body; fake-Gmail test passes. | PASS |
-| 35 | Identical bilateral result; each peer reports | Mandatory | `verify_bilateral_consensus()` is unused; no production result exchange. | FAIL |
-| 36 | Comprehensive mutual audit | Mandatory | Summary keys are generated during audit, not Step-0-bound; peer summary is optional and parse failure does not necessarily fail. | FAIL |
-| 37 | Accurate prior counted-match declaration | Mandatory | Field/ledger exist, but full signed declarations are not exchanged/verified. | FAIL |
-| 38 | False match count disqualifies | Forbidden | No bilateral signed declaration verification in production; ledger errors are swallowed. | FAIL |
-| 39 | Never commit secrets | Forbidden | Tracked secret-pattern scan found no key material. | PASS |
-| 40 | Credential files in `.gitignore` | Mandatory | Credential/token patterns are explicitly ignored in both repositories. | PASS |
-| 41 | Documented final Git tag | Mandatory | Historical tags do not identify audited HEAD; final tag/push waits for actual freeze. | EXTERNAL_PENDING |
-| 42 | Comprehensive accurate academic README | Mandatory | README exists but readiness/model/production claims conflict with this executable baseline. | FAIL |
-| 43 | Moodle PDF unchanged layout | Mandatory | Requires official external form and submission. | EXTERNAL_PENDING |
-| 44 | Each member submits separately | Mandatory | Human external action. | EXTERNAL_PENDING |
-| 45 | Real unique eight-character group ID | Mandatory | Validator exists; actual course identity not available and must not be invented. | EXTERNAL_PENDING |
-| 46 | Barrier placed on thief captures | Mandatory | Canonical transition supports it, but passive production uses a separate helper and movement path is split. | FAIL |
-| 47 | Trapped thief is caught | Mandatory | Domain/rules semantics and exact trapped-thief tests pass. | PASS |
-| 48 | Fixed scoring table | Mandatory | Canonical config fixes 20/5 and 5/10 plus tie 2; scoring tests pass. | PASS |
-| 49 | Two repositories with cross-links | Mandatory | Both repositories exist and README line 3 links the companion. | PASS |
-| 50 | README/config/PRD/PLAN/TODO in each repo | Mandatory | Required artifact classes are present in both tracked trees. | PASS |
-| 51 | Lecturer agent report address | Mandatory | Exact Appendix-F address is in Gmail code/config tests. | PASS |
-| 52 | One counted match per opponent | Forbidden beyond one | Ledger exists, but opponent ID is derived from the generated game ID and ledger failure is swallowed. | FAIL |
-| 53 | Git SHA in Step-0 | Mandatory | Builder contains invalid subprocess call and live signed Step-0 exchange is absent. | FAIL |
-| 54 | Token totals in final JSON | Mandatory | Dataclass fields exist, but live result/report is not the signed agreement and does not populate them. | FAIL |
-| 55 | Self-grade code quality only | Mandatory | Release documentation acknowledges the scope and does not award league-result points. | PASS |
+| 1 | Police and thief are separate processes | Mandatory | Role CLIs plus `scripts/verify_local_two_process.py` launch two independent Python processes over TCP for the counted series. | PASS |
+| 2 | No shared memory/variables | Forbidden | The acceptance processes use separate configurations, secrets, ports, logs, game directories, and process memory; only MCP messages cross the boundary. | PASS |
+| 3 | Orchestrator is the single subsystem entry | Mandatory | `agent/role_cli.py::_resolved` creates counted `AgentOrchestrator`; `test_codex_counted_composition.py` proves active/passive fail-closed composition. | PASS |
+| 4 | Proper game state machine | Mandatory | `ProtocolCoordinator` authorizes the counted transitions; state-machine and production lifecycle suites run in CV-03. | PASS |
+| 5 | Reject illegal state transitions | Mandatory | Coordinator guards and adversarial ordering tests reject out-of-sequence phases. | PASS |
+| 6 | Deadline tracking prevents deadlock | Mandatory | Counted Orchestrator owns `DeadlineTracker`; timeout and production lifecycle tests plus bounded real-process verification pass. | PASS |
+| 7 | Independent Watchdog/recovery | Mandatory | Counted CLI starts the independent Watchdog and fails on startup/recovery errors; `test_watchdog.py` and chaos paths run in CV-08. | PASS |
+| 8 | Live GUI shows local truth only | Mandatory | Counted publication goes through `SafeLiveView`; `test_live_view_model.py`, UI route tests, and composition tests cover the production call. | PASS |
+| 9 | Never show objective board | Forbidden | Local-view serializers reject opponent coordinates; leak/adversarial GUI and observation tests run in the full suite. | PASS |
+| 10 | Public tunnel exposure | Mandatory | Requires a genuine public endpoint and outside connectivity; no tunnel evidence is fabricated locally. | EXTERNAL_PENDING |
+| 11 | Byte-identical shared config | Mandatory | Both champions and signed Step-0 bind config SHA `45ce5e…db90`; mismatch tests and CV-09 verify bilateral equality. | PASS |
+| 12 | Minimums only increase by agreement | Mandatory | `canonical_config.py` applies Appendix-F fixed/minimum semantics and signed negotiation locks the result; conformance tests pass. | PASS |
+| 13 | Orthogonal or stand movement only | Mandatory | Every physical action reaches `agent/domain/transition.py::apply_joint_action`; domain and real lifecycle evidence pass. | PASS |
+| 14 | No diagonal movement | Forbidden | Legal-action masking plus canonical domain validation reject diagonal/unknown movement in active and passive paths. | PASS |
+| 15 | Declare every barrier placement openly | Mandatory | `PLACE_*` is committed, revealed, audited, and applied by the canonical transition; barrier conformance tests pass. | PASS |
+| 16 | Never lie about barrier location | Forbidden | Barrier target is derived solely from the disclosed action and actor coordinate; no independent location claim exists. | PASS |
+| 17 | SHA-256 Commit-Reveal | Mandatory | Both peers use `create_commitment`; CV-09 verifies six bilateral commit/reveal journals and signatures. | PASS |
+| 18 | Nonce secret until final audit | Mandatory | Gameplay reveal omits nonce; final audit alone discloses it. Nonce-isolation and public-artifact scans pass. | PASS |
+| 19 | Audit mismatch causes technical loss | Mandatory | Audit/peer-result validation turns mismatches into technical loss/abort; `test_audit_adversarial.py` and bilateral tests run in CV-08. | PASS |
+| 20 | Replay reconstruction and verification | Mandatory | Counted audit bundle and signed result are durable trust anchors; replay/tamper suites reconstruct and reject modifications. | PASS |
+| 21 | Truthfully declare capture | Mandatory | Capture is derived by the canonical domain from geometry, not a peer assertion; active/passive consensus tests pass. | PASS |
+| 22 | Reject false capture | Forbidden | Peer game-end and result validators reject outcome/score claims inconsistent with canonical state. | PASS |
+| 23 | Lock scent model before game | Mandatory | Signed bilateral Step-0 carries and verifies the scent-model hash before the first commitment. | PASS |
+| 24 | Signed hardware declaration before game | Mandatory | Signed bilateral Step-0 includes hardware/dependency declarations and verifies both public keys in CV-09. | PASS |
+| 25 | Keep LLM from movement; project uses RL primary | Recommended + project mandatory | Counted order is local observation/belief/history → role recurrent champion → legal mask → canonical validation; model failure aborts. | PASS |
+| 26 | Free natural language | Mandatory | Movement and language policies are separate; active/passive turn paths exchange truth/lie-capable natural-language hints. | PASS |
+| 27 | No numeric-location verbal protocol | Forbidden | Language guards reject numeric coordinate protocols while permitting free strategic text; language suites pass. | PASS |
+| 28 | Gmail token bucket | Mandatory | Counted report uses Gatekeeper with token bucket; fake-service and production-pipeline tests pass. | PASS |
+| 29 | Gmail DOS detector | Mandatory | Gatekeeper owns DOS detector/circuit breaker; retry/abuse tests pass. | PASS |
+| 30 | Send-only Gmail authorization | Mandatory | OAuth setup/runtime requests only `gmail.send`; scope-contract tests and tracked scan pass. | PASS |
+| 31 | Minimum outside groups | Mandatory | At least two real different course groups must participate; local fixtures cannot prove this. | EXTERNAL_PENDING |
+| 32 | Automatic result report via Gmail API | Mandatory | Code path, independent role reports, validation, and fake transport pass; genuine provider delivery/message IDs require credentials. | EXTERNAL_PENDING |
+| 33 | Final report is valid signed JSON | Mandatory | Counted terminal path serializes the signed `ResultAgreement`, per-gamelet data, totals, hashes, and signatures; strict peer parsing passes. | PASS |
+| 34 | No free-text final report | Forbidden | Gatekeeper rejects non-JSON report bodies; counted sender passes only canonical JSON. | PASS |
+| 35 | Identical bilateral result; each peer reports | Mandatory | CV-09 checks byte-identical agreement bodies, two role signatures, consensus, and two independent fake outbox records. | PASS |
+| 36 | Comprehensive mutual audit | Mandatory | Both peers audit all six journals, bind audit keys from Step-0, exchange signed summaries, and reject incomplete/tampered bundles. | PASS |
+| 37 | Accurate prior counted-match declaration | Mandatory | Signed Step-0 derives prior-match count from the role-local league ledger and peer validation compares the declaration. | PASS |
+| 38 | False match count disqualifies | Forbidden | Signed-declaration and ledger-consistency tests reject false prior-count claims before commitments. | PASS |
+| 39 | Never commit secrets | Forbidden | CV-10 scans all tracked text for private-key/provider-token signatures; counted artifacts expose no nonces or secrets. | PASS |
+| 40 | Credential files in `.gitignore` | Mandatory | Both repositories ignore OAuth credentials, tokens, local secrets, and runtime evidence directories. | PASS |
+| 41 | Documented final Git tag | Mandatory | A final audited tag must be created and pushed only after the final clean verification. | EXTERNAL_PENDING |
+| 42 | Comprehensive accurate academic README | Mandatory | Both READMEs document current counted CLI, recurrent champions, strict verifier, and honest external boundary. | PASS |
+| 43 | Moodle PDF unchanged layout | Mandatory | Requires the official course form and human submission; local code cannot establish it. | EXTERNAL_PENDING |
+| 44 | Each member submits separately | Mandatory | Requires individual human Moodle actions and cannot be automated or fabricated. | EXTERNAL_PENDING |
+| 45 | Real unique eight-character group ID | Mandatory | Validation exists, but the actual course identity must be supplied by the team. | EXTERNAL_PENDING |
+| 46 | Barrier placed on thief captures | Mandatory | Canonical simultaneous transition places the declared legal barrier and captures when it lands on the thief; conformance tests pass. | PASS |
+| 47 | Trapped thief is caught | Mandatory | Canonical domain detects no legal escape and applies the Appendix-F caught outcome; exact trapped tests pass. | PASS |
+| 48 | Fixed scoring table | Mandatory | Canonical configuration fixes 20/5, 5/10, and 2/2 tie scoring; agreement recomputation rejects deviations. | PASS |
+| 49 | Two repositories with cross-links | Mandatory | Both role repositories exist and each README links its companion. | PASS |
+| 50 | README/config/PRD/PLAN/TODO in each repo | Mandatory | CV-11 validates all required academic/release artifacts in both repositories. | PASS |
+| 51 | Lecturer agent report address | Mandatory | Counted Gmail configuration and tests use the exact Appendix-F recipient. | PASS |
+| 52 | One counted match per opponent | Forbidden beyond one | League ledger uses the stable opponent identity, Step-0 declares history, and counted mode fails closed on repeats/ledger errors. | PASS |
+| 53 | Git SHA in Step-0 | Mandatory | Counted clean-worktree guard obtains exact HEAD; all 12 signed Step-0 declarations in CV-09 carry their role's exact SHA. | PASS |
+| 54 | Token totals in final JSON | Mandatory | Per-gamelet and series prompt/completion/total fields are explicit, arithmetically checked, signed, and peer-validated. | PASS |
+| 55 | Self-grade code quality only | Mandatory | Numeric verifier score covers code-verifiable gates only; league results and external evidence are excluded from the self-grade. | PASS |
 
-## Baseline totals
+## Final status totals
 
-`PASS=24`, `FAIL=25`, `EXTERNAL_PENDING=6`.
+`PASS=48`, `FAIL=0`, `EXTERNAL_PENDING=7`.
 
-These counts are not a grade calculation. They are an implementation backlog.
-Final PASS rows will be updated with an exact production symbol, exact test name,
-and hashed runtime evidence artifact.
+This is a code-readiness trace, not proof of completed external course actions.
+Real Gmail, public/outside matches, the final pushed tag, actual group identity,
+and Moodle evidence remain pending until genuine artifacts exist.
 

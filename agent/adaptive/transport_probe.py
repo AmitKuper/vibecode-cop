@@ -74,22 +74,27 @@ async def _try_sse(base_url: str, timeout: float) -> ProbeResult | None:
         import time
 
         t0 = time.monotonic()
-        async with httpx.AsyncClient(timeout=timeout) as c:
-            r = await c.get(
+        async with (
+            httpx.AsyncClient(timeout=timeout) as c,
+            # An SSE response is intentionally unbounded. Inspect the handshake
+            # headers without asking httpx to consume the response body.
+            c.stream(
+                "GET",
                 endpoint,
                 headers={"Accept": "text/event-stream"},
                 follow_redirects=True,
-            )
-        latency_ms = (time.monotonic() - t0) * 1000
-        content_type = r.headers.get("content-type", "")
-        if r.status_code == 200 and "event-stream" in content_type:
-            return ProbeResult(
-                transport=TransportType.SSE,
-                base_url=base_url,
-                mcp_endpoint=endpoint,
-                latency_ms=latency_ms,
-                probe_notes="SSE event-stream confirmed",
-            )
+            ) as r,
+        ):
+            latency_ms = (time.monotonic() - t0) * 1000
+            content_type = r.headers.get("content-type", "")
+            if r.status_code == 200 and "event-stream" in content_type:
+                return ProbeResult(
+                    transport=TransportType.SSE,
+                    base_url=base_url,
+                    mcp_endpoint=endpoint,
+                    latency_ms=latency_ms,
+                    probe_notes="SSE event-stream confirmed",
+                )
     except Exception as exc:
         logger.debug("SSE probe failed for %s: %s", base_url, exc)
     return None

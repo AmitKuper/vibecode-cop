@@ -1,145 +1,16 @@
 {
-  "timestamp_utc": "2026-08-04T20:41:22Z",
+  "schema_version": "2.0",
+  "timestamp_utc": "2026-08-05T00:00:00Z",
+  "repository_role": "cop",
+  "release_state": "CODE_VERIFICATION_IN_PROGRESS",
+  "repository_shas": null,
   "summary": {
-    "PASS": 14,
+    "PASS": 0,
     "FAIL": 0,
-    "EXTERNAL_PENDING": 3,
-    "SKIP": 2
+    "EXTERNAL_PENDING": 4
   },
-  "all_code_verifiable_pass": true,
-  "gates": [
-    {
-      "gate_id": "B-01",
-      "description": "Adaptive MCP package importable",
-      "status": "PASS",
-      "detail": "All adaptive MCP exports importable",
-      "elapsed_ms": 2643.0
-    },
-    {
-      "gate_id": "B-02",
-      "description": "Zero per-turn LLM calls in adapter",
-      "status": "PASS",
-      "detail": "per_turn_llm_calls=0 after adapt_request",
-      "elapsed_ms": 0.3
-    },
-    {
-      "gate_id": "B-03",
-      "description": "Compatible fixtures pass StaticSemanticVerifier",
-      "status": "PASS",
-      "detail": "All 11 compatible fixtures pass verifier",
-      "elapsed_ms": 3.1
-    },
-    {
-      "gate_id": "B-04",
-      "description": "Compatible fixtures pass ConformanceProbes",
-      "status": "PASS",
-      "detail": "All 11 compatible fixtures pass conformance",
-      "elapsed_ms": 3.5
-    },
-    {
-      "gate_id": "B-05",
-      "description": "Incompatible fixtures rejected before commitment",
-      "status": "PASS",
-      "detail": "3 structural incompatible fixtures rejected before first commitment",
-      "elapsed_ms": 2.6
-    },
-    {
-      "gate_id": "B-06",
-      "description": "Prompt injection sanitized by MCPIntrospector",
-      "status": "PASS",
-      "detail": "_sanitize raises ValueError on prompt injection",
-      "elapsed_ms": 0.0
-    },
-    {
-      "gate_id": "B-07",
-      "description": "Nonce isolation enforced (not in commit/reveal)",
-      "status": "PASS",
-      "detail": "nonce_isolation probe passes (nonce absent from commit/reveal)",
-      "elapsed_ms": 0.3
-    },
-    {
-      "gate_id": "B-08",
-      "description": "plan_hash() is deterministic",
-      "status": "PASS",
-      "detail": "plan_hash deterministic: 9748e4b0028c0a13\u2026",
-      "elapsed_ms": 0.1
-    },
-    {
-      "gate_id": "B-09",
-      "description": "ProfileCache disk roundtrip",
-      "status": "PASS",
-      "detail": "ProfileCache disk roundtrip ok",
-      "elapsed_ms": 6.1
-    },
-    {
-      "gate_id": "P-01",
-      "description": "PPO model weights nonzero",
-      "status": "PASS",
-      "detail": "Both cop and thief PPO models have nonzero weights",
-      "elapsed_ms": 3908.5
-    },
-    {
-      "gate_id": "P-02",
-      "description": "MANIFEST.json shows nonzero training_steps",
-      "status": "PASS",
-      "detail": "MANIFEST.json shows nonzero training_steps",
-      "elapsed_ms": 0.4
-    },
-    {
-      "gate_id": "P-03",
-      "description": "Adaptive MCP test suite passes (79 tests)",
-      "status": "SKIP",
-      "detail": "skipped with --skip-slow",
-      "elapsed_ms": 0.0
-    },
-    {
-      "gate_id": "P-04",
-      "description": "Full test suite passes",
-      "status": "SKIP",
-      "detail": "skipped with --skip-slow",
-      "elapsed_ms": 0.0
-    },
-    {
-      "gate_id": "P-05",
-      "description": "Ruff: no linting violations",
-      "status": "PASS",
-      "detail": "ruff: no violations",
-      "elapsed_ms": 241.2
-    },
-    {
-      "gate_id": "P-06",
-      "description": "Counted mode fails closed (RuntimeMode.COUNTED)",
-      "status": "PASS",
-      "detail": "RuntimeMode.COUNTED exists",
-      "elapsed_ms": 0.8
-    },
-    {
-      "gate_id": "P-07",
-      "description": "Binding compliance modules importable",
-      "status": "PASS",
-      "detail": "All 6 binding compliance modules importable",
-      "elapsed_ms": 5349.1
-    },
-    {
-      "gate_id": "E-01",
-      "description": "Real-process two-process integration test",
-      "status": "EXTERNAL_PENDING",
-      "detail": "Two-process counted series on localhost not run in this session; requires live server + client over real TCP",
-      "elapsed_ms": 0.0
-    },
-    {
-      "gate_id": "E-02",
-      "description": "Competitive strength: 8 families \u00d7 50 series",
-      "status": "EXTERNAL_PENDING",
-      "detail": "8 opponent families \u00d7 50 series each not run in this session; requires external tournament infrastructure",
-      "elapsed_ms": 0.0
-    },
-    {
-      "gate_id": "E-03",
-      "description": "Release tag pushed to GitHub",
-      "status": "EXTERNAL_PENDING",
-      "detail": "No v9.* tag found \u2014 release tag not yet pushed",
-      "elapsed_ms": 32.6
-    }
-  ]
+  "all_code_verifiable_pass": false,
+  "code_verifiable_score": null,
+  "submission_ready": false,
+  "detail": "Provisional placeholder. The strict clean-worktree verifier replaces this after the implementation commit."
 }

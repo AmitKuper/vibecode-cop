@@ -14,6 +14,7 @@ from agent.mcp.server import AgentMCPServer
 from agent.peer_agent_passive import (
     handle_passive_commit,
     handle_passive_final_audit,
+    handle_passive_game_end,
     handle_passive_reveal,
     init_passive_game,
 )
@@ -99,6 +100,7 @@ class PeerAgentRuntime(_DiscoveryMixin):
         from agent.peer_step0 import (
             accept_remote_signed_declaration,
             build_local_signed_declaration,
+            persist_step0_evidence,
         )
 
         local_signed = None
@@ -112,10 +114,13 @@ class PeerAgentRuntime(_DiscoveryMixin):
             if self.mode.value == "counted":
                 raise
             logger.warning("Development Step-0 compatibility fallback: %s", exc)
-        try:
-            self.discover_protocol(game_id, self._peer_url)
-        except Exception as exc:
-            logger.warning(f"[PeerAgentRuntime/{self.role}] Discovery failed (non-fatal): {exc}")
+        if self.mode.value != "counted":
+            try:
+                self.discover_protocol(game_id, self._peer_url)
+            except Exception as exc:
+                logger.warning(
+                    f"[PeerAgentRuntime/{self.role}] Discovery failed (non-fatal): {exc}"
+                )
         if self.role == "cop":
             loop = self._loop
             if loop is None or not loop.is_running():
@@ -125,6 +130,8 @@ class PeerAgentRuntime(_DiscoveryMixin):
             logger.info(f"[PeerAgentRuntime/cop] Scheduled PeerRuntime.run_game({game_id})")
         else:
             init_passive_game(self._peer_runtime, game_id, self._rules_ref)
+        if local_signed is not None and agreement is not None:
+            persist_step0_evidence(self._peer_runtime, game_id)
         result = {
             "ok": True,
             "game_id": game_id,
@@ -147,7 +154,7 @@ class PeerAgentRuntime(_DiscoveryMixin):
 
             return accept_and_sign_result(self._peer_runtime, game_id, message)
         if phase == "game_end":
-            return {"ok": True, "phase": "game_end"}
+            return handle_passive_game_end(self._peer_runtime, game_id, message, self._rules_ref)
         return {"ok": False, "error": f"Unknown phase: {phase}"}
 
     async def run_async(self, host: str = "0.0.0.0", port: int = 5000) -> None:

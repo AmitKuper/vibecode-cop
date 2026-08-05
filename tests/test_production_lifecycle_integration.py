@@ -5,8 +5,6 @@ from __future__ import annotations
 import contextlib
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -117,21 +115,12 @@ class TestStep0ValidationInCountedMode:
         assert errors == []
 
     def test_step0_validation_raises_for_invalid_counted_declaration(self, tmp_path):
-        from agent.agent_orchestrator import AgentOrchestrator
         from agent.runtime_mode import RuntimeMode
 
-        cfg = {"model_sha256": "abc" * 21, "secret": "real-secret-99999"}
-        try:
-            orch = AgentOrchestrator(
-                role="cop",
-                game_uid="counted-game-001",
-                grid_size=7,
-                mode=RuntimeMode.COUNTED,
-                work_dir=str(tmp_path),
-                config=cfg,
-            )
-        except ValueError:
-            pytest.skip("Counted mode precondition blocks creation in test env")
+        # Counted construction is covered separately; isolate the production
+        # Step-0 validator here while retaining its counted behavior.
+        orch = _make_orchestrator(tmp_path)
+        orch.mode = RuntimeMode.COUNTED
 
         from agent.step0.declaration import PeerDeclaration
 

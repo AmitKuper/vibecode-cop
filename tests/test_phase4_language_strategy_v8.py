@@ -36,7 +36,7 @@ class TestSymmetricLanguagePolicy:
         )
         hint, intent = orch.generate_strategic_hint("S")
         assert isinstance(hint, str)
-        assert intent in ("truth", "lie", "ambiguous", "bluff")
+        assert intent in ("truth", "lie")
 
     def test_passive_generate_hint_uses_nlp_policy(self):
         """Passive _generate_hint() uses NaturalLanguagePolicy, not always-truth."""
@@ -88,6 +88,7 @@ class TestSymmetricLanguagePolicy:
         rt.max_turns = 35
         rt._cop_barriers_remaining = 14
         rt.board = Board(cop_position=[0, 0], thief_position=[3, 3])
+        rt.game_dir = tmp_path
         rt._select_move_rl.return_value = None  # force heuristic path
         rt._my_commits = {}
         rt._store_my_commit = MagicMock()
@@ -99,6 +100,7 @@ class TestSymmetricLanguagePolicy:
 
         msg = MagicMock()
         msg.step = 5
+        msg.h_commit = "a" * 64
 
         with patch("agent.mcp.crypto.create_commitment", return_value=("h1", "n1")):
             result = handle_passive_commit(rt, "test_g1", msg, [])
