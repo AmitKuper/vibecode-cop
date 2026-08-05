@@ -86,3 +86,17 @@ Test counts are measured at phase end (cop repo).
 | Tournament reproduction | Cop stable `959872ca…1b72`; thief `a0e2bb3d…5003`; frozen series/family results match | PASS |
 | Current collection | 1,509 cop tests / 1,384 thief tests after final stdio additions | PASS |
 | Clean production process | Requires coherent commit because counted mode refuses dirty trees | PENDING |
+
+## 2026-08-06 v11 independent baseline
+
+| Evidence | Cop | Thief | Result |
+|---|---|---|---|
+| exact clean SHA | `115c20e60d3a318b117136b30661e3ea3b788e35` | `7ba1ad7fd42eb70cb7cf0690c512a23ca5dc3bf4` | PASS |
+| full suite / branch | 1,509 / 85.9867% | 1,384 / 85.5100% | PASS, zero skips |
+| exact tournament | 89.00%; worst 79.03% | 76.11%; worst 34.44% | reproduced; thief gap |
+| real process | `series_20260806_005228_14283ab9`, six gamelets | same | PASS |
+| v11 Appendix-E audit | 40 PASS, 8 FAIL, 7 external pending | mirrored | baseline 73/100 |
+
+The legacy aggregate's 11 PASS is retained only as scoped evidence. Direct v11
+FAIL rules are 6, 7, 17, 19, 20, 21, 23, and 36. See
+`CODEX_BASELINE_AUDIT.md` and `docs/CODEX_100_EXECPLAN.md`.
