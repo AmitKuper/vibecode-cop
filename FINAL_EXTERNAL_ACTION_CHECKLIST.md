@@ -15,7 +15,7 @@ screenshots, or an unpushed local tag.
 
 Verified local source revisions (post-hardening):
 
-- Cop: `7b2607773ce09e4a98465d62a0a1a9a5b91b6e65`
-- Thief: `22263c86d795c52c3e40ebb568fa8a7c7cfda063`
+- Cop: `5ce826333eb75b0f27982d16ee15c2f8767462cb`
+- Thief: `b392a2299818d13b3f1b4f8f3ec1c67669bfade3`
 
 Do not mark any row PASS until the named artifact can be independently checked.

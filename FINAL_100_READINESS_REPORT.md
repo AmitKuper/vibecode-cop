@@ -7,8 +7,8 @@ Release state: **CODE_VERIFIABLE PASS — EXTERNAL ACTIONS PENDING**
 
 The strict executable verifier passed every local gate on clean source revisions:
 
-- Cop verified source: `7b2607773ce09e4a98465d62a0a1a9a5b91b6e65` (post-hardening)
-- Thief verified source: `22263c86d795c52c3e40ebb568fa8a7c7cfda063` (post-hardening)
+- Cop verified source: `5ce826333eb75b0f27982d16ee15c2f8767462cb` (post-hardening)
+- Thief verified source: `b392a2299818d13b3f1b4f8f3ec1c67669bfade3` (post-hardening)
 - Code-verifiable gates: **11 PASS, 0 FAIL, 0 skipped**
 - Code-verifiable score: **100/100**
 - Appendix-E trace: **48 PASS, 0 FAIL, 7 EXTERNAL_PENDING**
@@ -23,8 +23,8 @@ identity, tag-push, or Moodle obligations are complete.
 | Gate | Cop | Thief |
 |---|---:|---:|
 | `uv sync --frozen` / `uv lock --check` | PASS / PASS | PASS / PASS |
-| Full pytest | 1,467 passed, 0 skipped | 1,340 passed, 0 skipped |
-| Actual branch coverage | 1,615/1,882 = 85.8130% | 1,603/1,882 = 85.1753% |
+| Full pytest | 1,471 passed, 0 skipped | 1,344 passed, 0 skipped |
+| Actual branch coverage | 1,629/1,902 = 85.6467% | 1,617/1,902 = 85.0158% |
 | Ruff lint / format | PASS / PASS | PASS / PASS |
 | CLI subprocess startup | PASS | PASS |
 | Hostile adaptive/audit/replay/Watchdog/Gmail/token suite | 130 passed | 130 passed |
@@ -38,14 +38,14 @@ no skip option and fails if any full or focused suite reports a skip.
 The verifier launched exactly two independent Python role processes over real
 localhost TCP and completed exactly six counted gamelets:
 
-- Series: `series_20260805_064801_ea4d7c38`
+- Series: `series_20260805_205914_9e15341c`
 - Signed Step-0 declarations verified: 12
 - Signed passing audits verified: 12
 - Result signatures verified: 2
 - Bilateral agreement hash:
-  `d731f5be9ee9b33d20f01787772df864bd77102bf0d08561ff29784e89233ce3`
+  `9e3ad410e4cdd0b69a60635161b8e9ed40379e0c90ac7c2f5148b9a19d3451f1`
 - Shared ledger-consensus hash:
-  `99b5f6d55f54266af3a9c9abd0df6d3b4a36b20a2ac75a5c57fdce6ba55a7c93`
+  `746efa71e8b09131ccde333f6e2f1a5966e721d4f105148de7304fe34917861b`
 - Public nonce-value keys: 0
 - Per-gamelet and series token totals: explicit, signed, arithmetically checked
 - Independent fake acceptance reports: 2, both explicitly marked fake
