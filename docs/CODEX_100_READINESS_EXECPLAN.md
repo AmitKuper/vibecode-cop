@@ -243,13 +243,24 @@ EXTERNAL_PENDING. Risk: never synthesize evidence. SHAs: pending.
   validation, and reran both full branch suites. Candidate measurements are cop
   1,615/1,882 = 85.8130% and thief 1,603/1,882 = 85.1753%; the final clean
   verifier and fresh release-provenance subprocess remain open.
+- [x] 2026-08-05T06:49+03:00 — strict clean-revision verifier passed all 11
+  code-verifiable gates on cop `b9f672381fb3c456a0a6fdb3f99a113750333548`
+  and thief `aedbcb854a2e20579a1540732693d4c721955814`: 1,467/1,340
+  full-suite tests, zero skips, 85.8130%/85.1753% actual branch coverage,
+  both champion/tournament gates, both 130-test hostile suites, and real series
+  `series_20260805_064801_ea4d7c38` with six gamelets, agreement
+  `d731f5be…3ce3`, and ledger consensus `99b5f6d5…7c93`.
+- [x] 2026-08-05T06:55+03:00 — regenerated the final report, external checklist,
+  release manifest, score JSON, 55-rule trace, and ledger. Code-verifiable score
+  is 100; full submission readiness remains false with seven Appendix-E rules
+  grouped into four genuine external action gates.
 
 - [x] M1 counted composition root.
 - [x] M2 zero-trust final lifecycle.
 - [x] M3 RL strength.
 - [x] M4 adaptive MCP.
-- [ ] M5 complete quality/verifier gates.
-- [ ] M6 final release evidence.
+- [x] M5 complete quality/verifier gates.
+- [x] M6 final release evidence.
 
 ## Decisions
 

@@ -1,24 +1,37 @@
 {
   "schema_version": "2.0",
-  "generated_at_utc": "2026-08-05T00:00:00Z",
+  "generated_at_utc": "2026-08-05T03:49:32.874048+00:00",
   "repository_role": "cop",
-  "release_state": "CODE_VERIFICATION_IN_PROGRESS",
-  "verified_source_commits": null,
+  "release_state": "CODE_VERIFIABLE_PASS_EXTERNAL_PENDING",
+  "verified_source_commits": {
+    "cop": "b9f672381fb3c456a0a6fdb3f99a113750333548",
+    "thief": "aedbcb854a2e20579a1540732693d4c721955814"
+  },
+  "evidence_wrapper_note": "This tracked evidence commit follows the clean verified source revisions; no production source changed.",
   "canonical_config_sha256": "45ce5eeb0daff048c31c1d5012b3db55b4b101f91146d4a886474e024ea8db90",
   "champions": {
     "cop": {
+      "repository": "vibecode-cop",
       "path": "models/cop_recurrent_champion.pt",
       "sha256": "1c6f85bed3ba754d1daa38aa394b455d605fe1768436532581cc118b5be96949"
     },
     "thief": {
+      "repository": "vibecode-thief",
       "path": "models/thief_recurrent_champion.pt",
       "sha256": "477c56ad7348dfc6dd9130e3ed371be8afbc912ef34635ee0fb56ef2427d6151"
     }
   },
+  "production_evidence": {
+    "series_id": "series_20260805_064801_ea4d7c38",
+    "gamelets": 6,
+    "agreement_sha256": "d731f5be9ee9b33d20f01787772df864bd77102bf0d08561ff29784e89233ce3",
+    "ledger_consensus_sha256": "99b5f6d55f54266af3a9c9abd0df6d3b4a36b20a2ac75a5c57fdce6ba55a7c93",
+    "real_gmail_status": "EXTERNAL_PENDING"
+  },
   "verification": {
     "script": "scripts/verify_100_readiness.py",
     "mandatory_skips_allowed": false,
-    "code_verifiable_score": null,
+    "code_verifiable_score": 100,
     "submission_ready": false
   },
   "rule_totals": {

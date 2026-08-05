@@ -8,9 +8,14 @@ screenshots, or an unpushed local tag.
 |---|---|---|
 | 10, 31 | Expose the role endpoints through a real public tunnel and complete the required counted match with at least two distinct outside course groups. Preserve peer identities, public URLs, timestamps, signed agreements, and both roles' logs. | EXTERNAL_PENDING |
 | 32 | Authorize each role independently with Gmail send-only OAuth, deliver its own signed JSON report to the exact Appendix-F address, and preserve the two provider-returned message IDs. | EXTERNAL_PENDING |
-| 41 | After the final clean verifier run, create the documented audited tag on both exact release revisions and push commits/tags to the correct remotes. Preserve remote URLs and tag-resolution output. | EXTERNAL_PENDING |
+| 41 | Create the documented audited tag on both verified source lines and push the final commits/tags to the correct remotes. Preserve remote URLs and tag-resolution output. | EXTERNAL_PENDING |
 | 43 | Put the required evidence into the official Moodle PDF without changing its mandated layout; preserve the final PDF hash. | EXTERNAL_PENDING |
 | 44 | Have every group member make the required individual Moodle submission and preserve real confirmation receipts/screenshots. | EXTERNAL_PENDING |
-| 45 | Replace no values automatically: supply the team's real unique eight-character group ID and verify it in both role environments and submitted artifacts. | EXTERNAL_PENDING |
+| 45 | Supply the team's real unique eight-character group ID and verify it in both role environments and submitted artifacts; never generate or guess it. | EXTERNAL_PENDING |
+
+Verified local source revisions:
+
+- Cop: `b9f672381fb3c456a0a6fdb3f99a113750333548`
+- Thief: `aedbcb854a2e20579a1540732693d4c721955814`
 
 Do not mark any row PASS until the named artifact can be independently checked.
