@@ -1,7 +1,5 @@
-param,value,cop_win_rate,thief_survival_rate
-learning_rate,0.0001,0.0,0.0
-learning_rate,0.0003,0.0,0.0
-learning_rate,0.001,0.0,0.0
-n_steps,1024,0.0,0.0
-n_steps,2048,0.0,0.0
-n_steps,4096,0.0,0.0
+inference_mode,temperature,win_rate,series_win_rate,official_role_score,score_differential,worst_family_win_rate,illegal_action_rate,p99_inference_ms
+argmax,0.0,0.82,0.98,5190,3420,0.6,0.0,0.5473839119076734
+controlled_stochastic,0.25,0.8,0.98,5100,3300,0.6,0.0,0.5559520423412323
+controlled_stochastic,0.5,0.8,1.0,5100,3300,0.6,0.0,0.544799966737628
+controlled_stochastic,0.75,0.73,1.0,4785,2880,0.5333333333333333,0.0,0.5654650623910129

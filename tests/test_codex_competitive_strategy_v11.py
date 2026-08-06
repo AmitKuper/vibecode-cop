@@ -104,7 +104,7 @@ class _RiskyEastNetwork(torch.nn.Module):
         return logits, torch.zeros((features.shape[0], 1)), next_hidden
 
 
-def test_deployed_thief_applies_risk_mask_after_legal_mask() -> None:
+def test_deployed_thief_uses_trained_preference_after_legal_mask() -> None:
     policy = RecurrentRolePolicy(_RiskyEastNetwork(), "thief", torch.device("cpu"))
     observation = LocalObservation(
         own_position=(3, 3),
@@ -117,8 +117,7 @@ def test_deployed_thief_applies_risk_mask_after_legal_mask() -> None:
         grid_size=7,
     )
     action = policy.select_action(observation, _belief((4, 3)), list(THIEF_ACTIONS))
-    assert action != "E"
-    assert action in THIEF_ACTIONS
+    assert action == "E"
 
 
 def test_all_four_language_intents_survive_wire_validation() -> None:

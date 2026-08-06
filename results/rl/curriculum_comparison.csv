@@ -1,0 +1,3 @@
+training_regime,artifact_sha256,continuation_episodes,training_families,held_out_gamelets,win_rate,series_win_rate,official_role_score,official_opponent_score,score_differential,worst_family_win_rate
+population_release,b9e74b7a13ca461484f2b47046eeecf8d393cb8d64b7cdd51d2915b714c21268,0,10,300,0.82,0.98,5190,1770,3420,0.6
+single_checkpoint_self_play,74bdda0b6887c69c0ab530aa7b3c86fae3fb9a06c12e4b2140ec517742042bcc,800,1,300,0.8,0.98,5100,1800,3300,0.6

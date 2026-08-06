@@ -1,36 +1,40 @@
-# Token Usage and Cost Ledger
+# Resource, token, and cost analysis
 
-This ledger covers the cop and thief repositories as one distributed product.
-Token totals are recorded once in each repository for discoverability; do not add
-the two copies together.
+This ledger covers both repositories as one distributed product; do not add the two
+copies together.
 
-## Codex implementation and verification — 2026-08-05
+## Counted runtime
 
-The completed goal reported an actual aggregate of **2,850,905 tokens** over
-approximately 6 hours 7 minutes. The runtime did not expose an input/output
-split, so the milestone allocation below is an estimate whose rows sum to that
-actual aggregate.
+Movement inference is local PyTorch CPU inference. The final held-out gates measured:
 
-| Milestone | Outcome | Tokens |
-|---|---|---:|
-| M0 — independent audit and 55-rule baseline | Baseline evidence and ExecPlan | ~228,072 total |
-| M1 — counted composition | Exact-six CLI and fail-closed Orchestrator | ~855,272 total |
-| M2 — zero-trust lifecycle | Step-0, canonical turns, audit/result/ledger/Gmail | ~570,181 total |
-| M3 — competitive RL | Training, rejected candidates, champions, tournaments | ~513,163 total |
-| M4 — adaptive MCP | Introspection, mapping, verifier, conformance, fixtures | ~285,091 total |
-| M5 — quality and executable verifier | Full suites, coverage, hostile and process gates | ~285,090 total |
-| M6 — reports and release evidence | Traceability, manifests, checklists, final commits | ~114,036 total |
-| **Actual goal aggregate** | Goal accounting result | **2,850,905 total** |
+| Role | p50 | p95 | p99 | Technical failures |
+|---|---:|---:|---:|---:|
+| Cop | 0.234 ms | 0.307 ms | 0.371 ms | 0 |
+| Thief | 0.254 ms | 0.331 ms | 0.403 ms | 0 |
 
-## Commit-and-push preparation — 2026-08-05
+The deterministic MCP adapter makes zero per-turn LLM calls. The default language
+realizer is template-based, so its counted token/API cost is zero. If an optional LLM
+realizer is configured, its provider usage must be measured separately and is not
+included here.
 
-Rules audit, TODO reconciliation, README reference sections, cost/sensitivity
-notebook, architecture asset, remote-ref validation, and push verification.
+## Local training and evaluation resources
 
-Tokens: **~20,000 total** (estimated; no API input/output breakdown was exposed).
+The final evidence was produced on Windows 11, Intel64 Family 6 Model 158, Python
+3.13.14, PyTorch 2.13.0+cpu, and NumPy 2.5.1. No GPU or paid training service was
+used. The exact-checkpoint ablation matrix took 261.51 seconds for cop and 289.74
+seconds for thief on this host. Each final role tournament evaluated 1,800 candidate
+gamelets plus the paired 1,800-gamelet heuristic baseline.
 
-Estimated cumulative project-session total: **~2,870,905 tokens**.
+Checkpoints are compact CPU artifacts. Training uses only local observations and
+stored historical checkpoints; it has no data-acquisition or external API cost.
 
-The notebook at `notebooks/cost_sensitivity.ipynb` converts token totals to
-currency only after a user supplies an applicable blended price. No provider
-price is assumed or represented as authoritative.
+## Token and currency accounting
+
+The execution environment does not expose a trustworthy input/output-token billing
+split for this Code-100 run. Therefore no currency total is asserted. The notebook
+at `notebooks/cost_sensitivity.ipynb` accepts user-supplied token counts and prices;
+it does not embed or claim a provider rate.
+
+Machine-readable runtime metadata is in
+`results/rl/strategy_analysis.json`. Any external tunnel, Gmail, Moodle, or
+cross-group activity remains `EXTERNAL_PENDING` and has no fabricated cost entry.

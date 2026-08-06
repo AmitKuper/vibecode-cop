@@ -6,8 +6,8 @@
       "algorithm": "RecurrentA2C-GRU",
       "artifact": "cop_recurrent_champion.pt",
       "architecture": "linear-tanh-grucell-policy-value",
-      "sha256": "1c6f85bed3ba754d1daa38aa394b455d605fe1768436532581cc118b5be96949",
-      "training_code_sha": "97ec919365d803caf2e10503ba2981f051a90553",
+      "sha256": "b9e74b7a13ca461484f2b47046eeecf8d393cb8d64b7cdd51d2915b714c21268",
+      "training_code_sha": "e052b799e1f732cd140fe3b51af6165566c239c9",
       "config_sha256": "45ce5eeb0daff048c31c1d5012b3db55b4b101f91146d4a886474e024ea8db90",
       "observation_schema_version": "1.0",
       "action_schema_version": "1.0",
@@ -15,20 +15,21 @@
       "inference_mode": "argmax",
       "grid_size": 7,
       "random_seed": 20260805,
-      "training_steps": 84000,
+      "training_steps": 413000,
       "hyperparams": {
         "hidden_size": 128,
         "gamma": 0.99,
         "initial_learning_rate": 0.0003,
-        "continuation_learning_rate": 0.00003,
+        "continuation_learning_rate": 0.00001,
         "demonstration_episodes": 240,
         "imitation_updates": 600,
-        "continuation_expert_probability": 0.05,
-        "continuation_imitation_weight": 0.25,
+        "continuation_expert_probability": 0.0,
+        "continuation_imitation_weight": 0.0,
+        "resumed_from_sha256": "36abc101ec496ca546e1ca8cf98a27899048928022f659a0818e501e21c3049e",
         "historical_checkpoint_sha256": "b1769c9e67ce571efa971a345e08a10d9c33a5710e6eb7ce0c8896a1b2feab5c"
       },
-      "evaluation_win_rate": 0.89,
-      "description": "Accepted cop champion: local-observation and Bayesian-belief BC warm start plus recurrent A2C; paired held-out six-gamelet promotion gate passed over 600 series."
+      "evaluation_win_rate": 0.8294444444444444,
+      "description": "Accepted trap-aware cop champion: local-observation and Bayesian-belief BC warm start plus recurrent A2C; paired ten-family held-out promotion gate passed over 300 exact six-gamelet series."
     }
   ]
 }

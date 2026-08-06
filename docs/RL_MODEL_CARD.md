@@ -1,62 +1,59 @@
-# RL Policy Model Card
+# RL policy model card — cop
 
-## Overview
-- **Role**: cop (vibecode-cop)
-- **Algorithm**: PPO (Proximal Policy Optimization)
-- **Status**: PLACEHOLDER — real training required before counted-mode use
-- **Schema versions**: observation=1.0, action=1.0, belief=1.0
+Status: **DEPLOYED / LOCAL GATE PASS**. External league play remains
+`EXTERNAL_PENDING`.
 
-## Observation Space
-Flat feature vector built from `LocalObservation` + `BeliefState`:
-- Own position one-hot (grid_size²)
-- Barrier grid (grid_size²)
-- Opponent scent field (grid_size²)
-- Belief heatmap (grid_size²)
-- 5 scalar features: barriers_remaining_norm, step_norm, gamelet_norm, entropy_norm, confidence
+## Identity and intended use
 
-**No hidden opponent coordinates.** `LocalObservation` deliberately omits `opponent_position`.
+- Role: cop; grid: 7×7; algorithm: recurrent A2C with a GRUCell policy/value head.
+- Artifact: `models/cop_recurrent_champion.pt`.
+- SHA-256: `b9e74b7a13ca461484f2b47046eeecf8d393cb8d64b7cdd51d2915b714c21268`.
+- Training-code SHA: `e052b799e1f732cd140fe3b51af6165566c239c9`.
+- Counted inference: deterministic argmax after the canonical legal-action mask.
+- Intended use: primary cop movement policy in counted six-gamelet play.
 
-## Action Space
-- **Cop**: 9 actions — N, S, E, W, STAY, PLACE_N, PLACE_S, PLACE_E, PLACE_W
-- **Thief**: 5 actions — N, S, E, W, STAY
+The policy consumes only `LocalObservation`, Bayesian `BeliefState`, and recurrent
+history. Features encode own position, public barriers, opponent scent, belief
+heatmap, own barrier budget, step/gamelet, entropy, and confidence. Hidden current
+opponent coordinates are absent. Movement and language are separate policies.
 
-## Legal Masking
-Actions that would move into barriers or out-of-bounds are masked to -∞ before softmax.
-PLACE_* actions are additionally masked when `barriers_remaining == 0`.
+## Training
 
-## Inference Mode
-Default: `argmax` (deterministic). Supports: sample, low_temp, top_k_mix.
+The champion descends from a 240-demonstration local-belief behavioral-cloning warm
+start and recurrent A2C. It was continued to 11,800 episodes (at most 413,000
+environment steps) with a 128-unit recurrent state, gamma 0.99, final learning rate
+1e-5, seed 20260805, and historical thief checkpoint
+`b1769c9e67ce571efa971a345e08a10d9c33a5710e6eb7ce0c8896a1b2feab5c`.
 
-## Counted-Mode Requirements
-Before this model can be used in counted (competitive) mode:
-1. Complete training (≥500k steps)
-2. Verify `evaluation_win_rate` in MANIFEST.json
-3. Re-compute and update sha256 in MANIFEST.json
-4. Schema versions must match CURRENT_*_SCHEMA_VERSION constants
+The final curriculum retains all ten evaluation families and oversamples the
+predeclared targeted-evasion weakness. Belief-supported trap shaping rewards only
+public barrier changes that reduce exits near belief mass; it receives no hidden
+coordinate. Candidate promotion was frozen at a 55% worst-family capture floor.
 
-## Limitations
-- Placeholder model: random-quality performance
-- Not trained on barrier placement strategies
-- Single grid_size (7x7) — not portable to other sizes without retraining
+## Held-out evaluation
 
-## Phase 4 v7 Status
+The exact artifact passed 300 held-out six-gamelet series (1,800 gamelets):
 
-### Heuristic Baseline (ACTIVE in DEVELOPMENT mode)
-Belief-driven pursuit/evasion heuristic is active via `AgentOrchestrator.select_move_heuristic()`:
-- **Cop**: `pursuit_cop` — greedy Manhattan toward belief centroid (highest-prob cell)
-- **Thief**: `evasion_thief` — greedy Manhattan away from belief centroid
-- Wired into `peer_turn_loop.py` when `runtime.orchestrator` is set and no RL model loaded
+- capture rate 82.94% (95% CI 81.14%–84.61%);
+- series win rate 99.33% (95% CI 97.60%–99.82%);
+- official score 31,395 versus 10,535;
+- worst-family capture rate 57.78%;
+- paired official-score improvement over the strongest heuristic: +6.05 points per
+  series, bootstrap 95% CI +3.65 to +8.40;
+- p99 inference 0.371 ms; technical failures and action corrections: 0.
 
-### RL Training: EXTERNAL_PENDING
-Real PPO training is required. Current MANIFEST.json has `training_steps=0`.
+The ten families are random, belief pursuit/evasion, wall, local adversarial
+ensemble, historical checkpoint, scent-following, corridor-cutting, anti-loop,
+targeted exploit, and deceptive language. Machine evidence is
+`results/cop_held_out_tournament.json`.
 
-### Language Policy: NaturalLanguagePolicy
-- `NaturalLanguagePolicy` (in `agent/language/deception_policy.py`) with configurable `bluff_probability`
-- Intents: TRUTH, LIE, AMBIGUOUS, BLUFF — chosen based on belief entropy
-- No numeric coordinates ever appear in hints
+## Safety, deployment, and limitations
 
-### Counted Mode: Rejects Placeholder Model
-`_validate_counted_preconditions()` now validates the MANIFEST.json on startup:
-- Rejects if `training_steps == 0`
-- Rejects if `evaluation_win_rate == 0.0`
-- Rejects if role/grid_size incompatible
+Counted startup validates the artifact checksum, schema versions, role, grid size,
+and positive trained/evaluated metadata. Missing or incompatible artifacts fail
+closed; the heuristic is a development fallback only. The legal mask is followed by
+canonical domain validation before every physical action.
+
+This is local simulated evidence, not evidence against another course group. It is
+specialized to the binding 7×7 rules. Targeted evasion remains the weakest family,
+and model behavior outside the evaluated observation/action schemas is unsupported.

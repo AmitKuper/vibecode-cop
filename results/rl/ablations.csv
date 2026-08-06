@@ -1,5 +1,9 @@
-ablation,cop_win_rate,thief_survival_rate,delta_vs_baseline
-full_model,0.0,0.0,0.0
-no_belief,0.0,0.0,0.0
-no_scent,0.0,0.0,0.0
-no_legal_mask,0.0,0.0,0.0
+variant,note,series,gamelets,win_rate,series_win_rate,official_role_score,official_opponent_score,score_differential,worst_family_win_rate,average_turns,illegal_action_rate,p99_inference_ms,technical_failures
+full_release,exact release inference,50,300,0.82,0.98,5190,1770,3420,0.6,15.263333333333334,0.0,0.5473839119076734,0
+strongest_heuristic,local belief heuristic,50,300,0.7266666666666667,0.96,4770,1910,2860,0.4666666666666667,18.043333333333333,0.0,,0
+scent_only_no_belief,belief tensor removed,50,300,0.8666666666666667,0.98,5400,1700,3700,0.5,13.66,0.0,0.5696348007768381,0
+belief_only_no_scent,scent tensor removed,50,300,0.36,0.54,3120,2460,660,0.0,27.573333333333334,0.0,0.547845063265413,0
+stateless,recurrent state reset every turn,50,300,0.8033333333333333,1.0,5115,1795,3320,0.6,15.163333333333334,0.0,0.5850319750606995,0
+no_legal_mask,offline unsafe-mask ablation,50,300,0.6566666666666666,0.96,4455,2015,2440,0.43333333333333335,19.6,0.44285714285714284,0.5446460726670922,0
+no_barrier_actions,PLACE actions removed,50,300,0.8366666666666667,0.98,5265,1745,3520,0.4666666666666667,15.493333333333334,0.0,0.5581949907354982,0
+language_off,measured invariant: language policy cannot enter movement inference,50,300,0.82,0.98,5190,1770,3420,0.6,15.263333333333334,0.0,0.5473839119076734,0

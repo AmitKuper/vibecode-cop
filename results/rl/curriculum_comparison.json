@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "role": "cop",
+  "seed": 20260805,
+  "held_out_seed_namespace": [20270805, 20310805],
+  "series_per_family": 5,
+  "families": 10,
+  "population_release": {
+    "artifact_sha256": "b9e74b7a13ca461484f2b47046eeecf8d393cb8d64b7cdd51d2915b714c21268",
+    "win_rate": 0.82,
+    "series_win_rate": 0.98,
+    "official_role_score": 5190,
+    "official_opponent_score": 1770,
+    "worst_family_win_rate": 0.6
+  },
+  "single_checkpoint_self_play": {
+    "artifact": "single_opponent_checkpoint.pt",
+    "artifact_sha256": "74bdda0b6887c69c0ab530aa7b3c86fae3fb9a06c12e4b2140ec517742042bcc",
+    "continuation_episodes": 800,
+    "training_schedule": ["historical_checkpoint"],
+    "win_rate": 0.8,
+    "series_win_rate": 0.98,
+    "official_role_score": 5100,
+    "official_opponent_score": 1800,
+    "worst_family_win_rate": 0.6
+  },
+  "population_score_differential_advantage": 120,
+  "status": "PASS"
+}

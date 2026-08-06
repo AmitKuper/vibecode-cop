@@ -317,6 +317,7 @@ def _observation(
     belief: BeliefEngine,
     legal: list[str],
     gamelet: int,
+    risk_mask_enabled: bool = False,
 ) -> tuple[torch.Tensor, object]:
     own = state.cop_position if role == "cop" else state.thief_position
     scent_grid = scent.cop_observation_scent() if role == "cop" else scent.thief_observation_scent()
@@ -333,7 +334,7 @@ def _observation(
     features = torch.tensor(local_obs_to_tensor(obs, belief.belief), dtype=torch.float32)
     actions = COP_ACTIONS if role == "cop" else THIEF_ACTIONS
     deployable = legal
-    if role == "thief":
+    if role == "thief" and risk_mask_enabled:
         from agent.rl.risk_mask import belief_safe_actions
 
         deployable = belief_safe_actions(own, belief.belief, legal, list(state.barriers))
@@ -391,6 +392,11 @@ def _run_episode(
     force_expert_actor: bool = False,
     latency_samples: list[float] | None = None,
     episode_metrics: dict[str, int] | None = None,
+    feature_mode: str = "full",
+    recurrent_enabled: bool = True,
+    legal_mask_enabled: bool = True,
+    risk_mask_enabled: bool = False,
+    barrier_actions_enabled: bool = True,
 ) -> tuple[list, str, int]:
     state = _initial_state(rng, random_start)
     scent = ScentFields.zeros(7)
@@ -402,7 +408,30 @@ def _run_episode(
     winner = "thief"
     while state.turn < 35:
         legal = _legal(state, role)
-        features, mask = _observation(state, role, scent, belief, legal, (state.turn % 6) + 1)
+        actor_legal = (
+            [action for action in legal if not action.startswith("PLACE_")]
+            if role == "cop" and not barrier_actions_enabled
+            else legal
+        )
+        features, mask = _observation(
+            state,
+            role,
+            scent,
+            belief,
+            actor_legal,
+            (state.turn % 6) + 1,
+            risk_mask_enabled,
+        )
+        grid_cells = state.grid_size * state.grid_size
+        if feature_mode == "no_scent":
+            features[2 * grid_cells : 3 * grid_cells] = 0.0
+        elif feature_mode == "no_belief":
+            features[3 * grid_cells : 4 * grid_cells] = 0.0
+            features[-2:] = 0.0
+        elif feature_mode != "full":
+            raise RuntimeError(f"unsupported feature ablation {feature_mode!r}")
+        if not legal_mask_enabled:
+            mask = torch.ones_like(mask)
         if episode_metrics is not None:
             actions = COP_ACTIONS if role == "cop" else THIEF_ACTIONS
             episode_metrics["legal_candidates"] = episode_metrics.get("legal_candidates", 0) + len(
@@ -412,7 +441,9 @@ def _run_episode(
                 action in legal and not bool(mask[index]) for index, action in enumerate(actions)
             )
         inference_started = time.perf_counter()
-        logits, value, hidden = network(features.unsqueeze(0), hidden)
+        logits, value, hidden = network(
+            features.unsqueeze(0), hidden if recurrent_enabled else None
+        )
         if latency_samples is not None and not force_expert_actor:
             latency_samples.append((time.perf_counter() - inference_started) * 1000)
         masked = logits.squeeze(0).masked_fill(~mask, -1e9)
@@ -431,6 +462,11 @@ def _run_episode(
         use_expert = force_expert_actor or (training and rng.random() < expert_probability)
         action_index = torch.tensor(expert_index) if use_expert else policy_index
         action = (COP_ACTIONS if role == "cop" else THIEF_ACTIONS)[int(action_index)]
+        if episode_metrics is not None:
+            episode_metrics["decisions"] = episode_metrics.get("decisions", 0) + 1
+            episode_metrics["illegal_selected"] = episode_metrics.get("illegal_selected", 0) + int(
+                action not in legal
+            )
         opponent_scent = (
             scent.thief_observation_scent()
             if opponent_role == "thief"
@@ -454,6 +490,8 @@ def _run_episode(
         previous_barriers = list(state.barriers)
         result = apply_joint_action(state, cop_action, thief_action)
         state = result.new_state
+        if not recurrent_enabled:
+            hidden = None
         current_distance = _distance(state)
         outcome = result.outcome.value
         terminal = outcome != "ongoing"
@@ -591,6 +629,7 @@ def train(
     resume_learning_rate: float = 3e-4,
     resume_expert_probability: float = 0.0,
     resume_imitation_weight: float = 0.0,
+    training_schedule: tuple[str, ...] | None = None,
 ) -> RecurrentActorCritic:
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -614,7 +653,9 @@ def train(
     learning_rate = resume_learning_rate if resume_checkpoint is not None else 3e-4
     optimizer = torch.optim.Adam(network.parameters(), lr=learning_rate)
     for episode in range(episodes):
-        schedule = THIEF_TRAINING_SCHEDULE if role == "thief" else COP_TRAINING_SCHEDULE
+        schedule = training_schedule or (
+            THIEF_TRAINING_SCHEDULE if role == "thief" else COP_TRAINING_SCHEDULE
+        )
         family = schedule[episode % len(schedule)]
         progress = episode / max(episodes - 1, 1)
         if resume_checkpoint is not None:
@@ -690,11 +731,17 @@ def evaluate(
     historical_policy,
     inference_temperature: float | None = None,
     force_expert_actor: bool = False,
+    feature_mode: str = "full",
+    recurrent_enabled: bool = True,
+    legal_mask_enabled: bool = True,
+    risk_mask_enabled: bool = False,
+    barrier_actions_enabled: bool = True,
 ) -> dict:
     """Run held-out tournaments composed only of exact six-gamelet series."""
     families = {}
     total_wins = total_games = total_turns = total_series_wins = 0
     total_role_score = total_opponent_score = 0
+    total_decisions = total_illegal_selected = 0
     latency_samples: list[float] = []
     torch.manual_seed(seed + 50_000)
     start = time.perf_counter()
@@ -718,6 +765,11 @@ def evaluate(
                     force_expert_actor=force_expert_actor,
                     latency_samples=latency_samples,
                     episode_metrics=family_metrics,
+                    feature_mode=feature_mode,
+                    recurrent_enabled=recurrent_enabled,
+                    legal_mask_enabled=legal_mask_enabled,
+                    risk_mask_enabled=risk_mask_enabled,
+                    barrier_actions_enabled=barrier_actions_enabled,
                 )
                 won = winner == role
                 wins += int(won)
@@ -769,6 +821,8 @@ def evaluate(
         total_series_wins += series_wins
         total_role_score += family_role_score
         total_opponent_score += family_opponent_score
+        total_decisions += family_metrics.get("decisions", 0)
+        total_illegal_selected += family_metrics.get("illegal_selected", 0)
     elapsed = time.perf_counter() - start
     total_series = series_per_family * len(FAMILIES)
     percentiles = (
@@ -798,7 +852,7 @@ def evaluate(
             "p99": percentiles[2],
         },
         "technical_failures": 0,
-        "illegal_action_rate": 0.0,
+        "illegal_action_rate": total_illegal_selected / max(total_decisions, 1),
         "action_correction_rate": 0.0,
         "inference_mode": "low_temp" if inference_temperature else "argmax",
         "inference_temperature": inference_temperature,
@@ -873,6 +927,7 @@ def main() -> None:
     parser.add_argument("--resume-learning-rate", type=float, default=3e-4)
     parser.add_argument("--resume-expert-probability", type=float, default=0.0)
     parser.add_argument("--resume-imitation-weight", type=float, default=0.0)
+    parser.add_argument("--training-families", nargs="+", choices=FAMILIES)
     args = parser.parse_args()
     args.models_dir.mkdir(parents=True, exist_ok=True)
     args.evidence_dir.mkdir(parents=True, exist_ok=True)
@@ -913,6 +968,7 @@ def main() -> None:
             args.resume_learning_rate,
             args.resume_expert_probability,
             args.resume_imitation_weight,
+            tuple(args.training_families) if args.training_families else None,
         )
         artifact_name = f"{args.role}_recurrent_champion.pt"
         artifact = args.models_dir / artifact_name
@@ -956,7 +1012,8 @@ def main() -> None:
     evaluation["training_episodes"] = training_episodes
     evaluation["training_opponents"] = list(FAMILIES)
     evaluation["training_schedule"] = list(
-        THIEF_TRAINING_SCHEDULE if args.role == "thief" else COP_TRAINING_SCHEDULE
+        args.training_families
+        or (THIEF_TRAINING_SCHEDULE if args.role == "thief" else COP_TRAINING_SCHEDULE)
     )
     evaluation["historical_checkpoint"] = str(args.historical_checkpoint)
     evaluation["historical_checkpoint_sha256"] = file_sha256(args.historical_checkpoint)
