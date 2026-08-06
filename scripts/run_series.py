@@ -181,6 +181,8 @@ async def run_series(
         orchestrator_config=orchestrator_config,
     )
 
+    runtime.reset_for_new_series()
+
     for idx in range(1, n_gamelets + 1):
         gamelet_label = f"g{idx:02d}"
         game_id = f"{series_id}_{gamelet_label}"

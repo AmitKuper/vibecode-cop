@@ -170,6 +170,18 @@ class PeerRuntime(_CrewMixin):
             logger.warning("AgentOrchestrator initialization failed: %s", exc)
         return self.orchestrator
 
+    def reset_for_new_series(self) -> None:
+        """Clear per-series adaptive profile so the next series renegotiates cleanly.
+
+        Call this before the first gamelet of a new series. Safe to call even if
+        the previous series completed normally — resets both sides of the profile pair
+        so _init_protocol_adapter() starts fresh instead of hitting the
+        'incomplete adaptive profile state cannot be reused' guard.
+        """
+        self.protocol_adapter = None
+        self._adaptive_profile = None
+        logger.info("[PeerRuntime/%s] Adaptive profile cleared for new series", self.role)
+
     async def run_game(self, game_id: str, counted_mode: bool | None = None) -> dict:
         """Drive this agent's side of the game to completion.
 
