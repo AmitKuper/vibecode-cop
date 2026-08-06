@@ -10,6 +10,7 @@ Run from the vibecode-cop or vibecode-thief directory:
 Flags:
   --human-role {cop,thief}   Which role you play (agent plays the other)
   --reveal                   Show both positions after each turn (full board)
+  --numeric                  Show scent/belief as floats instead of ░▒▓ chars
   --gamelets N               Number of gamelets to play (default 3)
 """
 
@@ -106,6 +107,7 @@ def _render_board(
     human_role: str,
     reveal: bool,
     agent_belief: BeliefEngine,
+    numeric: bool = False,
 ) -> str:
     """
     Render the 7×7 board from the human's perspective.
@@ -123,46 +125,61 @@ def _render_board(
 
     # Scent the human sees: opponent's emission trail
     if human_role == "cop":
-        # Cop tracks thief via thief's scent emission
         scent = state.thief_scent
     else:
-        # Thief tracks cop via cop's scent emission
         scent = state.cop_scent
 
-    col_header = "    " + "  ".join(str(x) for x in range(g))
-    rows = [col_header, "    " + "─" * (g * 3 - 1)]
+    if numeric:
+        col_header = "    " + "  ".join(str(x) for x in range(g))
+        sep = "    " + "─" * (g * 4 - 1)
+    else:
+        col_header = "   " + "  ".join(str(x) for x in range(g))
+        sep = "   " + "─" * (g * 3 - 1)
+    rows = [col_header, sep]
 
     for row in range(g):
         cells = [f"{row} │"]
         for col in range(g):
             pos = (col, row)
             if pos in barrier_set:
-                ch = " █ "
+                ch = " █  " if numeric else " █ "
             elif pos == cop_pos and (human_role == "cop" or reveal):
-                ch = " C "
+                ch = " C  " if numeric else " C "
             elif pos == thief_pos and (human_role == "thief" or reveal):
-                ch = " T "
+                ch = " T  " if numeric else " T "
             elif reveal and pos == cop_pos:
-                ch = " c "
+                ch = " c  " if numeric else " c "
             elif reveal and pos == thief_pos:
-                ch = " t "
+                ch = " t  " if numeric else " t "
             else:
                 sv = scent[row][col] if scent else 0.0
-                ch = f"{sv:4.2f}" if sv > 0 else "   ."
+                if numeric:
+                    ch = f"{sv:4.2f}" if sv > 0 else "   ."
+                else:
+                    ch = f" {_scent_ch(sv)} "
             cells.append(ch)
         rows.append("".join(cells))
 
-    # Belief heatmap — raw probabilities
+    # Belief heatmap
     belief_grid = agent_belief.belief.prob
     rows.append("")
-    rows.append("   Agent's belief of YOUR position (probability):")
-    rows.append("    " + "  ".join(str(x) for x in range(g)))
-    for row in range(g):
-        cells = [f"{row}   "]
-        for col in range(g):
-            v = belief_grid[row][col]
-            cells.append(f"{v:4.2f}")
-        rows.append("".join(cells))
+    if numeric:
+        rows.append("   Agent's belief of YOUR position (probability):")
+        rows.append("    " + "  ".join(str(x) for x in range(g)))
+        for row in range(g):
+            cells = [f"{row}   "]
+            for col in range(g):
+                cells.append(f"{belief_grid[row][col]:4.2f}")
+            rows.append("".join(cells))
+    else:
+        rows.append("   Agent's belief of YOUR position (brighter = more likely):")
+        rows.append("   " + "  ".join(str(x) for x in range(g)))
+        for row in range(g):
+            cells = ["   "]
+            for col in range(g):
+                v = belief_grid[row][col]
+                cells.append(f" {_scent_ch(min(v * (g * g) / 2, 1.0))} ")
+            rows.append("".join(cells))
     rows.append(
         f"   entropy={agent_belief.belief.entropy:.2f}  "
         f"confidence={agent_belief.belief.confidence:.2f}"
@@ -314,6 +331,7 @@ def _run_gamelet(
     policy,
     config: GameConfig,
     reveal: bool,
+    numeric: bool = False,
 ) -> tuple[int, int, str]:
     """Play one gamelet. Returns (cop_score, thief_score, outcome_label)."""
     g = config.grid_size
@@ -344,7 +362,7 @@ def _run_gamelet(
             print(f"  Last turn: {last_event}")
         print("═" * 60)
         print()
-        print(_render_board(state, human_role, reveal, agent_belief))
+        print(_render_board(state, human_role, reveal, agent_belief, numeric))
         print()
 
         # Status info
@@ -416,7 +434,7 @@ def _run_gamelet(
 
     # Show full board on gamelet end
     reveal_final = True
-    print(_render_board(state, human_role, reveal_final, agent_belief))
+    print(_render_board(state, human_role, reveal_final, agent_belief, numeric))
     print()
     input("  Press Enter for next gamelet...")
     return cop_score, thief_score, outcome.value
@@ -424,7 +442,7 @@ def _run_gamelet(
 
 # ── Series ────────────────────────────────────────────────────────────────────
 
-def _run_series(human_role: str, n_gamelets: int, reveal: bool) -> None:
+def _run_series(human_role: str, n_gamelets: int, reveal: bool, numeric: bool = False) -> None:
     agent_role = "thief" if human_role == "cop" else "cop"
 
     print(f"\n  Loading production {agent_role} policy...")
@@ -436,6 +454,7 @@ def _run_series(human_role: str, n_gamelets: int, reveal: bool) -> None:
     policy = load_recurrent_policy(manifest, agent_role)
     config = GameConfig()  # canonical Appendix-F config (6-gamelet series)
 
+    scent_mode = "numeric floats" if numeric else "visual ░▒▓"
     print(f"  Policy loaded: {agent_role} ({policy.inference_mode})")
     print(f"\n  Rules:")
     print(f"    Grid: {config.grid_size}×{config.grid_size}")
@@ -444,8 +463,8 @@ def _run_series(human_role: str, n_gamelets: int, reveal: bool) -> None:
     print(f"    Cop wins by: capture or trapping the thief")
     print(f"    Thief wins by: surviving {config.survival_threshold} turns")
     print(f"    Cop barriers: {config.max_barriers} total per gamelet")
-    print(f"    Scent: shows opponent's historical trail (NOT exact position)")
-    print(f"    Board legend: C=Cop  T=Thief  █=Barrier  ░▒▓=scent trail")
+    print(f"    Scent display: {scent_mode}  (toggle with --numeric)")
+    print(f"    Board legend: C=Cop  T=Thief  █=Barrier")
     if reveal:
         print(f"    --reveal: both positions shown (training/debug mode)")
     print(f"\n  {n_gamelets} gamelets. You play as {human_role.upper()}.")
@@ -455,7 +474,7 @@ def _run_series(human_role: str, n_gamelets: int, reveal: bool) -> None:
     cop_wins = thief_wins = 0
 
     for i in range(1, n_gamelets + 1):
-        c, t, outcome = _run_gamelet(i, human_role, agent_role, policy, config, reveal)
+        c, t, outcome = _run_gamelet(i, human_role, agent_role, policy, config, reveal, numeric)
         total_cop += c
         total_thief += t
         if outcome == GameOutcome.COP_WIN.value:
@@ -512,12 +531,17 @@ def main() -> None:
         metavar="N",
         help="Number of gamelets to play (default: 3)",
     )
+    parser.add_argument(
+        "--numeric",
+        action="store_true",
+        help="Show scent and belief as raw float values instead of ░▒▓ characters",
+    )
     args = parser.parse_args()
 
     if args.gamelets < 1 or args.gamelets > 10:
         parser.error("--gamelets must be between 1 and 10")
 
-    _run_series(args.human_role, args.gamelets, args.reveal)
+    _run_series(args.human_role, args.gamelets, args.reveal, args.numeric)
 
 
 if __name__ == "__main__":
