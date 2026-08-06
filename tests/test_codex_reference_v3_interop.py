@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import json
 
 import pytest
 
@@ -209,3 +210,22 @@ async def test_deterministic_session_calls_exact_four_tools() -> None:
     assert set(calls[0][1]) == {"message"}
     assert set(calls[2][1]) == {"payload"}
     assert session.per_turn_llm_calls == 0
+
+
+def test_invalid_native_start_probe_preserves_protected_response_fields(tmp_path) -> None:
+    from agent.mcp.server_handlers import handle_start_game
+
+    game_id = "PROBE_GAME_response_contract"
+    response = handle_start_game(
+        "thief",
+        "secret",
+        "0" * 64,
+        tmp_path,
+        {},
+        {},
+        json.dumps({"game_id": game_id, "phase": "start_game"}),
+        "a" * 64,
+    )
+    assert response["ok"] is False
+    assert response["game_id"] == game_id
+    assert response["phase"] == "start_game"

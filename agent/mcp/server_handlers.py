@@ -13,6 +13,7 @@ a successful callback.
 
 from __future__ import annotations
 
+import json
 import logging
 from pathlib import Path
 
@@ -73,6 +74,13 @@ def handle_start_game(
     """
     coord = coordinator or get_coordinator()
     game_log = None
+    base = {"game_id": "", "phase": "start_game"}
+    try:
+        untrusted = json.loads(message_json)
+        if isinstance(untrusted, dict) and isinstance(untrusted.get("game_id"), str):
+            base["game_id"] = untrusted["game_id"]
+    except (json.JSONDecodeError, TypeError):
+        pass
     try:
         msg = StartGameMessage.from_json(message_json)
         game_id = msg.game_id
@@ -168,7 +176,7 @@ def handle_start_game(
         logger.error(f"Error in start_game: {e}", exc_info=True)
         if game_log:
             game_log.append_error("start_game", role, "handshake", str(e))
-        return {"ok": False, "error": str(e)}
+        return {"ok": False, "error": str(e), **base}
 
 
 def handle_action(
