@@ -224,10 +224,10 @@ _KEY_TO_PLACE = {
 }
 
 _CONTROLS_THIEF = (
-    "  ↑W  ↓S  ←A  →D  Space=STAY   Q=quit"
+    "  ↑W  ↓S  ←A  →D  Space=STAY   Q/Esc=quit"
 )
 _CONTROLS_COP = (
-    "  ↑W  ↓S  ←A  →D  Space=STAY   B=barrier mode   Q=quit"
+    "  ↑W  ↓S  ←A  →D  Space=STAY   B=barrier mode   Q/Esc=quit"
 )
 _CONTROLS_COP_BARRIER = (
     "  [BARRIER MODE] ↑W↓S←A→D=place direction   Esc=cancel"
@@ -250,9 +250,8 @@ def _get_human_move(legal: list[str], role: str) -> str:
 
         # Quit
         if key in ("Q", "ESC") and not barrier_mode:
-            if key == "Q":
-                print("\n  Quit.")
-                sys.exit(0)
+            print("\n  Quit.")
+            sys.exit(0)
 
         # Enter barrier mode (cop only, when barriers remain)
         if key == "B" and role == "cop" and not barrier_mode:
