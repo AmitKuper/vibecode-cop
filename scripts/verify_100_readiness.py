@@ -146,6 +146,8 @@ def check_tests_and_coverage() -> str:
                 [
                     "uv",
                     "run",
+                    "python",
+                    "-m",
                     "pytest",
                     "-q",
                     "--cov=agent",
@@ -499,7 +501,7 @@ def check_hostile_suites() -> str:
         absent = [path for path in FOCUSED_TESTS if not (repo / path).is_file()]
         if absent:
             raise RuntimeError(f"{role} missing mandatory hostile suites: {absent}")
-        result = run(["uv", "run", "pytest", "-q", *FOCUSED_TESTS], repo, 600)
+        result = run(["uv", "run", "python", "-m", "pytest", "-q", *FOCUSED_TESTS], repo, 600)
         require_success(result, f"{role} hostile/recovery/Gmail suites")
         if " skipped" in result.stdout:
             raise RuntimeError(f"{role} focused suite skipped tests: {tail(result)}")
