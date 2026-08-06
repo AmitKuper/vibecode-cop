@@ -8,7 +8,7 @@ from agent.gmail.circuit_breaker import CircuitBreaker
 from agent.gmail.dos_detector import DosDetector
 from agent.gmail.token_bucket import TokenBucket
 
-RECIPIENT = "rmisegal+uoh26finalgame@gmail.com"
+RECIPIENT = "agentsorch@gmail.com"
 DAILY_QUOTA = 20
 MAX_CONCURRENT = 2
 MIN_INTERVAL_S = 5.0
