@@ -256,10 +256,11 @@ async def run_series(
         },
     }
 
-    if mode == RuntimeMode.COUNTED:
+    if mode in (RuntimeMode.COUNTED, RuntimeMode.WARMUP):
         from agent.mcp.coordinator import gamelet_from_game_id, get_coordinator
         from agent.peer_result import exchange_series_result
 
+        is_counted = mode == RuntimeMode.COUNTED
         agreement_artifact = await exchange_series_result(runtime, series_result)
         series_result["result_agreement"] = agreement_artifact
         signed = runtime._signed_series_result
@@ -270,7 +271,7 @@ async def run_series(
         runtime.orchestrator.record_match_in_ledger(
             opponent_id=runtime._remote_step0[last_game_id].declaration.group_id,
             match_id=series_id,
-            counted=True,
+            counted=is_counted,
             declaration_hash=step0.agreement_hash,
             result_hash=result_hash,
             both_result_signatures=[signed.signature_hex, remote_sig],

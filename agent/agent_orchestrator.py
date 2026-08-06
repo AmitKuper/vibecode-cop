@@ -66,7 +66,7 @@ class AgentOrchestrator:
         self.belief_engine: BeliefEngine = BeliefEngine(grid_size, role)
 
         self.movement_policy = None
-        if self.mode == RuntimeMode.COUNTED:
+        if self.mode in (RuntimeMode.COUNTED, RuntimeMode.WARMUP):
             from agent.rl.recurrent_policy import load_recurrent_policy
 
             try:
@@ -74,9 +74,11 @@ class AgentOrchestrator:
                     self.config.get("model_manifest_path", "models/MANIFEST.json"), role
                 )
             except Exception as exc:
-                raise ValueError(
-                    f"COUNTED mode rejected: recurrent movement policy failed to load: {exc}"
-                ) from exc
+                if self.mode == RuntimeMode.COUNTED:
+                    raise ValueError(
+                        f"COUNTED mode rejected: recurrent movement policy failed to load: {exc}"
+                    ) from exc
+                logger.warning("WARMUP: RL policy failed to load, falling back to LLM: %s", exc)
 
         # Reliability
         from agent.reliability.deadline_tracker import DeadlineTracker
