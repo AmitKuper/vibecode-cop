@@ -30,10 +30,10 @@ screenshots, official Moodle artifacts, and individual submissions remain
   hostile adaptive/audit/Replay/Watchdog/Gmail/token suites, secret scan, and
   documentation claims all pass.
 - A clean real two-process counted series
-  `series_20260806_070500_fd652ee5` completed exactly six gamelets with
-  agreement `44b4ceb3c404f62bf44094cad24b2987c8eeddd1f85bf3d603e8d33778cd0bff`
+  `series_20260806_212310_0ca18691` completed exactly six gamelets with
+  agreement `cc752c1ca50a8c2ff6064bd92d0c97f3dec5cda4ecf25700d9dc347472162fe2`
   and reciprocal ledger consensus
-  `467d5cea435c58c31d99e06329f98098c4f5253446063eaac0e4581e95f59756`.
+  `d06a235a07c3bcca7bbb856d734d0cb4634a55723bb833668b9593a8a35c6d67`.
 
 ## Competitive release evidence
 

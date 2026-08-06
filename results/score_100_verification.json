@@ -11,8 +11,8 @@
   "code_ready_for_100": true,
   "fully_submission_ready": false,
   "verified_source_revisions": {
-    "cop": "fb9982e000488a96ea09879544b288bb661a0b98",
-    "thief": "0c519714d709a52cb4ddbdc96d5e87b248c98687"
+    "cop": "2a0b0e79fb5a5a8d87ba086adc9bbf1c061832be",
+    "thief": "0000c0e4765598721de884324895caa6223b2bb3"
   },
   "note": "All 13 executable code-verifiable gates pass; genuine external actions remain EXTERNAL_PENDING."
 }

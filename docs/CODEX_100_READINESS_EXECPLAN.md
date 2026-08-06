@@ -362,7 +362,7 @@ and release-tag push remain honestly `EXTERNAL_PENDING`.
 | Current complete suites | Cop 1,553; thief 1,428; zero skips; branches 85.7482%/85.1940%; Ruff/format clean; shared config and manifest-selected model tests are clean-clone reproducible | PASS |
 | Strength/evidence commits | Cop `dedaaf147989d1b63f4d4536330bf70335df4630`; thief `55d45fcd4010884b08c64380fe03c6cd39062266` | PASS |
 | M5 exact-current-SHA verifier | Cop `fb9982e000488a96ea09879544b288bb661a0b98`; thief `0c519714d709a52cb4ddbdc96d5e87b248c98687`; 13 PASS, 0 FAIL, code score 100 | PASS |
-| M6 final reports/tag/push | Reports regenerated from M5; final clean-clone verification and audited remote tag remain | IN PROGRESS |
+| M6 final reports/tag/push | Cop `2a0b0e79fb5a5a8d87ba086adc9bbf1c061832be`; thief `0000c0e4765598721de884324895caa6223b2bb3`; 13 PASS, 0 FAIL at 2026-08-06T18:25:45Z; series `series_20260806_212310_0ca18691`; tag/push remain external | PASS (code-verifiable) |
 
 The reference kit's own suite runs 167 tests with three errors caused by calls to
 the removed FastMCP `get_tools()` API under FastMCP 3.4.5. The external source

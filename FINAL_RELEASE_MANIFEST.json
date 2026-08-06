@@ -1,11 +1,11 @@
 {
   "schema_version": "3.0",
-  "generated_at_utc": "2026-08-06T04:06:40Z",
+  "generated_at_utc": "2026-08-06T18:25:45Z",
   "repository_role": "cop",
   "release_state": "CODE_VERIFIABLE_PASS_EXTERNAL_PENDING",
   "verified_source_revisions": {
-    "cop": "fb9982e000488a96ea09879544b288bb661a0b98",
-    "thief": "0c519714d709a52cb4ddbdc96d5e87b248c98687"
+    "cop": "2a0b0e79fb5a5a8d87ba086adc9bbf1c061832be",
+    "thief": "0000c0e4765598721de884324895caa6223b2bb3"
   },
   "verifier": {
     "code_verifiable_score": 100,
@@ -16,7 +16,7 @@
     "thief_tests": 1428,
     "cop_branches": "2166/2526=85.7482%",
     "thief_branches": "2152/2526=85.1940%",
-    "real_series": "series_20260806_070500_fd652ee5"
+    "real_series": "series_20260806_212310_0ca18691"
   },
   "canonical_config_sha256": "45ce5eeb0daff048c31c1d5012b3db55b4b101f91146d4a886474e024ea8db90",
   "reference_v3": {

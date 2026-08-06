@@ -191,3 +191,19 @@ CV-03/CV-08 could not start because Windows Application Control rejected the
 fresh virtual environment's generated `pytest.exe` launcher (OS error 4551).
 The verifier now uses the equivalent portable `python -m pytest` entry point;
 this environment correction also requires a full clean-clone rerun before tag.
+
+## 2026-08-06 M6 final clean-clone verification — PASS
+
+| Gate | Evidence | Status |
+|---|---|---|
+| All 13 code-verifiable gates | 13 PASS, 0 FAIL, 4 EXTERNAL_PENDING | PASS |
+| Exact revisions | Cop `2a0b0e79fb5a5a8d87ba086adc9bbf1c061832be`; thief `0000c0e4765598721de884324895caa6223b2bb3` | PASS |
+| Verifier timestamp | 2026-08-06T18:25:45Z | PASS |
+| Real two-process series | `series_20260806_212310_0ca18691`; agreement `cc752c1ca50a8c2ff6064bd92d0c97f3dec5cda4ecf25700d9dc347472162fe2`; ledger consensus `d06a235a07c3bcca7bbb856d734d0cb4634a55723bb833668b9593a8a35c6d67` | PASS |
+| Reference-v3 untouched | `9cecfa8b4befa070dfee0f3bc23cfe7ff7216e8e`; 113/113 vectors; profile `4cc7609ea2690979e6e9776a391b2031bc838f66f306a3b2c04dadb02807decd` | PASS |
+| Hostile suites | cop=202 passed; thief=202 passed | PASS |
+| FINAL_RELEASE_MANIFEST.json | Updated to verified SHAs and new series | DONE |
+| results/score_100_verification.json | Updated to verified SHAs | DONE |
+
+All code-verifiable milestones complete. Remaining work is the genuine external actions
+in `FINAL_EXTERNAL_ACTION_CHECKLIST.md`.
