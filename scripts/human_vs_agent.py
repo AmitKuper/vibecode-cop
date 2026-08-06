@@ -18,8 +18,54 @@ from __future__ import annotations
 import argparse
 import os
 import sys
-import time
 from pathlib import Path
+
+# ── Cross-platform single-keypress capture ─────────────────────────────────────
+
+if os.name == "nt":
+    import msvcrt
+
+    def _get_key() -> str:
+        """Return a normalised key name (one blocking read, no Enter needed)."""
+        ch = msvcrt.getch()
+        if ch in (b"\xe0", b"\x00"):          # arrow / function-key prefix
+            ch2 = msvcrt.getch()
+            return {b"H": "UP", b"P": "DOWN", b"K": "LEFT", b"M": "RIGHT"}.get(ch2, "")
+        if ch == b" ":
+            return "SPACE"
+        if ch == b"\r":
+            return "ENTER"
+        if ch == b"\x1b":
+            return "ESC"
+        try:
+            return ch.decode("utf-8").upper()
+        except UnicodeDecodeError:
+            return ""
+else:
+    import tty
+    import termios
+
+    def _get_key() -> str:  # type: ignore[misc]
+        fd = sys.stdin.fileno()
+        old = termios.tcgetattr(fd)
+        try:
+            tty.setraw(fd)
+            ch = sys.stdin.read(1)
+            if ch == "\x1b":
+                ch2 = sys.stdin.read(1)
+                if ch2 == "[":
+                    ch3 = sys.stdin.read(1)
+                    return {"A": "UP", "B": "DOWN", "C": "RIGHT", "D": "LEFT"}.get(ch3, "")
+                return "ESC"
+            if ch == " ":
+                return "SPACE"
+            if ch == "\r":
+                return "ENTER"
+            if ch == "\x1b":
+                return "ESC"
+            return ch.upper()
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old)
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
@@ -141,28 +187,86 @@ def _legal_moves_for(role: str, state: DomainState) -> list[str]:
         return [a for a, ok in zip(THIEF_ACTIONS, mask) if ok]
 
 
-# ── Human input ───────────────────────────────────────────────────────────────
+# ── Human input (keyboard) ────────────────────────────────────────────────────
 
-_ALIASES = {"N": "N", "S": "S", "E": "E", "W": "W",
-            "NORTH": "N", "SOUTH": "S", "EAST": "E", "WEST": "W",
-            "STAY": "STAY", "PLACE_N": "PLACE_N", "PLACE_S": "PLACE_S",
-            "PLACE_E": "PLACE_E", "PLACE_W": "PLACE_W",
-            "PN": "PLACE_N", "PS": "PLACE_S", "PE": "PLACE_E", "PW": "PLACE_W"}
+# Maps raw key name → movement action
+_KEY_TO_MOVE = {
+    "UP": "N", "W": "N",
+    "DOWN": "S", "S": "S",
+    "LEFT": "W", "A": "W",
+    "RIGHT": "E", "D": "E",
+    "SPACE": "STAY",
+}
+
+# Maps raw key name → barrier-placement action (used in barrier mode)
+_KEY_TO_PLACE = {
+    "UP": "PLACE_N", "W": "PLACE_N",
+    "DOWN": "PLACE_S", "S": "PLACE_S",
+    "LEFT": "PLACE_W", "A": "PLACE_W",
+    "RIGHT": "PLACE_E", "D": "PLACE_E",
+}
+
+_CONTROLS_THIEF = (
+    "  ↑W  ↓S  ←A  →D  Space=STAY   Q=quit"
+)
+_CONTROLS_COP = (
+    "  ↑W  ↓S  ←A  →D  Space=STAY   B=barrier mode   Q=quit"
+)
+_CONTROLS_COP_BARRIER = (
+    "  [BARRIER MODE] ↑W↓S←A→D=place direction   Esc=cancel"
+)
 
 
 def _get_human_move(legal: list[str], role: str) -> str:
-    short_help = {
-        "cop": "Move: N/S/E/W/STAY  |  Place barrier: PLACE_N/S/E/W (or PN/PS/PE/PW)",
-        "thief": "Move: N/S/E/W/STAY",
-    }
-    print(f"\n  {short_help[role]}")
+    """Blocking single-keypress move selection; returns a legal action string."""
+    barrier_mode = False
+
+    if role == "cop":
+        print(_CONTROLS_COP)
+    else:
+        print(_CONTROLS_THIEF)
     print(f"  Legal: {' '.join(legal)}")
+    print("  Your move: ", end="", flush=True)
+
     while True:
-        raw = input("  Your move: ").strip().upper()
-        move = _ALIASES.get(raw, raw)
-        if move in legal:
-            return move
-        print(f"  ✗  '{raw}' is not legal here. Try: {' '.join(legal)}")
+        key = _get_key()
+
+        # Quit
+        if key in ("Q", "ESC") and not barrier_mode:
+            if key == "Q":
+                print("\n  Quit.")
+                sys.exit(0)
+
+        # Enter barrier mode (cop only, when barriers remain)
+        if key == "B" and role == "cop" and not barrier_mode:
+            can_place = any(a.startswith("PLACE_") for a in legal)
+            if can_place:
+                barrier_mode = True
+                print(f"\r{_CONTROLS_COP_BARRIER}", end="", flush=True)
+                continue
+            else:
+                # No barriers left — flash message
+                print(f"\r  No barriers remaining.      ", end="", flush=True)
+                continue
+
+        # Cancel barrier mode
+        if barrier_mode and key == "ESC":
+            barrier_mode = False
+            print(f"\r{_CONTROLS_COP}                              ", end="", flush=True)
+            continue
+
+        # Resolve action
+        if barrier_mode:
+            action = _KEY_TO_PLACE.get(key, "")
+        else:
+            action = _KEY_TO_MOVE.get(key, "")
+
+        if action and action in legal:
+            label = f"[barrier] {action}" if barrier_mode else action
+            print(f"\r  Your move: {label}          ")
+            return action
+
+        # Key not legal — silently loop (no error spam on keypress)
 
 
 # ── Agent move ────────────────────────────────────────────────────────────────
