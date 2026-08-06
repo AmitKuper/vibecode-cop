@@ -6,8 +6,13 @@
   "adaptive_mcp_interoperability": "PASS",
   "submission_and_professional_quality": "PASS",
   "external_submission_evidence": "EXTERNAL_PENDING",
-  "exact_current_sha_verifier": "PENDING",
-  "code_ready_for_100": false,
+  "exact_current_sha_verifier": "PASS",
+  "code_verifiable_score": 100,
+  "code_ready_for_100": true,
   "fully_submission_ready": false,
-  "note": "Candidate dimensions pass; numeric 100 is withheld until the clean exact-current-SHA verifier completes."
+  "verified_source_revisions": {
+    "cop": "fb9982e000488a96ea09879544b288bb661a0b98",
+    "thief": "0c519714d709a52cb4ddbdc96d5e87b248c98687"
+  },
+  "note": "All 13 executable code-verifiable gates pass; genuine external actions remain EXTERNAL_PENDING."
 }

@@ -158,3 +158,17 @@ The reference kit's own suite runs 167 tests with three errors caused by calls t
 the removed FastMCP `get_tools()` API under FastMCP 3.4.5. The external source
 was not edited. Published vectors and real bidirectional interoperability pass;
 the upstream dependency mismatch is not recast as our product evidence.
+
+## 2026-08-06 M5 exact-SHA verifier closure
+
+| Run | Exact revisions | Result |
+|---|---|---|
+| Initial strict run | cop `a86d169bd7a7b6bd0e2b98deeb51d0a92a51276c`; thief `1f1779cfc9e62bf531a3c0d9e777be1bbe96d23f` | FAIL: CV-03 cop branch coverage 2,091/2,526 = 82.7791%; all other code gates passed. |
+| Branch-contract repair | cop `fb9982e000488a96ea09879544b288bb661a0b98`; thief `0c519714d709a52cb4ddbdc96d5e87b248c98687` | PASS: 13 code-verifiable gates, zero FAIL; code-verifiable score 100. |
+
+Final strict evidence: cop 1,555 tests and 2,166/2,526 branches (85.7482%);
+thief 1,430 tests and 2,151/2,526 branches (85.1544%); zero skips; exact
+300-series tournament hashes reproduced; hostile suites 202/202 per repository;
+real series `series_20260806_070500_fd652ee5`; untouched reference-v3 113/113
+with bidirectional profile `4cc7609e…07decd`. Public/Gmail/identity/Moodle
+evidence remains `EXTERNAL_PENDING`.

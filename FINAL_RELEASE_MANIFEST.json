@@ -1,11 +1,22 @@
 {
   "schema_version": "3.0",
-  "generated_at_utc": "2026-08-06T00:00:00Z",
+  "generated_at_utc": "2026-08-06T04:06:40Z",
   "repository_role": "cop",
-  "release_state": "EXACT_SHA_VERIFICATION_PENDING",
-  "code_evidence_basis": {
-    "cop": "dedaaf147989d1b63f4d4536330bf70335df4630",
-    "thief": "55d45fcd4010884b08c64380fe03c6cd39062266"
+  "release_state": "CODE_VERIFIABLE_PASS_EXTERNAL_PENDING",
+  "verified_source_revisions": {
+    "cop": "fb9982e000488a96ea09879544b288bb661a0b98",
+    "thief": "0c519714d709a52cb4ddbdc96d5e87b248c98687"
+  },
+  "verifier": {
+    "code_verifiable_score": 100,
+    "pass": 13,
+    "fail": 0,
+    "external_pending": 4,
+    "cop_tests": 1555,
+    "thief_tests": 1430,
+    "cop_branches": "2166/2526=85.7482%",
+    "thief_branches": "2151/2526=85.1544%",
+    "real_series": "series_20260806_070500_fd652ee5"
   },
   "canonical_config_sha256": "45ce5eeb0daff048c31c1d5012b3db55b4b101f91146d4a886474e024ea8db90",
   "reference_v3": {
@@ -15,10 +26,11 @@
     "tree_edited": false
   },
   "champions": {
-    "cop": {"path": "models/cop_recurrent_champion.pt", "sha256": "b9e74b7a13ca461484f2b47046eeecf8d393cb8d64b7cdd51d2915b714c21268"},
-    "thief": {"repository": "vibecode-thief", "path": "models/thief_recurrent_champion.pt", "sha256": "cdf5bc67daad6c922757dbc5aac0a278935dcbe79554e887d6003ddee2cbd271"}
+    "local": {"path": "models/cop_recurrent_champion.pt", "sha256": "b9e74b7a13ca461484f2b47046eeecf8d393cb8d64b7cdd51d2915b714c21268"},
+    "cop_sha256": "b9e74b7a13ca461484f2b47046eeecf8d393cb8d64b7cdd51d2915b714c21268",
+    "thief_sha256": "cdf5bc67daad6c922757dbc5aac0a278935dcbe79554e887d6003ddee2cbd271"
   },
   "rule_totals": {"PASS": 48, "FAIL": 0, "EXTERNAL_PENDING": 7},
-  "code_ready_for_100": false,
+  "code_ready_for_100": true,
   "fully_submission_ready": false
 }

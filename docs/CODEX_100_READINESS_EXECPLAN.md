@@ -259,8 +259,8 @@ EXTERNAL_PENDING. Risk: never synthesize evidence. SHAs: pending.
 - [x] M2 zero-trust final lifecycle.
 - [x] M3 RL strength.
 - [x] M4 adaptive MCP.
-- [ ] M5 current exact-SHA quality/verifier gates (candidate gates pass; final clean run pending).
-- [ ] M6 current final release evidence and tag/push.
+- [x] M5 current exact-SHA quality/verifier gates: all 13 code-verifiable gates PASS.
+- [ ] M6 final clean-clone verification, audited tag, and push (reports regenerated).
 
 ## Decisions
 
@@ -359,10 +359,10 @@ and release-tag push remain honestly `EXTERNAL_PENDING`.
 | Published reference-v3 | Untouched `9cecfa8b4befa070dfee0f3bc23cfe7ff7216e8e`; 113/113 vectors; bidirectional four-tool profile `4cc7609e…07decd`; zero per-turn LLM | PASS |
 | Competitive release | Cop `b9e74b7a…c21268`, 82.94%/57.78% worst; thief `cdf5bc67…bd271`, 78.72%/55.00% worst; 300 exact series each | PASS |
 | Strategy analysis | Exact ablations, sensitivity, learning curves, language invariant, barrier/risk decisions, population comparison | PASS |
-| Current complete suites | Cop 1,543; thief 1,418; zero skips; Ruff/format clean; branch gates above 89% | PASS |
+| Current complete suites | Cop 1,555; thief 1,430; zero skips; branches 85.7482%/85.1544%; Ruff/format clean | PASS |
 | Strength/evidence commits | Cop `dedaaf147989d1b63f4d4536330bf70335df4630`; thief `55d45fcd4010884b08c64380fe03c6cd39062266` | PASS |
-| M5 exact-current-SHA verifier | Strengthened with analysis and untouched reference-v3 process gates; final clean run follows coherent document commit | PENDING |
-| M6 final reports/tag/push | Candidate reports withhold numeric 100 until M5; external-only actions remain pending | PENDING |
+| M5 exact-current-SHA verifier | Cop `fb9982e000488a96ea09879544b288bb661a0b98`; thief `0c519714d709a52cb4ddbdc96d5e87b248c98687`; 13 PASS, 0 FAIL, code score 100 | PASS |
+| M6 final reports/tag/push | Reports regenerated from M5; final clean-clone verification and audited remote tag remain | IN PROGRESS |
 
 The reference kit's own suite runs 167 tests with three errors caused by calls to
 the removed FastMCP `get_tools()` API under FastMCP 3.4.5. The external source
