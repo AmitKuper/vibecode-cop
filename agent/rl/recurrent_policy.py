@@ -70,6 +70,16 @@ class RecurrentRolePolicy:
     ) -> str:
         if not legal_actions:
             raise RuntimeError("canonical domain returned no legal actions")
+        deployable_actions = legal_actions
+        if self.role == "thief":
+            from agent.rl.risk_mask import belief_safe_actions
+
+            deployable_actions = belief_safe_actions(
+                observation.own_position,
+                belief,
+                legal_actions,
+                list(observation.known_barriers),
+            )
         features = torch.tensor(
             local_obs_to_tensor(observation, belief),
             dtype=torch.float32,
@@ -78,7 +88,7 @@ class RecurrentRolePolicy:
         with torch.no_grad():
             logits, _value, hidden = self.network(features, self._hidden)
         mask = torch.tensor(
-            [action in legal_actions for action in self.action_names],
+            [action in deployable_actions for action in self.action_names],
             dtype=torch.bool,
             device=self.device,
         ).unsqueeze(0)

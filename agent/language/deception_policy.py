@@ -46,24 +46,44 @@ class NaturalLanguagePolicy:
         self.role = role
         self.bluff_probability = bluff_probability
         self._opponent_move_history: list[str] = []
+        self._trust_history: list[bool] = []
 
-    def choose_intent(self, step: int, belief_entropy: float = 1.0) -> DeceptionIntent:
+    def choose_intent(
+        self,
+        step: int,
+        belief_entropy: float = 1.0,
+        *,
+        trust_history: list[bool] | None = None,
+        gamelet: int = 1,
+        physical_action: str = "STAY",
+        token_budget: int = 15,
+    ) -> DeceptionIntent:
         """
         Choose deception intent based on game context.
         High entropy (uncertain belief) → more likely to lie.
         Low entropy (confident belief) → more likely to truth or bluff.
         """
-        r = random.random()
-        adjusted_bluff = self.bluff_probability * (1.0 + belief_entropy)
-        adjusted_bluff = min(0.6, adjusted_bluff)
-        if r < 0.1:
+        if token_budget <= 4:
             return DeceptionIntent.AMBIGUOUS
-        elif r < adjusted_bluff:
+        history = self._trust_history if trust_history is None else trust_history
+        trust = sum(history) / len(history) if history else 0.5
+        uncertainty = max(0.0, min(1.0, belief_entropy / 4.0))
+        ambiguous_weight = 0.08 + 0.12 * uncertainty
+        lie_weight = 0.12 + 0.28 * uncertainty + 0.08 * (1.0 - trust)
+        bluff_weight = self.bluff_probability * (0.35 + 0.65 * trust)
+        if physical_action.startswith("PLACE_") or physical_action == "STAY":
+            bluff_weight += 0.06
+        # Vary the controlled policy across a six-gamelet series without coupling it to movement.
+        if (step + gamelet) % 5 == 0:
+            ambiguous_weight += 0.05
+        r = random.random()
+        if r < ambiguous_weight:
+            return DeceptionIntent.AMBIGUOUS
+        if r < ambiguous_weight + lie_weight:
             return DeceptionIntent.LIE
-        elif r < adjusted_bluff + 0.2:
+        if r < ambiguous_weight + lie_weight + bluff_weight:
             return DeceptionIntent.BLUFF
-        else:
-            return DeceptionIntent.TRUTH
+        return DeceptionIntent.TRUTH
 
     def generate(self, move: str, intent: DeceptionIntent) -> str:
         """Generate a free-language hint. Never numeric-location protocol."""
@@ -82,9 +102,11 @@ class NaturalLanguagePolicy:
                 templates = self.AMBIGUOUS_TEMPLATES
             return random.choice(templates)
 
-    def record_opponent_hint(self, hint: str) -> None:
+    def record_opponent_hint(self, hint: str, trustworthy: bool | None = None) -> None:
         """Track opponent hints for behavioral profiling."""
         self._opponent_move_history.append(hint)
+        if trustworthy is not None:
+            self._trust_history.append(bool(trustworthy))
 
     def opponent_hint_count(self) -> int:
         return len(self._opponent_move_history)

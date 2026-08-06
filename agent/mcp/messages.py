@@ -135,8 +135,8 @@ def validate_action_message(msg: ActionMessage) -> tuple[bool, str | None]:
         }
         if msg.move is not None and msg.move not in _valid_moves:
             return False, f"REVEAL phase move must be a valid direction or PLACE_*, got {msg.move}"
-        if msg.intent is not None and msg.intent not in ["truth", "lie"]:
-            return False, f"intent must be 'truth' or 'lie', got {msg.intent}"
+        if msg.intent is not None and msg.intent not in ["truth", "lie", "ambiguous", "bluff"]:
+            return False, f"intent must be truth/lie/ambiguous/bluff, got {msg.intent}"
         if msg.hint is not None and len(msg.hint.split()) > 15:
             return False, f"hint exceeds 15 words ({len(msg.hint.split())})"
         if msg.state_hash is not None and len(msg.state_hash) != 64:

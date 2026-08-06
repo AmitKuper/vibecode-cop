@@ -17,9 +17,9 @@ class TestSymmetricLanguagePolicy:
         calls = []
         original = orch.language_policy.choose_intent
 
-        def tracking_choose_intent(step, belief_entropy=1.0):
+        def tracking_choose_intent(step, belief_entropy=1.0, **context):
             calls.append(step)
-            return original(step=step, belief_entropy=belief_entropy)
+            return original(step=step, belief_entropy=belief_entropy, **context)
 
         orch.language_policy.choose_intent = tracking_choose_intent
 
@@ -29,6 +29,7 @@ class TestSymmetricLanguagePolicy:
     def test_generate_strategic_hint_default_step_zero(self):
         """Default step argument is 0 for backward compatibility."""
         from agent.agent_orchestrator import AgentOrchestrator
+        from agent.language.deception_policy import DeceptionIntent
         from agent.runtime_mode import RuntimeMode
 
         orch = AgentOrchestrator(
@@ -36,7 +37,7 @@ class TestSymmetricLanguagePolicy:
         )
         hint, intent = orch.generate_strategic_hint("S")
         assert isinstance(hint, str)
-        assert intent in ("truth", "lie")
+        assert intent in {item.value for item in DeceptionIntent}
 
     def test_passive_generate_hint_uses_nlp_policy(self):
         """Passive _generate_hint() uses NaturalLanguagePolicy, not always-truth."""

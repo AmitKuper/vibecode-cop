@@ -27,17 +27,32 @@ FAMILIES = (
     "wall",
     "local_adversarial_ensemble",
     "historical_checkpoint",
+    "scent_following",
+    "corridor_cutting",
+    "anti_loop",
+    "targeted_exploit",
+    "deceptive_language",
 )
 THIEF_TRAINING_SCHEDULE = (
     "random",
     "belief_pursuit_evasion",
     "belief_pursuit_evasion",
-    "wall",
+    "belief_pursuit_evasion",
+    "belief_pursuit_evasion",
+    "scent_following",
+    "scent_following",
+    "scent_following",
+    "scent_following",
+    "corridor_cutting",
+    "corridor_cutting",
     "local_adversarial_ensemble",
-    "local_adversarial_ensemble",
+    "targeted_exploit",
+    "targeted_exploit",
+    "anti_loop",
     "historical_checkpoint",
-    "historical_checkpoint",
+    "deceptive_language",
 )
+WORST_FAMILY_PROMOTION_FLOOR = {"cop": 0.55, "thief": 0.35}
 
 
 def _initial_state(rng: random.Random, random_start: bool = True) -> DomainState:
@@ -78,6 +93,29 @@ def _legal(state: DomainState, role: str) -> list[str]:
 def _distance(state: DomainState) -> int:
     return abs(state.cop_position[0] - state.thief_position[0]) + abs(
         state.cop_position[1] - state.thief_position[1]
+    )
+
+
+def _action_position(position: tuple[int, int], action: str) -> tuple[int, int]:
+    delta = {
+        "N": (0, -1),
+        "S": (0, 1),
+        "E": (1, 0),
+        "W": (-1, 0),
+        "STAY": (0, 0),
+    }.get(action, (0, 0))
+    return position[0] + delta[0], position[1] + delta[1]
+
+
+def _local_exit_count(
+    position: tuple[int, int], barriers: list[tuple[int, int]], grid_size: int
+) -> int:
+    blocked = set(barriers)
+    return sum(
+        0 <= position[0] + dx < grid_size
+        and 0 <= position[1] + dy < grid_size
+        and (position[0] + dx, position[1] + dy) not in blocked
+        for dx, dy in ((0, -1), (0, 1), (1, 0), (-1, 0))
     )
 
 
@@ -133,9 +171,22 @@ def _opponent_action(
             wall_score = min(pos[0], pos[1], 6 - pos[0], 6 - pos[1])
             scored.append((wall_score, action))
         return min(scored)[1]
+    own_position = state.cop_position if role == "cop" else state.thief_position
+    if family == "scent_following":
+        if not opponent_scent or not any(any(row) for row in opponent_scent):
+            return rng.choice(legal)
+        target_y, target_x = np.unravel_index(
+            np.asarray(opponent_scent).argmax(), np.asarray(opponent_scent).shape
+        )
+        scored = []
+        for action in legal:
+            pos = _action_position(own_position, action)
+            distance = abs(pos[0] - target_x) + abs(pos[1] - target_y)
+            score = -distance if role == "cop" else distance
+            scored.append((score, rng.random(), action))
+        return max(scored)[2]
     if opponent_belief is None:
         raise RuntimeError(f"{family} opponent requires a local Bayesian belief")
-    own_position = state.cop_position if role == "cop" else state.thief_position
     belief_action = _belief_expert_action(own_position, role, opponent_belief, legal)
     if family == "belief_pursuit_evasion":
         return belief_action
@@ -157,6 +208,55 @@ def _opponent_action(
             wall_distance = min(pos[0], pos[1], 6 - pos[0], 6 - pos[1])
             wall_scored.append((-wall_distance, rng.random(), action))
         return max(wall_scored)[2]
+    if family == "corridor_cutting":
+        target_y, target_x = np.unravel_index(
+            opponent_belief.belief.prob.argmax(), opponent_belief.belief.prob.shape
+        )
+        scored = []
+        for action in legal:
+            pos = _action_position(own_position, action)
+            distance = abs(pos[0] - target_x) + abs(pos[1] - target_y)
+            exits = _local_exit_count(pos, list(state.barriers), state.grid_size)
+            if role == "cop":
+                placement_bonus = 1.5 if action.startswith("PLACE_") and distance <= 2 else 0.0
+                score = -distance + placement_bonus - 0.1 * exits
+            else:
+                score = distance + 0.45 * exits
+            scored.append((score, rng.random(), action))
+        return max(scored)[2]
+    if family == "anti_loop":
+        # Alternate among the best two local-belief actions and prefer cells with exits.  This
+        # defeats deterministic two-cell cycles without consulting the hidden rival coordinate.
+        target_y, target_x = np.unravel_index(
+            opponent_belief.belief.prob.argmax(), opponent_belief.belief.prob.shape
+        )
+        ranked = []
+        for action in legal:
+            pos = _action_position(own_position, action)
+            distance = abs(pos[0] - target_x) + abs(pos[1] - target_y)
+            exits = _local_exit_count(pos, list(state.barriers), state.grid_size)
+            score = (-distance if role == "cop" else distance) + 0.25 * exits
+            ranked.append((score, action))
+        ranked.sort(reverse=True)
+        return ranked[state.turn % min(2, len(ranked))][1]
+    if family == "targeted_exploit":
+        if role == "cop":
+            # The strongest local-information pursuer used to attack the historical thief gap.
+            return belief_action
+        from agent.rl.risk_mask import belief_safe_actions
+
+        safe = belief_safe_actions(
+            own_position,
+            opponent_belief.belief,
+            legal,
+            list(state.barriers),
+            keep_fraction=0.4,
+        )
+        return safe[state.turn % len(safe)]
+    if family == "deceptive_language":
+        # Movement remains separate from language: noisy/deceptive hints alter trust, modelled
+        # here as controlled uncertainty between the belief expert and another legal action.
+        return belief_action if state.turn % 3 else rng.choice(legal)
     raise RuntimeError(f"unknown opponent family {family!r}")
 
 
@@ -182,7 +282,12 @@ def _observation(
     )
     features = torch.tensor(local_obs_to_tensor(obs, belief.belief), dtype=torch.float32)
     actions = COP_ACTIONS if role == "cop" else THIEF_ACTIONS
-    mask = torch.tensor([action in legal for action in actions], dtype=torch.bool)
+    deployable = legal
+    if role == "thief":
+        from agent.rl.risk_mask import belief_safe_actions
+
+        deployable = belief_safe_actions(own, belief.belief, legal, list(state.barriers))
+    mask = torch.tensor([action in deployable for action in actions], dtype=torch.bool)
     return features, mask
 
 
@@ -235,6 +340,7 @@ def _run_episode(
     evaluation_temperature: float | None = None,
     force_expert_actor: bool = False,
     latency_samples: list[float] | None = None,
+    episode_metrics: dict[str, int] | None = None,
 ) -> tuple[list, str, int]:
     state = _initial_state(rng, random_start)
     scent = ScentFields.zeros(7)
@@ -247,6 +353,14 @@ def _run_episode(
     while state.turn < 35:
         legal = _legal(state, role)
         features, mask = _observation(state, role, scent, belief, legal, (state.turn % 6) + 1)
+        if episode_metrics is not None:
+            actions = COP_ACTIONS if role == "cop" else THIEF_ACTIONS
+            episode_metrics["legal_candidates"] = episode_metrics.get("legal_candidates", 0) + len(
+                legal
+            )
+            episode_metrics["risk_pruned"] = episode_metrics.get("risk_pruned", 0) + sum(
+                action in legal and not bool(mask[index]) for index, action in enumerate(actions)
+            )
         inference_started = time.perf_counter()
         logits, value, hidden = network(features.unsqueeze(0), hidden)
         if latency_samples is not None and not force_expert_actor:
@@ -282,6 +396,10 @@ def _run_episode(
             opponent_belief=opponent_belief,
         )
         cop_action, thief_action = (action, opponent) if role == "cop" else (opponent, action)
+        if episode_metrics is not None:
+            episode_metrics["barrier_placements"] = episode_metrics.get(
+                "barrier_placements", 0
+            ) + int(cop_action.startswith("PLACE_"))
         previous_distance = _distance(state)
         result = apply_joint_action(state, cop_action, thief_action)
         state = result.new_state
@@ -526,6 +644,7 @@ def evaluate(
         rng = random.Random(seed + 10_000 + family_index)
         wins = turns = series_wins = family_role_score = family_opponent_score = 0
         series_results = []
+        family_metrics: dict[str, int] = {}
         for series_index in range(series_per_family):
             series_role_score = series_opponent_score = series_gamelet_wins = 0
             for _gamelet in range(6):
@@ -540,6 +659,7 @@ def evaluate(
                     evaluation_temperature=inference_temperature,
                     force_expert_actor=force_expert_actor,
                     latency_samples=latency_samples,
+                    episode_metrics=family_metrics,
                 )
                 won = winner == role
                 wins += int(won)
@@ -577,6 +697,12 @@ def evaluate(
             "official_role_score": family_role_score,
             "official_opponent_score": family_opponent_score,
             "average_turns": turns / games,
+            "capture_rate": (wins if role == "cop" else games - wins) / games,
+            "survival_rate": (games - wins if role == "cop" else wins) / games,
+            "barrier_placements": family_metrics.get("barrier_placements", 0),
+            "barrier_efficiency": wins / max(family_metrics.get("barrier_placements", 0), 1),
+            "risk_mask_pruned_rate": family_metrics.get("risk_pruned", 0)
+            / max(family_metrics.get("legal_candidates", 0), 1),
             "series_results": series_results,
         }
         total_wins += wins
@@ -643,22 +769,32 @@ def _promotion_comparison(candidate: dict, baseline: dict, seed: int) -> dict:
     confidence = np.percentile(bootstrap_means, [2.5, 97.5]).tolist()
     no_zero_family = all(item["win_rate"] > 0 for item in candidate["families"].values())
     p99 = candidate["inference_latency_ms"]["p99"]
+    role = candidate.get("role")
+    worst_family_floor = WORST_FAMILY_PROMOTION_FLOOR.get(role, 0.0)
+    worst_family = min(item["win_rate"] for item in candidate["families"].values())
+    baseline_worst = min(item.get("win_rate", 0.0) for item in baseline["families"].values())
+    no_catastrophic_regression = worst_family >= max(worst_family_floor, baseline_worst - 0.05)
     passed = (
         confidence[0] > 0
         and no_zero_family
         and candidate["technical_failures"] == 0
         and p99 is not None
         and p99 < 30.0
+        and no_catastrophic_regression
     )
     return {
         "criterion": (
             "paired bootstrap 95% lower official-score bound > 0; every family nonzero; "
-            "zero technical failures; p99 inference < 30 ms"
+            "zero technical failures; p99 inference < 30 ms; role worst-family floor met"
         ),
         "candidate_official_role_score": candidate["official_role_score"],
         "baseline_official_role_score": baseline["official_role_score"],
         "mean_series_role_score_improvement": float(differences.mean()),
         "bootstrap_95": confidence,
+        "worst_family_win_rate": worst_family,
+        "predeclared_worst_family_floor": worst_family_floor,
+        "baseline_worst_family_win_rate": baseline_worst,
+        "no_catastrophic_worst_family_regression": no_catastrophic_regression,
         "passed": passed,
     }
 
@@ -757,6 +893,8 @@ def main() -> None:
     promotion = _promotion_comparison(evaluation, heuristic_baseline, args.seed)
     evaluation["artifact_sha256"] = file_sha256(artifact)
     evaluation["evaluation_seed"] = args.seed
+    evaluation["training_seed_namespace"] = [args.seed, args.seed + args.episodes]
+    evaluation["held_out_seed_namespace"] = [args.seed + 10_000, args.seed + 50_000]
     evaluation["training_episodes"] = training_episodes
     evaluation["training_opponents"] = list(FAMILIES)
     evaluation["training_schedule"] = list(

@@ -75,7 +75,7 @@ def test_orchestrator_generate_strategic_hint():
     hint, intent_str = result
     assert isinstance(hint, str)
     assert isinstance(intent_str, str)
-    assert intent_str in ("truth", "lie")
+    assert intent_str in {intent.value for intent in DeceptionIntent}
 
 
 def test_orchestrator_strategic_hint_not_numeric():
