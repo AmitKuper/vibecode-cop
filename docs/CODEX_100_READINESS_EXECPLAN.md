@@ -259,8 +259,8 @@ EXTERNAL_PENDING. Risk: never synthesize evidence. SHAs: pending.
 - [x] M2 zero-trust final lifecycle.
 - [x] M3 RL strength.
 - [x] M4 adaptive MCP.
-- [x] M5 complete quality/verifier gates.
-- [x] M6 final release evidence.
+- [ ] M5 current exact-SHA quality/verifier gates (candidate gates pass; final clean run pending).
+- [ ] M6 current final release evidence and tag/push.
 
 ## Decisions
 
@@ -348,3 +348,23 @@ re-read Appendix E/F and the guidelines and did not rely on the prior score.
 
 External tunnel/opponent, real Gmail, real group identity, Moodle artifacts,
 and release-tag push remain honestly `EXTERNAL_PENDING`.
+
+
+## 2026-08-06 v11 continuation — current program
+
+| Milestone | Exact evidence | Status |
+|---|---|---|
+| M1 audit/domain/replay | Cop `5116fbb6c048146f7692c7efbfcfcb47c0ae57b7`; thief `d8563803fb3482d1a757eb166bd5d33a2b8a2dcd`; clean series `series_20260806_015319_1a957014` plus independent Replay | PASS |
+| M2/M3 adaptive/reliability | Cop `e1e0a9b3143…`; thief `da8c50bc4f…`; clean series `series_20260806_032521_036c5e75`; ten compatible/eight incompatible process fixtures | PASS |
+| Published reference-v3 | Untouched `9cecfa8b4befa070dfee0f3bc23cfe7ff7216e8e`; 113/113 vectors; bidirectional four-tool profile `4cc7609e…07decd`; zero per-turn LLM | PASS |
+| Competitive release | Cop `b9e74b7a…c21268`, 82.94%/57.78% worst; thief `cdf5bc67…bd271`, 78.72%/55.00% worst; 300 exact series each | PASS |
+| Strategy analysis | Exact ablations, sensitivity, learning curves, language invariant, barrier/risk decisions, population comparison | PASS |
+| Current complete suites | Cop 1,543; thief 1,418; zero skips; Ruff/format clean; branch gates above 89% | PASS |
+| Strength/evidence commits | Cop `dedaaf147989d1b63f4d4536330bf70335df4630`; thief `55d45fcd4010884b08c64380fe03c6cd39062266` | PASS |
+| M5 exact-current-SHA verifier | Strengthened with analysis and untouched reference-v3 process gates; final clean run follows coherent document commit | PENDING |
+| M6 final reports/tag/push | Candidate reports withhold numeric 100 until M5; external-only actions remain pending | PENDING |
+
+The reference kit's own suite runs 167 tests with three errors caused by calls to
+the removed FastMCP `get_tools()` API under FastMCP 3.4.5. The external source
+was not edited. Published vectors and real bidirectional interoperability pass;
+the upstream dependency mismatch is not recast as our product evidence.

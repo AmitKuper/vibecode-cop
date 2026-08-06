@@ -61,6 +61,15 @@ RL policy: tracked `RecurrentA2C-GRU` champion with paired held-out six-gamelet
 promotion evidence in `results/cop_held_out_tournament.json`.
 Language: `NaturalLanguagePolicy` with `DeceptionIntent` (TRUTH/LIE/AMBIGUOUS/BLUFF).
 
+Exact release artifact
+`b9e74b7a13ca461484f2b47046eeecf8d393cb8d64b7cdd51d2915b714c21268`
+captures 82.94% of 1,800 held-out gamelets, wins 99.33% of 300 exact
+six-gamelet series, and clears the predeclared 55% worst-family floor at 57.78%.
+Its official score is 31,395 versus 10,535 with zero technical failures and
+0.371 ms p99 inference. Current learning curves, ten-family results, ablations,
+sensitivity, curriculum comparison, and the analysis notebook are under
+`results/rl/` and `notebooks/release_strategy_analysis.ipynb`.
+
 ## Installation
 
 ```bash
@@ -87,12 +96,18 @@ tamper/replay, Watchdog and fake-Gmail suites, scans tracked files for secrets,
 and launches the real isolated two-process six-gamelet counted path. A skipped or
 failed code-verifiable gate makes the verifier fail.
 
+The adaptive gate also launches the untouched published `reference-v3` league kit
+in both call directions. Our deterministic adapter exposes its exact four-tool
+surface, passes all 113 published vectors, locks the discovered profile before the
+first commitment, and makes zero per-turn protocol-LLM calls.
+
 ## Known Limitations / EXTERNAL_PENDING
 
 - Public tunnel and outside-opponent matches: EXTERNAL_PENDING
 - Real Gmail OAuth delivery and provider message IDs: EXTERNAL_PENDING
 - Actual eight-character course group ID: EXTERNAL_PENDING
 - Official PDF/Moodle screenshots and individual submissions: EXTERNAL_PENDING
+- Genuine Live GUI and Replay screenshots from the final external run: EXTERNAL_PENDING
 - Final audited release tag push: EXTERNAL_PENDING
 
 Local fake-Gmail output and localhost transport are acceptance evidence only; they
@@ -143,6 +158,6 @@ tests/       unit, integration, hostile, and production-lifecycle evidence
 scripts/     series, evaluation, Gmail, replay, and strict verification tools
 docs/        requirements, plans, ledger, cost, and external-action records
 notebooks/   reproducible cost and sensitivity analysis
-assets/      architecture and sample/replay visuals
+assets/      architecture and local illustrative captures (not external evidence)
 results/     tournament and executable score evidence
 ```

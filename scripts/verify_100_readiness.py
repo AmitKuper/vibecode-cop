@@ -11,6 +11,7 @@ import argparse
 import hashlib
 import json
 import re
+import socket
 import subprocess
 import tempfile
 import time
@@ -24,6 +25,7 @@ from typing import Literal
 REPO = Path(__file__).resolve().parents[1]
 WORKSPACE = REPO.parent
 REPOS = {"cop": WORKSPACE / "vibecode-cop", "thief": WORKSPACE / "vibecode-thief"}
+REFERENCE_KIT = WORKSPACE / "external" / "copthief-league-protocol"
 Status = Literal["PASS", "FAIL", "EXTERNAL_PENDING"]
 
 
@@ -347,6 +349,129 @@ def check_tournaments() -> str:
     return "; ".join(evidence)
 
 
+def check_strategy_analysis() -> str:
+    evidence: list[str] = []
+    required_common = {
+        "full_release",
+        "strongest_heuristic",
+        "scent_only_no_belief",
+        "belief_only_no_scent",
+        "stateless",
+        "no_legal_mask",
+        "language_off",
+    }
+    for role, repo in REPOS.items():
+        manifest = json.loads((repo / "models" / "MANIFEST.json").read_text(encoding="utf-8"))
+        entry = next(item for item in manifest["models"] if item["role"] == role)
+        analysis = json.loads(
+            (repo / "results" / "rl" / "strategy_analysis.json").read_text(encoding="utf-8")
+        )
+        if analysis.get("artifact_sha256") != entry["sha256"]:
+            raise RuntimeError(f"{role} strategy analysis targets stale model")
+        if int(analysis.get("series_per_family", 0)) < 5:
+            raise RuntimeError(f"{role} strategy analysis sample is too small")
+        rows = {row["variant"]: row for row in analysis.get("ablations", [])}
+        required = required_common | {"no_barrier_actions" if role == "cop" else "belief_risk_mask"}
+        if not required.issubset(rows):
+            raise RuntimeError(f"{role} strategy analysis missing {sorted(required - rows.keys())}")
+        full = rows["full_release"]
+        if (
+            int(full["gamelets"]) != 300
+            or int(full["technical_failures"]) != 0
+            or float(full["illegal_action_rate"]) != 0.0
+        ):
+            raise RuntimeError(f"{role} full-release ablation is not clean executable evidence")
+        if float(rows["no_legal_mask"]["illegal_action_rate"]) <= 0.0:
+            raise RuntimeError(f"{role} legal-mask ablation did not exercise illegal selection")
+        if analysis.get("language_official_score_delta") != 0:
+            raise RuntimeError(f"{role} movement/language separation is not invariant")
+        if len(analysis.get("sensitivity", [])) < 4:
+            raise RuntimeError(f"{role} deterministic/stochastic sensitivity is incomplete")
+
+        curriculum = json.loads(
+            (repo / "results" / "rl" / "curriculum_comparison.json").read_text(encoding="utf-8")
+        )
+        comparison = curriculum["single_checkpoint_self_play"]
+        comparison_path = repo / "results" / "rl" / comparison["artifact"]
+        if sha256(comparison_path) != comparison["artifact_sha256"]:
+            raise RuntimeError(f"{role} single-opponent comparison checksum mismatch")
+        if (
+            curriculum.get("status") != "PASS"
+            or float(curriculum.get("population_score_differential_advantage", 0)) <= 0
+        ):
+            raise RuntimeError(f"{role} population curriculum comparison did not pass")
+
+        curves = (repo / "results" / "rl" / "learning_curves.csv").read_text(encoding="utf-8")
+        if entry["sha256"] not in curves or "true" not in curves.lower():
+            raise RuntimeError(f"{role} learning curve does not end at release artifact")
+        card = (repo / "docs" / "RL_MODEL_CARD.md").read_text(encoding="utf-8")
+        tournament = (repo / "docs" / "RL_TOURNAMENT_REPORT.md").read_text(encoding="utf-8")
+        if entry["sha256"] not in card or entry["sha256"] not in tournament:
+            raise RuntimeError(f"{role} model documentation is not release-checksum bound")
+        if "PLACEHOLDER" in card or "EXTERNAL_PENDING" not in card:
+            raise RuntimeError(f"{role} model card has stale or dishonest readiness status")
+        evidence.append(
+            f"{role}=release {100 * float(full['win_rate']):.2f}%, "
+            f"{len(rows)} ablations, {len(analysis['sensitivity'])} sensitivity points"
+        )
+    return "; ".join(evidence)
+
+
+def _free_port() -> int:
+    with socket.socket() as sock:
+        sock.bind(("127.0.0.1", 0))
+        return int(sock.getsockname()[1])
+
+
+def check_reference_v3_interop() -> str:
+    if not REFERENCE_KIT.is_dir():
+        raise RuntimeError(f"untouched reference-v3 clone missing: {REFERENCE_KIT}")
+    before = run(["git", "status", "--short"], REFERENCE_KIT, 30)
+    require_success(before, "reference-v3 git status")
+    if before.stdout.strip():
+        raise RuntimeError(f"reference-v3 clone is dirty: {before.stdout.strip()}")
+    reference_sha = git_sha(REFERENCE_KIT)
+    vectors = run(["uv", "run", "python", "verify_vectors.py"], REFERENCE_KIT, 180)
+    require_success(vectors, "reference-v3 published vectors")
+    if "113 checks" not in vectors.stdout or "ALL VECTORS PASS" not in vectors.stdout:
+        raise RuntimeError(f"reference-v3 vector total not proven: {tail(vectors)}")
+
+    profiles: set[str] = set()
+    for role, repo in REPOS.items():
+        command = [
+            "uv",
+            "run",
+            "python",
+            "scripts/verify_reference_v3_interop.py",
+            "--kit-root",
+            str(REFERENCE_KIT),
+            "--external-port",
+            str(_free_port()),
+            "--local-port",
+            str(_free_port()),
+        ]
+        result = run(command, repo, 300)
+        require_success(result, f"{role} bidirectional reference-v3 interop")
+        lines = [line for line in result.stdout.splitlines() if line.strip()]
+        payload = json.loads("\n".join(lines[lines.index("{") :])) if "{" in lines else None
+        if not isinstance(payload, dict) or payload.get("status") != "PASS":
+            raise RuntimeError(f"{role} invalid reference-v3 evidence: {tail(result)}")
+        if payload.get("external_sha") != reference_sha:
+            raise RuntimeError(f"{role} reference-v3 SHA drift")
+        client_evidence = payload.get("our_client_to_external_server", {})
+        if int(client_evidence.get("per_turn_llm_calls", -1)) != 0:
+            raise RuntimeError(f"{role} reference-v3 path uses a per-turn protocol LLM")
+        profiles.add(str(client_evidence.get("profile_hash")))
+
+    after = run(["git", "status", "--short"], REFERENCE_KIT, 30)
+    require_success(after, "reference-v3 final git status")
+    if after.stdout.strip():
+        raise RuntimeError("reference-v3 verifier modified the external clone")
+    if len(profiles) != 1:
+        raise RuntimeError(f"role adapters disagree on reference-v3 profile: {profiles}")
+    return f"reference={reference_sha}, vectors=113/113, profile={next(iter(profiles))}"
+
+
 FOCUSED_TESTS = (
     "tests/test_codex_adaptive_transport.py",
     "tests/test_codex_adaptive_contract_coverage.py",
@@ -362,6 +487,9 @@ FOCUSED_TESTS = (
     "tests/test_codex_recurrent_failure_contract.py",
     "tests/test_codex_recurrent_training.py",
     "tests/test_codex_token_accounting.py",
+    "tests/test_codex_real_adaptive_fixture_matrix_v11.py",
+    "tests/test_codex_reference_v3_interop.py",
+    "tests/test_codex_competitive_strategy_v11.py",
 )
 
 
@@ -474,7 +602,7 @@ def check_documents() -> str:
         ):
             raise RuntimeError(f"{role} RL reproduction guide is stale")
         matrix = (repo / "docs" / "REQUIREMENTS_TRACEABILITY.md").read_text(encoding="utf-8")
-        rows = re.findall(r"^\|\s*(\d+)\s*\|", matrix, flags=re.MULTILINE)
+        rows = re.findall(r"^\|\s*(\d+)\.", matrix, flags=re.MULTILINE)
         if sorted(map(int, rows)) != list(range(1, 56)):
             raise RuntimeError(f"{role} traceability matrix is not exactly 55 rules")
         json.loads((repo / "FINAL_RELEASE_MANIFEST.json").read_text(encoding="utf-8"))
@@ -502,12 +630,18 @@ def main() -> int:
         ("CV-05", "Clean subprocess CLI startup", check_cli_startup),
         ("CV-06", "Champion checksum, schema, and inference load", check_models),
         ("CV-07", "Held-out six-gamelet tournament promotion", check_tournaments),
+        ("CV-07A", "Exact-checkpoint analysis and documentation", check_strategy_analysis),
         (
             "CV-08",
             "Adaptive/tamper/replay/Watchdog/Gmail/token hostile suites",
             check_hostile_suites,
         ),
         ("CV-09", "Real isolated two-process six-gamelet production path", check_two_process),
+        (
+            "CV-09A",
+            "Untouched published reference-v3 bidirectional interoperability",
+            check_reference_v3_interop,
+        ),
         ("CV-10", "Tracked secret scan", check_secrets),
         ("CV-11", "Documentation claim and 55-rule validation", check_documents),
     )

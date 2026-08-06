@@ -1,50 +1,24 @@
 {
-  "schema_version": "2.0",
-  "generated_at_utc": "2026-08-05T18:00:00.000000+00:00",
+  "schema_version": "3.0",
+  "generated_at_utc": "2026-08-06T00:00:00Z",
   "repository_role": "cop",
-  "release_state": "CODE_VERIFIABLE_PASS_EXTERNAL_PENDING",
-  "verified_source_commits": {
-    "cop": "5ce826333eb75b0f27982d16ee15c2f8767462cb",
-    "thief": "b392a2299818d13b3f1b4f8f3ec1c67669bfade3"
+  "release_state": "EXACT_SHA_VERIFICATION_PENDING",
+  "code_evidence_basis": {
+    "cop": "dedaaf147989d1b63f4d4536330bf70335df4630",
+    "thief": "55d45fcd4010884b08c64380fe03c6cd39062266"
   },
-  "evidence_wrapper_note": "Post-hardening: 6 integrity gaps closed (exact-set audit, chain length pre-check, 6-gamelet replay, fatal journal write, raise-on-missing-fields, unified scent authority).",
   "canonical_config_sha256": "45ce5eeb0daff048c31c1d5012b3db55b4b101f91146d4a886474e024ea8db90",
+  "reference_v3": {
+    "git_sha": "9cecfa8b4befa070dfee0f3bc23cfe7ff7216e8e",
+    "vectors": "113/113 PASS",
+    "profile_sha256": "4cc7609ea2690979e6e9776a391b2031bc838f66f306a3b2c04dadb02807decd",
+    "tree_edited": false
+  },
   "champions": {
-    "cop": {
-      "repository": "vibecode-cop",
-      "path": "models/cop_recurrent_champion.pt",
-      "sha256": "1c6f85bed3ba754d1daa38aa394b455d605fe1768436532581cc118b5be96949"
-    },
-    "thief": {
-      "repository": "vibecode-thief",
-      "path": "models/thief_recurrent_champion.pt",
-      "sha256": "477c56ad7348dfc6dd9130e3ed371be8afbc912ef34635ee0fb56ef2427d6151"
-    }
+    "cop": {"path": "models/cop_recurrent_champion.pt", "sha256": "b9e74b7a13ca461484f2b47046eeecf8d393cb8d64b7cdd51d2915b714c21268"},
+    "thief": {"repository": "vibecode-thief", "path": "models/thief_recurrent_champion.pt", "sha256": "cdf5bc67daad6c922757dbc5aac0a278935dcbe79554e887d6003ddee2cbd271"}
   },
-  "production_evidence": {
-    "series_id": "series_20260805_205914_9e15341c",
-    "gamelets": 6,
-    "agreement_sha256": "9e3ad410e4cdd0b69a60635161b8e9ed40379e0c90ac7c2f5148b9a19d3451f1",
-    "ledger_consensus_sha256": "746efa71e8b09131ccde333f6e2f1a5966e721d4f105148de7304fe34917861b",
-    "real_gmail_status": "EXTERNAL_PENDING"
-  },
-  "verification": {
-    "script": "scripts/verify_100_readiness.py",
-    "mandatory_skips_allowed": false,
-    "code_verifiable_score": 100,
-    "submission_ready": false
-  },
-  "rule_totals": {
-    "PASS": 48,
-    "FAIL": 0,
-    "EXTERNAL_PENDING": 7
-  },
-  "external_pending": [
-    "public_tunnel_and_outside_groups",
-    "real_gmail_delivery",
-    "final_tag_push",
-    "official_moodle_pdf",
-    "individual_submissions",
-    "real_group_id"
-  ]
+  "rule_totals": {"PASS": 48, "FAIL": 0, "EXTERNAL_PENDING": 7},
+  "code_ready_for_100": false,
+  "fully_submission_ready": false
 }

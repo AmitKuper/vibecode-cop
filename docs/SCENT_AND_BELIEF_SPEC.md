@@ -70,5 +70,5 @@ belief_new[r][c] = belief_new[r][c] / Z
 
 ### Usage
 
-The belief heatmap is provided as an input channel to the PPO policy and
+The belief heatmap is provided as an input channel to the recurrent A2C policy and
 displayed in the live GUI belief overlay.

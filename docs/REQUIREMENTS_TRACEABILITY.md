@@ -1,75 +1,70 @@
-# Appendix-E Requirements Traceability — v11 Independent Baseline
+# Appendix-E requirements traceability — Code-100 v11
 
-Evidence date: 2026-08-06. Appendix E supplies the rules and Appendix F supplies
-the quantitative values. Status is restricted to `PASS`, `FAIL`, and
-`EXTERNAL_PENDING`. A PASS below requires production wiring plus executable
-evidence. This is the pre-edit v11 baseline at cop
-`115c20e60d3a318b117136b30661e3ea3b788e35` and thief
-`7ba1ad7fd42eb70cb7cf0690c512a23ca5dc3bf4`; repository claims were not accepted
-without direct source/runtime verification.
+Evidence basis: cop `dedaaf147989d1b63f4d4536330bf70335df4630`; thief
+`55d45fcd4010884b08c64380fe03c6cd39062266`. Appendix E defines the
+rules; Appendix F defines quantitative values. Repository claims alone are not
+evidence. Final statuses are only `PASS`, `FAIL`, or `EXTERNAL_PENDING`.
 
-| # | Binding rule | Class | Production and executable evidence | Status |
-|---:|---|---|---|---|
-| 1 | Police and thief are separate processes | Mandatory | Role CLIs plus `scripts/verify_local_two_process.py` launch two independent Python processes over TCP for the counted series. | PASS |
-| 2 | No shared memory/variables | Forbidden | The acceptance processes use separate configurations, secrets, ports, logs, game directories, and process memory; only MCP messages cross the boundary. | PASS |
-| 3 | Orchestrator is the single subsystem entry | Mandatory | `agent/role_cli.py::_resolved` creates counted `AgentOrchestrator`; `test_codex_counted_composition.py` proves active/passive fail-closed composition. | PASS |
-| 4 | Proper game state machine | Mandatory | `ProtocolCoordinator` authorizes the counted transitions; state-machine and production lifecycle suites run in CV-03. | PASS |
-| 5 | Reject illegal state transitions | Mandatory | Coordinator guards and adversarial ordering tests reject out-of-sequence phases. | PASS |
-| 6 | Deadline tracking prevents deadlock | Mandatory | `DeadlineTracker` exists, but blocking boundaries do not all persist deadlines or route persistence/timeout failures through the counted technical-loss authority. | FAIL |
-| 7 | Independent Watchdog/recovery | Mandatory | `agent/peer_turn_loop.py::run_peer_turn_loop` catches heartbeat emit failures and continues; counted mode can fail open. | FAIL |
-| 8 | Live GUI shows local truth only | Mandatory | Counted publication goes through `SafeLiveView`; `test_live_view_model.py`, UI route tests, and composition tests cover the production call. | PASS |
-| 9 | Never show objective board | Forbidden | Local-view serializers reject opponent coordinates; leak/adversarial GUI and observation tests run in the full suite. | PASS |
-| 10 | Public tunnel exposure | Mandatory | Requires a genuine public endpoint and outside connectivity; no tunnel evidence is fabricated locally. | EXTERNAL_PENDING |
-| 11 | Byte-identical shared config | Mandatory | Both champions and signed Step-0 bind config SHA `45ce5e…db90`; mismatch tests and CV-09 verify bilateral equality. | PASS |
-| 12 | Minimums only increase by agreement | Mandatory | `canonical_config.py` applies Appendix-F fixed/minimum semantics and signed negotiation locks the result; conformance tests pass. | PASS |
-| 13 | Orthogonal or stand movement only | Mandatory | Every physical action reaches `agent/domain/transition.py::apply_joint_action`; domain and real lifecycle evidence pass. | PASS |
-| 14 | No diagonal movement | Forbidden | Legal-action masking plus canonical domain validation reject diagonal/unknown movement in active and passive paths. | PASS |
-| 15 | Declare every barrier placement openly | Mandatory | `PLACE_*` is committed, revealed, audited, and applied by the canonical transition; barrier conformance tests pass. | PASS |
-| 16 | Never lie about barrier location | Forbidden | Barrier target is derived solely from the disclosed action and actor coordinate; no independent location claim exists. | PASS |
-| 17 | SHA-256 Commit-Reveal | Mandatory | `create_commitment` defaults `gamelet=1`, and live active/passive calls omit the actual gamelet, so gamelets 2-6 are not correctly bound. | FAIL |
-| 18 | Nonce secret until final audit | Mandatory | Gameplay reveal omits nonce; final audit alone discloses it. Nonce-isolation and public-artifact scans pass. | PASS |
-| 19 | Audit mismatch causes technical loss | Mandatory | `run_final_audit` derives expected extent from received commits and optionalizes nonce/completeness checks; all mismatch classes cannot be assigned reliably. | FAIL |
-| 20 | Replay reconstruction and verification | Mandatory | `ReplayApp` trusts the result-embedded key, accepts missing roots/outcome, and verifies journal chains without reconstructing configured canonical transitions. | FAIL |
-| 21 | Truthfully declare capture | Mandatory | Canonical transition computes an outcome, but the live loop ignores it and calls legacy `RulesEngine.check_game_status()` as terminal authority. | FAIL |
-| 22 | Reject false capture | Forbidden | Peer game-end and result validators reject outcome/score claims inconsistent with canonical state. | PASS |
-| 23 | Lock scent model before game | Mandatory | Step-0 signs parameters, but `DomainState.scent_grid` and `AgentOrchestrator.scent_fields` are split authorities and the live path performs a second, different Manhattan update. | FAIL |
-| 24 | Signed hardware declaration before game | Mandatory | Signed bilateral Step-0 includes hardware/dependency declarations and verifies both public keys in CV-09. | PASS |
-| 25 | Keep LLM from movement; project uses RL primary | Recommended + project mandatory | Counted order is local observation/belief/history → role recurrent champion → legal mask → canonical validation; model failure aborts. | PASS |
-| 26 | Free natural language | Mandatory | Movement and language policies are separate; active/passive turn paths exchange truth/lie-capable natural-language hints. | PASS |
-| 27 | No numeric-location verbal protocol | Forbidden | Language guards reject numeric coordinate protocols while permitting free strategic text; language suites pass. | PASS |
-| 28 | Gmail token bucket | Mandatory | Counted report uses Gatekeeper with token bucket; fake-service and production-pipeline tests pass. | PASS |
-| 29 | Gmail DOS detector | Mandatory | Gatekeeper owns DOS detector/circuit breaker; retry/abuse tests pass. | PASS |
-| 30 | Send-only Gmail authorization | Mandatory | OAuth setup/runtime requests only `gmail.send`; scope-contract tests and tracked scan pass. | PASS |
-| 31 | Minimum outside groups | Mandatory | At least two real different course groups must participate; local fixtures cannot prove this. | EXTERNAL_PENDING |
-| 32 | Automatic result report via Gmail API | Mandatory | Code path, independent role reports, validation, and fake transport pass; genuine provider delivery/message IDs require credentials. | EXTERNAL_PENDING |
-| 33 | Final report is valid signed JSON | Mandatory | Counted terminal path serializes the signed `ResultAgreement`, per-gamelet data, totals, hashes, and signatures; strict peer parsing passes. | PASS |
-| 34 | No free-text final report | Forbidden | Gatekeeper rejects non-JSON report bodies; counted sender passes only canonical JSON. | PASS |
-| 35 | Identical bilateral result; each peer reports | Mandatory | CV-09 checks byte-identical agreement bodies, two role signatures, consensus, and two independent fake outbox records. | PASS |
-| 36 | Comprehensive mutual audit | Mandatory | Audits do not prove exact contiguous step sets, complete nonces, reconstructed state/score/token roots, or equality of every consensus field. | FAIL |
-| 37 | Accurate prior counted-match declaration | Mandatory | Signed Step-0 derives prior-match count from the role-local league ledger and peer validation compares the declaration. | PASS |
-| 38 | False match count disqualifies | Forbidden | Signed-declaration and ledger-consistency tests reject false prior-count claims before commitments. | PASS |
-| 39 | Never commit secrets | Forbidden | CV-10 scans all tracked text for private-key/provider-token signatures; counted artifacts expose no nonces or secrets. | PASS |
-| 40 | Credential files in `.gitignore` | Mandatory | Both repositories ignore OAuth credentials, tokens, local secrets, and runtime evidence directories. | PASS |
-| 41 | Documented final Git tag | Mandatory | A final audited tag must be created and pushed only after the final clean verification. | EXTERNAL_PENDING |
-| 42 | Comprehensive accurate academic README | Mandatory | Both READMEs document current counted CLI, recurrent champions, strict verifier, and honest external boundary. | PASS |
-| 43 | Moodle PDF unchanged layout | Mandatory | Requires the official course form and human submission; local code cannot establish it. | EXTERNAL_PENDING |
-| 44 | Each member submits separately | Mandatory | Requires individual human Moodle actions and cannot be automated or fabricated. | EXTERNAL_PENDING |
-| 45 | Real unique eight-character group ID | Mandatory | Validation exists, but the actual course identity must be supplied by the team. | EXTERNAL_PENDING |
-| 46 | Barrier placed on thief captures | Mandatory | Canonical simultaneous transition places the declared legal barrier and captures when it lands on the thief; conformance tests pass. | PASS |
-| 47 | Trapped thief is caught | Mandatory | Canonical domain detects no legal escape and applies the Appendix-F caught outcome; exact trapped tests pass. | PASS |
-| 48 | Fixed scoring table | Mandatory | Canonical configuration fixes 20/5, 5/10, and 2/2 tie scoring; agreement recomputation rejects deviations. | PASS |
-| 49 | Two repositories with cross-links | Mandatory | Both role repositories exist and each README links its companion. | PASS |
-| 50 | README/config/PRD/PLAN/TODO in each repo | Mandatory | CV-11 validates all required academic/release artifacts in both repositories. | PASS |
-| 51 | Lecturer agent report address | Mandatory | Counted Gmail configuration and tests use the exact Appendix-F recipient. | PASS |
-| 52 | One counted match per opponent | Forbidden beyond one | League ledger uses the stable opponent identity, Step-0 declares history, and counted mode fails closed on repeats/ledger errors. | PASS |
-| 53 | Git SHA in Step-0 | Mandatory | Counted clean-worktree guard obtains exact HEAD; all 12 signed Step-0 declarations in CV-09 carry their role's exact SHA. | PASS |
-| 54 | Token totals in final JSON | Mandatory | Per-gamelet and series prompt/completion/total fields are explicit, arithmetically checked, signed, and peer-validated. | PASS |
-| 55 | Self-grade code quality only | Mandatory | Numeric verifier score covers code-verifiable gates only; league results and external evidence are excluded from the self-grade. | PASS |
+| Rule | Classification | Result | Production code | Tests | Runtime evidence | Cop SHA | Thief SHA | Notes |
+|---:|---|---|---|---|---|---|---|---|
+| 1. Separate police/thief processes | Mandatory | PASS | `agent/role_cli.py`; role packages | `test_codex_counted_composition.py` | CV-09 real TCP process series | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Separate PID/config/log/secret roots. |
+| 2. No shared memory/variables | Forbidden | PASS | `agent/peer_runtime.py` | process isolation tests | CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Only MCP messages cross processes. |
+| 3. One Orchestrator entry point | Mandatory | PASS | `AgentOrchestrator` | `test_codex_counted_composition.py` | CV-03/CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Counted construction fails closed. |
+| 4. Proper game state machine | Mandatory | PASS | `ProtocolCoordinator` | coordinator/state-machine suites | CV-03/CV-08 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Coordinator authorizes phases. |
+| 5. Reject illegal state transitions | Mandatory | PASS | `agent/mcp/coordinator.py` | adversarial ordering tests | CV-08 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | No permissive fallback. |
+| 6. Deadline tracking/deadlock prevention | Mandatory | PASS | `DeadlineTracker`; durable deadlines | `test_codex_reliability_v11.py` | CV-03/CV-08 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Counted timeout becomes technical loss. |
+| 7. Independent Watchdog/recovery | Mandatory | PASS | `agent/reliability/watchdog.py`; recovery state | `test_watchdog.py`; chaos tests | CV-08/CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Heartbeat failure fails closed. |
+| 8. Live GUI shows local truth | Mandatory | PASS | `SafeLiveView` | GUI/leak suites | CV-03 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Real screenshot is external pending. |
+| 9. Never show objective board | Forbidden | PASS | `LiveViewModel`; `LocalObservation` | hidden-coordinate leak tests | CV-03 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Opponent coordinate absent. |
+| 10. Public tunnel exposure | Mandatory | EXTERNAL_PENDING | tunnel runbook | N/A external | EXT-01 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Requires public infrastructure. |
+| 11. Byte-identical shared config | Mandatory | PASS | canonical config/hash | config mismatch suites | CV-06/CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Both bind `45ce5e…db90`. |
+| 12. Minimums increase only by agreement | Mandatory | PASS | `config_validator.py` | Appendix-F conformance tests | CV-03 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Fixed/minimum/negotiated distinguished. |
+| 13. Orthogonal or STAY movement | Mandatory | PASS | `apply_joint_action` | domain conformance | CV-03/CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | One physical authority. |
+| 14. No diagonal movement | Forbidden | PASS | legal mask + domain validation | illegal-action tests | CV-03 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Unknown actions rejected. |
+| 15. Declare barrier placement openly | Mandatory | PASS | `PLACE_*` commit/reveal/audit | barrier/audit tests | CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Audited physical action. |
+| 16. Never lie about barrier location | Forbidden | PASS | canonical derived target | barrier conformance | CV-03/CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | No separate location claim. |
+| 17. SHA-256 Commit-Reveal | Mandatory | PASS | gamelet-bound commitment helpers | `test_audit_adversarial.py` | CV-08/CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Actual gamelet/step bound. |
+| 18. Nonce secret until final audit | Mandatory | PASS | journal/audit serializers | nonce privacy tests | CV-09 public scan | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Zero public nonce values. |
+| 19. Audit mismatch is technical loss | Mandatory | PASS | audit exact-set validator | hostile tamper matrix | CV-08 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | No audit downgrade. |
+| 20. Trusted Replay reconstruction | Mandatory | PASS | `ReplayApp` canonical reconstruction | replay tamper/reconstruction tests | CV-08 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Trusted Step-0 keys, roots, six gamelets. |
+| 21. Truthfully declare capture | Mandatory | PASS | `TransitionResult.outcome` | outcome authority tests | CV-03/CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | No legacy terminal authority. |
+| 22. Reject false capture | Forbidden | PASS | peer result validators | false-claim tests | CV-08 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Outcome/score recomputed. |
+| 23. Lock scent model at Step-0 | Mandatory | PASS | dual scent in immutable domain state | scent/profile tests | CV-09 signed Step-0 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | One canonical scent authority. |
+| 24. Signed hardware declaration | Mandatory | PASS | signed Step-0 declaration | signing/declaration tests | CV-09, 12 signatures | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Includes Git/model/dependencies. |
+| 25. LLM out of movement; RL primary | Recommended + project mandatory | PASS | recurrent role policy | recurrent failure/strategy suites | CV-06/CV-07 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Missing model aborts counted. |
+| 26. Free natural language | Mandatory | PASS | `NaturalLanguagePolicy` | language intent tests | CV-03 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Four contextual intents. |
+| 27. No numeric-location verbal protocol | Forbidden | PASS | hint validation | language guard tests | CV-08 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Strategic text remains free. |
+| 28. Gmail token bucket | Mandatory | PASS | Gatekeeper/token bucket | Gmail fake-service tests | CV-08/CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Production path invoked. |
+| 29. Gmail DOS detector | Mandatory | PASS | DOS detector/circuit breaker | Gmail abuse tests | CV-08 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Counted failure closes. |
+| 30. Send-only Gmail authorization | Mandatory | PASS | OAuth scope validator | scope tests | CV-08/CV-10 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Only `gmail.send`. |
+| 31. Minimum outside groups | Mandatory | EXTERNAL_PENDING | league runbook | N/A external | EXT-01 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Needs two real groups. |
+| 32. Automatic Gmail result report | Mandatory | EXTERNAL_PENDING | independent Gatekeeper pipelines | fake Gmail tests PASS | EXT-02 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Real IDs require OAuth. |
+| 33. Final report is signed JSON | Mandatory | PASS | signed `ResultAgreement` serializer | report schema tests | CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Includes gamelets/totals/signatures. |
+| 34. No free-text final report | Forbidden | PASS | Gatekeeper JSON validation | rejection tests | CV-08 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Canonical JSON only. |
+| 35. Identical bilateral result; both report | Mandatory | PASS | bilateral result consensus | bilateral/result tests | CV-09, two signatures/outboxes | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Byte-identical agreement. |
+| 36. Comprehensive mutual audit | Mandatory | PASS | bilateral audit summary/exact sets | audit adversarial suite | CV-08/CV-09, 12 audits | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Roots/config/profile/score/tokens bound. |
+| 37. Accurate prior-match declaration | Mandatory | PASS | league ledger + Step-0 | ledger tests | CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Stable opponent identity. |
+| 38. False match count disqualifies | Forbidden | PASS | declaration validator | false-count tests | CV-08 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Rejected before commitment. |
+| 39. Never commit secrets | Forbidden | PASS | secret hygiene | secret/privacy tests | CV-10 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Tracked scan clean. |
+| 40. Credential files ignored | Mandatory | PASS | `.gitignore` | ignore/secret tests | CV-10 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | OAuth/runtime secrets excluded. |
+| 41. Documented final Git tag | Mandatory | EXTERNAL_PENDING | release workflow | tag checks | EXT-04 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Tag/push only after final gate. |
+| 42. Accurate academic README | Mandatory | PASS | `README.md` | document validator | CV-11 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Current architecture/limits. |
+| 43. Moodle PDF unchanged layout | Mandatory | EXTERNAL_PENDING | external checklist | N/A external | EXT-03 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Moodle access required. |
+| 44. Every member submits separately | Mandatory | EXTERNAL_PENDING | external checklist | N/A external | EXT-03 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Human participation required. |
+| 45. Real unique eight-character group ID | Mandatory | EXTERNAL_PENDING | group-ID validators | validator tests | EXT-03 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Real identity not guessed. |
+| 46. Barrier-on-thief captures | Mandatory | PASS | canonical transition | exact domain vector | CV-03 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Appendix-F behavior. |
+| 47. Trapped thief is caught | Mandatory | PASS | canonical transition/outcome | trapped-thief tests | CV-03 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Escape set computed canonically. |
+| 48. Fixed scoring table | Mandatory | PASS | config + result recomputation | scoring tests | CV-03/CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | 20/5, 5/10, 2/2. |
+| 49. Two cross-linked repositories | Mandatory | PASS | companion README links | document validator | CV-11 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Both repos verified together. |
+| 50. README/config/PRD/PLAN/TODO | Mandatory | PASS | required documents | document validator | CV-11 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Present in both repos. |
+| 51. Correct lecturer report recipient | Mandatory | PASS | report config | recipient tests | CV-08 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Appendix-F value used. |
+| 52. One counted match per opponent | Forbidden beyond one | PASS | league ledger admission | repeat-opponent tests | CV-08/CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Counted repeat fails closed. |
+| 53. Git SHA in Step-0 | Mandatory | PASS | clean Git guard/declaration | provenance tests | CV-09 exact SHA | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Signed by each role. |
+| 54. Token totals in final JSON | Mandatory | PASS | token accounting/result agreement | token tests | CV-08/CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Per gamelet + series arithmetic. |
+| 55. Self-grade code quality only | Mandatory | PASS | strict verifier dimensions | verifier/document tests | final machine report | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | External/league points excluded. |
 
-## Final status totals
+Totals: **48 PASS, 0 FAIL, 7 EXTERNAL_PENDING**.
 
-`PASS=40`, `FAIL=8`, `EXTERNAL_PENDING=7`.
-
-This is an initial defect trace, not a final readiness claim or proof of external course actions.
-Real Gmail, public/outside matches, the final pushed tag, actual group identity,
-and Moodle evidence remain pending until genuine artifacts exist.
+The code-verifiable result may reach 100 only after the exact-current-SHA verifier
+passes. Full submission readiness remains false until the seven external rows are
+closed with genuine evidence.

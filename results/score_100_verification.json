@@ -1,108 +1,13 @@
 {
-  "schema_version": "2.0",
-  "timestamp_utc": "2026-08-05T03:49:32.874048+00:00",
-  "repository_shas": {
-    "cop": "b9f672381fb3c456a0a6fdb3f99a113750333548",
-    "thief": "aedbcb854a2e20579a1540732693d4c721955814"
-  },
-  "summary": {
-    "PASS": 11,
-    "FAIL": 0,
-    "EXTERNAL_PENDING": 4
-  },
-  "all_code_verifiable_pass": true,
-  "code_verifiable_score": 100,
-  "submission_ready": false,
-  "gates": [
-    {
-      "gate_id": "CV-01",
-      "description": "Clean exact repository revisions",
-      "status": "PASS",
-      "detail": "cop=b9f672381fb3c456a0a6fdb3f99a113750333548, thief=aedbcb854a2e20579a1540732693d4c721955814"
-    },
-    {
-      "gate_id": "CV-02",
-      "description": "Frozen dependencies and lock consistency",
-      "status": "PASS",
-      "detail": "cop=sync+lock, thief=sync+lock"
-    },
-    {
-      "gate_id": "CV-03",
-      "description": "Full suites, zero skips, branch coverage >=85%",
-      "status": "PASS",
-      "detail": "cop=1467 tests, 0 skipped, branches 1615/1882=85.8130%; thief=1340 tests, 0 skipped, branches 1603/1882=85.1753%"
-    },
-    {
-      "gate_id": "CV-04",
-      "description": "Ruff lint and format",
-      "status": "PASS",
-      "detail": "both repositories: zero lint violations and formatting clean"
-    },
-    {
-      "gate_id": "CV-05",
-      "description": "Clean subprocess CLI startup",
-      "status": "PASS",
-      "detail": "cop and thief package CLIs start cleanly and expose counted serving"
-    },
-    {
-      "gate_id": "CV-06",
-      "description": "Champion checksum, schema, and inference load",
-      "status": "PASS",
-      "detail": "cop=1c6f85bed3ba754d1daa38aa394b455d605fe1768436532581cc118b5be96949; thief=477c56ad7348dfc6dd9130e3ed371be8afbc912ef34635ee0fb56ef2427d6151"
-    },
-    {
-      "gate_id": "CV-07",
-      "description": "Held-out six-gamelet tournament promotion",
-      "status": "PASS",
-      "detail": "cop=600 series/3600 games, win=89.00%, worst=79.03%; thief=150 series/900 games, win=76.11%, worst=34.44%"
-    },
-    {
-      "gate_id": "CV-08",
-      "description": "Adaptive/tamper/replay/Watchdog/Gmail/token hostile suites",
-      "status": "PASS",
-      "detail": "cop=130 passed in 7.77s; thief=130 passed in 7.87s"
-    },
-    {
-      "gate_id": "CV-09",
-      "description": "Real isolated two-process six-gamelet production path",
-      "status": "PASS",
-      "detail": "series=series_20260805_064801_ea4d7c38, gamelets=6, agreement=d731f5be9ee9b33d20f01787772df864bd77102bf0d08561ff29784e89233ce3, ledger_consensus=99b5f6d55f54266af3a9c9abd0df6d3b4a36b20a2ac75a5c57fdce6ba55a7c93"
-    },
-    {
-      "gate_id": "CV-10",
-      "description": "Tracked secret scan",
-      "status": "PASS",
-      "detail": "tracked-file credential pattern scan clean in both repositories"
-    },
-    {
-      "gate_id": "CV-11",
-      "description": "Documentation claim and 55-rule validation",
-      "status": "PASS",
-      "detail": "required artifacts present, current README claims, exact 55-rule matrices, valid manifests"
-    },
-    {
-      "gate_id": "EXT-01",
-      "description": "Public tunnel and outside-opponent matches",
-      "status": "EXTERNAL_PENDING",
-      "detail": "Requires genuine public/outside-group evidence."
-    },
-    {
-      "gate_id": "EXT-02",
-      "description": "Independent real Gmail delivery",
-      "status": "EXTERNAL_PENDING",
-      "detail": "Requires real OAuth delivery and provider message IDs."
-    },
-    {
-      "gate_id": "EXT-03",
-      "description": "Real group identity and Moodle submissions",
-      "status": "EXTERNAL_PENDING",
-      "detail": "Requires actual identity, official PDF, screenshots, and human submissions."
-    },
-    {
-      "gate_id": "EXT-04",
-      "description": "Final documented tag pushed to remotes",
-      "status": "EXTERNAL_PENDING",
-      "detail": "Requires external repository push evidence."
-    }
-  ]
+  "schema_version": "3.0",
+  "binding_compliance": "PASS",
+  "production_correctness_and_reliability": "PASS",
+  "competitive_strength": "PASS",
+  "adaptive_mcp_interoperability": "PASS",
+  "submission_and_professional_quality": "PASS",
+  "external_submission_evidence": "EXTERNAL_PENDING",
+  "exact_current_sha_verifier": "PENDING",
+  "code_ready_for_100": false,
+  "fully_submission_ready": false,
+  "note": "Candidate dimensions pass; numeric 100 is withheld until the clean exact-current-SHA verifier completes."
 }
