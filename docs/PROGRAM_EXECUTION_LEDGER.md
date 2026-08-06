@@ -172,3 +172,15 @@ thief 1,430 tests and 2,151/2,526 branches (85.1544%); zero skips; exact
 real series `series_20260806_070500_fd652ee5`; untouched reference-v3 113/113
 with bidirectional profile `4cc7609e…07decd`. Public/Gmail/identity/Moodle
 evidence remains `EXTERNAL_PENDING`.
+
+## 2026-08-06 M6 independent clean-clone correction
+
+The first no-hardlink clone of the report commits correctly failed CV-03: the
+shared `game_config.toml` was ignored, and a legacy CrewAI test selected locally
+ignored PPO checkpoints instead of the deployed recurrent manifest. The release
+candidate now tracks the identical non-secret shared config in both repositories
+and tests each repository's checksum-pinned recurrent role policy through
+`LocalObservation`, `BeliefState`, and a legal-action mask. Pre-commit full suites
+pass with zero skips: cop 1,553 and 2,166/2,526 branches (85.7482%); thief 1,428
+and 2,152/2,526 branches (85.1940%). A new independent clean-clone verifier run
+is mandatory before tag creation; its external JSON is the exact release proof.

@@ -12,10 +12,10 @@
     "pass": 13,
     "fail": 0,
     "external_pending": 4,
-    "cop_tests": 1555,
-    "thief_tests": 1430,
+    "cop_tests": 1553,
+    "thief_tests": 1428,
     "cop_branches": "2166/2526=85.7482%",
-    "thief_branches": "2151/2526=85.1544%",
+    "thief_branches": "2152/2526=85.1940%",
     "real_series": "series_20260806_070500_fd652ee5"
   },
   "canonical_config_sha256": "45ce5eeb0daff048c31c1d5012b3db55b4b101f91146d4a886474e024ea8db90",

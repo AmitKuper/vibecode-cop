@@ -5,13 +5,11 @@ State: **CODE-VERIFIABLE PASS (100/100) — EXTERNAL ACTIONS PENDING**
 
 ## Outcome
 
-The exact-current-SHA executable verifier reports all 13 code-verifiable gates PASS,
-zero FAIL, and code-verifiable score 100 for cop
-`fb9982e000488a96ea09879544b288bb661a0b98` and thief
-`0c519714d709a52cb4ddbdc96d5e87b248c98687`. The final documentation/tag
-commits are subjected to the same verifier from fresh clones before release; the
-machine-readable verifier output is stored outside the repositories so it cannot
-dirty the revision it attests.
+At the tagged release revision, the exact-current-SHA executable verifier must
+report all 13 code-verifiable gates PASS, zero FAIL, and code-verifiable score
+100. The release gate runs from fresh independent clones; its machine-readable
+output is stored outside the repositories so it cannot dirty the revision it
+attests. Earlier exact source evidence is retained in the release manifest.
 
 This is not a claim that the human/external submission is complete. Public
 outside-team play, real Gmail message IDs, real group identity, final GUI/Replay
@@ -22,9 +20,12 @@ screenshots, official Moodle artifacts, and individual submissions remain
 
 - Frozen sync and lock checks pass in both repositories, including isolated Torch
   and NumPy imports.
-- Full suites pass with zero skips: cop 1,555 tests and thief 1,430 tests.
+- Full suites pass with zero skips: cop 1,553 tests and thief 1,428 tests.
 - Actual branch coverage is cop 2,166/2,526 = 85.7482% and thief
-  2,151/2,526 = 85.1544%; no broad mandatory-subsystem omission is accepted.
+  2,152/2,526 = 85.1940%; no broad mandatory-subsystem omission is accepted.
+- The required shared `game_config.toml` is tracked in both repositories, and
+  model integration tests load the manifest-selected recurrent artifact without
+  relying on ignored legacy checkpoints or hidden opponent coordinates.
 - Ruff lint and format, subprocess CLI startup, model schema/checksum/inference,
   hostile adaptive/audit/Replay/Watchdog/Gmail/token suites, secret scan, and
   documentation claims all pass.

@@ -1,7 +1,7 @@
 """Integration test: crewAI crew + RL model running a full P2P game.
 
 Verifies:
-- RL policy loads for both cop and thief
+- the repository's manifest-selected recurrent RL policy loads and masks actions
 - crewAI Crew is constructed without error (LLM mock avoids API calls)
 - A full commit-reveal game runs to completion
 - Final audit passes
@@ -95,68 +95,41 @@ def _make_mcp_side_effect(game_id: str, opp_role: str):
 
 
 class TestRLModelLoad:
-    def test_cop_rl_policy_loads(self):
-        # Clear cache to force fresh load
-        import agent.orchestrator_crew_helpers as h
-        from agent.orchestrator_crew_helpers import get_rl_policy
+    @staticmethod
+    def _load_deployed_policy():
+        from agent.rl.model_schema import load_manifest
+        from agent.rl.recurrent_policy import load_recurrent_policy
 
-        h._rl_policies.pop("cop", None)
-        policy = get_rl_policy("cop")
-        assert policy is not None, "cop RL policy must load from models/"
-        logger.info(f"cop RL policy: algo={policy.algo}, barrier_quota={policy.barrier_quota}")
+        manifest_path = Path("models/MANIFEST.json")
+        entries = load_manifest(str(manifest_path))
+        assert len(entries) == 1, "each independent role repository deploys exactly one policy"
+        role = next(iter(entries))
+        return role, load_recurrent_policy(manifest_path, role)
 
-    def test_thief_rl_policy_loads(self):
-        import agent.orchestrator_crew_helpers as h
-        from agent.orchestrator_crew_helpers import get_rl_policy
+    def test_deployed_recurrent_policy_loads(self):
+        role, policy = self._load_deployed_policy()
+        assert policy.role == role
+        assert policy.network.training is False
+        logger.info("deployed recurrent policy loaded for %s", role)
 
-        h._rl_policies.pop("thief", None)
-        try:
-            policy = get_rl_policy("thief")
-        except (FileNotFoundError, ValueError) as exc:
-            pytest.skip(f"No compatible 4-channel thief model available: {exc}")
-        assert policy is not None, "thief RL policy must load from models/"
-        logger.info(f"thief RL policy: algo={policy.algo}")
+    def test_deployed_recurrent_policy_selects_only_a_legal_action(self):
+        from agent.observation import BeliefState, LocalObservation
 
-    def test_cop_rl_selects_valid_move(self):
-        from agent.orchestrator_crew_helpers import build_observation, get_rl_policy
-
-        policy = get_rl_policy("cop")
-        board_state = {
-            "cop_position": [0, 0],
-            "thief_position": [3, 3],
-            "turn": 1,
-            "scent_field": [],
-            "grid_state": {},
-        }
-        build_observation("cop", board_state)
-        move = policy.select_move_from_dict(
-            {"cop_position": [0, 0], "thief_position": [3, 3], "turn": 1}
+        role, policy = self._load_deployed_policy()
+        observation = LocalObservation(
+            own_position=(0, 0),
+            own_barriers_remaining=14 if role == "cop" else 0,
+            known_barriers=[],
+            opponent_scent=[[0.0] * 7 for _ in range(7)],
+            last_hint="",
+            step=1,
+            gamelet=1,
+            grid_size=7,
         )
-        assert move in (
-            "NORTH",
-            "SOUTH",
-            "EAST",
-            "WEST",
-            "STAY",
-            "PLACE_N",
-            "PLACE_S",
-            "PLACE_E",
-            "PLACE_W",
-        )
-        logger.info(f"RL cop move: {move}")
-
-    def test_thief_rl_selects_valid_move(self):
-        from agent.orchestrator_crew_helpers import get_rl_policy
-
-        try:
-            policy = get_rl_policy("thief")
-        except (FileNotFoundError, ValueError) as exc:
-            pytest.skip(f"No compatible 4-channel thief model available: {exc}")
-        move = policy.select_move_from_dict(
-            {"cop_position": [0, 0], "thief_position": [3, 3], "turn": 1}
-        )
-        assert move in ("NORTH", "SOUTH", "EAST", "WEST", "STAY")
-        logger.info(f"RL thief move: {move}")
+        legal_actions = ["E", "S", "STAY"]
+        move = policy.select_action(observation, BeliefState.uniform(7, step=1), legal_actions)
+        assert move in legal_actions
+        logger.info("deployed recurrent %s move: %s", role, move)
 
 
 # ---------------------------------------------------------------------------

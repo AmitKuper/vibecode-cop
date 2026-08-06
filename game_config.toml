@@ -1,0 +1,44 @@
+[board_and_agents]
+grid_size = 7
+num_agents = 2
+cop_start = [0, 0]
+thief_start = [3, 3]
+axis_origin_corner = "top-left"
+axis_start_index = 0
+
+[movement_and_barriers]
+move_set = ["N", "S", "E", "W", "STAY"]
+diagonal_moves = false
+barrier_quota = 14
+max_turns = 35
+survival_threshold = 35
+
+[scoring]
+capture_cop = 20
+capture_thief = 5
+survival_cop = 5
+survival_thief = 10
+tie_score = 2
+technical_loss = 0
+
+[pheromones]
+scent_center_intensity = 0.9
+scent_decay_rate = 0.10
+scent_field_size = 5
+
+[network_and_league]
+group_name = "vibecode"
+response_timeout_sec = 30
+watchdog_timeout_sec = 60
+num_gamelets = 6
+diversity_reward = 10
+min_games_to_pass = 2
+max_games_per_team = 10
+token_budget_per_series = 200000
+
+[rate_limiter_gatekeeper]
+requests_per_minute = 30
+concurrent_requests = 2
+retry_backoff_sec = 5
+max_retries = 3
+queue_depth = 100

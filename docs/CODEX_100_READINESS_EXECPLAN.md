@@ -359,7 +359,7 @@ and release-tag push remain honestly `EXTERNAL_PENDING`.
 | Published reference-v3 | Untouched `9cecfa8b4befa070dfee0f3bc23cfe7ff7216e8e`; 113/113 vectors; bidirectional four-tool profile `4cc7609e…07decd`; zero per-turn LLM | PASS |
 | Competitive release | Cop `b9e74b7a…c21268`, 82.94%/57.78% worst; thief `cdf5bc67…bd271`, 78.72%/55.00% worst; 300 exact series each | PASS |
 | Strategy analysis | Exact ablations, sensitivity, learning curves, language invariant, barrier/risk decisions, population comparison | PASS |
-| Current complete suites | Cop 1,555; thief 1,430; zero skips; branches 85.7482%/85.1544%; Ruff/format clean | PASS |
+| Current complete suites | Cop 1,553; thief 1,428; zero skips; branches 85.7482%/85.1940%; Ruff/format clean; shared config and manifest-selected model tests are clean-clone reproducible | PASS |
 | Strength/evidence commits | Cop `dedaaf147989d1b63f4d4536330bf70335df4630`; thief `55d45fcd4010884b08c64380fe03c6cd39062266` | PASS |
 | M5 exact-current-SHA verifier | Cop `fb9982e000488a96ea09879544b288bb661a0b98`; thief `0c519714d709a52cb4ddbdc96d5e87b248c98687`; 13 PASS, 0 FAIL, code score 100 | PASS |
 | M6 final reports/tag/push | Reports regenerated from M5; final clean-clone verification and audited remote tag remain | IN PROGRESS |

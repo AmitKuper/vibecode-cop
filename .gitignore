@@ -28,7 +28,6 @@ journal_*.json
 deadlines_*.json
 recovery_*.json
 watchdog_evidence_*.json
-game_config.toml
 *.log
 *.log.err
 *.log.out
