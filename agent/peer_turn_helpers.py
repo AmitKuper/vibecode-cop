@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import logging
+import time
+from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
@@ -20,6 +23,63 @@ _MOVE_ALIASES = {"N": "NORTH", "S": "SOUTH", "E": "EAST", "W": "WEST", "STAY": "
 
 def _now() -> str:
     return datetime.now(UTC).isoformat()
+
+
+async def _bounded_exchange(
+    runtime: PeerRuntime,
+    phase: str,
+    step: int,
+    invoke: Callable[[], Awaitable[dict]],
+) -> dict:
+    """Execute one idempotent peer request under its durable deadline record."""
+    orchestrator = getattr(runtime, "orchestrator", None)
+    tracker = getattr(orchestrator, "deadline_tracker", None)
+    if tracker is None:
+        return await invoke()
+    try:
+        record = tracker.begin(
+            idempotency_key=f"{runtime.game_id}:{step}:{phase}",
+            game_uid=runtime.game_id,
+            gamelet=max(1, runtime._gamelet_number(runtime.game_id)),
+            step=step,
+            phase=phase,
+        )
+    except Exception as exc:
+        if runtime.counted_mode:
+            runtime.declare_technical_loss(
+                f"DeadlineTracker persistence failed before {phase} step {step}",
+                subsystem="deadline_tracker",
+                step=step,
+            )
+        raise RuntimeError("deadline record could not be persisted") from exc
+
+    while True:
+        try:
+            remaining = max(0.001, record.expiry_monotonic - time.monotonic())
+            response = await asyncio.wait_for(invoke(), timeout=remaining)
+            digest = hashlib.sha256(canonical_json(response).encode("utf-8")).hexdigest()
+            tracker.complete(record.request_id, response_digest=digest)
+            return response
+        except Exception as exc:
+            try:
+                retry = tracker.fail(record.request_id, error=type(exc).__name__)
+            except Exception as persistence_exc:
+                if runtime.counted_mode:
+                    runtime.declare_technical_loss(
+                        f"DeadlineTracker persistence failed after {phase} step {step}",
+                        subsystem="deadline_tracker",
+                        step=step,
+                    )
+                raise RuntimeError("deadline failure could not be persisted") from persistence_exc
+            if not retry:
+                if runtime.counted_mode:
+                    runtime.declare_technical_loss(
+                        f"peer {phase} deadline exhausted at step {step}",
+                        subsystem="peer_deadline",
+                        step=step,
+                    )
+                raise
+            await asyncio.sleep(min(record.next_retry_delay(), 0.25))
 
 
 async def _call_adapted_phase(
@@ -45,7 +105,7 @@ async def _call_adapted_phase(
     response = adapter.adapt_response(
         phase,
         raw,
-        expected_protected={"game_id": runtime.game_id},
+        expected_protected={"game_id": runtime.game_id, "phase": phase},
     )
     return {**raw, **response.extracted}
 
@@ -65,7 +125,12 @@ async def send_commit(runtime: PeerRuntime, step: int, h_commit: str) -> dict | 
             h_commit=h_commit,
         ).to_dict()
         try:
-            return await _call_adapted_phase(runtime, "commit", msg_dict, {"commitment": h_commit})
+            return await _bounded_exchange(
+                runtime,
+                "commit",
+                step,
+                lambda: _call_adapted_phase(runtime, "commit", msg_dict, {"commitment": h_commit}),
+            )
         except Exception as exc:
             if runtime.counted_mode:
                 raise RuntimeError(
@@ -89,7 +154,9 @@ async def send_commit(runtime: PeerRuntime, step: int, h_commit: str) -> dict | 
         h_commit=h_commit,
     )
     try:
-        return await runtime.opponent_client.action(runtime.game_id, msg)
+        return await _bounded_exchange(
+            runtime, "commit", step, lambda: runtime.opponent_client.action(runtime.game_id, msg)
+        )
     except Exception as exc:
         logger.error(f"[PeerTurn] COMMIT send failed at step {step}: {exc}")
         return None
@@ -113,16 +180,21 @@ async def send_reveal(runtime: PeerRuntime, step: int, reveal_payload: dict) -> 
             state_hash=reveal_payload["state_hash"],
         ).to_dict()
         try:
-            return await _call_adapted_phase(
+            return await _bounded_exchange(
                 runtime,
                 "reveal",
-                msg_dict,
-                {
-                    "move": reveal_payload["move"],
-                    "hint": reveal_payload["hint"],
-                    "intent": reveal_payload["intent"],
-                    "state_hash": reveal_payload["state_hash"],
-                },
+                step,
+                lambda: _call_adapted_phase(
+                    runtime,
+                    "reveal",
+                    msg_dict,
+                    {
+                        "move": reveal_payload["move"],
+                        "hint": reveal_payload["hint"],
+                        "intent": reveal_payload["intent"],
+                        "state_hash": reveal_payload["state_hash"],
+                    },
+                ),
             )
         except Exception as exc:
             if runtime.counted_mode:
@@ -150,7 +222,9 @@ async def send_reveal(runtime: PeerRuntime, step: int, reveal_payload: dict) -> 
         state_hash=reveal_payload["state_hash"],
     )
     try:
-        return await runtime.opponent_client.action(runtime.game_id, msg)
+        return await _bounded_exchange(
+            runtime, "reveal", step, lambda: runtime.opponent_client.action(runtime.game_id, msg)
+        )
     except Exception as exc:
         logger.error(f"[PeerTurn] REVEAL send failed at step {step}: {exc}")
         return None

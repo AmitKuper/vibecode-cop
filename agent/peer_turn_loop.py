@@ -349,8 +349,14 @@ async def run_peer_turn(
                 protocol_state_after=str(build_board_state(runtime)),
                 **transition_evidence,
             )
+            runtime.persist_recovery_state(step)
         except Exception as _journal_err:
             if getattr(runtime, "counted_mode", False):
+                runtime.declare_technical_loss(
+                    f"StepJournal/recovery persistence failed at step {step}",
+                    subsystem="step_evidence",
+                    step=step,
+                )
                 raise RuntimeError(
                     f"StepJournal write failed in counted mode at step {step}"
                 ) from _journal_err
@@ -387,6 +393,10 @@ async def run_peer_turn_loop(
             except TimeoutError:
                 abort_reason = f"Watchdog timeout at step {step}"
                 logger.error(f"[PeerTurnLoop] {abort_reason}")
+                if runtime.counted_mode:
+                    runtime.declare_technical_loss(
+                        abort_reason, subsystem="turn_deadline", step=step
+                    )
                 break
             final_step = int(runtime.board.turn)
             # 3B: emit heartbeat after each completed step
@@ -396,13 +406,10 @@ async def run_peer_turn_loop(
                 except Exception as _hb_err:
                     if runtime.counted_mode:
                         abort_reason = f"counted heartbeat persistence failed: {_hb_err}"
-                        gamelet = gamelet_from_game_id(runtime.game_id)
-                        coord = get_coordinator()
-                        coord.on_technical_loss(
-                            runtime.game_id,
-                            gamelet,
-                            runtime.role,
-                            reason=abort_reason,
+                        runtime.declare_technical_loss(
+                            abort_reason,
+                            subsystem="watchdog_heartbeat",
+                            step=step,
                         )
                         break
                     logger.warning("[PeerTurnLoop] Heartbeat emit failed: %s", _hb_err)

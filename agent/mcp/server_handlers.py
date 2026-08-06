@@ -81,7 +81,7 @@ def handle_start_game(
         game_log = GameLog(game_id, games_dir)
         game_logs[game_id] = game_log
         actor = msg.roles.get(role, "unknown")
-        base = {"game_id": game_id}
+        base = {"game_id": game_id, "phase": "start_game"}
 
         # Guard: only accept start_game when SM is in IDLE or READY (idempotent)
         current_state = coord.get_state(game_id, gamelet, role)
@@ -158,11 +158,11 @@ def handle_start_game(
             coord.on_handshake_complete(game_id, gamelet, role)
             game_log.append_message_received("start_game", role, "handshake", True)
             game_log.append("start_game", role, "handshake", "ok", result)
-            return result
+            return {**result, **base}
 
         coord.on_handshake_complete(game_id, gamelet, role)
         game_log.append_message_received("start_game", role, "handshake", True)
-        return {"ok": True, "game_id": game_id, "role": role}
+        return {"ok": True, "game_id": game_id, "role": role, "phase": "start_game"}
 
     except Exception as e:
         logger.error(f"Error in start_game: {e}", exc_info=True)
@@ -347,6 +347,19 @@ def handle_action(
                 coord.on_done(game_id, gamelet, role)
             return result
 
+        elif msg.phase == "audit_summary":
+            current_state = coord.get_state(game_id, gamelet, role)
+            if current_state not in (ProtocolState.AUDITING, ProtocolState.RESULT_AGREEMENT):
+                return _err(
+                    game_log,
+                    "action:audit_summary",
+                    msg.role,
+                    "audit_summary",
+                    f"Protocol violation: audit_summary in state {current_state}",
+                    base,
+                )
+            return _invoke_callback(handler_callbacks, game_id, msg)
+
         elif msg.phase == "game_end":
             # Fix 7: Coordinator guard for game_end — only accept in active/audit states
             current_state = coord.get_state(game_id, gamelet, role)
@@ -409,7 +422,8 @@ def _invoke_callback(handler_callbacks: dict, game_id: str, msg: ActionMessage) 
         handler = handler_callbacks["on_action"]
         try:
             result = handler(game_id, msg)
-            return result if isinstance(result, dict) else {"ok": True}
+            payload = result if isinstance(result, dict) else {"ok": True}
+            return {**payload, "game_id": game_id, "phase": msg.phase}
         except Exception as e:
             logger.error(f"on_action callback raised: {e}", exc_info=True)
             return {"ok": False, "error": str(e)}

@@ -1,12 +1,13 @@
 """Durable per-request deadline records with retry scheduling."""
 
 import json
-import os
 import threading
 import time
 import uuid
 from dataclasses import asdict, dataclass
 from pathlib import Path
+
+from agent.reliability.durable_io import atomic_write_json
 
 
 @dataclass
@@ -65,11 +66,7 @@ class DeadlineTracker:
             self._records[rec.request_id] = rec
 
     def _save(self) -> None:
-        self._path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = str(self._path) + ".tmp"
-        with open(tmp, "w") as f:
-            json.dump({"records": [asdict(r) for r in self._records.values()]}, f, indent=2)
-        os.replace(tmp, str(self._path))
+        atomic_write_json(self._path, {"records": [asdict(r) for r in self._records.values()]})
 
     def begin(
         self, idempotency_key: str, game_uid: str, gamelet: int, step: int, phase: str

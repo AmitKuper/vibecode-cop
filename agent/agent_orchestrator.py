@@ -494,6 +494,7 @@ class AgentOrchestrator:
                 session_id=self.game_uid,
                 step=step,
                 state_path=f"{self.work_dir}/recovery_{self.game_uid}.json",
+                technical_loss_path=f"{self.work_dir}/technical_loss_watchdog.json",
             )
 
     def start_watchdog(self) -> None:

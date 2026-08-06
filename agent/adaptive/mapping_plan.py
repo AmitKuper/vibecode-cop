@@ -40,6 +40,12 @@ class PhaseMapping:
     field_mappings: list[FieldMapping] = field(default_factory=list)
     response_extraction: dict[str, str] = field(default_factory=dict)
     notes: str = ""
+    required_response_fields: list[str] = field(default_factory=lambda: ["ok", "game_id", "phase"])
+    expected_errors: list[str] = field(
+        default_factory=lambda: ["invalid_signature", "out_of_order", "duplicate_conflict"]
+    )
+    idempotent: bool = True
+    multiphase_envelope: bool = False
 
 
 @dataclass
@@ -61,10 +67,20 @@ class ProtocolMappingPlan:
     confidence: float = 1.0
     agent_model: str = "deterministic"
     agent_version: str = "1.0"
+    conformance_tool: str = "protocol_conformance"
 
     # Canonical phases that must be mappable for gameplay
     REQUIRED_PHASES = frozenset(
-        ["start_game", "commit", "reveal", "final_audit", "game_end", "result_agreement"]
+        [
+            "start_game",
+            "commit",
+            "reveal",
+            "final_audit",
+            "audit_summary",
+            "game_end",
+            "result_agreement",
+            "abort",
+        ]
     )
 
     def is_compatible(self) -> bool:
@@ -105,6 +121,10 @@ class ProtocolMappingPlan:
                     ],
                     "response_extraction": pm.response_extraction,
                     "notes": pm.notes,
+                    "required_response_fields": pm.required_response_fields,
+                    "expected_errors": pm.expected_errors,
+                    "idempotent": pm.idempotent,
+                    "multiphase_envelope": pm.multiphase_envelope,
                 }
                 for pm in self.phase_mappings
             ],
@@ -115,6 +135,7 @@ class ProtocolMappingPlan:
             "confidence": self.confidence,
             "agent_model": self.agent_model,
             "agent_version": self.agent_version,
+            "conformance_tool": self.conformance_tool,
         }
 
     @classmethod
@@ -139,6 +160,15 @@ class ProtocolMappingPlan:
                     field_mappings=field_mappings,
                     response_extraction=pm_d.get("response_extraction", {}),
                     notes=pm_d.get("notes", ""),
+                    required_response_fields=pm_d.get(
+                        "required_response_fields", ["ok", "game_id", "phase"]
+                    ),
+                    expected_errors=pm_d.get(
+                        "expected_errors",
+                        ["invalid_signature", "out_of_order", "duplicate_conflict"],
+                    ),
+                    idempotent=pm_d.get("idempotent", True),
+                    multiphase_envelope=pm_d.get("multiphase_envelope", False),
                 )
             )
         return cls(
@@ -153,6 +183,7 @@ class ProtocolMappingPlan:
             confidence=d.get("confidence", 1.0),
             agent_model=d.get("agent_model", "deterministic"),
             agent_version=d.get("agent_version", "1.0"),
+            conformance_tool=d.get("conformance_tool", "protocol_conformance"),
         )
 
     @classmethod
@@ -166,21 +197,24 @@ class ProtocolMappingPlan:
             FieldMapping("role", "role"),
             FieldMapping("phase", "phase"),
             FieldMapping("config_sha256", "config_sha256"),
+            FieldMapping("signature", "signature"),
             FieldMapping("timestamp", "timestamp", required=False),
         ]
         _phase_extra: dict[str, list[FieldMapping]] = {
-            "start_game": [FieldMapping("gamelet", "gamelet", required=False)],
+            "start_game": [FieldMapping("gamelet", "gamelet")],
             "commit": [
                 FieldMapping("commitment", "commitment"),
                 FieldMapping("hint", "hint", required=False),
             ],
             "reveal": [FieldMapping("move", "move")],
             "final_audit": [FieldMapping("nonces", "nonces")],
+            "audit_summary": [FieldMapping("signed_audit_summary", "signed_audit_summary")],
             "game_end": [FieldMapping("reason", "reason")],
             "result_agreement": [
                 FieldMapping("result_hash", "result_hash", required=False),
-                FieldMapping("signed_agreement", "signed_agreement", required=False),
+                FieldMapping("signed_agreement", "signed_agreement"),
             ],
+            "abort": [FieldMapping("reason", "reason")],
         }
         return cls(
             remote_tool_name=tool_name,
@@ -191,7 +225,8 @@ class ProtocolMappingPlan:
                     phase=phase,
                     remote_tool=tool_name,
                     field_mappings=_base + _phase_extra.get(phase, []),
-                    response_extraction={"ok": "ok", "phase": "phase"},
+                    response_extraction={"ok": "ok", "game_id": "game_id", "phase": "phase"},
+                    multiphase_envelope=True,
                 )
                 for phase in sorted(cls.REQUIRED_PHASES)
             ],
@@ -227,7 +262,8 @@ class ProtocolMappingPlan:
                         FieldMapping("message_json", "message_json"),
                         FieldMapping("signature", "signature"),
                     ],
-                    response_extraction={"ok": "ok", "phase": "phase"},
+                    response_extraction={"ok": "ok", "game_id": "game_id", "phase": "phase"},
+                    multiphase_envelope=True,
                 ),
                 *[
                     PhaseMapping(
@@ -237,8 +273,10 @@ class ProtocolMappingPlan:
                         response_extraction={
                             "ok": "ok",
                             "phase": "phase",
+                            "game_id": "game_id",
                             "winner": "winner",
                         },
+                        multiphase_envelope=True,
                     )
                     for phase in (
                         "commit",
@@ -246,6 +284,8 @@ class ProtocolMappingPlan:
                         "final_audit",
                         "game_end",
                         "result_agreement",
+                        "audit_summary",
+                        "abort",
                     )
                 ],
             ],
@@ -277,7 +317,8 @@ class ProtocolMappingPlan:
                     phase=phase,
                     remote_tool=tool_name,
                     field_mappings=list(fields),
-                    response_extraction={"ok": "ok", "phase": "phase"},
+                    response_extraction={"ok": "ok", "game_id": "game_id", "phase": "phase"},
+                    multiphase_envelope=True,
                 )
                 for phase in sorted(cls.REQUIRED_PHASES)
             ],

@@ -46,10 +46,28 @@ def _tool(name: str = "action", *, commitment: bool = True) -> ToolSchema:
         "reason": {"type": "string"},
         "result_hash": {"type": "string"},
         "signed_agreement": {"type": "object"},
+        "signed_audit_summary": {"type": "object"},
+        "signature": {"type": "string"},
     }
     if commitment:
         fields["commitment"] = {"type": "string"}
     return ToolSchema(name, "safe action", {"type": "object", "properties": fields})
+
+
+def _conformance_tool() -> ToolSchema:
+    return ToolSchema(
+        "protocol_conformance",
+        "side-effect-free conformance",
+        {
+            "type": "object",
+            "properties": {
+                "phase": {"type": "string"},
+                "game_id": {"type": "string"},
+                "request_digest": {"type": "string"},
+                "idempotency_key": {"type": "string"},
+            },
+        },
+    )
 
 
 @pytest.mark.parametrize(
@@ -171,9 +189,12 @@ def test_protocol_agent_native_signed_heuristic_and_llm_paths() -> None:
         {"properties": {"game_id": {}, "message_json": {}, "signature": {}}},
     )
     start = ToolSchema("start_game", "safe", {"properties": {"message_json": {}, "signature": {}}})
-    assert agent.create_plan(_intro(action, start)).agent_model == "deterministic-signed-envelope"
+    assert (
+        agent.create_plan(_intro(action, start, _conformance_tool())).agent_model
+        == "deterministic-signed-envelope"
+    )
 
-    compatible = agent.create_plan(_intro(_tool("remote_action")))
+    compatible = agent.create_plan(_intro(_tool("remote_action"), _conformance_tool()))
     assert compatible.verdict == CompatibilityVerdict.COMPATIBLE
     incompatible = agent.create_plan(_intro(_tool("commit_now", commitment=False)))
     assert incompatible.verdict == CompatibilityVerdict.INCOMPATIBLE
@@ -219,7 +240,7 @@ def test_protocol_agent_helpers_and_verifier_warnings() -> None:
     assert agent._closest_match("missing", {}) is None
     assert "nonces" in agent._canonical_fields_for_phase("final_audit")
     assert "reason" in agent._canonical_fields_for_phase("game_end")
-    assert len(agent._canonical_fields_for_phase("unknown")) == 6
+    assert len(agent._canonical_fields_for_phase("unknown")) == 7
     assert agent._build_plan_from_llm({}, _intro()).agent_model == "native-identity"
 
     plan = ProtocolMappingPlan.native_plan()

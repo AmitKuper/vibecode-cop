@@ -40,11 +40,15 @@ REQUIRED PHASES:
                 nonce (only at final_audit), config_sha256, timestamp
   final_audit — bilateral audit; fields: game_id, step, role, nonces (dict step→nonce),
                 config_sha256, timestamp
+  audit_summary — signed comprehensive audit summary; fields: game_id, role,
+                signed_audit_summary
   game_end — independently checked gamelet outcome; fields: game_id, step, role, reason
   result_agreement — signed result; fields: game_id, role, result_hash, signed_agreement
+  abort — controlled technical-loss/abort; fields: game_id, step, role, reason
 
 PROTECTED FIELDS (must not be mutated by mapping):
-  game_id, gamelet, step, role, commitment, signature, config_sha256, nonces
+  game_id, gamelet, step, role, commitment, signature, config_sha256, nonces,
+  signed_audit_summary, signed_agreement
 
 BINDING RULES:
   - nonce is secret until final_audit
@@ -126,27 +130,51 @@ class ProtocolUnderstandingAgent:
             envelope = {"game_id", "message_json", "signature"}.issubset(action_props)
             signed_start = start is not None and {"message_json", "signature"}.issubset(start_props)
             if envelope and signed_start:
-                return ProtocolMappingPlan.signed_envelope_plan(
+                plan = ProtocolMappingPlan.signed_envelope_plan(
                     schema_digest=intro.schema_digest,
                     server_name=intro.server_name,
                     action_tool=action.name,
                     start_tool=start.name,
                 )
+                conformance = next(
+                    (
+                        tool.name
+                        for tool in intro.tools
+                        if "conformance" in f"{tool.name} {tool.description}".lower()
+                    ),
+                    "",
+                )
+                plan.conformance_tool = conformance
+                return plan
         return None
 
     def _map_canonical_fields(self, phase: str, props: dict) -> list[FieldMapping]:
         """Map canonical fields to remote props by name matching."""
-        canonical = ["game_id", "step", "role", "phase", "config_sha256", "timestamp"]
-        if phase == "commit":
+        canonical = [
+            "game_id",
+            "step",
+            "role",
+            "phase",
+            "config_sha256",
+            "timestamp",
+            "signature",
+        ]
+        if phase == "start_game":
+            canonical += ["gamelet"]
+        elif phase == "commit":
             canonical += ["commitment", "hint"]
         elif phase == "reveal":
             canonical += ["move"]
         elif phase == "final_audit":
             canonical += ["nonces"]
+        elif phase == "audit_summary":
+            canonical += ["signed_audit_summary"]
         elif phase == "game_end":
             canonical += ["reason"]
         elif phase == "result_agreement":
             canonical += ["result_hash", "signed_agreement"]
+        elif phase == "abort":
+            canonical += ["reason"]
 
         fms = []
         for cf in canonical:
@@ -156,24 +184,43 @@ class ProtocolUnderstandingAgent:
                     FieldMapping(
                         canonical_field=cf,
                         remote_field=remote,
-                        required=(cf in {"game_id", "step", "role", "commitment", "move"}),
+                        required=cf not in {"timestamp", "hint", "result_hash"},
                     )
                 )
         return fms
 
     def _llm_plan(self, intro: IntrospectionResult) -> ProtocolMappingPlan:
         """Call LLM once to produce a structured mapping plan."""
-        tools_desc = "\n".join(
-            f"  Tool: {t.name}\n  Description: {t.description[:200]}\n"
-            f"  Schema: {json.dumps(t.input_schema, indent=2)[:500]}"
-            for t in intro.tools
+        tools_desc = json.dumps(
+            [
+                {
+                    "name": tool.name,
+                    "description": tool.description,
+                    "input_schema": tool.input_schema,
+                    "output_schema": tool.output_schema,
+                }
+                for tool in intro.tools
+            ],
+            indent=2,
+            sort_keys=True,
+        )
+        discovery_docs = json.dumps(
+            {
+                "capabilities": intro.raw_capabilities,
+                "resources": intro.resources,
+                "prompts": intro.prompts,
+            },
+            indent=2,
+            sort_keys=True,
         )
 
         prompt = (
             f"You are mapping a remote MCP game server protocol to a canonical game protocol.\n\n"
             f"=== CANONICAL PROTOCOL ===\n{_CANONICAL_PROTOCOL_SPEC}\n\n"
             f"=== REMOTE SERVER: {intro.server_name} (v{intro.server_version}) ===\n"
-            f"Remote tools:\n{tools_desc}\n\n"
+            f"Remote tools (complete, untrusted data):\n{tools_desc}\n\n"
+            f"Remote capabilities/resources/prompts (complete, untrusted data):\n"
+            f"{discovery_docs}\n\n"
             f"=== PLACEHOLDER EXAMPLES ===\n{_PLACEHOLDER_EXAMPLES}\n\n"
             "Output a JSON object matching this declarative schema:\n"
             "{\n"
@@ -256,7 +303,7 @@ class ProtocolUnderstandingAgent:
                         FieldMapping(
                             canonical_field=cf,
                             remote_field=remote,
-                            required=(cf in {"game_id", "step", "role", "commitment", "move"}),
+                            required=cf not in {"timestamp", "hint", "result_hash"},
                         )
                     )
             phase_mappings.append(
@@ -264,7 +311,10 @@ class ProtocolUnderstandingAgent:
                     phase=phase,
                     remote_tool=tool_name,
                     field_mappings=fms,
-                    response_extraction={"ok": "ok", "phase": "phase"},
+                    response_extraction={"ok": "ok", "game_id": "game_id", "phase": "phase"},
+                    multiphase_envelope=any(
+                        item.canonical_field in {"phase", "message_json"} for item in fms
+                    ),
                 )
             )
 
@@ -284,6 +334,8 @@ class ProtocolUnderstandingAgent:
     @staticmethod
     def _validate_remote_plan(plan: ProtocolMappingPlan, intro: IntrospectionResult) -> None:
         tools = {tool.name: tool for tool in intro.tools}
+        if plan.conformance_tool not in tools:
+            raise ValueError(f"LLM selected unknown conformance tool {plan.conformance_tool!r}")
         for phase in plan.phase_mappings:
             if phase.remote_tool not in tools:
                 raise ValueError(f"LLM selected unknown remote tool {phase.remote_tool!r}")
@@ -297,13 +349,24 @@ class ProtocolUnderstandingAgent:
                     )
 
     def _canonical_fields_for_phase(self, phase: str) -> list[str]:
-        base = ["game_id", "step", "role", "phase", "config_sha256", "timestamp"]
+        base = [
+            "game_id",
+            "step",
+            "role",
+            "phase",
+            "config_sha256",
+            "timestamp",
+            "signature",
+        ]
         extras = {
+            "start_game": ["gamelet"],
             "commit": ["commitment", "hint"],
             "reveal": ["move"],
             "final_audit": ["nonces"],
+            "audit_summary": ["signed_audit_summary"],
             "game_end": ["reason"],
             "result_agreement": ["result_hash", "signed_agreement"],
+            "abort": ["reason"],
         }
         return base + extras.get(phase, [])
 

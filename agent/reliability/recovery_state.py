@@ -1,9 +1,10 @@
 """Durable recovery state for process restart."""
 
 import json
-import os
 from dataclasses import asdict, dataclass
 from pathlib import Path
+
+from agent.reliability.durable_io import atomic_write_json
 
 
 @dataclass
@@ -34,11 +35,7 @@ class RecoveryStore:
         self._path = Path(path)
 
     def save(self, state: RecoveryState) -> None:
-        self._path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = str(self._path) + ".tmp"
-        with open(tmp, "w") as f:
-            json.dump(asdict(state), f, indent=2)
-        os.replace(tmp, str(self._path))
+        atomic_write_json(self._path, asdict(state))
 
     def load(self) -> RecoveryState | None:
         if not self._path.exists():

@@ -11,6 +11,7 @@ from pathlib import Path
 
 from fastmcp import FastMCP
 
+from agent.adaptive.reference_v3 import ReferenceV3Session, register_reference_v3_tools
 from agent.mcp.log import GameLog
 from agent.mcp.server_tools_game import register_game_tools
 from agent.mcp.server_tools_info import register_info_tools
@@ -48,6 +49,13 @@ class AgentMCPServer:
             name=f"Agent-{role.capitalize()}",
             instructions=f"{role.capitalize()} agent with crewAI orchestration",
         )
+
+        async def _outbound_not_configured(_tool_name: str, _params: dict) -> dict:
+            raise RuntimeError("reference-v3 outbound transport is not configured on the server")
+
+        # The handlers are deliberately queue-only.  A separately running game loop owns
+        # outbound calls, so two push-style peers can never block inside each other's MCP tool.
+        self.reference_v3_session = ReferenceV3Session(_outbound_not_configured)
         self._register_tools()
 
     def _register_tools(self) -> None:
@@ -61,6 +69,7 @@ class AgentMCPServer:
             self.handler_callbacks,
         )
         register_info_tools(self.mcp, self.role, self.config_sha256)
+        register_reference_v3_tools(self.mcp, self.reference_v3_session)
 
     def get_game_log(self, game_id: str) -> GameLog | None:
         return self.game_logs.get(game_id)

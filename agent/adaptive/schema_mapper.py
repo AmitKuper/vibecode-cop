@@ -18,6 +18,7 @@ _FIELDS = {
     "phase": ("phase", "action_phase", "message_type", "kind"),
     "config_sha256": ("config_sha256", "config_hash", "configuration_hash"),
     "timestamp": ("timestamp", "ts", "sent_at"),
+    "signature": ("signature", "sig", "message_signature"),
     "commitment": ("commitment", "h_commit", "move_commitment", "commit_hash"),
     "hint": ("hint", "message", "utterance", "text"),
     "move": ("move", "action", "direction"),
@@ -25,23 +26,28 @@ _FIELDS = {
     "reason": ("reason", "outcome", "winner"),
     "result_hash": ("result_hash", "agreement_hash"),
     "signed_agreement": ("signed_agreement", "result_agreement", "agreement"),
+    "signed_audit_summary": ("signed_audit_summary", "audit_summary", "signed_summary"),
 }
 _PHASE_TERMS = {
     "start_game": ("start_game", "start", "begin", "handshake"),
     "commit": ("commit_move", "commit", "lock", "seal"),
     "reveal": ("reveal_move", "reveal", "open_move"),
     "final_audit": ("final_audit", "audit", "verify_nonce"),
+    "audit_summary": ("audit_summary", "signed_audit", "summary"),
     "game_end": ("game_end", "finish", "outcome"),
     "result_agreement": ("result_agreement", "agreement", "final_result", "result"),
+    "abort": ("abort", "technical_loss", "cancel"),
 }
-_BASE = ("game_id", "step", "role", "phase", "config_sha256", "timestamp")
+_BASE = ("game_id", "step", "role", "phase", "config_sha256", "timestamp", "signature")
 _EXTRAS = {
     "start_game": ("gamelet",),
     "commit": ("commitment", "hint"),
     "reveal": ("move",),
     "final_audit": ("nonces",),
+    "audit_summary": ("signed_audit_summary",),
     "game_end": ("reason",),
     "result_agreement": ("result_hash", "signed_agreement"),
+    "abort": ("reason",),
 }
 
 
@@ -67,10 +73,21 @@ def infer_mapping_plan(intro: IntrospectionResult) -> ProtocolMappingPlan:
                 field_mappings=fields,
                 response_extraction=_responses(tool),
                 notes="deterministic schema discovery",
+                multiphase_envelope=(
+                    any(item.canonical_field == "phase" for item in fields) or _is_packed(fields)
+                ),
             )
         )
     verdict = CompatibilityVerdict.INCOMPATIBLE if gaps else CompatibilityVerdict.COMPATIBLE
     primary = next((item.remote_tool for item in mappings if item.phase == "commit"), "")
+    conformance = next(
+        (
+            tool.name
+            for tool in intro.tools
+            if "conformance" in f"{tool.name} {tool.description}".lower()
+        ),
+        "",
+    )
     return ProtocolMappingPlan(
         remote_tool_name=primary,
         remote_server_name=intro.server_name,
@@ -81,6 +98,7 @@ def infer_mapping_plan(intro: IntrospectionResult) -> ProtocolMappingPlan:
         confidence=0.92 if not gaps else 0.35,
         agent_model="deterministic-schema-agent",
         agent_version="2.0",
+        conformance_tool=conformance,
     )
 
 
@@ -157,7 +175,7 @@ def _destination(canonical: str, props: dict) -> str | None:
 
 
 def _required_fields(phase: str) -> set[str]:
-    common = {"game_id", "role"}
+    common = {"game_id", "role", "signature"}
     return (
         common
         | {
@@ -165,8 +183,10 @@ def _required_fields(phase: str) -> set[str]:
             "commit": {"step", "commitment"},
             "reveal": {"step", "move"},
             "final_audit": {"nonces"},
+            "audit_summary": {"signed_audit_summary"},
             "game_end": {"reason"},
             "result_agreement": {"signed_agreement"},
+            "abort": {"reason"},
         }[phase]
     )
 
@@ -176,12 +196,28 @@ def _is_packed(fields: list[FieldMapping]) -> bool:
 
 
 def _uses_long_moves(tool: ToolSchema, schema: dict) -> bool:
-    values = {str(value) for value in schema.get("enum", [])}
+    values: set[str] = set()
+
+    def collect(value) -> None:
+        if isinstance(value, dict):
+            values.update(str(item) for item in value.get("enum", []))
+            for nested in value.values():
+                collect(nested)
+        elif isinstance(value, list):
+            for nested in value:
+                collect(nested)
+
+    collect(schema)
     return "long move" in tool.description.lower() or "NORTH" in values
 
 
 def _responses(tool: ToolSchema) -> dict[str, str]:
     props = tool.output_schema.get("properties", {})
     if "data" in props or "nested response" in tool.description.lower():
-        return {"ok": "data.ok", "phase": "data.phase", "winner": "data.winner"}
+        return {
+            "ok": "data.ok",
+            "phase": "data.phase",
+            "game_id": "data.game_id",
+            "winner": "data.winner",
+        }
     return {"ok": "ok", "phase": "phase", "winner": "winner", "game_id": "game_id"}

@@ -38,6 +38,17 @@ def _sanitize(text: str | None) -> str:
     return text
 
 
+def _sanitize_tree(value):
+    """Recursively reject prompt-injection text while preserving full discovery data."""
+    if isinstance(value, str):
+        return _sanitize(value)
+    if isinstance(value, list):
+        return [_sanitize_tree(item) for item in value]
+    if isinstance(value, dict):
+        return {key: _sanitize_tree(item) for key, item in value.items()}
+    return value
+
+
 @dataclass
 class ToolSchema:
     name: str
@@ -157,28 +168,40 @@ class MCPIntrospector:
         capabilities = init_body.get("capabilities", {})
         tools = []
         for rt in raw_tools:
-            desc = _sanitize(rt.get("description", ""))
+            sanitized = _sanitize_tree(rt)
+            desc = sanitized.get("description") or ""
             tools.append(
                 ToolSchema(
-                    name=rt["name"],
+                    name=sanitized["name"],
                     description=desc,
-                    input_schema=rt.get("inputSchema", {}),
-                    output_schema=rt.get("outputSchema", {}),
-                    raw=rt,
+                    input_schema=sanitized.get("inputSchema", {}),
+                    output_schema=sanitized.get("outputSchema", {}),
+                    raw=sanitized,
                 )
             )
 
-        all_digests = "|".join(sorted(t.schema_digest() for t in tools))
-        schema_digest = hashlib.sha256(all_digests.encode()).hexdigest()
+        sanitized_resources = _sanitize_tree(resources)
+        sanitized_prompts = _sanitize_tree(prompts)
+        sanitized_capabilities = _sanitize_tree(capabilities)
+        digest_payload = {
+            "protocol_version": init_body.get("protocolVersion", "unknown"),
+            "capabilities": sanitized_capabilities,
+            "tools": [tool.raw for tool in sorted(tools, key=lambda item: item.name)],
+            "resources": sanitized_resources,
+            "prompts": sanitized_prompts,
+        }
+        schema_digest = hashlib.sha256(
+            json.dumps(digest_payload, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
 
         return IntrospectionResult(
             server_name=server_info.get("name", "unknown"),
             server_version=server_info.get("version", "0.0.0"),
             protocol_version=init_body.get("protocolVersion", "unknown"),
             tools=tools,
-            resources=resources,
-            prompts=prompts,
-            raw_capabilities=capabilities,
+            resources=sanitized_resources,
+            prompts=sanitized_prompts,
+            raw_capabilities=sanitized_capabilities,
             schema_digest=schema_digest,
         )
 

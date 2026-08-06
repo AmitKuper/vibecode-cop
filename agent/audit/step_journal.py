@@ -2,9 +2,10 @@
 
 import hashlib
 import json
-import os
 from dataclasses import asdict, dataclass
 from pathlib import Path
+
+from agent.reliability.durable_io import atomic_write_json
 
 
 @dataclass
@@ -80,20 +81,13 @@ class StepJournal:
         self._chain_hashes = data.get("chain_hashes", [])
 
     def _save(self) -> None:
-        self._path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = str(self._path) + ".tmp"
-        with open(tmp, "w", encoding="utf-8") as f:
-            json.dump(
-                {
-                    "entries": [asdict(e) for e in self._entries],
-                    "chain_hashes": self._chain_hashes,
-                },
-                f,
-                indent=2,
-            )
-            f.flush()
-            os.fsync(f.fileno())
-        os.replace(tmp, str(self._path))  # atomic
+        atomic_write_json(
+            self._path,
+            {
+                "entries": [asdict(e) for e in self._entries],
+                "chain_hashes": self._chain_hashes,
+            },
+        )
 
     def prev_hash(self) -> str:
         return self._chain_hashes[-1] if self._chain_hashes else self._genesis_hash

@@ -112,4 +112,29 @@ FAIL rules are 6, 7, 17, 19, 20, 21, 23, and 36. See
 | bilateral consensus | signed summaries bind declaration agreement, config/profile, extent, public/final roots, outcome, score and token totals | PASS candidate |
 | full no-skip suite | 1,505 passed in 139.49 s; Ruff lint/format clean | PASS |
 
-Candidate remains unaccepted until committed clean-tree real-process evidence.
+Accepted at clean cop `5116fbb6c048146f7692c7efbfcfcb47c0ae57b7` / thief
+`d8563803fb3482d1a757eb166bd5d33a2b8a2dcd`: real counted series
+`series_20260806_015319_1a957014` PASS with six gamelets, 12 audit and two
+result signatures, agreement `1214bb64...46edd`, ledger consensus
+`c56e678b...fff7fd`, and no public nonce values. Independent ReplayApp
+reconstruction of the live evidence also PASS. Root artifact:
+`artifacts/code100_real_20260806_m1/summary.json`.
+
+## 2026-08-06 M2/M3 reliability, adaptive MCP, and league-kit interoperability
+
+| Gate | Executable evidence | Status |
+|---|---|---|
+| durable counted runtime | Atomic temp/flush/fsync/replace writes; durable deadline, idempotency, recovery, heartbeat and technical-loss evidence; 172 focused cop / 93 focused thief tests with adaptive matrix | PASS candidate |
+| exact adaptive semantics | Eight mandatory lifecycle phases, protected response bindings, error/idempotency contracts, valid/invalid side-effect-free remote proofs, cache re-verification | PASS candidate |
+| process fixture matrix | 10 compatible six-gamelet processes (native, split, renamed, nested, packed, enum, optional-extra, nested-response, HTTP, SSE); 8 hostile/incompatible processes rejected before first commitment | PASS candidate |
+| full suite | cop 1,528 PASS / thief 1,403 PASS, zero skips | PASS candidate |
+| unmodified league kit | clone SHA `9cecfa8b4befa070dfee0f3bc23cfe7ff7216e8e`, tree clean, `verify_vectors.py` 113/113; bidirectional four-tool real-process verifier PASS in both repositories | PASS candidate |
+| league-kit self-tests | 167 run; 3 errors are its calls to removed FastMCP `get_tools()` under installed FastMCP 3.4.5; kit source left unchanged | FAIL (external dependency mismatch; not our product gate) |
+
+The `reference-v3` bridge is deliberately distinct from the course-native
+eight-phase adapter: the published wire sends one sealed turn, reveals move and
+nonce only at audit, and uses queue-only `negotiate(message)`,
+`receive_turn(message)`, `submit_audit(payload)`, and
+`receive_control(message)`. The real-process verifier proves both call
+directions and records zero per-turn LLM calls. Clean-SHA acceptance is pending
+the coherent M2/M3 commit.

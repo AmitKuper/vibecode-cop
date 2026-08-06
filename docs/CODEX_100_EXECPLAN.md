@@ -67,10 +67,25 @@ champion -> belief/legal mask -> canonical transition`.
 - [x] 2026-08-06 required v11 authority read; exact starting state captured.
 - [x] Frozen install/test/coverage/Ruff/CLI/tournament/real-process baseline.
 - [x] All v11 findings classified; baseline matrix corrected.
-- [x] M0 commit; [x] M1 candidate; [ ] M2 reliability remainder; [ ] M3; [ ] M4; [ ] M5.
+- [x] M0 commit; [x] M1 clean-tree accepted; [x] M2 implementation/tests;
+  [x] M3 native/adaptive/reference-v3 implementation/tests; [ ] M4; [ ] M5.
 
-M1/M2 candidate validation: cop 1,505 PASS, thief 1,380 PASS, both Ruff
-clean. Clean-tree real-process/replay acceptance follows the coherent commit.
+M1/M2 validation: cop 1,505 PASS, thief 1,380 PASS, both Ruff clean. At clean
+SHAs cop `5116fbb` / thief `d856380`, real counted series
+`series_20260806_015319_1a957014` and independent canonical ReplayApp
+reconstruction both PASS.
+
+M2/M3 dirty-tree candidate validation: atomic replace/fsync persistence, durable
+deadline/idempotency/recovery evidence, counted technical-loss routing, Watchdog
+evidence, exact eight-phase semantic verification, safe valid/invalid conformance,
+and ten compatible/eight incompatible real-process variants pass. Current full
+suites: cop 1,528 PASS, thief 1,403 PASS. The separately cloned, unmodified league
+kit at `9cecfa8b4befa070dfee0f3bc23cfe7ff7216e8e` reports all 113 vectors PASS.
+Our distinct deterministic `reference-v3` bridge reproduces its CORE bytes and
+bidirectional real-process checks pass: our client calls its four tools and its
+unmodified `McpClient` calls our exact four-tool surface, with zero gameplay LLM
+calls and no changes to the external tree. Clean-SHA acceptance follows the
+coherent M2/M3 commit.
 
 ## 8. Decisions
 
@@ -84,7 +99,11 @@ Live commitment/audit silently use gamelet 1; journal length admits missing IDs;
 ReplayApp and actual result schemas differ; audit chooses received evidence as
 its expected extent; live code double-updates two scent models, ignores canonical
 outcome, leaks both positions in logs, and remote conformance never proves a
-valid mapped call. Thief hard-family weakness reproduced independently.
+valid mapped call. Thief hard-family weakness reproduced independently. The
+league kit's `reference-v3` is not a renamed eight-phase protocol: one sealed
+push per half-turn, thief-first, nonce/move reveal deferred to audit, and four
+queue-only tools. It therefore has a separately locked codec/session rather than
+weakening or misrepresenting the course-native adapter.
 
 ## 10. Validation log
 

@@ -38,7 +38,43 @@ def _intro(digest="native"):
         {"properties": {"game_id": {}, "message_json": {}, "signature": {}}},
     )
     start = ToolSchema("start_game", "safe", {"properties": {"message_json": {}, "signature": {}}})
-    return IntrospectionResult("peer", "1", "p", [action, start], [], [], {}, digest)
+    conformance = ToolSchema(
+        "protocol_conformance",
+        "side-effect-free conformance",
+        {
+            "properties": {
+                "phase": {},
+                "game_id": {},
+                "request_digest": {},
+                "idempotency_key": {},
+            }
+        },
+    )
+    return IntrospectionResult("peer", "1", "p", [action, start, conformance], [], [], {}, digest)
+
+
+async def _conforming_probe(tool_name, params):
+    if tool_name == "protocol_conformance":
+        return {
+            "ok": True,
+            "game_id": params["game_id"],
+            "phase": params["phase"],
+            "idempotent": True,
+            "side_effects": 0,
+            "canonical_order": True,
+            "canonical_json_bytes": True,
+            "commitment_binding": True,
+            "nonce_final_audit_only": True,
+            "comprehensive_audit": True,
+            "result_agreement": True,
+        }
+    body = json.loads(params["message_json"])
+    return {
+        "ok": False,
+        "error": "invalid probe signature",
+        "game_id": params.get("game_id", body["game_id"]),
+        "phase": body["phase"],
+    }
 
 
 async def _patch_transport(monkeypatch, probe=None, intro=None):
@@ -54,11 +90,8 @@ async def _patch_transport(monkeypatch, probe=None, intro=None):
     monkeypatch.setattr("agent.adaptive.pipeline.TransportProbe.probe", fake_probe)
     monkeypatch.setattr("agent.adaptive.pipeline.MCPIntrospector.introspect", fake_intro)
 
-    async def reject_probe(_tool_name, params):
-        return {"ok": False, "error": "invalid probe signature", "game_id": params.get("game_id")}
-
     monkeypatch.setattr(
-        "agent.adaptive.pipeline._discovered_tool_caller", lambda _probe: reject_probe
+        "agent.adaptive.pipeline._discovered_tool_caller", lambda _probe: _conforming_probe
     )
 
 
@@ -119,11 +152,8 @@ def test_negotiation_sync_native_and_result_accessors(monkeypatch, tmp_path) -> 
     monkeypatch.setattr("agent.adaptive.pipeline.TransportProbe.probe", fake_probe)
     monkeypatch.setattr("agent.adaptive.pipeline.MCPIntrospector.introspect", fake_intro)
 
-    async def reject_probe(_tool_name, params):
-        return {"ok": False, "error": "invalid probe signature", "game_id": params.get("game_id")}
-
     monkeypatch.setattr(
-        "agent.adaptive.pipeline._discovered_tool_caller", lambda _probe: reject_probe
+        "agent.adaptive.pipeline._discovered_tool_caller", lambda _probe: _conforming_probe
     )
     sync = run_adaptive_negotiation_sync("http://peer", cache_dir=tmp_path)
     assert isinstance(sync, AdaptiveNegotiationResult)

@@ -156,13 +156,25 @@ class DeterministicProtocolAdapter:
             if value is not None:
                 extracted[canonical_key] = value
 
+        missing_response = [
+            key
+            for key in pm.required_response_fields
+            if extracted.get(key) is None and raw_response.get(key) is None
+        ]
+        if missing_response:
+            raise ProtocolCompatibilityError(
+                f"Required response fields missing for {phase!r}: {missing_response}"
+            )
+
         # Verify protected response fields
         if expected_protected:
             for k, expected_v in expected_protected.items():
                 actual_v = extracted.get(k)
                 if actual_v is None:
                     actual_v = raw_response.get(k)
-                if actual_v is not None and actual_v != expected_v:
+                if actual_v is None:
+                    raise ProtocolCompatibilityError(f"Protected response field {k!r} is missing")
+                if actual_v != expected_v:
                     raise ProtocolCompatibilityError(
                         f"Protected response field {k!r} mismatch: "
                         f"expected {expected_v!r}, got {actual_v!r}"

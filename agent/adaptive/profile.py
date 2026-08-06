@@ -15,6 +15,7 @@ from pathlib import Path
 
 from agent.adaptive.mapping_plan import ProtocolMappingPlan
 from agent.adaptive.transport_probe import ProbeResult
+from agent.reliability.durable_io import atomic_write_json
 
 
 @dataclass
@@ -120,8 +121,7 @@ class ProtocolProfile:
         )
 
     def save(self, path: Path) -> None:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(self.to_dict(), indent=2))
+        atomic_write_json(path, self.to_dict())
 
     @classmethod
     def load(cls, path: Path) -> ProtocolProfile:

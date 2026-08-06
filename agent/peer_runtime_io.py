@@ -8,6 +8,8 @@ import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
 
+from agent.reliability.durable_io import atomic_write_json
+
 logger = logging.getLogger(__name__)
 
 
@@ -38,7 +40,7 @@ def _git_commit() -> str:
 
 
 def save_game_state(game_dir: Path, state: dict) -> None:
-    (game_dir / "game_state.json").write_text(json.dumps(state, indent=2), encoding="utf-8")
+    atomic_write_json(game_dir / "game_state.json", state)
 
 
 def store_commit(game_dir: Path, role: str, step: int, payload: dict) -> None:
@@ -49,7 +51,7 @@ def store_commit(game_dir: Path, role: str, step: int, payload: dict) -> None:
         with open(path, encoding="utf-8") as f:
             existing = json.load(f)
     existing[str(step)] = payload
-    path.write_text(json.dumps(existing, indent=2), encoding="utf-8")
+    atomic_write_json(path, existing)
 
 
 def write_result(
@@ -84,5 +86,5 @@ def write_result(
         "opponent_commits_count": opponent_commits_count,
     }
     path = game_dir / f"result_{game_id}.json"
-    path.write_text(json.dumps(result, indent=2), encoding="utf-8")
+    atomic_write_json(path, result)
     logger.info(f"[PeerRuntime/{role}] Result written: {path}")

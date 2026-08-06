@@ -201,22 +201,32 @@ def handle_passive_reveal(rt: PeerRuntime, game_id: str, message, rules_ref: lis
     )
     if rt.orchestrator is not None:
         rt.orchestrator.synchronize_domain_state(transition.new_state)
-        rt.orchestrator.record_step_evidence(
-            gamelet=rt._gamelet_number(game_id),
-            step=message.step,
-            local_commitment=payload["h_commit"],
-            local_move=payload["move"],
-            local_nonce=payload["nonce"],
-            local_hint=payload["hint"],
-            local_intent=payload["intent"],
-            local_state_hash=payload["state_hash"],
-            received_commitment=load_opponent_commits(rt.game_dir)[message.step],
-            received_move=raw_opp_move,
-            received_hint=opp_reveal["hint"],
-            received_intent=opp_reveal["intent"],
-            received_state_hash=opp_reveal["state_hash"],
-            **transition_evidence,
-        )
+        try:
+            rt.orchestrator.record_step_evidence(
+                gamelet=rt._gamelet_number(game_id),
+                step=message.step,
+                local_commitment=payload["h_commit"],
+                local_move=payload["move"],
+                local_nonce=payload["nonce"],
+                local_hint=payload["hint"],
+                local_intent=payload["intent"],
+                local_state_hash=payload["state_hash"],
+                received_commitment=load_opponent_commits(rt.game_dir)[message.step],
+                received_move=raw_opp_move,
+                received_hint=opp_reveal["hint"],
+                received_intent=opp_reveal["intent"],
+                received_state_hash=opp_reveal["state_hash"],
+                **transition_evidence,
+            )
+            rt.persist_recovery_state(message.step)
+        except Exception as exc:
+            if rt.counted_mode:
+                rt.declare_technical_loss(
+                    f"passive step evidence persistence failed at step {message.step}",
+                    subsystem="step_evidence",
+                    step=message.step,
+                )
+            raise RuntimeError("passive counted evidence persistence failed") from exc
 
     return {
         "ok": True,

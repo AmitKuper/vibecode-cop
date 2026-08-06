@@ -30,6 +30,7 @@ class MessagePhase(Enum):
     ACK = "ack"
     REVEAL = "reveal"
     FINAL_AUDIT = "final_audit"
+    AUDIT_SUMMARY = "audit_summary"
     ABORT = "abort"
     GAME_END = "game_end"
     RESULT_AGREEMENT = "result_agreement"
@@ -146,6 +147,9 @@ def validate_action_message(msg: ActionMessage) -> tuple[bool, str | None]:
         if msg.nonces is not None and not isinstance(msg.nonces, dict):
             return False, "FINAL_AUDIT nonces must be a dict when provided"
         # game_log is always optional
+
+    elif phase == MessagePhase.AUDIT_SUMMARY and not msg.signed_audit_summary:
+        return False, "AUDIT_SUMMARY phase requires signed_audit_summary"
 
     elif phase == MessagePhase.ABORT and not msg.reason:
         return False, "ABORT phase requires reason"

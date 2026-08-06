@@ -64,14 +64,45 @@ async def test_remote_conformance_requires_stable_rejection() -> None:
     probes = ConformanceProbes(DeterministicProtocolAdapter(plan), plan)
     observed = []
 
-    async def reject(tool_name, params):
+    async def conform(tool_name, params):
         observed.append((tool_name, params))
-        return {"ok": False, "error": "invalid probe signature"}
+        if tool_name == plan.conformance_tool:
+            return {
+                "ok": True,
+                "game_id": params["game_id"],
+                "phase": params["phase"],
+                "idempotent": True,
+                "side_effects": 0,
+                "canonical_order": True,
+                "canonical_json_bytes": True,
+                "commitment_binding": True,
+                "nonce_final_audit_only": True,
+                "comprehensive_audit": True,
+                "result_agreement": True,
+            }
+        return {
+            "ok": False,
+            "error": "invalid probe signature",
+            "game_id": params["game_id"],
+            "phase": params["phase"],
+        }
 
-    passed = await probes.run_remote(reject)
+    passed = await probes.run_remote(conform)
     assert passed.all_passed
-    assert len(observed) == 2 * len(ProtocolMappingPlan.REQUIRED_PHASES)
+    assert len(observed) == 4 * len(ProtocolMappingPlan.REQUIRED_PHASES)
     assert "private_key" not in str(observed)
+
+    async def reject_only(_tool_name, params):
+        return {
+            "ok": False,
+            "error": "invalid probe signature",
+            "game_id": params.get("game_id"),
+            "phase": params.get("phase"),
+        }
+
+    reject_only_report = await probes.run_remote(reject_only)
+    assert not reject_only_report.all_passed
+    assert len(reject_only_report.failed_probes()) == len(ProtocolMappingPlan.REQUIRED_PHASES)
 
     async def unsafe_accept(_tool_name, _params):
         return {"ok": True}
@@ -156,13 +187,26 @@ async def test_full_stdio_discovery_conformance_and_profile_lock(tmp_path) -> No
     script = tmp_path / "stdio_signed_peer.py"
     script.write_text(
         "from fastmcp import FastMCP\n"
+        "import json\n"
         "mcp = FastMCP('stdio-signed-peer')\n"
         "@mcp.tool\n"
         "def start_game(message_json: str, signature: str) -> dict:\n"
-        "    return {'ok': False, 'error': 'invalid probe signature'}\n"
+        "    body = json.loads(message_json)\n"
+        "    return {'ok': False, 'error': 'invalid probe signature',\n"
+        "            'game_id': body['game_id'], 'phase': 'start_game'}\n"
         "@mcp.tool\n"
         "def action(game_id: str, message_json: str, signature: str) -> dict:\n"
-        "    return {'ok': False, 'error': 'invalid probe signature'}\n"
+        "    body = json.loads(message_json)\n"
+        "    return {'ok': False, 'error': 'invalid probe signature',\n"
+        "            'game_id': game_id, 'phase': body['phase']}\n"
+        "@mcp.tool\n"
+        "def protocol_conformance(phase: str, game_id: str, request_digest: str,\n"
+        "                         idempotency_key: str) -> dict:\n"
+        "    return {'ok': True, 'game_id': game_id, 'phase': phase,\n"
+        "            'idempotent': True, 'side_effects': 0,\n"
+        "            'canonical_order': True, 'canonical_json_bytes': True,\n"
+        "            'commitment_binding': True, 'nonce_final_audit_only': True,\n"
+        "            'comprehensive_audit': True, 'result_agreement': True}\n"
         "if __name__ == '__main__':\n"
         "    mcp.run()\n",
         encoding="utf-8",

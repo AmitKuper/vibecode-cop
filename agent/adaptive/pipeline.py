@@ -25,10 +25,46 @@ from agent.adaptive.introspector import MCPIntrospector
 from agent.adaptive.mapping_plan import ProtocolMappingPlan
 from agent.adaptive.profile import ProfileCache, ProtocolProfile
 from agent.adaptive.protocol_agent import ProtocolUnderstandingAgent
+from agent.adaptive.reference_v3 import (
+    ReferenceV3Profile,
+    ReferenceV3Session,
+    assert_core_vectors,
+)
 from agent.adaptive.transport_probe import TransportProbe, TransportType
 from agent.adaptive.verifier import StaticSemanticVerifier
 
 logger = logging.getLogger(__name__)
+
+
+async def discover_reference_v3(
+    opponent_url: str,
+    *,
+    probe_timeout_s: float = 5.0,
+    introspect_timeout_s: float = 10.0,
+    tool_caller: Callable[[str, dict], Awaitable[dict]] | None = None,
+) -> tuple[ReferenceV3Profile, ReferenceV3Session]:
+    """Discover and lock the league kit's distinct push-only protocol.
+
+    The generic eight-phase adapter must not flatten this dialect: its move and nonce are both
+    deferred to the final audit.  This entry point still uses the same transport probe and full
+    MCP introspection, but binds an exact four-tool surface, reproduces the published CORE
+    vectors, and returns a deterministic queue/session implementation for gameplay.
+    """
+    probe = await TransportProbe(timeout_s=probe_timeout_s).probe(opponent_url)
+    if probe.transport == TransportType.UNKNOWN:
+        raise ProtocolCompatibilityError(
+            f"No compatible MCP transport found at {opponent_url}: {probe.probe_notes}"
+        )
+    intro = await MCPIntrospector(timeout_s=introspect_timeout_s).introspect(probe)
+    try:
+        profile = ReferenceV3Profile.from_introspection(intro)
+        assert_core_vectors()
+    except ValueError as exc:
+        raise ProtocolCompatibilityError(
+            f"reference-v3 discovery failed before first commitment: {exc}"
+        ) from exc
+    caller = tool_caller or _discovered_tool_caller(probe)
+    return profile, ReferenceV3Session(caller)
 
 
 class AdaptiveNegotiationResult:
@@ -97,6 +133,13 @@ async def run_adaptive_negotiation(
     cached_profile = cache.get(intro.schema_digest)
     if cached_profile is not None:
         logger.info("[AdaptiveMCP] Cache hit for schema_digest=%s", intro.schema_digest)
+        cached_verification = StaticSemanticVerifier().verify(cached_profile.mapping_plan)
+        if not cached_verification.passed:
+            cache.invalidate(intro.schema_digest)
+            raise ProtocolCompatibilityError(
+                "Cached profile failed current semantic verification: "
+                f"{cached_verification.reject_reason()}"
+            )
         adapter = DeterministicProtocolAdapter(cached_profile.mapping_plan)
         await _verify_conformance(
             adapter,

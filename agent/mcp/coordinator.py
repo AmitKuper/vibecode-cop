@@ -24,10 +24,12 @@ import contextlib
 import hashlib
 import logging
 import threading
+import time
 from dataclasses import dataclass
 
 from agent.mcp.protocol import ProtocolState
 from agent.mcp.session_registry import SessionRegistry, get_registry
+from agent.reliability.durable_io import atomic_write_json
 
 logger = logging.getLogger(__name__)
 
@@ -232,11 +234,26 @@ class ProtocolCoordinator:
         role: str,
         reason: str = "",
         evidence: dict | None = None,
+        evidence_path: str | None = None,
     ) -> None:
-        """Advance any non-terminal state → TECHNICAL_LOSS."""
+        """Advance to TECHNICAL_LOSS and durably record the controlled outcome."""
         entry = self._registry.get_or_create(game_id, gamelet, role)
         with entry.lock, contextlib.suppress(ValueError):
             entry.sm.transition(ProtocolState.TECHNICAL_LOSS)
+        if evidence_path:
+            atomic_write_json(
+                evidence_path,
+                {
+                    "schema_version": "1.0",
+                    "game_id": game_id,
+                    "gamelet": gamelet,
+                    "role": role,
+                    "protocol_state": ProtocolState.TECHNICAL_LOSS.value,
+                    "reason": reason,
+                    "evidence": evidence or {},
+                    "timestamp_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                },
+            )
         if reason:
             logger.error(
                 "[Coordinator] TECHNICAL_LOSS %s gamelet=%d %s: %s evidence=%s",
@@ -521,6 +538,18 @@ class ProtocolCoordinator:
     def get_state(self, game_id: str, gamelet: int, role: str) -> ProtocolState | None:
         """Current SM state for the session, or None if no session exists."""
         return self._registry.state_of(game_id, gamelet, role)
+
+    def snapshot_idempotency(self, game_id: str, gamelet: int, role: str) -> dict:
+        """Return a JSON-safe recovery snapshot of one session's response cache."""
+        with self._idempotency_lock:
+            return {
+                "|".join(str(part) for part in key): {
+                    "content_key": record.content_key,
+                    "cached_response": record.cached_response,
+                }
+                for key, record in self._idempotency.items()
+                if key[:3] == (game_id, gamelet, role)
+            }
 
     def is_ready(self, game_id: str, gamelet: int, role: str) -> bool:
         """Return True if the session is in an active gameplay state.

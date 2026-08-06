@@ -405,8 +405,69 @@ class PeerRuntime(_CrewMixin):
             logger.warning(msg_text)
 
     def _store_my_commit(self, step: int, payload: dict) -> None:
+        try:
+            store_commit(self.game_dir, self.role, step, payload)
+        except Exception:
+            if self.counted_mode:
+                self.declare_technical_loss(
+                    f"commitment persistence failed at step {step}",
+                    subsystem="commitment_store",
+                    step=step,
+                )
+            raise
         self._my_commits[step] = payload
-        store_commit(self.game_dir, self.role, step, payload)
+
+    def declare_technical_loss(self, reason: str, *, subsystem: str, step: int = 0) -> None:
+        """Route a counted failure through the sole coordinator and durable evidence."""
+        gamelet = max(1, gamelet_from_game_id(self.game_id))
+        get_coordinator().on_technical_loss(
+            self.game_id,
+            gamelet,
+            self.role,
+            reason=reason,
+            evidence={"subsystem": subsystem, "step": step},
+            evidence_path=str(self.game_dir / "technical_loss.json"),
+        )
+
+    def persist_recovery_state(self, step: int) -> None:
+        """Persist the minimal private state needed for controlled crash recovery."""
+        if self.orchestrator is None:
+            if self.counted_mode:
+                raise RuntimeError("counted recovery store is unavailable")
+            return
+        import time
+
+        from agent.reliability.recovery_state import RecoveryState
+
+        gamelet = max(1, gamelet_from_game_id(self.game_id))
+        coordinator = get_coordinator()
+        protocol_state = coordinator.get_state(self.game_id, gamelet, self.role)
+        journal = self.orchestrator.get_journal(gamelet)
+        state = RecoveryState(
+            game_uid=self.game_id,
+            session_id=self.game_id,
+            role=self.role,
+            sm_state=protocol_state.value if protocol_state is not None else "UNKNOWN",
+            expected_step=step + 1,
+            last_accepted_commit_step=step,
+            transcript_root=journal.transcript_root(),
+            idempotency_journal=coordinator.snapshot_idempotency(self.game_id, gamelet, self.role),
+            pending_request_id="",
+            local_commitments={str(k): v["h_commit"] for k, v in self._my_commits.items()},
+            local_nonces={str(k): v["nonce"] for k, v in self._my_commits.items()},
+            report_delivered=False,
+            timestamp_utc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        )
+        try:
+            self.orchestrator.recovery_store.save(state)
+        except Exception:
+            if self.counted_mode:
+                self.declare_technical_loss(
+                    f"recovery-state persistence failed at step {step}",
+                    subsystem="recovery_store",
+                    step=step,
+                )
+            raise
 
     # Tool names that are not per-turn game-action tools.
     _UTILITY_TOOL_NAMES = frozenset(
