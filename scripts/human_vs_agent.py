@@ -129,39 +129,39 @@ def _render_board(
         # Thief tracks cop via cop's scent emission
         scent = state.cop_scent
 
-    header = "   " + "  ".join(str(x) for x in range(g))
-    rows = [header, "   " + "─" * (g * 3 - 1)]
+    col_header = "    " + "  ".join(str(x) for x in range(g))
+    rows = [col_header, "    " + "─" * (g * 3 - 1)]
 
     for row in range(g):
         cells = [f"{row} │"]
         for col in range(g):
             pos = (col, row)
             if pos in barrier_set:
-                ch = "█"
+                ch = " █ "
             elif pos == cop_pos and (human_role == "cop" or reveal):
-                ch = "C"
+                ch = " C "
             elif pos == thief_pos and (human_role == "thief" or reveal):
-                ch = "T"
+                ch = " T "
             elif reveal and pos == cop_pos:
-                ch = "c"   # lowercase = revealed opponent
+                ch = " c "
             elif reveal and pos == thief_pos:
-                ch = "t"
+                ch = " t "
             else:
                 sv = scent[row][col] if scent else 0.0
-                ch = _scent_ch(sv)
-            cells.append(f" {ch} ")
+                ch = f"{sv:4.2f}" if sv > 0 else "   ."
+            cells.append(ch)
         rows.append("".join(cells))
 
-    # Belief heatmap shown to human (what the agent thinks about your location)
+    # Belief heatmap — raw probabilities
     belief_grid = agent_belief.belief.prob
     rows.append("")
-    rows.append("   Agent's belief of YOUR position (brighter = more likely):")
-    rows.append("   " + "  ".join(str(x) for x in range(g)))
+    rows.append("   Agent's belief of YOUR position (probability):")
+    rows.append("    " + "  ".join(str(x) for x in range(g)))
     for row in range(g):
-        cells = [f"   "]
+        cells = [f"{row}   "]
         for col in range(g):
             v = belief_grid[row][col]
-            cells.append(f" {_scent_ch(min(v * (g * g) / 2, 1.0))} ")
+            cells.append(f"{v:4.2f}")
         rows.append("".join(cells))
     rows.append(
         f"   entropy={agent_belief.belief.entropy:.2f}  "
