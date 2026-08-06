@@ -52,6 +52,29 @@ THIEF_TRAINING_SCHEDULE = (
     "historical_checkpoint",
     "deceptive_language",
 )
+COP_TRAINING_SCHEDULE = (
+    "targeted_exploit",
+    "targeted_exploit",
+    "targeted_exploit",
+    "targeted_exploit",
+    "targeted_exploit",
+    "targeted_exploit",
+    "targeted_exploit",
+    "targeted_exploit",
+    "targeted_exploit",
+    "targeted_exploit",
+    "targeted_exploit",
+    "targeted_exploit",
+    "belief_pursuit_evasion",
+    "local_adversarial_ensemble",
+    "scent_following",
+    "corridor_cutting",
+    "anti_loop",
+    "historical_checkpoint",
+    "deceptive_language",
+    "random",
+    "wall",
+)
 WORST_FAMILY_PROMOTION_FLOOR = {"cop": 0.55, "thief": 0.35}
 
 
@@ -117,6 +140,33 @@ def _local_exit_count(
         and (position[0] + dx, position[1] + dy) not in blocked
         for dx, dy in ((0, -1), (0, 1), (1, 0), (-1, 0))
     )
+
+
+def _belief_trap_reward(
+    opponent_belief,
+    before_barriers: list[tuple[int, int]],
+    after_barriers: list[tuple[int, int]],
+    grid_size: int,
+) -> float:
+    """Reward belief-supported trap construction without consulting hidden coordinates."""
+    placed = set(after_barriers) - set(before_barriers)
+    if not placed:
+        return 0.0
+    trap_gain = 0.0
+    proximity_mass = 0.0
+    probability = opponent_belief.prob
+    for y in range(grid_size):
+        for x in range(grid_size):
+            mass = float(probability[y, x])
+            if mass <= 0.0:
+                continue
+            cell = (x, y)
+            before_exits = _local_exit_count(cell, before_barriers, grid_size)
+            after_exits = _local_exit_count(cell, after_barriers, grid_size)
+            trap_gain += mass * max(0, before_exits - after_exits)
+            if any(abs(x - bx) + abs(y - by) <= 1 for bx, by in placed):
+                proximity_mass += mass
+    return min(0.45, 0.25 * trap_gain + 0.20 * proximity_mass)
 
 
 def _opponent_action(
@@ -401,6 +451,7 @@ def _run_episode(
                 "barrier_placements", 0
             ) + int(cop_action.startswith("PLACE_"))
         previous_distance = _distance(state)
+        previous_barriers = list(state.barriers)
         result = apply_joint_action(state, cop_action, thief_action)
         state = result.new_state
         current_distance = _distance(state)
@@ -412,6 +463,13 @@ def _run_episode(
         else:
             delta = previous_distance - current_distance
             reward = (0.12 * delta if role == "cop" else -0.12 * delta) - 0.01
+            if role == "cop":
+                reward += _belief_trap_reward(
+                    belief.belief,
+                    previous_barriers,
+                    list(state.barriers),
+                    state.grid_size,
+                )
         trajectory.append(
             (
                 dist.log_prob(action_index),
@@ -556,7 +614,7 @@ def train(
     learning_rate = resume_learning_rate if resume_checkpoint is not None else 3e-4
     optimizer = torch.optim.Adam(network.parameters(), lr=learning_rate)
     for episode in range(episodes):
-        schedule = THIEF_TRAINING_SCHEDULE if role == "thief" else FAMILIES
+        schedule = THIEF_TRAINING_SCHEDULE if role == "thief" else COP_TRAINING_SCHEDULE
         family = schedule[episode % len(schedule)]
         progress = episode / max(episodes - 1, 1)
         if resume_checkpoint is not None:
@@ -898,7 +956,7 @@ def main() -> None:
     evaluation["training_episodes"] = training_episodes
     evaluation["training_opponents"] = list(FAMILIES)
     evaluation["training_schedule"] = list(
-        THIEF_TRAINING_SCHEDULE if args.role == "thief" else FAMILIES
+        THIEF_TRAINING_SCHEDULE if args.role == "thief" else COP_TRAINING_SCHEDULE
     )
     evaluation["historical_checkpoint"] = str(args.historical_checkpoint)
     evaluation["historical_checkpoint_sha256"] = file_sha256(args.historical_checkpoint)

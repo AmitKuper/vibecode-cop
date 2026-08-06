@@ -13,7 +13,12 @@ from agent.observation import BeliefState, LocalObservation
 from agent.rl.action_space import THIEF_ACTIONS
 from agent.rl.recurrent_policy import RecurrentRolePolicy
 from agent.rl.risk_mask import belief_safe_actions
-from agent.rl.train_recurrent import FAMILIES, _opponent_action
+from agent.rl.train_recurrent import (
+    COP_TRAINING_SCHEDULE,
+    FAMILIES,
+    _belief_trap_reward,
+    _opponent_action,
+)
 
 
 def _belief(cell: tuple[int, int]) -> BeliefState:
@@ -34,6 +39,18 @@ def test_held_out_population_has_diverse_required_families() -> None:
         "targeted_exploit",
         "deceptive_language",
     }.issubset(FAMILIES)
+
+
+def test_cop_training_schedule_targets_the_exploit_without_dropping_coverage() -> None:
+    assert set(FAMILIES).issubset(COP_TRAINING_SCHEDULE)
+    assert COP_TRAINING_SCHEDULE.count("targeted_exploit") >= 4
+
+
+def test_cop_trap_reward_uses_belief_supported_public_barrier_change() -> None:
+    belief = _belief((3, 3))
+    assert _belief_trap_reward(belief, [], [], 7) == 0.0
+    assert _belief_trap_reward(belief, [], [(3, 2)], 7) > 0.0
+    assert _belief_trap_reward(belief, [], [(0, 0)], 7) == 0.0
 
 
 def test_new_opponents_use_only_local_belief_scent_and_public_state() -> None:
