@@ -52,6 +52,8 @@ ignore = ["N999"]
 [tool.ruff.lint.per-file-ignores]
 "agent/gui/app.py" = ["E501"]
 "agent/replay/app.py" = ["E501"]
+"cop_worker/gui/app.py" = ["E501"]
+"cop_worker/replay/app.py" = ["E501"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
