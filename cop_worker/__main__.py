@@ -20,13 +20,45 @@ def setup_logging(log_dir: str = "logs") -> None:
 
 
 def main() -> None:
-    """Parse CLI args and start the cop_worker MCP server."""
-    parser = argparse.ArgumentParser(description="cop_worker MCP server")
+    """Parse CLI args and start the cop_worker MCP server.
+
+    Commands:
+      serve   Start the MCP server (default, counted mode supported).
+    """
+    parser = argparse.ArgumentParser(
+        description=(
+            "cop_worker: counted-mode MCP server for the cop agent. "
+            "Use 'serve' to start the counted game server."
+        )
+    )
+    subparsers = parser.add_subparsers(dest="command", help="Subcommand")
+    serve_parser = subparsers.add_parser(
+        "serve",
+        help="Serve the cop MCP endpoint (counted mode enforced in production).",
+    )
+    serve_parser.add_argument("--port", type=int, default=8001, help="MCP server port")
+    serve_parser.add_argument("--config", default="cop_config.yaml", help="Config YAML path")
+    serve_parser.add_argument("--log-dir", default="logs", help="Log output directory")
+    serve_parser.add_argument("--report-dir", default="reports", help="Report output directory")
+    serve_parser.add_argument(
+        "--counted",
+        action="store_true",
+        default=False,
+        help="Enable counted (production) mode — enforces all COUNTED constraints.",
+    )
+    # Top-level flags for direct invocation (no subcommand)
     parser.add_argument("--port", type=int, default=8001, help="MCP server port")
     parser.add_argument("--config", default="cop_config.yaml", help="Config YAML path")
     parser.add_argument("--log-dir", default="logs", help="Log output directory")
     parser.add_argument("--report-dir", default="reports", help="Report output directory")
+    parser.add_argument(
+        "--counted",
+        action="store_true",
+        default=False,
+        help="Enable counted (production) mode.",
+    )
     args = parser.parse_args()
+    # If subcommand 'serve' was used, its namespace is in args directly
     setup_logging(log_dir=args.log_dir)
     logger = logging.getLogger(__name__)
     logger.info("cop_worker starting port=%d config=%s", args.port, args.config)

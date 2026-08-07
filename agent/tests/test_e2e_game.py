@@ -13,7 +13,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from agent.game_runner import GameRunner
-from agent.mcp.crypto import create_commitment, hash_game_state
+from cop_worker.crypto import create_commitment, hash_game_state
 
 _SECRET = "e2e-test-secret"
 _CFG_SHA = "c" * 64

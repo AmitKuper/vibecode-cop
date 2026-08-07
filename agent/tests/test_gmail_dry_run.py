@@ -5,8 +5,8 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from agent.reports.base import ReportContext
-from agent.reports.gmail_report import GmailReportPlugin
+from league_manager.reports.base import ReportContext
+from league_manager.reports.gmail_report import GmailReportPlugin
 
 
 @pytest.fixture

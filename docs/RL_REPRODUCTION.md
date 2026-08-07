@@ -22,7 +22,7 @@ not a counted fallback.
 After `uv sync --frozen`:
 
 ```powershell
-uv run python -m agent.rl.train_recurrent `
+uv run python -m cop_worker.rl.train_recurrent `
   --role cop --episodes 0 --eval-series-per-family 30 `
   --seed 20260805 --hidden-size 128 `
   --historical-checkpoint models/thief_ppo_best.pt `

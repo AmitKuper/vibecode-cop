@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from agent.reports.base import ReportContext, ReportResult
-from agent.reports.manager import ReportManager
+from league_manager.reports.base import ReportContext, ReportResult
+from league_manager.reports.manager import ReportManager
 
 
 class MockPlugin:

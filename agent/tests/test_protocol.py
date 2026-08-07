@@ -2,19 +2,19 @@
 
 import pytest
 
-from agent.mcp.crypto import (
+from agent.mcp.messages import (
+    ActionMessage,
+    StartGameMessage,
+    validate_action_message,
+    validate_start_game_message,
+)
+from cop_worker.crypto import (
     canonical_json,
     create_commitment,
     hash_game_state,
     sign_message,
     verify_commitment,
     verify_signature,
-)
-from agent.mcp.messages import (
-    ActionMessage,
-    StartGameMessage,
-    validate_action_message,
-    validate_start_game_message,
 )
 
 _SECRET = "test-secret-for-testing"

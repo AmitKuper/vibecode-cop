@@ -1,6 +1,6 @@
-"""Game report plugins."""
+"""Game report plugins — re-exports from league_manager.reports."""
 
-from agent.reports.base import ReportPlugin
-from agent.reports.manager import ReportManager
+from league_manager.reports.base import ReportPlugin
+from league_manager.reports.manager import ReportManager
 
 __all__ = ["ReportPlugin", "ReportManager"]

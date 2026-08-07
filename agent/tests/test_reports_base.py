@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from agent.reports.base import ReportContext, ReportResult
+from league_manager.reports.base import ReportContext, ReportResult
 
 
 def test_report_context_frozen():

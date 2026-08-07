@@ -62,7 +62,7 @@ ignore = ["N999"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-testpaths = ["tests", "agent/tests", "league_manager/tests"]
+testpaths = ["tests", "cop_worker/tests", "league_manager/tests"]
 pythonpath = ["."]
 
 [tool.coverage.run]
