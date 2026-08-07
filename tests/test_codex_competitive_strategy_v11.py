@@ -4,11 +4,11 @@ import random
 
 import numpy as np
 import torch
-from cop_worker.mcp.messages import ActionMessage, validate_action_message
 
 from cop_worker.belief_engine import BeliefEngine
 from cop_worker.domain.types import DomainState
 from cop_worker.language.deception_policy import DeceptionIntent, NaturalLanguagePolicy
+from cop_worker.mcp.messages import ActionMessage, validate_action_message
 from cop_worker.observation import BeliefState, LocalObservation
 from cop_worker.rl.action_space import THIEF_ACTIONS
 from cop_worker.rl.recurrent_policy import RecurrentRolePolicy

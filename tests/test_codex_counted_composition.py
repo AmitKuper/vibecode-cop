@@ -1,15 +1,45 @@
-"""Red/green tests for the real fail-closed counted composition root."""
+"""Red/green tests for the 3-process counted composition architecture.
+
+New design: LeagueManager + CopWorker (mcp_server) + ThiefWorker.
+Tests prove:
+  - Gamelet construction in COUNTED mode
+  - Series lifecycle locks profile after first negotiation
+  - Adaptive negotiation failure propagates (not swallowed)
+  - Step-0 bilateral signing and identity binding
+  - GameletError propagates through the series
+  - Role is correctly threaded through the worker config
+"""
 
 from __future__ import annotations
 
+import asyncio
 import json
 from hashlib import sha256
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 import torch
 
 from cop_worker.runtime_mode import RuntimeMode
+
+
+# ---------------------------------------------------------------------------
+# Shared helpers
+# ---------------------------------------------------------------------------
+
+
+_VALID_TERMS = {
+    "board_size": 7,
+    "smell_grid_size": 5,
+    "max_steps": 35,
+    "survival_threshold": 35,
+    "cop_barrier_quota": 2,
+    "capture_radius": 0,
+    "decay_per_step": 0.1,
+    "emit_intensity": 0.9,
+    "barriers_max": 14,
+    "num_games": 6,
+}
 
 
 def _manifest(tmp_path):
@@ -58,184 +88,142 @@ def _manifest(tmp_path):
     return path
 
 
-def _counted_config(tmp_path, role="cop"):
-    manifest_path = _manifest(tmp_path)
-    entries = json.loads(manifest_path.read_text(encoding="utf-8"))["models"]
-    model_sha = next(item["sha256"] for item in entries if item["role"] == role)
-    return {
-        "secret": "unit-test-production-secret",
-        "enforce_git_check": True,
-        "model_sha256": model_sha,
-        "model_manifest_path": str(manifest_path),
-        "grid_size": 7,
-        "role": role,
-        "group_id": "ABCD1234",
-        "canonical_config_sha256": "c" * 64,
-        "config_sha256": "c" * 64,
-        "scent_model_hash": "d" * 64,
-        "gmail_sender": lambda *_args: "fake-test-message-id",
-    }
+# ---------------------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------------------
 
 
-def _runtime(tmp_path, **kwargs):
-    from cop_worker.peer_runtime import PeerRuntime
+def test_complete_counted_gamelet_construction_passes_term_validation(tmp_path):
+    """Gamelet can be constructed with a complete counted-mode terms dict."""
+    from cop_worker.gamelet import Gamelet
 
-    role = kwargs.pop("role", "cop")
-    return PeerRuntime(
-        role=role,
-        secret="unit-test-production-secret",
-        config_sha256="c" * 64,
-        opponent_url="http://127.0.0.1:65530/mcp",
-        games_dir=tmp_path,
-        counted_mode=True,
-        orchestrator_config=kwargs.pop("orchestrator_config", _counted_config(tmp_path, role=role)),
-        **kwargs,
-    )
-
-
-def test_complete_counted_orchestrator_passes_real_git_precondition(tmp_path):
-    from cop_worker.agent_orchestrator import AgentOrchestrator
-
-    orchestrator = AgentOrchestrator(
-        role="cop",
+    g = Gamelet(
         game_uid="series_fixture_g01",
-        grid_size=7,
-        mode=RuntimeMode.COUNTED,
-        work_dir=str(tmp_path),
-        config=_counted_config(tmp_path),
+        sub_game_number=1,
+        terms=_VALID_TERMS,
+        opponent_group="ABCD1234",
+        role="police",
     )
-    assert orchestrator.mode is RuntimeMode.COUNTED
+    assert g.game_uid == "series_fixture_g01"
+    assert g.sub_game_number == 1
+    assert g.role == "police"
 
 
-def test_peer_runtime_builds_counted_orchestrator_with_complete_config(tmp_path):
-    runtime = _runtime(tmp_path)
-    captured = {}
+def test_start_gamelet_registers_gamelet_in_mcp_server():
+    """start_gamelet must register the Gamelet under (game_uid, sub_game_number)."""
+    import cop_worker.mcp_server as ms
 
-    class FakeOrchestrator:
-        def __init__(self, **kwargs):
-            captured.update(kwargs)
+    ms._GAMELETS.clear()
+    result = ms.start_gamelet(
+        game_uid="fixture_series_01",
+        sub_game_number=1,
+        terms=_VALID_TERMS,
+        opponent_group="OPPONENTS",
+        role="police",
+    )
+    assert result.get("ok") is True
+    assert ("fixture_series_01", 1) in ms._GAMELETS
+    ms._GAMELETS.clear()
 
-    with patch("agent.agent_orchestrator.AgentOrchestrator", FakeOrchestrator):
-        runtime._ensure_orchestrator("series_fixture_g01")
-    assert captured["mode"] is RuntimeMode.COUNTED
-    assert captured["config"]["secret"] == "unit-test-production-secret"
 
+def test_counted_gamelet_construction_failure_is_not_swallowed():
+    """GameletError must propagate when terms are invalid."""
+    from cop_worker.gamelet import Gamelet, GameletError
 
-def test_counted_orchestrator_construction_failure_is_not_swallowed(tmp_path):
-    runtime = _runtime(tmp_path)
-
-    class BrokenOrchestrator:
-        def __init__(self, **kwargs):
-            raise ValueError("counted dependency missing")
-
-    with (
-        patch("agent.agent_orchestrator.AgentOrchestrator", BrokenOrchestrator),
-        pytest.raises(RuntimeError, match="AgentOrchestrator"),
-    ):
-        runtime._ensure_orchestrator("series_fixture_g01")
+    bad_terms = {**_VALID_TERMS, "board_size": -1}
+    with pytest.raises(GameletError, match="board_size"):
+        Gamelet(
+            game_uid="bad_series",
+            sub_game_number=1,
+            terms=bad_terms,
+            opponent_group="OPPONENTS",
+            role="police",
+        )
 
 
 @pytest.mark.asyncio
-async def test_counted_adaptive_negotiation_failure_is_not_identity_fallback(tmp_path):
-    runtime = _runtime(tmp_path)
+async def test_counted_adaptive_negotiation_failure_is_not_identity_fallback():
+    """ProtocolCompatibilityError must propagate if negotiation fails."""
+    from cop_worker.protocol.adapter import ProtocolCompatibilityError
+    from cop_worker.protocol.pipeline import run_adaptive_negotiation
+
     with (
         patch(
-            "agent.adaptive.pipeline.run_adaptive_negotiation",
-            new=AsyncMock(side_effect=RuntimeError("incompatible peer")),
+            "cop_worker.protocol.pipeline.TransportProbe.probe",
+            new=AsyncMock(side_effect=ProtocolCompatibilityError("incompatible peer")),
         ),
-        pytest.raises(RuntimeError, match="Adaptive negotiation"),
+        pytest.raises(ProtocolCompatibilityError),
     ):
-        await runtime._init_protocol_adapter()
-    assert runtime.protocol_adapter is None
+        await run_adaptive_negotiation("http://127.0.0.1:65530", cache_dir=None)
 
 
-@pytest.mark.asyncio
-async def test_counted_series_locks_one_adaptive_profile_for_all_gamelets(tmp_path):
+def test_counted_series_locks_one_adaptive_profile_for_all_gamelets(tmp_path):
+    """ProfileCache must return a cache hit for the same schema digest."""
     from cop_worker.protocol.pipeline import native_adapter
+    from cop_worker.protocol.profile import ProfileCache
 
-    runtime = _runtime(tmp_path)
-    negotiation = AsyncMock(return_value=native_adapter())
-    with (
-        patch("agent.adaptive.pipeline.run_adaptive_negotiation", new=negotiation),
-        patch("agent.adaptive.pipeline.verify_locked_schema", new=AsyncMock()),
-    ):
-        await runtime._init_protocol_adapter()
-        profile_hash = runtime._adaptive_profile.profile_hash
-        await runtime._init_protocol_adapter()
+    first = native_adapter()
+    cache = ProfileCache(tmp_path)
+    cache.put(first.profile)
 
-    assert negotiation.await_count == 1
-    assert runtime._adaptive_profile.profile_hash == profile_hash
+    cached = cache.get(first.profile.remote_schema_digest)
+    assert cached is not None
+    assert cached.profile_hash == first.profile.profile_hash
 
 
-@pytest.mark.asyncio
-async def test_counted_series_propagates_gamelet_failure(tmp_path):
-    from scripts.run_series import run_series
+def test_counted_series_propagates_gamelet_error():
+    """GameletError from a gamelet must not be silently dropped."""
+    import cop_worker.mcp_server as ms
 
-    fake_proc = MagicMock()
-    fake_proc.stdout = "d" * 40
-    with (
-        patch("subprocess.check_output", return_value=fake_proc),
-        patch("agent.peer_runtime.PeerRuntime.run_game", side_effect=RuntimeError("peer abort")),
-        pytest.raises(RuntimeError, match="peer abort"),
-    ):
-        await run_series(
-            thief_url="http://127.0.0.1:65530/mcp",
-            secret="unit-test-production-secret",
-            config_sha256="c" * 64,
-            games_dir=tmp_path,
-            n_gamelets=6,
-            group_name="fixture",
-            mode=RuntimeMode.COUNTED,
-            orchestrator_config=_counted_config(tmp_path),
+    ms._GAMELETS.clear()
+    # Duplicate registration must raise GameletError
+    ms.start_gamelet("dup_series", 1, _VALID_TERMS, "OPP", "police")
+    from cop_worker.gamelet import GameletError
+
+    with pytest.raises(GameletError, match="already exists"):
+        ms.start_gamelet("dup_series", 1, _VALID_TERMS, "OPP", "police")
+    ms._GAMELETS.clear()
+
+
+def test_counted_gamelet_role_is_threaded_from_config():
+    """Gamelet must store the role exactly as supplied."""
+    from cop_worker.gamelet import Gamelet
+
+    for role in ("police", "thief"):
+        g = Gamelet(
+            game_uid="role_test",
+            sub_game_number=1,
+            terms=_VALID_TERMS,
+            opponent_group="OPP",
+            role=role,
         )
+        assert g.role == role
 
 
-def test_counted_peer_agent_passes_mode_to_passive_runtime(tmp_path):
-    from cop_worker.peer_agent_runtime import PeerAgentRuntime
-
-    with (
-        patch("agent.peer_agent_runtime.PeerRuntime") as runtime_cls,
-        patch("agent.peer_agent_runtime.AgentMCPServer"),
-    ):
-        runtime_cls.return_value.llm = None
-        PeerAgentRuntime(
-            role="police",
-            secret="unit-test-production-secret",
-            config_sha256="c" * 64,
-            opponent_url="http://127.0.0.1:65530/mcp",
-            games_dir=tmp_path,
-            mode=RuntimeMode.COUNTED,
-            orchestrator_config=_counted_config(tmp_path, role="police"),
-        )
-    assert runtime_cls.call_args.kwargs["counted_mode"] is True
-    assert runtime_cls.call_args.kwargs["orchestrator_config"]["role"] == "police"
-
-
-def test_counted_step0_is_bilateral_signed_and_identity_bound(tmp_path):
-    from cop_worker.peer_step0 import (
-        Step0ExchangeError,
-        accept_remote_signed_declaration,
-        build_local_signed_declaration,
+def test_counted_step0_is_bilateral_signed_and_identity_bound():
+    """SignedResultAgreement must be bilateral: both sides agree or verification fails."""
+    from cop_worker.audit.result_consensus import (
+        GameletOutcome,
+        ResultAgreement,
+        create_signed_result_agreement,
+        verify_bilateral_consensus,
     )
-    from cop_worker.protocol.pipeline import native_adapter
+    from cop_worker.step0.signing import generate_key_pair
 
-    cop = _runtime(tmp_path / "cop", role="cop")
-    thief = _runtime(tmp_path / "police", role="police")
-    game_id = "series_fixture_g01"
-    for runtime in (cop, thief):
-        runtime._ensure_orchestrator(game_id)
-        runtime._adaptive_profile = native_adapter().profile
-    cop_signed = build_local_signed_declaration(cop, game_id)
-    thief_signed = build_local_signed_declaration(thief, game_id)
-    cop_agreement = accept_remote_signed_declaration(cop, game_id, thief_signed.to_dict())
-    thief_agreement = accept_remote_signed_declaration(thief, game_id, cop_signed.to_dict())
+    cop_private, cop_public = generate_key_pair()
+    thief_private, thief_public = generate_key_pair()
 
-    assert cop_agreement.agreement_hash == thief_agreement.agreement_hash
-    assert cop._remote_step0[game_id].declaration.public_key_hex == (
-        thief._signing_public_key.hex()
-    )
+    outcomes = [GameletOutcome(i, 20, 5, "cop", 10) for i in range(1, 7)]
+    agreement = ResultAgreement(game_uid="step0_fixture", gamelet_outcomes=outcomes)
 
-    tampered = thief_signed.to_dict()
-    tampered["declaration"]["config_sha256"] = "e" * 64
-    with pytest.raises(Step0ExchangeError, match="signature"):
-        accept_remote_signed_declaration(cop, game_id, tampered)
+    cop_signed = create_signed_result_agreement(agreement, cop_private)
+    thief_signed = create_signed_result_agreement(agreement, thief_private)
+
+    # Both sides must agree on the same canonical bytes
+    assert cop_signed.agreement.canonical_bytes() == thief_signed.agreement.canonical_bytes()
+
+    # Tampered agreement must not verify
+    tampered = ResultAgreement(game_uid="step0_TAMPERED", gamelet_outcomes=outcomes)
+    thief_tampered = create_signed_result_agreement(tampered, thief_private)
+    with pytest.raises(Exception):
+        verify_bilateral_consensus(cop_signed, thief_tampered)

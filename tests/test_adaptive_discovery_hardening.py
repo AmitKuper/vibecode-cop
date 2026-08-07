@@ -8,6 +8,7 @@ from copy import deepcopy
 from types import SimpleNamespace
 
 import pytest
+
 from cop_worker.mcp.client import GameMCPClient
 from cop_worker.protocol.adapter import DeterministicProtocolAdapter
 from cop_worker.protocol.conformance import ConformanceProbes

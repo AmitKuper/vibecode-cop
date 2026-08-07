@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 
 import pytest
+
 from cop_worker.gmail.sender import AcceptanceFileGmailSender, GmailApiSender
 from cop_worker.protocol.adapter import AdaptedRequest, ProtocolCompatibilityError
 from cop_worker.protocol.conformance import ConformanceProbes, ConformanceReport, ProbeOutcome
@@ -83,11 +84,11 @@ async def _patch_transport(monkeypatch, probe=None, intro=None):
     async def fake_intro(_self, _probe_result):
         return chosen_intro
 
-    monkeypatch.setattr("agent.adaptive.pipeline.TransportProbe.probe", fake_probe)
-    monkeypatch.setattr("agent.adaptive.pipeline.MCPIntrospector.introspect", fake_intro)
+    monkeypatch.setattr("cop_worker.protocol.pipeline.TransportProbe.probe", fake_probe)
+    monkeypatch.setattr("cop_worker.protocol.pipeline.MCPIntrospector.introspect", fake_intro)
 
     monkeypatch.setattr(
-        "agent.adaptive.pipeline._discovered_tool_caller", lambda _probe: _conforming_probe
+        "cop_worker.protocol.pipeline._discovered_tool_caller", lambda _probe: _conforming_probe
     )
 
 
@@ -121,7 +122,7 @@ async def test_negotiation_rejects_static_and_conformance_failures(monkeypatch, 
     incompatible = ProtocolMappingPlan.native_plan()
     incompatible.verdict = CompatibilityVerdict.INCOMPATIBLE
     monkeypatch.setattr(
-        "agent.adaptive.pipeline.ProtocolUnderstandingAgent.create_plan",
+        "cop_worker.protocol.pipeline.ProtocolUnderstandingAgent.create_plan",
         lambda _self, _intro_result: incompatible,
     )
     with pytest.raises(ProtocolCompatibilityError, match="Static verification failed"):
@@ -129,11 +130,11 @@ async def test_negotiation_rejects_static_and_conformance_failures(monkeypatch, 
 
     compatible = ProtocolMappingPlan.native_plan()
     monkeypatch.setattr(
-        "agent.adaptive.pipeline.ProtocolUnderstandingAgent.create_plan",
+        "cop_worker.protocol.pipeline.ProtocolUnderstandingAgent.create_plan",
         lambda _self, _intro_result: compatible,
     )
     failed = ConformanceReport(False, [ProbeOutcome("broken", False)])
-    monkeypatch.setattr("agent.adaptive.pipeline.ConformanceProbes.run_all", lambda _self: failed)
+    monkeypatch.setattr("cop_worker.protocol.pipeline.ConformanceProbes.run_all", lambda _self: failed)
     with pytest.raises(ProtocolCompatibilityError, match="Conformance probes failed"):
         await run_adaptive_negotiation("http://peer", cache_dir=tmp_path)
 
@@ -145,11 +146,11 @@ def test_negotiation_sync_native_and_result_accessors(monkeypatch, tmp_path) -> 
     async def fake_intro(_self, _probe_result):
         return _intro()
 
-    monkeypatch.setattr("agent.adaptive.pipeline.TransportProbe.probe", fake_probe)
-    monkeypatch.setattr("agent.adaptive.pipeline.MCPIntrospector.introspect", fake_intro)
+    monkeypatch.setattr("cop_worker.protocol.pipeline.TransportProbe.probe", fake_probe)
+    monkeypatch.setattr("cop_worker.protocol.pipeline.MCPIntrospector.introspect", fake_intro)
 
     monkeypatch.setattr(
-        "agent.adaptive.pipeline._discovered_tool_caller", lambda _probe: _conforming_probe
+        "cop_worker.protocol.pipeline._discovered_tool_caller", lambda _probe: _conforming_probe
     )
     sync = run_adaptive_negotiation_sync("http://peer", cache_dir=tmp_path)
     assert isinstance(sync, AdaptiveNegotiationResult)
@@ -251,7 +252,7 @@ def test_gmail_sender_calls_real_api_boundary(monkeypatch, tmp_path) -> None:
     token_path.write_text(json.dumps({"token": "access"}), encoding="utf-8")
     sender = GmailApiSender(token_path)
     monkeypatch.setattr(
-        "agent.reports.gmail_send.load_oauth_credentials",
+        "league_manager.reports.gmail_send.load_oauth_credentials",
         lambda path: ("credentials", path),
     )
 
@@ -261,7 +262,7 @@ def test_gmail_sender_calls_real_api_boundary(monkeypatch, tmp_path) -> None:
         assert credentials[0] == "credentials"
         return "gmail-message-id"
 
-    monkeypatch.setattr("agent.reports.gmail_send.gmail_api_send", fake_send)
+    monkeypatch.setattr("league_manager.reports.gmail_send.gmail_api_send", fake_send)
     assert sender("to@example.com", "subject", "body", []) == "gmail-message-id"
 
 

@@ -12,6 +12,9 @@ from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
+from fastmcp import Client
+from fastmcp.client.transports import SSETransport, StdioTransport, StreamableHttpTransport
+
 from cop_worker.protocol.adapter import DeterministicProtocolAdapter
 from cop_worker.protocol.conformance import ConformanceProbes
 from cop_worker.protocol.introspector import MCPIntrospector
@@ -19,8 +22,6 @@ from cop_worker.protocol.profile import ProtocolProfile
 from cop_worker.protocol.protocol_agent import ProtocolUnderstandingAgent
 from cop_worker.protocol.transport_probe import ProbeResult, TransportProbe, TransportType
 from cop_worker.protocol.verifier import StaticSemanticVerifier
-from fastmcp import Client
-from fastmcp.client.transports import SSETransport, StdioTransport, StreamableHttpTransport
 
 SERVER = Path(__file__).parent / "fixtures" / "adaptive_peer_server.py"
 COMPATIBLE = (

@@ -4,6 +4,7 @@ import copy
 import json
 
 import pytest
+
 from cop_worker.protocol.introspector import IntrospectionResult, ToolSchema
 from cop_worker.protocol.reference_v3 import (
     REFERENCE_V3_TOOLS,
@@ -68,7 +69,7 @@ def _greetings() -> tuple[dict, dict]:
         nonce="22" * 16,
         group_id="sparring-theirs",
         group_name="Theirs",
-        role="police",
+        role="thief",
         sub_game_number=1,
         opponent_group="sparring-ours",
     )

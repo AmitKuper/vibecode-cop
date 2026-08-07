@@ -1,29 +1,29 @@
 {
   "role": "cop",
-  "held_out_series": 300,
-  "held_out_games": 1800,
-  "wins": 1493,
-  "win_rate": 0.8294444444444444,
+  "held_out_series": 200,
+  "held_out_games": 1200,
+  "wins": 967,
+  "win_rate": 0.8058333333333333,
   "confidence_95": [
-    0.8113713083859626,
-    0.8461143599787098
+    0.7824910294572929,
+    0.8272237370036766
   ],
-  "series_wins": 298,
-  "series_win_rate": 0.9933333333333333,
+  "series_wins": 198,
+  "series_win_rate": 0.99,
   "series_confidence_95": [
-    0.9760219257685385,
-    0.9981698899670288
+    0.9642775148038205,
+    0.9972533993962251
   ],
-  "official_role_score": 31395,
-  "official_opponent_score": 10535,
-  "worst_family_win_rate": 0.5777777777777777,
-  "worst_family_series_win_rate": 0.9333333333333333,
-  "average_turns": 15.009444444444444,
-  "average_inference_and_environment_ms": 3.246860269462066,
+  "official_role_score": 20505,
+  "official_opponent_score": 7165,
+  "worst_family_win_rate": 0.48333333333333334,
+  "worst_family_series_win_rate": 0.9,
+  "average_turns": 15.175,
+  "average_inference_and_environment_ms": 13.4315736683139,
   "inference_latency_ms": {
-    "p50": 0.2343999221920967,
-    "p95": 0.30712010338902446,
-    "p99": 0.3707001078873873
+    "p50": 1.9509999983711168,
+    "p95": 7.856675000220999,
+    "p99": 11.622553988418074
   },
   "technical_failures": 0,
   "illegal_action_rate": 0.0,
@@ -32,34 +32,34 @@
   "inference_temperature": null,
   "families": {
     "random": {
-      "series": 30,
-      "games": 180,
-      "wins": 135,
-      "win_rate": 0.75,
+      "series": 20,
+      "games": 120,
+      "wins": 98,
+      "win_rate": 0.8166666666666667,
       "confidence_95": [
-        0.681964014563061,
-        0.80758786052941
+        0.7379892641067634,
+        0.8756978975578147
       ],
-      "series_wins": 30,
+      "series_wins": 20,
       "series_win_rate": 1.0,
       "series_confidence_95": [
-        0.8864829086095221,
+        0.8388698745050667,
         1.0
       ],
-      "official_role_score": 2925,
-      "official_opponent_score": 1125,
-      "average_turns": 16.82777777777778,
-      "capture_rate": 0.75,
-      "survival_rate": 0.25,
-      "barrier_placements": 389,
-      "barrier_efficiency": 0.34704370179948585,
+      "official_role_score": 2070,
+      "official_opponent_score": 710,
+      "average_turns": 13.75,
+      "capture_rate": 0.8166666666666667,
+      "survival_rate": 0.18333333333333332,
+      "barrier_placements": 219,
+      "barrier_efficiency": 0.4474885844748858,
       "risk_mask_pruned_rate": 0.0,
       "series_results": [
         {
           "series": 1,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
@@ -78,16 +78,16 @@
         },
         {
           "series": 4,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
           "series": 5,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
@@ -120,9 +120,9 @@
         },
         {
           "series": 10,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
@@ -134,9 +134,9 @@
         },
         {
           "series": 12,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
@@ -148,37 +148,37 @@
         },
         {
           "series": 14,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
+          "series_won": true
+        },
+        {
+          "series": 15,
           "gamelet_wins": 6,
           "role_score": 120,
           "opponent_score": 30,
           "series_won": true
         },
         {
-          "series": 15,
+          "series": 16,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
+          "series_won": true
+        },
+        {
+          "series": 17,
           "gamelet_wins": 4,
           "role_score": 90,
           "opponent_score": 40,
           "series_won": true
         },
         {
-          "series": 16,
-          "gamelet_wins": 2,
-          "role_score": 60,
-          "opponent_score": 50,
-          "series_won": true
-        },
-        {
-          "series": 17,
+          "series": 18,
           "gamelet_wins": 3,
           "role_score": 75,
           "opponent_score": 45,
-          "series_won": true
-        },
-        {
-          "series": 18,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
           "series_won": true
         },
         {
@@ -190,105 +190,35 @@
         },
         {
           "series": 20,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 21,
-          "gamelet_wins": 2,
-          "role_score": 60,
-          "opponent_score": 50,
-          "series_won": true
-        },
-        {
-          "series": 22,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 23,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 24,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 25,
           "gamelet_wins": 4,
           "role_score": 90,
           "opponent_score": 40,
-          "series_won": true
-        },
-        {
-          "series": 26,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 27,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
-          "series_won": true
-        },
-        {
-          "series": 28,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
-          "series_won": true
-        },
-        {
-          "series": 29,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
-          "series_won": true
-        },
-        {
-          "series": 30,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
           "series_won": true
         }
       ]
     },
     "belief_pursuit_evasion": {
-      "series": 30,
-      "games": 180,
-      "wins": 174,
-      "win_rate": 0.9666666666666667,
+      "series": 20,
+      "games": 120,
+      "wins": 107,
+      "win_rate": 0.8916666666666667,
       "confidence_95": [
-        0.9291947482669836,
-        0.9846354185722956
+        0.8234449199472613,
+        0.9355892010589275
       ],
-      "series_wins": 30,
+      "series_wins": 20,
       "series_win_rate": 1.0,
       "series_confidence_95": [
-        0.8864829086095221,
+        0.8388698745050667,
         1.0
       ],
-      "official_role_score": 3510,
-      "official_opponent_score": 930,
-      "average_turns": 11.3,
-      "capture_rate": 0.9666666666666667,
-      "survival_rate": 0.03333333333333333,
-      "barrier_placements": 185,
-      "barrier_efficiency": 0.9405405405405406,
+      "official_role_score": 2205,
+      "official_opponent_score": 665,
+      "average_turns": 12.541666666666666,
+      "capture_rate": 0.8916666666666667,
+      "survival_rate": 0.10833333333333334,
+      "barrier_placements": 144,
+      "barrier_efficiency": 0.7430555555555556,
       "risk_mask_pruned_rate": 0.0,
       "series_results": [
         {
@@ -300,9 +230,9 @@
         },
         {
           "series": 2,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
@@ -321,23 +251,23 @@
         },
         {
           "series": 5,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
           "series": 6,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
           "series": 7,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
@@ -356,9 +286,9 @@
         },
         {
           "series": 10,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
@@ -370,23 +300,23 @@
         },
         {
           "series": 12,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
           "series": 13,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
           "series": 14,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
@@ -398,104 +328,34 @@
         },
         {
           "series": 16,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
           "series": 17,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
           "series": 18,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
           "series": 19,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
           "series": 20,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 21,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 22,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 23,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 24,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 25,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 26,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 27,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 28,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 29,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 30,
           "gamelet_wins": 6,
           "role_score": 120,
           "opponent_score": 30,
@@ -504,83 +364,83 @@
       ]
     },
     "wall": {
-      "series": 30,
-      "games": 180,
-      "wins": 136,
-      "win_rate": 0.7555555555555555,
+      "series": 20,
+      "games": 120,
+      "wins": 81,
+      "win_rate": 0.675,
       "confidence_95": [
-        0.6878625842267486,
-        0.8125682214233328
+        0.5869001692187791,
+        0.7522427359116458
       ],
-      "series_wins": 30,
+      "series_wins": 20,
       "series_win_rate": 1.0,
       "series_confidence_95": [
-        0.8864829086095221,
+        0.8388698745050667,
         1.0
       ],
-      "official_role_score": 2940,
-      "official_opponent_score": 1120,
-      "average_turns": 15.75,
-      "capture_rate": 0.7555555555555555,
-      "survival_rate": 0.24444444444444444,
-      "barrier_placements": 239,
-      "barrier_efficiency": 0.5690376569037657,
+      "official_role_score": 1815,
+      "official_opponent_score": 795,
+      "average_turns": 17.375,
+      "capture_rate": 0.675,
+      "survival_rate": 0.325,
+      "barrier_placements": 210,
+      "barrier_efficiency": 0.38571428571428573,
       "risk_mask_pruned_rate": 0.0,
       "series_results": [
         {
           "series": 1,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
           "series": 2,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 3,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
-          "series_won": true
-        },
-        {
-          "series": 4,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 5,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
-          "series_won": true
-        },
-        {
-          "series": 6,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
-          "series_won": true
-        },
-        {
-          "series": 7,
           "gamelet_wins": 6,
           "role_score": 120,
           "opponent_score": 30,
           "series_won": true
         },
         {
-          "series": 8,
+          "series": 3,
           "gamelet_wins": 5,
           "role_score": 105,
           "opponent_score": 35,
+          "series_won": true
+        },
+        {
+          "series": 4,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
+          "series_won": true
+        },
+        {
+          "series": 5,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
+          "series_won": true
+        },
+        {
+          "series": 6,
+          "gamelet_wins": 3,
+          "role_score": 75,
+          "opponent_score": 45,
+          "series_won": true
+        },
+        {
+          "series": 7,
+          "gamelet_wins": 3,
+          "role_score": 75,
+          "opponent_score": 45,
+          "series_won": true
+        },
+        {
+          "series": 8,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
@@ -592,9 +452,9 @@
         },
         {
           "series": 10,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
@@ -606,161 +466,91 @@
         },
         {
           "series": 12,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
+          "gamelet_wins": 3,
+          "role_score": 75,
+          "opponent_score": 45,
           "series_won": true
         },
         {
           "series": 13,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
+          "gamelet_wins": 3,
+          "role_score": 75,
+          "opponent_score": 45,
           "series_won": true
         },
         {
           "series": 14,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
           "series": 15,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
           "series": 16,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
           "series": 17,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
           "series": 18,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 3,
+          "role_score": 75,
+          "opponent_score": 45,
           "series_won": true
         },
         {
           "series": 19,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
+          "gamelet_wins": 3,
+          "role_score": 75,
+          "opponent_score": 45,
           "series_won": true
         },
         {
           "series": 20,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 21,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 22,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 23,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 24,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 25,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 26,
           "gamelet_wins": 3,
           "role_score": 75,
           "opponent_score": 45,
-          "series_won": true
-        },
-        {
-          "series": 27,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
-          "series_won": true
-        },
-        {
-          "series": 28,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 29,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 30,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
           "series_won": true
         }
       ]
     },
     "local_adversarial_ensemble": {
-      "series": 30,
-      "games": 180,
-      "wins": 154,
-      "win_rate": 0.8555555555555555,
+      "series": 20,
+      "games": 120,
+      "wins": 102,
+      "win_rate": 0.85,
       "confidence_95": [
-        0.7967685455528166,
-        0.899483010134253
+        0.7753231505975375,
+        0.9029626596633118
       ],
-      "series_wins": 30,
+      "series_wins": 20,
       "series_win_rate": 1.0,
       "series_confidence_95": [
-        0.8864829086095221,
+        0.8388698745050667,
         1.0
       ],
-      "official_role_score": 3210,
-      "official_opponent_score": 1030,
-      "average_turns": 13.844444444444445,
-      "capture_rate": 0.8555555555555555,
-      "survival_rate": 0.14444444444444443,
-      "barrier_placements": 226,
-      "barrier_efficiency": 0.6814159292035398,
+      "official_role_score": 2130,
+      "official_opponent_score": 690,
+      "average_turns": 13.25,
+      "capture_rate": 0.85,
+      "survival_rate": 0.15,
+      "barrier_placements": 147,
+      "barrier_efficiency": 0.6938775510204082,
       "risk_mask_pruned_rate": 0.0,
       "series_results": [
         {
@@ -772,30 +562,30 @@
         },
         {
           "series": 2,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 3,
           "gamelet_wins": 4,
           "role_score": 90,
           "opponent_score": 40,
           "series_won": true
         },
         {
+          "series": 3,
+          "gamelet_wins": 3,
+          "role_score": 75,
+          "opponent_score": 45,
+          "series_won": true
+        },
+        {
           "series": 4,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
           "series": 5,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
@@ -807,16 +597,16 @@
         },
         {
           "series": 7,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
           "series": 8,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
@@ -828,16 +618,16 @@
         },
         {
           "series": 10,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
           "series": 11,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
@@ -863,9 +653,9 @@
         },
         {
           "series": 15,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
@@ -877,9 +667,9 @@
         },
         {
           "series": 17,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
@@ -901,116 +691,46 @@
           "gamelet_wins": 5,
           "role_score": 105,
           "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 21,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
-          "series_won": true
-        },
-        {
-          "series": 22,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 23,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
-          "series_won": true
-        },
-        {
-          "series": 24,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 25,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 26,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
-          "series_won": true
-        },
-        {
-          "series": 27,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
-          "series_won": true
-        },
-        {
-          "series": 28,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 29,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
-          "series_won": true
-        },
-        {
-          "series": 30,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
           "series_won": true
         }
       ]
     },
     "historical_checkpoint": {
-      "series": 30,
-      "games": 180,
-      "wins": 168,
-      "win_rate": 0.9333333333333333,
+      "series": 20,
+      "games": 120,
+      "wins": 111,
+      "win_rate": 0.925,
       "confidence_95": [
-        0.8871002756924606,
-        0.9614563078011558
+        0.8635894316089088,
+        0.9600433379935513
       ],
-      "series_wins": 30,
+      "series_wins": 20,
       "series_win_rate": 1.0,
       "series_confidence_95": [
-        0.8864829086095221,
+        0.8388698745050667,
         1.0
       ],
-      "official_role_score": 3420,
-      "official_opponent_score": 960,
-      "average_turns": 10.577777777777778,
-      "capture_rate": 0.9333333333333333,
-      "survival_rate": 0.06666666666666667,
-      "barrier_placements": 194,
-      "barrier_efficiency": 0.865979381443299,
+      "official_role_score": 2265,
+      "official_opponent_score": 645,
+      "average_turns": 11.4,
+      "capture_rate": 0.925,
+      "survival_rate": 0.075,
+      "barrier_placements": 180,
+      "barrier_efficiency": 0.6166666666666667,
       "risk_mask_pruned_rate": 0.0,
       "series_results": [
         {
           "series": 1,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
           "series": 2,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
@@ -1022,23 +742,23 @@
         },
         {
           "series": 4,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
+          "series_won": true
+        },
+        {
+          "series": 5,
           "gamelet_wins": 6,
           "role_score": 120,
           "opponent_score": 30,
           "series_won": true
         },
         {
-          "series": 5,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
           "series": 6,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
@@ -1057,30 +777,30 @@
         },
         {
           "series": 9,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 10,
           "gamelet_wins": 5,
           "role_score": 105,
           "opponent_score": 35,
           "series_won": true
         },
         {
+          "series": 10,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
+          "series_won": true
+        },
+        {
           "series": 11,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
           "series": 12,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
@@ -1092,16 +812,16 @@
         },
         {
           "series": 14,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
           "series": 15,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
@@ -1134,126 +854,56 @@
         },
         {
           "series": 20,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 21,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 22,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 23,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 24,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 25,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 26,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 27,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 28,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 29,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 30,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 3,
+          "role_score": 75,
+          "opponent_score": 45,
           "series_won": true
         }
       ]
     },
     "scent_following": {
-      "series": 30,
-      "games": 180,
-      "wins": 146,
-      "win_rate": 0.8111111111111111,
+      "series": 20,
+      "games": 120,
+      "wins": 93,
+      "win_rate": 0.775,
       "confidence_95": [
-        0.7476559023231929,
-        0.8615642089029932
+        0.6924293655773726,
+        0.8405094853418662
       ],
-      "series_wins": 30,
+      "series_wins": 20,
       "series_win_rate": 1.0,
       "series_confidence_95": [
-        0.8864829086095221,
+        0.8388698745050667,
         1.0
       ],
-      "official_role_score": 3090,
-      "official_opponent_score": 1070,
-      "average_turns": 18.538888888888888,
-      "capture_rate": 0.8111111111111111,
-      "survival_rate": 0.18888888888888888,
-      "barrier_placements": 313,
-      "barrier_efficiency": 0.46645367412140576,
+      "official_role_score": 1995,
+      "official_opponent_score": 735,
+      "average_turns": 18.091666666666665,
+      "capture_rate": 0.775,
+      "survival_rate": 0.225,
+      "barrier_placements": 223,
+      "barrier_efficiency": 0.4170403587443946,
       "risk_mask_pruned_rate": 0.0,
       "series_results": [
         {
           "series": 1,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
           "series": 2,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
           "series": 3,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 3,
+          "role_score": 75,
+          "opponent_score": 45,
           "series_won": true
         },
         {
@@ -1293,9 +943,9 @@
         },
         {
           "series": 9,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
@@ -1328,9 +978,9 @@
         },
         {
           "series": 14,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
@@ -1349,126 +999,56 @@
         },
         {
           "series": 17,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
           "series": 18,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
           "series": 19,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
           "series": 20,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 21,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 22,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 23,
           "gamelet_wins": 4,
           "role_score": 90,
           "opponent_score": 40,
-          "series_won": true
-        },
-        {
-          "series": 24,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
-          "series_won": true
-        },
-        {
-          "series": 25,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 26,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 27,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 28,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 29,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
-          "series_won": true
-        },
-        {
-          "series": 30,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
           "series_won": true
         }
       ]
     },
     "corridor_cutting": {
-      "series": 30,
-      "games": 180,
-      "wins": 174,
-      "win_rate": 0.9666666666666667,
+      "series": 20,
+      "games": 120,
+      "wins": 112,
+      "win_rate": 0.9333333333333333,
       "confidence_95": [
-        0.9291947482669836,
-        0.9846354185722956
+        0.8739473292228184,
+        0.9658351025287095
       ],
-      "series_wins": 30,
+      "series_wins": 20,
       "series_win_rate": 1.0,
       "series_confidence_95": [
-        0.8864829086095221,
+        0.8388698745050667,
         1.0
       ],
-      "official_role_score": 3510,
-      "official_opponent_score": 930,
-      "average_turns": 11.783333333333333,
-      "capture_rate": 0.9666666666666667,
-      "survival_rate": 0.03333333333333333,
-      "barrier_placements": 244,
-      "barrier_efficiency": 0.7131147540983607,
+      "official_role_score": 2280,
+      "official_opponent_score": 640,
+      "average_turns": 12.183333333333334,
+      "capture_rate": 0.9333333333333333,
+      "survival_rate": 0.06666666666666667,
+      "barrier_placements": 167,
+      "barrier_efficiency": 0.6706586826347305,
       "risk_mask_pruned_rate": 0.0,
       "series_results": [
         {
@@ -1480,16 +1060,16 @@
         },
         {
           "series": 2,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
           "series": 3,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
@@ -1501,30 +1081,30 @@
         },
         {
           "series": 5,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
           "series": 6,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
           "series": 7,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
           "series": 8,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
@@ -1536,9 +1116,9 @@
         },
         {
           "series": 10,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
@@ -1599,119 +1179,49 @@
         },
         {
           "series": 19,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
           "series": 20,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 21,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 22,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 23,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 24,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 25,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 26,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 27,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 28,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 29,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 30,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         }
       ]
     },
     "anti_loop": {
-      "series": 30,
-      "games": 180,
-      "wins": 140,
-      "win_rate": 0.7777777777777778,
+      "series": 20,
+      "games": 120,
+      "wins": 105,
+      "win_rate": 0.875,
       "confidence_95": [
-        0.7115961997536944,
-        0.832350328126829
+        0.8039690855177497,
+        0.9227657111903032
       ],
-      "series_wins": 30,
+      "series_wins": 20,
       "series_win_rate": 1.0,
       "series_confidence_95": [
-        0.8864829086095221,
+        0.8388698745050667,
         1.0
       ],
-      "official_role_score": 3000,
-      "official_opponent_score": 1100,
-      "average_turns": 16.45,
-      "capture_rate": 0.7777777777777778,
-      "survival_rate": 0.2222222222222222,
-      "barrier_placements": 239,
-      "barrier_efficiency": 0.5857740585774058,
+      "official_role_score": 2175,
+      "official_opponent_score": 675,
+      "average_turns": 14.525,
+      "capture_rate": 0.875,
+      "survival_rate": 0.125,
+      "barrier_placements": 183,
+      "barrier_efficiency": 0.5737704918032787,
       "risk_mask_pruned_rate": 0.0,
       "series_results": [
         {
           "series": 1,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
@@ -1723,37 +1233,37 @@
         },
         {
           "series": 3,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 4,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
-          "series_won": true
-        },
-        {
-          "series": 5,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
-          "series_won": true
-        },
-        {
-          "series": 6,
           "gamelet_wins": 5,
           "role_score": 105,
           "opponent_score": 35,
           "series_won": true
         },
         {
-          "series": 7,
+          "series": 4,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
+          "series_won": true
+        },
+        {
+          "series": 5,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
+          "series_won": true
+        },
+        {
+          "series": 6,
           "gamelet_wins": 4,
           "role_score": 90,
           "opponent_score": 40,
+          "series_won": true
+        },
+        {
+          "series": 7,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
@@ -1765,9 +1275,9 @@
         },
         {
           "series": 9,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
@@ -1779,23 +1289,23 @@
         },
         {
           "series": 11,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
+          "series_won": true
+        },
+        {
+          "series": 12,
           "gamelet_wins": 5,
           "role_score": 105,
           "opponent_score": 35,
           "series_won": true
         },
         {
-          "series": 12,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
-          "series_won": true
-        },
-        {
           "series": 13,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
@@ -1807,23 +1317,23 @@
         },
         {
           "series": 15,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
           "series": 16,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
           "series": 17,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
@@ -1835,83 +1345,13 @@
         },
         {
           "series": 19,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
           "series": 20,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 21,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 22,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
-          "series_won": true
-        },
-        {
-          "series": 23,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 24,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 25,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 26,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 27,
-          "gamelet_wins": 2,
-          "role_score": 60,
-          "opponent_score": 50,
-          "series_won": true
-        },
-        {
-          "series": 28,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
-          "series_won": true
-        },
-        {
-          "series": 29,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
-          "series_won": true
-        },
-        {
-          "series": 30,
           "gamelet_wins": 5,
           "role_score": 105,
           "opponent_score": 35,
@@ -1920,62 +1360,62 @@
       ]
     },
     "targeted_exploit": {
-      "series": 30,
-      "games": 180,
-      "wins": 104,
-      "win_rate": 0.5777777777777777,
+      "series": 20,
+      "games": 120,
+      "wins": 58,
+      "win_rate": 0.48333333333333334,
       "confidence_95": [
-        0.5047361675674037,
-        0.6475688602391426
+        0.3958348942305447,
+        0.5718657814713197
       ],
-      "series_wins": 28,
-      "series_win_rate": 0.9333333333333333,
+      "series_wins": 18,
+      "series_win_rate": 0.9,
       "series_confidence_95": [
-        0.7867618227892791,
-        0.9815233646723066
+        0.6989617935882066,
+        0.9721341060158468
       ],
-      "official_role_score": 2460,
-      "official_opponent_score": 1280,
-      "average_turns": 22.083333333333332,
-      "capture_rate": 0.5777777777777777,
-      "survival_rate": 0.4222222222222222,
-      "barrier_placements": 548,
-      "barrier_efficiency": 0.1897810218978102,
+      "official_role_score": 1470,
+      "official_opponent_score": 910,
+      "average_turns": 24.55,
+      "capture_rate": 0.48333333333333334,
+      "survival_rate": 0.5166666666666667,
+      "barrier_placements": 459,
+      "barrier_efficiency": 0.12636165577342048,
       "risk_mask_pruned_rate": 0.0,
       "series_results": [
         {
           "series": 1,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 2,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
-          "series_won": true
-        },
-        {
-          "series": 3,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
-          "series_won": true
-        },
-        {
-          "series": 4,
           "gamelet_wins": 1,
           "role_score": 45,
           "opponent_score": 55,
           "series_won": false
         },
         {
+          "series": 2,
+          "gamelet_wins": 2,
+          "role_score": 60,
+          "opponent_score": 50,
+          "series_won": true
+        },
+        {
+          "series": 3,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
+          "series_won": true
+        },
+        {
+          "series": 4,
+          "gamelet_wins": 2,
+          "role_score": 60,
+          "opponent_score": 50,
+          "series_won": true
+        },
+        {
           "series": 5,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
@@ -1987,30 +1427,30 @@
         },
         {
           "series": 7,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 2,
+          "role_score": 60,
+          "opponent_score": 50,
           "series_won": true
         },
         {
           "series": 8,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
           "series": 9,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
+          "gamelet_wins": 2,
+          "role_score": 60,
+          "opponent_score": 50,
           "series_won": true
         },
         {
           "series": 10,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
+          "gamelet_wins": 3,
+          "role_score": 75,
+          "opponent_score": 45,
           "series_won": true
         },
         {
@@ -2029,9 +1469,9 @@
         },
         {
           "series": 13,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
+          "gamelet_wins": 2,
+          "role_score": 60,
+          "opponent_score": 50,
           "series_won": true
         },
         {
@@ -2043,17 +1483,17 @@
         },
         {
           "series": 15,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
           "series": 16,
-          "gamelet_wins": 1,
-          "role_score": 45,
-          "opponent_score": 55,
-          "series_won": false
+          "gamelet_wins": 3,
+          "role_score": 75,
+          "opponent_score": 45,
+          "series_won": true
         },
         {
           "series": 17,
@@ -2064,126 +1504,56 @@
         },
         {
           "series": 18,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 19,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 20,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
-          "series_won": true
-        },
-        {
-          "series": 21,
-          "gamelet_wins": 2,
-          "role_score": 60,
-          "opponent_score": 50,
-          "series_won": true
-        },
-        {
-          "series": 22,
-          "gamelet_wins": 2,
-          "role_score": 60,
-          "opponent_score": 50,
-          "series_won": true
-        },
-        {
-          "series": 23,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 24,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 25,
-          "gamelet_wins": 2,
-          "role_score": 60,
-          "opponent_score": 50,
-          "series_won": true
-        },
-        {
-          "series": 26,
           "gamelet_wins": 4,
           "role_score": 90,
           "opponent_score": 40,
           "series_won": true
         },
         {
-          "series": 27,
+          "series": 19,
           "gamelet_wins": 3,
           "role_score": 75,
           "opponent_score": 45,
           "series_won": true
         },
         {
-          "series": 28,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
-          "series_won": true
-        },
-        {
-          "series": 29,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 30,
-          "gamelet_wins": 2,
-          "role_score": 60,
-          "opponent_score": 50,
-          "series_won": true
+          "series": 20,
+          "gamelet_wins": 1,
+          "role_score": 45,
+          "opponent_score": 55,
+          "series_won": false
         }
       ]
     },
     "deceptive_language": {
-      "series": 30,
-      "games": 180,
-      "wins": 162,
-      "win_rate": 0.9,
+      "series": 20,
+      "games": 120,
+      "wins": 100,
+      "win_rate": 0.8333333333333334,
       "confidence_95": [
-        0.8474767289960173,
-        0.9358062711519363
+        0.756545606089762,
+        0.8894408798729518
       ],
-      "series_wins": 30,
+      "series_wins": 20,
       "series_win_rate": 1.0,
       "series_confidence_95": [
-        0.8864829086095221,
+        0.8388698745050667,
         1.0
       ],
-      "official_role_score": 3330,
-      "official_opponent_score": 990,
-      "average_turns": 12.938888888888888,
-      "capture_rate": 0.9,
-      "survival_rate": 0.1,
-      "barrier_placements": 239,
-      "barrier_efficiency": 0.6778242677824268,
+      "official_role_score": 2100,
+      "official_opponent_score": 700,
+      "average_turns": 14.083333333333334,
+      "capture_rate": 0.8333333333333334,
+      "survival_rate": 0.16666666666666666,
+      "barrier_placements": 180,
+      "barrier_efficiency": 0.5555555555555556,
       "risk_mask_pruned_rate": 0.0,
       "series_results": [
         {
           "series": 1,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
@@ -2195,16 +1565,16 @@
         },
         {
           "series": 3,
-          "gamelet_wins": 4,
-          "role_score": 90,
-          "opponent_score": 40,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
           "series": 4,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 3,
+          "role_score": 75,
+          "opponent_score": 45,
           "series_won": true
         },
         {
@@ -2223,23 +1593,23 @@
         },
         {
           "series": 7,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 3,
+          "role_score": 75,
+          "opponent_score": 45,
           "series_won": true
         },
         {
           "series": 8,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
           "series": 9,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
@@ -2251,9 +1621,9 @@
         },
         {
           "series": 11,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 6,
+          "role_score": 120,
+          "opponent_score": 30,
           "series_won": true
         },
         {
@@ -2265,9 +1635,9 @@
         },
         {
           "series": 13,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
@@ -2286,23 +1656,23 @@
         },
         {
           "series": 16,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
           "series": 17,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
+          "gamelet_wins": 4,
+          "role_score": 90,
+          "opponent_score": 40,
           "series_won": true
         },
         {
           "series": 18,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
+          "gamelet_wins": 5,
+          "role_score": 105,
+          "opponent_score": 35,
           "series_won": true
         },
         {
@@ -2314,95 +1684,25 @@
         },
         {
           "series": 20,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 21,
           "gamelet_wins": 5,
           "role_score": 105,
           "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 22,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 23,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 24,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 25,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 26,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 27,
-          "gamelet_wins": 5,
-          "role_score": 105,
-          "opponent_score": 35,
-          "series_won": true
-        },
-        {
-          "series": 28,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 29,
-          "gamelet_wins": 6,
-          "role_score": 120,
-          "opponent_score": 30,
-          "series_won": true
-        },
-        {
-          "series": 30,
-          "gamelet_wins": 3,
-          "role_score": 75,
-          "opponent_score": 45,
           "series_won": true
         }
       ]
     }
   },
-  "artifact_sha256": "b9e74b7a13ca461484f2b47046eeecf8d393cb8d64b7cdd51d2915b714c21268",
-  "evaluation_seed": 20260805,
+  "artifact_sha256": "e57f068e88fea557be1130d0c15c8783b1eecfc2c693ddad4582a1c250516d7c",
+  "evaluation_seed": 20260806,
   "training_seed_namespace": [
-    20260805,
-    20260805
+    20260806,
+    20262806
   ],
   "held_out_seed_namespace": [
-    20270805,
-    20310805
+    20270806,
+    20310806
   ],
-  "training_episodes": 11800,
+  "training_episodes": 13800,
   "training_opponents": [
     "random",
     "belief_pursuit_evasion",
@@ -2443,28 +1743,34 @@
   "demonstration_episodes": 240,
   "imitation_updates": 600,
   "training_method": "local-belief BC warm start + recurrent A2C",
+  "resumed_from_sha256": "b9e74b7a13ca461484f2b47046eeecf8d393cb8d64b7cdd51d2915b714c21268",
+  "resume_hyperparams": {
+    "learning_rate": 1e-05,
+    "expert_probability": 0.0,
+    "imitation_weight": 0.0
+  },
   "strongest_heuristic_baseline": {
     "role": "cop",
-    "held_out_series": 300,
-    "held_out_games": 1800,
-    "wins": 1372,
-    "win_rate": 0.7622222222222222,
+    "held_out_series": 200,
+    "held_out_games": 1200,
+    "wins": 907,
+    "win_rate": 0.7558333333333334,
     "confidence_95": [
-      0.7420094235297854,
-      0.781318123634001
+      0.730735567262817,
+      0.779298310948403
     ],
-    "series_wins": 295,
-    "series_win_rate": 0.9833333333333333,
+    "series_wins": 198,
+    "series_win_rate": 0.99,
     "series_confidence_95": [
-      0.9615840563782944,
-      0.9928606279572277
+      0.9642775148038205,
+      0.9972533993962251
     ],
-    "official_role_score": 29580,
-    "official_opponent_score": 11140,
-    "worst_family_win_rate": 0.48333333333333334,
-    "worst_family_series_win_rate": 0.8666666666666667,
-    "average_turns": 17.42,
-    "average_inference_and_environment_ms": 3.2475037568620433,
+    "official_role_score": 19605,
+    "official_opponent_score": 7465,
+    "worst_family_win_rate": 0.55,
+    "worst_family_series_win_rate": 0.9,
+    "average_turns": 17.445,
+    "average_inference_and_environment_ms": 11.348225718926043,
     "inference_latency_ms": {
       "p50": null,
       "p95": null,
@@ -2477,27 +1783,27 @@
     "inference_temperature": null,
     "families": {
       "random": {
-        "series": 30,
-        "games": 180,
-        "wins": 148,
-        "win_rate": 0.8222222222222222,
+        "series": 20,
+        "games": 120,
+        "wins": 102,
+        "win_rate": 0.85,
         "confidence_95": [
-          0.7598131328927978,
-          0.871164839448609
+          0.7753231505975375,
+          0.9029626596633118
         ],
-        "series_wins": 30,
+        "series_wins": 20,
         "series_win_rate": 1.0,
         "series_confidence_95": [
-          0.8864829086095221,
+          0.8388698745050667,
           1.0
         ],
-        "official_role_score": 3120,
-        "official_opponent_score": 1060,
-        "average_turns": 12.661111111111111,
-        "capture_rate": 0.8222222222222222,
-        "survival_rate": 0.17777777777777778,
-        "barrier_placements": 301,
-        "barrier_efficiency": 0.49169435215946844,
+        "official_role_score": 2130,
+        "official_opponent_score": 690,
+        "average_turns": 11.925,
+        "capture_rate": 0.85,
+        "survival_rate": 0.15,
+        "barrier_placements": 198,
+        "barrier_efficiency": 0.5151515151515151,
         "risk_mask_pruned_rate": 0.0,
         "series_results": [
           {
@@ -2516,16 +1822,16 @@
           },
           {
             "series": 3,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
             "series_won": true
           },
           {
             "series": 4,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
@@ -2537,9 +1843,9 @@
           },
           {
             "series": 6,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
             "series_won": true
           },
           {
@@ -2558,16 +1864,16 @@
           },
           {
             "series": 9,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
             "series_won": true
           },
           {
             "series": 10,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
@@ -2586,51 +1892,51 @@
           },
           {
             "series": 13,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
             "series": 14,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
+            "series_won": true
+          },
+          {
+            "series": 15,
             "gamelet_wins": 6,
             "role_score": 120,
             "opponent_score": 30,
             "series_won": true
           },
           {
-            "series": 15,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
-            "series_won": true
-          },
-          {
             "series": 16,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
             "series_won": true
           },
           {
             "series": 17,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 18,
             "gamelet_wins": 5,
             "role_score": 105,
             "opponent_score": 35,
             "series_won": true
           },
           {
-            "series": 19,
+            "series": 18,
             "gamelet_wins": 4,
             "role_score": 90,
             "opponent_score": 40,
+            "series_won": true
+          },
+          {
+            "series": 19,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
             "series_won": true
           },
           {
@@ -2638,109 +1944,39 @@
             "gamelet_wins": 5,
             "role_score": 105,
             "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 21,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 22,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 23,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 24,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 25,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 26,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 27,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 28,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 29,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 30,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
             "series_won": true
           }
         ]
       },
       "belief_pursuit_evasion": {
-        "series": 30,
-        "games": 180,
-        "wins": 129,
-        "win_rate": 0.7166666666666667,
+        "series": 20,
+        "games": 120,
+        "wins": 90,
+        "win_rate": 0.75,
         "confidence_95": [
-          0.6468429127526663,
-          0.777435378994142
+          0.6655869783172575,
+          0.8189028861547777
         ],
-        "series_wins": 30,
+        "series_wins": 20,
         "series_win_rate": 1.0,
         "series_confidence_95": [
-          0.8864829086095221,
+          0.8388698745050667,
           1.0
         ],
-        "official_role_score": 2835,
-        "official_opponent_score": 1155,
-        "average_turns": 19.227777777777778,
-        "capture_rate": 0.7166666666666667,
-        "survival_rate": 0.2833333333333333,
-        "barrier_placements": 396,
-        "barrier_efficiency": 0.32575757575757575,
+        "official_role_score": 1950,
+        "official_opponent_score": 750,
+        "average_turns": 17.525,
+        "capture_rate": 0.75,
+        "survival_rate": 0.25,
+        "barrier_placements": 238,
+        "barrier_efficiency": 0.37815126050420167,
         "risk_mask_pruned_rate": 0.0,
         "series_results": [
           {
             "series": 1,
-            "gamelet_wins": 2,
-            "role_score": 60,
-            "opponent_score": 50,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
@@ -2759,16 +1995,16 @@
           },
           {
             "series": 4,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 5,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
@@ -2787,44 +2023,44 @@
           },
           {
             "series": 8,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 9,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 10,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
-            "series_won": true
-          },
-          {
-            "series": 11,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
-            "series_won": true
-          },
-          {
-            "series": 12,
             "gamelet_wins": 4,
             "role_score": 90,
             "opponent_score": 40,
             "series_won": true
           },
           {
-            "series": 13,
+            "series": 10,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
+            "series_won": true
+          },
+          {
+            "series": 11,
             "gamelet_wins": 5,
             "role_score": 105,
             "opponent_score": 35,
+            "series_won": true
+          },
+          {
+            "series": 12,
+            "gamelet_wins": 3,
+            "role_score": 75,
+            "opponent_score": 45,
+            "series_won": true
+          },
+          {
+            "series": 13,
+            "gamelet_wins": 2,
+            "role_score": 60,
+            "opponent_score": 50,
             "series_won": true
           },
           {
@@ -2836,23 +2072,23 @@
           },
           {
             "series": 15,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
             "series": 16,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 17,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
@@ -2864,119 +2100,49 @@
           },
           {
             "series": 19,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 20,
-            "gamelet_wins": 2,
-            "role_score": 60,
-            "opponent_score": 50,
-            "series_won": true
-          },
-          {
-            "series": 21,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 22,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
-            "series_won": true
-          },
-          {
-            "series": 23,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 24,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 25,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 26,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 27,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 28,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 29,
             "gamelet_wins": 6,
             "role_score": 120,
             "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 30,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
             "series_won": true
           }
         ]
       },
       "wall": {
-        "series": 30,
-        "games": 180,
-        "wins": 147,
-        "win_rate": 0.8166666666666667,
+        "series": 20,
+        "games": 120,
+        "wins": 101,
+        "win_rate": 0.8416666666666667,
         "confidence_95": [
-          0.7537252847530411,
-          0.8663737570307555
+          0.7659051081885379,
+          0.8962310399232437
         ],
-        "series_wins": 30,
+        "series_wins": 20,
         "series_win_rate": 1.0,
         "series_confidence_95": [
-          0.8864829086095221,
+          0.8388698745050667,
           1.0
         ],
-        "official_role_score": 3105,
-        "official_opponent_score": 1065,
-        "average_turns": 16.272222222222222,
-        "capture_rate": 0.8166666666666667,
-        "survival_rate": 0.18333333333333332,
-        "barrier_placements": 380,
-        "barrier_efficiency": 0.3868421052631579,
+        "official_role_score": 2115,
+        "official_opponent_score": 695,
+        "average_turns": 16.083333333333332,
+        "capture_rate": 0.8416666666666667,
+        "survival_rate": 0.15833333333333333,
+        "barrier_placements": 268,
+        "barrier_efficiency": 0.376865671641791,
         "risk_mask_pruned_rate": 0.0,
         "series_results": [
           {
             "series": 1,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
@@ -2988,51 +2154,51 @@
           },
           {
             "series": 3,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 4,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
             "series_won": true
           },
           {
             "series": 5,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 6,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 7,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 8,
             "gamelet_wins": 5,
             "role_score": 105,
             "opponent_score": 35,
             "series_won": true
           },
           {
-            "series": 9,
+            "series": 6,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
+            "series_won": true
+          },
+          {
+            "series": 7,
             "gamelet_wins": 4,
             "role_score": 90,
             "opponent_score": 40,
+            "series_won": true
+          },
+          {
+            "series": 8,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
+            "series_won": true
+          },
+          {
+            "series": 9,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
             "series_won": true
           },
           {
@@ -3051,175 +2217,105 @@
           },
           {
             "series": 12,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 13,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 14,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 15,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 16,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 17,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 18,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 19,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 20,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 21,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 22,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 23,
             "gamelet_wins": 6,
             "role_score": 120,
             "opponent_score": 30,
             "series_won": true
           },
           {
-            "series": 24,
+            "series": 16,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
+            "series_won": true
+          },
+          {
+            "series": 17,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
+            "series_won": true
+          },
+          {
+            "series": 18,
             "gamelet_wins": 4,
             "role_score": 90,
             "opponent_score": 40,
             "series_won": true
           },
           {
-            "series": 25,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 26,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 27,
+            "series": 19,
             "gamelet_wins": 3,
             "role_score": 75,
             "opponent_score": 45,
             "series_won": true
           },
           {
-            "series": 28,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 29,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 30,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "series": 20,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           }
         ]
       },
       "local_adversarial_ensemble": {
-        "series": 30,
-        "games": 180,
-        "wins": 145,
-        "win_rate": 0.8055555555555556,
+        "series": 20,
+        "games": 120,
+        "wins": 88,
+        "win_rate": 0.7333333333333333,
         "confidence_95": [
-          0.7416043794180397,
-          0.856736801250536
+          0.6478739437150142,
+          0.8043165964588853
         ],
-        "series_wins": 30,
+        "series_wins": 20,
         "series_win_rate": 1.0,
         "series_confidence_95": [
-          0.8864829086095221,
+          0.8388698745050667,
           1.0
         ],
-        "official_role_score": 3075,
-        "official_opponent_score": 1075,
-        "average_turns": 16.583333333333332,
-        "capture_rate": 0.8055555555555556,
-        "survival_rate": 0.19444444444444445,
-        "barrier_placements": 406,
-        "barrier_efficiency": 0.35714285714285715,
+        "official_role_score": 1920,
+        "official_opponent_score": 760,
+        "average_turns": 18.408333333333335,
+        "capture_rate": 0.7333333333333333,
+        "survival_rate": 0.26666666666666666,
+        "barrier_placements": 241,
+        "barrier_efficiency": 0.3651452282157676,
         "risk_mask_pruned_rate": 0.0,
         "series_results": [
           {
             "series": 1,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 3,
+            "role_score": 75,
+            "opponent_score": 45,
             "series_won": true
           },
           {
             "series": 2,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
@@ -3231,9 +2327,9 @@
           },
           {
             "series": 4,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
@@ -3280,9 +2376,9 @@
           },
           {
             "series": 11,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 3,
+            "role_score": 75,
+            "opponent_score": 45,
             "series_won": true
           },
           {
@@ -3308,9 +2404,9 @@
           },
           {
             "series": 15,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
@@ -3329,133 +2425,63 @@
           },
           {
             "series": 18,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
+            "series_won": true
+          },
+          {
+            "series": 19,
             "gamelet_wins": 3,
             "role_score": 75,
             "opponent_score": 45,
             "series_won": true
           },
           {
-            "series": 19,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
             "series": 20,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 21,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 22,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 23,
             "gamelet_wins": 4,
             "role_score": 90,
             "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 24,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 25,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 26,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 27,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 28,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 29,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 30,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
             "series_won": true
           }
         ]
       },
       "historical_checkpoint": {
-        "series": 30,
-        "games": 180,
-        "wins": 165,
+        "series": 20,
+        "games": 120,
+        "wins": 110,
         "win_rate": 0.9166666666666666,
         "confidence_95": [
-          0.8670691981623806,
-          0.9488505936584042
+          0.8533762622701224,
+          0.9541068451832697
         ],
-        "series_wins": 30,
+        "series_wins": 20,
         "series_win_rate": 1.0,
         "series_confidence_95": [
-          0.8864829086095221,
+          0.8388698745050667,
           1.0
         ],
-        "official_role_score": 3375,
-        "official_opponent_score": 975,
-        "average_turns": 12.205555555555556,
+        "official_role_score": 2250,
+        "official_opponent_score": 650,
+        "average_turns": 12.3,
         "capture_rate": 0.9166666666666666,
         "survival_rate": 0.08333333333333333,
-        "barrier_placements": 319,
-        "barrier_efficiency": 0.5172413793103449,
+        "barrier_placements": 206,
+        "barrier_efficiency": 0.5339805825242718,
         "risk_mask_pruned_rate": 0.0,
         "series_results": [
           {
             "series": 1,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
             "series_won": true
           },
           {
             "series": 2,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
@@ -3467,65 +2493,65 @@
           },
           {
             "series": 4,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 5,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 6,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 7,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 8,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 9,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 10,
             "gamelet_wins": 4,
             "role_score": 90,
             "opponent_score": 40,
             "series_won": true
           },
           {
-            "series": 11,
+            "series": 6,
             "gamelet_wins": 6,
             "role_score": 120,
             "opponent_score": 30,
             "series_won": true
           },
           {
-            "series": 12,
+            "series": 7,
             "gamelet_wins": 6,
             "role_score": 120,
             "opponent_score": 30,
+            "series_won": true
+          },
+          {
+            "series": 8,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
+            "series_won": true
+          },
+          {
+            "series": 9,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
+            "series_won": true
+          },
+          {
+            "series": 10,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
+            "series_won": true
+          },
+          {
+            "series": 11,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
+            "series_won": true
+          },
+          {
+            "series": 12,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
@@ -3551,9 +2577,9 @@
           },
           {
             "series": 16,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
@@ -3565,355 +2591,215 @@
           },
           {
             "series": 18,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
             "series_won": true
           },
           {
             "series": 19,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
             "series_won": true
           },
           {
             "series": 20,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 21,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 22,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 23,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 24,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 25,
             "gamelet_wins": 5,
             "role_score": 105,
             "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 26,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 27,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 28,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 29,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 30,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
             "series_won": true
           }
         ]
       },
       "scent_following": {
-        "series": 30,
-        "games": 180,
-        "wins": 143,
-        "win_rate": 0.7944444444444444,
+        "series": 20,
+        "games": 120,
+        "wins": 91,
+        "win_rate": 0.7583333333333333,
         "confidence_95": [
-          0.7295526952842258,
-          0.8470306242691287
+          0.6744968590361364,
+          0.8261426675849666
         ],
-        "series_wins": 30,
+        "series_wins": 20,
         "series_win_rate": 1.0,
         "series_confidence_95": [
-          0.8864829086095221,
+          0.8388698745050667,
           1.0
         ],
-        "official_role_score": 3045,
-        "official_opponent_score": 1085,
-        "average_turns": 17.983333333333334,
-        "capture_rate": 0.7944444444444444,
-        "survival_rate": 0.20555555555555555,
-        "barrier_placements": 415,
-        "barrier_efficiency": 0.344578313253012,
+        "official_role_score": 1965,
+        "official_opponent_score": 745,
+        "average_turns": 19.158333333333335,
+        "capture_rate": 0.7583333333333333,
+        "survival_rate": 0.24166666666666667,
+        "barrier_placements": 291,
+        "barrier_efficiency": 0.3127147766323024,
         "risk_mask_pruned_rate": 0.0,
         "series_results": [
           {
             "series": 1,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
+            "gamelet_wins": 2,
+            "role_score": 60,
+            "opponent_score": 50,
             "series_won": true
           },
           {
             "series": 2,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 3,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
             "series": 4,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
             "series": 5,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
             "series_won": true
           },
           {
             "series": 6,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 7,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
             "series": 8,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
             "series_won": true
           },
           {
             "series": 9,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 10,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
             "series_won": true
           },
           {
             "series": 11,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 12,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 3,
+            "role_score": 75,
+            "opponent_score": 45,
             "series_won": true
           },
           {
             "series": 13,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
             "series": 14,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
             "series_won": true
           },
           {
             "series": 15,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 16,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
             "series": 17,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 3,
+            "role_score": 75,
+            "opponent_score": 45,
             "series_won": true
           },
           {
             "series": 18,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
             "series": 19,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
             "series_won": true
           },
           {
             "series": 20,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 21,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 22,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
-            "series_won": true
-          },
-          {
-            "series": 23,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 24,
             "gamelet_wins": 4,
             "role_score": 90,
             "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 25,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 26,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 27,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 28,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 29,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 30,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
             "series_won": true
           }
         ]
       },
       "corridor_cutting": {
-        "series": 30,
-        "games": 180,
-        "wins": 163,
-        "win_rate": 0.9055555555555556,
+        "series": 20,
+        "games": 120,
+        "wins": 102,
+        "win_rate": 0.85,
         "confidence_95": [
-          0.8539652606145085,
-          0.9401966700910556
+          0.7753231505975375,
+          0.9029626596633118
         ],
-        "series_wins": 30,
+        "series_wins": 20,
         "series_win_rate": 1.0,
         "series_confidence_95": [
-          0.8864829086095221,
+          0.8388698745050667,
           1.0
         ],
-        "official_role_score": 3345,
-        "official_opponent_score": 985,
-        "average_turns": 14.061111111111112,
-        "capture_rate": 0.9055555555555556,
-        "survival_rate": 0.09444444444444444,
-        "barrier_placements": 393,
-        "barrier_efficiency": 0.41475826972010177,
+        "official_role_score": 2130,
+        "official_opponent_score": 690,
+        "average_turns": 14.991666666666667,
+        "capture_rate": 0.85,
+        "survival_rate": 0.15,
+        "barrier_placements": 253,
+        "barrier_efficiency": 0.4031620553359684,
         "risk_mask_pruned_rate": 0.0,
         "series_results": [
           {
@@ -3932,9 +2818,9 @@
           },
           {
             "series": 3,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
@@ -3953,9 +2839,9 @@
           },
           {
             "series": 6,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
@@ -3967,16 +2853,16 @@
           },
           {
             "series": 8,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
             "series_won": true
           },
           {
             "series": 9,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
@@ -3988,9 +2874,9 @@
           },
           {
             "series": 11,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
@@ -4002,44 +2888,44 @@
           },
           {
             "series": 13,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 14,
             "gamelet_wins": 4,
             "role_score": 90,
             "opponent_score": 40,
             "series_won": true
           },
           {
-            "series": 15,
+            "series": 14,
             "gamelet_wins": 5,
             "role_score": 105,
             "opponent_score": 35,
             "series_won": true
           },
           {
-            "series": 16,
+            "series": 15,
             "gamelet_wins": 6,
             "role_score": 120,
             "opponent_score": 30,
+            "series_won": true
+          },
+          {
+            "series": 16,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
             "series": 17,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 18,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
@@ -4051,76 +2937,6 @@
           },
           {
             "series": 20,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 21,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 22,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 23,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 24,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 25,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 26,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 27,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 28,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 29,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 30,
             "gamelet_wins": 5,
             "role_score": 105,
             "opponent_score": 35,
@@ -4129,55 +2945,55 @@
         ]
       },
       "anti_loop": {
-        "series": 30,
-        "games": 180,
-        "wins": 139,
-        "win_rate": 0.7722222222222223,
+        "series": 20,
+        "games": 120,
+        "wins": 90,
+        "win_rate": 0.75,
         "confidence_95": [
-          0.7056412267522465,
-          0.8274263705706664
+          0.6655869783172575,
+          0.8189028861547777
         ],
-        "series_wins": 30,
+        "series_wins": 20,
         "series_win_rate": 1.0,
         "series_confidence_95": [
-          0.8864829086095221,
+          0.8388698745050667,
           1.0
         ],
-        "official_role_score": 2985,
-        "official_opponent_score": 1105,
-        "average_turns": 18.86111111111111,
-        "capture_rate": 0.7722222222222223,
-        "survival_rate": 0.22777777777777777,
-        "barrier_placements": 511,
-        "barrier_efficiency": 0.2720156555772994,
+        "official_role_score": 1950,
+        "official_opponent_score": 750,
+        "average_turns": 19.458333333333332,
+        "capture_rate": 0.75,
+        "survival_rate": 0.25,
+        "barrier_placements": 331,
+        "barrier_efficiency": 0.2719033232628399,
         "risk_mask_pruned_rate": 0.0,
         "series_results": [
           {
             "series": 1,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 2,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
             "series": 3,
-            "gamelet_wins": 2,
-            "role_score": 60,
-            "opponent_score": 50,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
             "series": 4,
-            "gamelet_wins": 2,
-            "role_score": 60,
-            "opponent_score": 50,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
@@ -4196,9 +3012,9 @@
           },
           {
             "series": 7,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
             "series_won": true
           },
           {
@@ -4210,44 +3026,44 @@
           },
           {
             "series": 9,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
+            "series_won": true
+          },
+          {
+            "series": 10,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
+            "series_won": true
+          },
+          {
+            "series": 11,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
+            "series_won": true
+          },
+          {
+            "series": 12,
             "gamelet_wins": 3,
             "role_score": 75,
             "opponent_score": 45,
             "series_won": true
           },
           {
-            "series": 10,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 11,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 12,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
             "series": 13,
-            "gamelet_wins": 2,
-            "role_score": 60,
-            "opponent_score": 50,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
             "series": 14,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
@@ -4259,183 +3075,113 @@
           },
           {
             "series": 16,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
             "series": 17,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 18,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
+            "gamelet_wins": 3,
+            "role_score": 75,
+            "opponent_score": 45,
             "series_won": true
           },
           {
             "series": 19,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 20,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 21,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 22,
             "gamelet_wins": 4,
             "role_score": 90,
             "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 23,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 24,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 25,
-            "gamelet_wins": 6,
-            "role_score": 120,
-            "opponent_score": 30,
-            "series_won": true
-          },
-          {
-            "series": 26,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 27,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 28,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 29,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 30,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
             "series_won": true
           }
         ]
       },
       "targeted_exploit": {
-        "series": 30,
-        "games": 180,
-        "wins": 87,
-        "win_rate": 0.48333333333333334,
+        "series": 20,
+        "games": 120,
+        "wins": 66,
+        "win_rate": 0.55,
         "confidence_95": [
-          0.41144325401286297,
-          0.5559199543143057
+          0.46081381811060756,
+          0.6360841547837995
         ],
-        "series_wins": 26,
-        "series_win_rate": 0.8666666666666667,
+        "series_wins": 18,
+        "series_win_rate": 0.9,
         "series_confidence_95": [
-          0.7031831605558306,
-          0.9469043057578189
+          0.6989617935882066,
+          0.9721341060158468
         ],
-        "official_role_score": 2205,
-        "official_opponent_score": 1365,
-        "average_turns": 23.95,
-        "capture_rate": 0.48333333333333334,
-        "survival_rate": 0.5166666666666667,
-        "barrier_placements": 603,
-        "barrier_efficiency": 0.14427860696517414,
+        "official_role_score": 1590,
+        "official_opponent_score": 870,
+        "average_turns": 23.108333333333334,
+        "capture_rate": 0.55,
+        "survival_rate": 0.45,
+        "barrier_placements": 424,
+        "barrier_efficiency": 0.15566037735849056,
         "risk_mask_pruned_rate": 0.0,
         "series_results": [
           {
             "series": 1,
-            "gamelet_wins": 1,
-            "role_score": 45,
-            "opponent_score": 55,
-            "series_won": false
+            "gamelet_wins": 3,
+            "role_score": 75,
+            "opponent_score": 45,
+            "series_won": true
           },
           {
             "series": 2,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
+            "series_won": true
+          },
+          {
+            "series": 3,
             "gamelet_wins": 5,
             "role_score": 105,
             "opponent_score": 35,
             "series_won": true
           },
           {
-            "series": 3,
+            "series": 4,
             "gamelet_wins": 3,
             "role_score": 75,
             "opponent_score": 45,
-            "series_won": true
-          },
-          {
-            "series": 4,
-            "gamelet_wins": 2,
-            "role_score": 60,
-            "opponent_score": 50,
             "series_won": true
           },
           {
             "series": 5,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
-            "series_won": true
+            "gamelet_wins": 0,
+            "role_score": 30,
+            "opponent_score": 60,
+            "series_won": false
           },
           {
             "series": 6,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
             "series": 7,
-            "gamelet_wins": 2,
-            "role_score": 60,
-            "opponent_score": 50,
-            "series_won": true
+            "gamelet_wins": 1,
+            "role_score": 45,
+            "opponent_score": 55,
+            "series_won": false
           },
           {
             "series": 8,
@@ -4446,23 +3192,23 @@
           },
           {
             "series": 9,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 10,
             "gamelet_wins": 3,
             "role_score": 75,
             "opponent_score": 45,
             "series_won": true
           },
           {
-            "series": 11,
+            "series": 10,
             "gamelet_wins": 4,
             "role_score": 90,
             "opponent_score": 40,
+            "series_won": true
+          },
+          {
+            "series": 11,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
@@ -4481,9 +3227,9 @@
           },
           {
             "series": 14,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 2,
+            "role_score": 60,
+            "opponent_score": 50,
             "series_won": true
           },
           {
@@ -4495,104 +3241,34 @@
           },
           {
             "series": 16,
-            "gamelet_wins": 1,
-            "role_score": 45,
-            "opponent_score": 55,
-            "series_won": false
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
+            "series_won": true
           },
           {
             "series": 17,
-            "gamelet_wins": 1,
-            "role_score": 45,
-            "opponent_score": 55,
-            "series_won": false
-          },
-          {
-            "series": 18,
             "gamelet_wins": 2,
             "role_score": 60,
             "opponent_score": 50,
+            "series_won": true
+          },
+          {
+            "series": 18,
+            "gamelet_wins": 4,
+            "role_score": 90,
+            "opponent_score": 40,
             "series_won": true
           },
           {
             "series": 19,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
+            "gamelet_wins": 6,
+            "role_score": 120,
+            "opponent_score": 30,
             "series_won": true
           },
           {
             "series": 20,
-            "gamelet_wins": 1,
-            "role_score": 45,
-            "opponent_score": 55,
-            "series_won": false
-          },
-          {
-            "series": 21,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
-            "series_won": true
-          },
-          {
-            "series": 22,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 23,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
-            "series_won": true
-          },
-          {
-            "series": 24,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
-            "series_won": true
-          },
-          {
-            "series": 25,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
-            "series_won": true
-          },
-          {
-            "series": 26,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 27,
-            "gamelet_wins": 2,
-            "role_score": 60,
-            "opponent_score": 50,
-            "series_won": true
-          },
-          {
-            "series": 28,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
-            "series_won": true
-          },
-          {
-            "series": 29,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 30,
             "gamelet_wins": 3,
             "role_score": 75,
             "opponent_score": 45,
@@ -4601,27 +3277,27 @@
         ]
       },
       "deceptive_language": {
-        "series": 30,
-        "games": 180,
-        "wins": 106,
-        "win_rate": 0.5888888888888889,
+        "series": 20,
+        "games": 120,
+        "wins": 67,
+        "win_rate": 0.5583333333333333,
         "confidence_95": [
-          0.5158808549890499,
-          0.6581820339327176
+          0.46904360820302915,
+          0.6440040268404459
         ],
-        "series_wins": 29,
-        "series_win_rate": 0.9666666666666667,
+        "series_wins": 20,
+        "series_win_rate": 1.0,
         "series_confidence_95": [
-          0.8332924860304112,
-          0.9940915620051425
+          0.8388698745050667,
+          1.0
         ],
-        "official_role_score": 2490,
-        "official_opponent_score": 1270,
-        "average_turns": 22.394444444444446,
-        "capture_rate": 0.5888888888888889,
-        "survival_rate": 0.4111111111111111,
-        "barrier_placements": 430,
-        "barrier_efficiency": 0.24651162790697675,
+        "official_role_score": 1605,
+        "official_opponent_score": 865,
+        "average_turns": 21.491666666666667,
+        "capture_rate": 0.5583333333333333,
+        "survival_rate": 0.44166666666666665,
+        "barrier_placements": 270,
+        "barrier_efficiency": 0.24814814814814815,
         "risk_mask_pruned_rate": 0.0,
         "series_results": [
           {
@@ -4640,10 +3316,10 @@
           },
           {
             "series": 3,
-            "gamelet_wins": 1,
-            "role_score": 45,
-            "opponent_score": 55,
-            "series_won": false
+            "gamelet_wins": 3,
+            "role_score": 75,
+            "opponent_score": 45,
+            "series_won": true
           },
           {
             "series": 4,
@@ -4654,30 +3330,30 @@
           },
           {
             "series": 5,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 6,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 7,
             "gamelet_wins": 2,
             "role_score": 60,
             "opponent_score": 50,
             "series_won": true
           },
           {
+            "series": 6,
+            "gamelet_wins": 2,
+            "role_score": 60,
+            "opponent_score": 50,
+            "series_won": true
+          },
+          {
+            "series": 7,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
+            "series_won": true
+          },
+          {
             "series": 8,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 2,
+            "role_score": 60,
+            "opponent_score": 50,
             "series_won": true
           },
           {
@@ -4689,44 +3365,44 @@
           },
           {
             "series": 10,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 2,
+            "role_score": 60,
+            "opponent_score": 50,
             "series_won": true
           },
           {
             "series": 11,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 2,
+            "role_score": 60,
+            "opponent_score": 50,
             "series_won": true
           },
           {
             "series": 12,
-            "gamelet_wins": 2,
-            "role_score": 60,
-            "opponent_score": 50,
+            "gamelet_wins": 3,
+            "role_score": 75,
+            "opponent_score": 45,
             "series_won": true
           },
           {
             "series": 13,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 14,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
+            "gamelet_wins": 5,
+            "role_score": 105,
+            "opponent_score": 35,
             "series_won": true
           },
           {
             "series": 15,
-            "gamelet_wins": 2,
-            "role_score": 60,
-            "opponent_score": 50,
+            "gamelet_wins": 3,
+            "role_score": 75,
+            "opponent_score": 45,
             "series_won": true
           },
           {
@@ -4752,86 +3428,16 @@
           },
           {
             "series": 19,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
+            "gamelet_wins": 2,
+            "role_score": 60,
+            "opponent_score": 50,
             "series_won": true
           },
           {
             "series": 20,
-            "gamelet_wins": 2,
-            "role_score": 60,
-            "opponent_score": 50,
-            "series_won": true
-          },
-          {
-            "series": 21,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 22,
             "gamelet_wins": 4,
             "role_score": 90,
             "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 23,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 24,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
-            "series_won": true
-          },
-          {
-            "series": 25,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 26,
-            "gamelet_wins": 2,
-            "role_score": 60,
-            "opponent_score": 50,
-            "series_won": true
-          },
-          {
-            "series": 27,
-            "gamelet_wins": 4,
-            "role_score": 90,
-            "opponent_score": 40,
-            "series_won": true
-          },
-          {
-            "series": 28,
-            "gamelet_wins": 2,
-            "role_score": 60,
-            "opponent_score": 50,
-            "series_won": true
-          },
-          {
-            "series": 29,
-            "gamelet_wins": 3,
-            "role_score": 75,
-            "opponent_score": 45,
-            "series_won": true
-          },
-          {
-            "series": 30,
-            "gamelet_wins": 5,
-            "role_score": 105,
-            "opponent_score": 35,
             "series_won": true
           }
         ]
@@ -4840,17 +3446,17 @@
   },
   "promotion_gate": {
     "criterion": "paired bootstrap 95% lower official-score bound > 0; every family nonzero; zero technical failures; p99 inference < 30 ms; role worst-family floor met",
-    "candidate_official_role_score": 31395,
-    "baseline_official_role_score": 29580,
-    "mean_series_role_score_improvement": 6.05,
+    "candidate_official_role_score": 20505,
+    "baseline_official_role_score": 19605,
+    "mean_series_role_score_improvement": 4.5,
     "bootstrap_95": [
-      3.65,
-      8.4
+      1.5731250000000006,
+      7.5
     ],
-    "worst_family_win_rate": 0.5777777777777777,
+    "worst_family_win_rate": 0.48333333333333334,
     "predeclared_worst_family_floor": 0.55,
-    "baseline_worst_family_win_rate": 0.48333333333333334,
-    "no_catastrophic_worst_family_regression": true,
-    "passed": true
+    "baseline_worst_family_win_rate": 0.55,
+    "no_catastrophic_worst_family_regression": false,
+    "passed": false
   }
 }

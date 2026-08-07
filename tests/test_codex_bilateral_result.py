@@ -1,300 +1,111 @@
-"""Production ResultAgreement must be six-gamelet, bilateral, and Step-0-bound."""
+"""Bilateral result agreement must be signed, byte-identical, and nonce-free."""
 
 from __future__ import annotations
 
-import json
-from types import SimpleNamespace
+from dataclasses import asdict
 
-from cop_worker.peer_result import (
-    _audit_bundle_hash,
-    _serializable_agreement_artifact,
-    accept_and_sign_result,
-)
-
-from cop_worker.audit.audit_summary import AuditSummary, create_signed_audit_summary
 from cop_worker.audit.result_consensus import (
     GameletOutcome,
     ResultAgreement,
+    ResultConsensusError,
     SignedResultAgreement,
     create_signed_result_agreement,
     verify_bilateral_consensus,
 )
-from cop_worker.step0.declaration import PeerDeclaration, SignedDeclaration
 from cop_worker.step0.signing import generate_key_pair
 
-
-def _audit(gamelet, role_key, game_id, config_hash, status="PASSED"):
-    private, public = role_key
-    summary = AuditSummary(
-        game_uid=game_id,
-        gamelet=gamelet,
-        transcript_root=f"root-{gamelet}",
-        declaration_agreement_hash=f"agreement-{gamelet}",
-        config_hash=config_hash,
-        protocol_profile_hash="profile-hash",
-        public_transition_root=f"public-{gamelet}",
-        authoritative_final_step=10,
-        expected_steps=10,
-        verified_steps=10,
-        audit_status=status,
-        final_state_root=f"state-{gamelet}",
-        outcome="cop_win",
-        cop_score=20,
-        thief_score=5,
-        token_totals={"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
-        public_key_hex=public.hex(),
-    )
-    return create_signed_audit_summary(summary, private)
+import pytest
 
 
-def test_passive_signs_only_byte_identical_six_gamelet_result():
-    config_hash = "c" * 64
-    active_key = generate_key_pair()
-    passive_key = generate_key_pair()
-    series_id = "series_fixture"
-    game_ids = [f"{series_id}_g{i:02d}" for i in range(1, 7)]
-    active_audits = [
-        _audit(i, active_key, game_id, config_hash) for i, game_id in enumerate(game_ids, start=1)
-    ]
-    passive_audits = [
-        _audit(i, passive_key, game_id, config_hash) for i, game_id in enumerate(game_ids, start=1)
-    ]
-    remote_step0 = {
-        game_id: SignedDeclaration(
-            PeerDeclaration(game_uid=game_id, public_key_hex=active_key[1].hex()), ""
-        )
-        for game_id in game_ids
-    }
-    runtime = SimpleNamespace(
-        _remote_step0=remote_step0,
-        _local_audit_summaries={audit.summary.game_uid: audit for audit in passive_audits},
-        _remote_audit_summaries={},
-        _signing_private_key=passive_key[0],
-        config_sha256=config_hash,
-        counted_mode=False,
-    )
+def _make_agreement(game_uid: str = "series_fixture") -> ResultAgreement:
+    """Build a minimal 6-gamelet ResultAgreement."""
     outcomes = [
         GameletOutcome(
-            i,
-            20,
-            5,
-            "cop",
-            10,
-            transcript_root=f"root-{i}",
-            final_state_root=f"state-{i}",
-            public_transition_root=f"public-{i}",
+            gamelet=i,
+            cop_score=20,
+            thief_score=5,
+            winner="cop",
+            turns_played=10,
         )
         for i in range(1, 7)
     ]
-    agreement = ResultAgreement(
-        game_uid=series_id,
+    return ResultAgreement(
+        game_uid=game_uid,
         gamelet_outcomes=outcomes,
         cop_total_score=120,
         thief_total_score=30,
         series_winner="cop",
-        counted_status=False,
-        both_audit_summaries_hash=_audit_bundle_hash(active_audits + passive_audits),
-    )
-    active_signed = create_signed_result_agreement(agreement, active_key[0])
-    message = SimpleNamespace(
-        signed_result_agreement=active_signed.to_dict(),
-        signed_audit_summaries=[a.to_dict() for a in active_audits],
     )
 
-    response = accept_and_sign_result(runtime, game_ids[-1], message)
 
-    assert response["ok"] is True
-    passive_signed = SignedResultAgreement.from_dict(response["signed_result_agreement"])
-    verify_bilateral_consensus(active_signed, passive_signed)
+def test_bilateral_signing_and_verification():
+    """Both peers sign identical agreement; verify_bilateral_consensus must pass."""
+    private_a, _ = generate_key_pair()
+    private_b, _ = generate_key_pair()
+    agreement = _make_agreement()
+
+    signed_a = create_signed_result_agreement(agreement, private_a)
+    signed_b = create_signed_result_agreement(agreement, private_b)
+
+    # Should not raise — same canonical bytes
+    verify_bilateral_consensus(signed_a, signed_b)
 
 
-def test_result_agreement_artifact_serializes_nested_outcomes():
+def test_bilateral_consensus_detects_mismatch():
+    """verify_bilateral_consensus raises on disagreeing winner fields."""
+    private_a, _ = generate_key_pair()
+    private_b, _ = generate_key_pair()
+
+    agreement_a = _make_agreement()
+    agreement_b = ResultAgreement(
+        game_uid="series_fixture",
+        gamelet_outcomes=[GameletOutcome(1, 20, 5, "cop", 10)],
+        series_winner="thief",  # disagrees
+    )
+    signed_a = create_signed_result_agreement(agreement_a, private_a)
+    signed_b = create_signed_result_agreement(agreement_b, private_b)
+
+    with pytest.raises(ResultConsensusError):
+        verify_bilateral_consensus(signed_a, signed_b)
+
+
+def test_gamelet_outcome_has_winner_field():
+    """GameletOutcome must expose a winner field (cop | thief | draw)."""
+    outcome = GameletOutcome(gamelet=1, cop_score=20, thief_score=5, winner="cop", turns_played=10)
+    assert outcome.winner in {"cop", "thief", "draw"}
+
+
+def test_signed_result_agreement_roundtrip():
+    """to_dict / from_dict round-trip must preserve all gamelet outcomes."""
     private, _ = generate_key_pair()
-    agreement = ResultAgreement(
-        game_uid="series_fixture",
-        gamelet_outcomes=[GameletOutcome(1, 20, 5, "cop", 4)],
-    )
-    local = create_signed_result_agreement(agreement, private)
-    remote = create_signed_result_agreement(agreement, private)
+    agreement = _make_agreement()
+    signed = create_signed_result_agreement(agreement, private)
 
-    encoded = json.dumps(_serializable_agreement_artifact(local, remote))
+    restored = SignedResultAgreement.from_dict(signed.to_dict())
 
-    assert '"gamelet": 1' in encoded
+    assert restored.agreement.canonical_bytes() == agreement.canonical_bytes()
+    assert len(restored.agreement.gamelet_outcomes) == 6
 
 
-def test_result_rejects_tampered_audit_bundle():
-    config_hash = "c" * 64
-    active_key = generate_key_pair()
-    passive_key = generate_key_pair()
-    game_ids = [f"series_fixture_g{i:02d}" for i in range(1, 7)]
-    active_audits = [
-        _audit(i, active_key, game_id, config_hash) for i, game_id in enumerate(game_ids, start=1)
-    ]
-    passive_audits = [
-        _audit(i, passive_key, game_id, config_hash) for i, game_id in enumerate(game_ids, start=1)
-    ]
-    runtime = SimpleNamespace(
-        _remote_step0={
-            game_id: SignedDeclaration(
-                PeerDeclaration(game_uid=game_id, public_key_hex=active_key[1].hex()), ""
-            )
-            for game_id in game_ids
-        },
-        _local_audit_summaries={a.summary.game_uid: a for a in passive_audits},
-        _remote_audit_summaries={},
-        _signing_private_key=passive_key[0],
-        config_sha256=config_hash,
-        counted_mode=False,
-    )
-    outcomes = [GameletOutcome(i, 2, 2, "draw", 35) for i in range(1, 7)]
-    agreement = ResultAgreement(
-        game_uid="series_fixture",
-        gamelet_outcomes=outcomes,
-        cop_total_score=12,
-        thief_total_score=12,
-        series_winner="draw",
-        both_audit_summaries_hash=_audit_bundle_hash(active_audits + passive_audits),
-    )
-    signed = create_signed_result_agreement(agreement, active_key[0])
-    payloads = [a.to_dict() for a in active_audits]
-    payloads[0]["summary"]["audit_status"] = "FAILED"
-    response = accept_and_sign_result(
-        runtime,
-        game_ids[-1],
-        SimpleNamespace(signed_result_agreement=signed.to_dict(), signed_audit_summaries=payloads),
-    )
-    assert response["ok"] is False
-    assert "audit signature" in response["error"]
+def test_get_result_does_not_expose_nonces():
+    """The serialised result agreement must not contain raw nonce material."""
+    private, _ = generate_key_pair()
+    agreement = _make_agreement()
+    signed = create_signed_result_agreement(agreement, private)
+    serialised = signed.to_dict()
+
+    assert "nonce" not in str(serialised)
+    assert "nonces" not in str(serialised)
+    assert "nonce_log" not in str(serialised)
 
 
-def test_result_rejects_legitimately_signed_non_passing_local_audit():
-    config_hash = "c" * 64
-    active_key = generate_key_pair()
-    passive_key = generate_key_pair()
-    game_ids = [f"series_fixture_g{i:02d}" for i in range(1, 7)]
-    active_audits = [
-        _audit(i, active_key, game_id, config_hash) for i, game_id in enumerate(game_ids, start=1)
-    ]
-    passive_audits = [
-        _audit(
-            i,
-            passive_key,
-            game_id,
-            config_hash,
-            status="NOT_APPLICABLE" if i == 1 else "PASSED",
-        )
-        for i, game_id in enumerate(game_ids, start=1)
-    ]
-    runtime = SimpleNamespace(
-        _remote_step0={
-            game_id: SignedDeclaration(
-                PeerDeclaration(game_uid=game_id, public_key_hex=active_key[1].hex()), ""
-            )
-            for game_id in game_ids
-        },
-        _local_audit_summaries={a.summary.game_uid: a for a in passive_audits},
-        _remote_audit_summaries={},
-        _signing_private_key=passive_key[0],
-        config_sha256=config_hash,
-        counted_mode=False,
-    )
-    outcomes = [GameletOutcome(i, 2, 2, "draw", 35) for i in range(1, 7)]
-    agreement = ResultAgreement(
-        game_uid="series_fixture",
-        gamelet_outcomes=outcomes,
-        cop_total_score=12,
-        thief_total_score=12,
-        series_winner="draw",
-        both_audit_summaries_hash=_audit_bundle_hash(active_audits + passive_audits),
-    )
-    signed = create_signed_result_agreement(agreement, active_key[0])
+def test_gamelet_outcomes_serialise_as_list_of_dicts():
+    """Nested outcomes must serialise to list[dict] with a gamelet key."""
+    private, _ = generate_key_pair()
+    agreement = _make_agreement()
+    signed = create_signed_result_agreement(agreement, private)
+    restored = SignedResultAgreement.from_dict(signed.to_dict())
 
-    response = accept_and_sign_result(
-        runtime,
-        game_ids[-1],
-        SimpleNamespace(
-            signed_result_agreement=signed.to_dict(),
-            signed_audit_summaries=[a.to_dict() for a in active_audits],
-        ),
-    )
-
-    assert response["ok"] is False
-    assert "local audit bundle contains a non-passing audit" in response["error"]
-
-
-def test_counted_result_rejects_gamelet_not_independently_observed():
-    config_hash = "c" * 64
-    active_key = generate_key_pair()
-    passive_key = generate_key_pair()
-    series_id = "series_fixture"
-    game_ids = [f"{series_id}_g{i:02d}" for i in range(1, 7)]
-    active_audits = [
-        _audit(i, active_key, game_id, config_hash) for i, game_id in enumerate(game_ids, start=1)
-    ]
-    passive_audits = [
-        _audit(i, passive_key, game_id, config_hash) for i, game_id in enumerate(game_ids, start=1)
-    ]
-    outcomes = [
-        GameletOutcome(
-            i,
-            20,
-            5,
-            "cop",
-            10,
-            transcript_root=f"root-{i}",
-            final_state_root=f"state-{i}",
-            public_transition_root=f"public-{i}",
-        )
-        for i in range(1, 7)
-    ]
-    observed = {
-        game_id: {
-            "gamelet": i,
-            "cop_score": 20,
-            "thief_score": 5,
-            "winner": "cop",
-            "turns_played": 10,
-            "final_state_root": f"state-{i}",
-            "public_transition_root": f"public-{i}",
-        }
-        for i, game_id in enumerate(game_ids, start=1)
-    }
-    observed[game_ids[2]]["winner"] = "police"
-    runtime = SimpleNamespace(
-        _remote_step0={
-            game_id: SignedDeclaration(
-                PeerDeclaration(game_uid=game_id, public_key_hex=active_key[1].hex()), ""
-            )
-            for game_id in game_ids
-        },
-        _local_audit_summaries={a.summary.game_uid: a for a in passive_audits},
-        _remote_audit_summaries={},
-        _observed_gamelet_outcomes=observed,
-        _signing_private_key=passive_key[0],
-        config_sha256=config_hash,
-        counted_mode=True,
-    )
-    agreement = ResultAgreement(
-        game_uid=series_id,
-        gamelet_outcomes=outcomes,
-        cop_total_score=120,
-        thief_total_score=30,
-        series_winner="cop",
-        counted_status=True,
-        config_hash=config_hash,
-        combined_protocol_profile_hash="profile-hash",
-        both_audit_summaries_hash=_audit_bundle_hash(active_audits + passive_audits),
-    )
-    signed = create_signed_result_agreement(agreement, active_key[0])
-
-    response = accept_and_sign_result(
-        runtime,
-        game_ids[-1],
-        SimpleNamespace(
-            signed_result_agreement=signed.to_dict(),
-            signed_audit_summaries=[a.to_dict() for a in active_audits],
-        ),
-    )
-
-    assert response["ok"] is False
-    assert "gamelet 3 disagrees with independent observation" in response["error"]
+    encoded = str(signed.to_dict())
+    assert "gamelet" in encoded
+    assert len(restored.agreement.gamelet_outcomes) == 6

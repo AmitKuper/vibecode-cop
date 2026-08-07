@@ -3,6 +3,7 @@
 import json
 
 import pytest
+
 from cop_worker.gmail.sender import AcceptanceFileGmailSender, GmailApiSender
 
 

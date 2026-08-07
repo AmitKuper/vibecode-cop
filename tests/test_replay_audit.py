@@ -3,13 +3,12 @@
 import json
 from pathlib import Path
 
+from cop_worker.crypto import create_commitment
 from cop_worker.mcp.log_replay import (
     audit_log_commitments,
     sha256_of_file,
     verify_log_integrity,
 )
-
-from cop_worker.crypto import create_commitment
 
 
 def _make_log(tmp_path: Path, game_id: str, entries: list[dict]) -> Path:
@@ -94,7 +93,7 @@ class TestAuditLogCommitments:
     def test_valid_log_all_ok(self, tmp_path):
         game_id = "audit_test_001"
         cop_h, cop_nonce = self._make_real_commit(game_id, 1, "cop", "N")
-        thief_h, thief_nonce = self._make_real_commit(game_id, 1, "police", "S")
+        thief_h, thief_nonce = self._make_real_commit(game_id, 1, "thief", "S")
 
         entry = _make_entry(
             1,
@@ -115,7 +114,7 @@ class TestAuditLogCommitments:
     def test_tampered_move_fails(self, tmp_path):
         game_id = "audit_test_002"
         cop_h, cop_nonce = self._make_real_commit(game_id, 1, "cop", "N")
-        thief_h, thief_nonce = self._make_real_commit(game_id, 1, "police", "S")
+        thief_h, thief_nonce = self._make_real_commit(game_id, 1, "thief", "S")
 
         entry = _make_entry(
             1,
