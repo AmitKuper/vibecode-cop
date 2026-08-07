@@ -16,8 +16,12 @@ from agent.audit.result_consensus import (
     verify_bilateral_consensus,
     verify_result_agreement_signature,
 )
+import logging
+
 from agent.mcp.messages import ActionMessage
 from agent.peer_runtime_io import _now
+
+logger = logging.getLogger(__name__)
 
 
 class ResultExchangeError(RuntimeError):
@@ -196,6 +200,12 @@ def agreement_from_series(runtime, series_result: dict) -> ResultAgreement:
     records = series_result.get("gamelets", [])
     if len(records) != 6:
         raise ResultExchangeError(f"result requires six gamelets, got {len(records)}")
+    n_local = len(runtime._local_audit_summaries)
+    n_remote = len(runtime._remote_audit_summaries)
+    logger.info(
+        "[ResultAgreement] Pre-flight: local_audit_summaries=%d remote_audit_summaries=%d",
+        n_local, n_remote,
+    )
     outcomes = []
     for index, record in enumerate(records, start=1):
         if record.get("audit_ok") is not True:
@@ -223,6 +233,17 @@ def agreement_from_series(runtime, series_result: dict) -> ResultAgreement:
         runtime._remote_audit_summaries.values()
     )
     if len(audits) != 12:
+        local_ids = sorted(runtime._local_audit_summaries.keys())
+        remote_ids = sorted(runtime._remote_audit_summaries.keys())
+        expected_ids = sorted(r["game_id"] for r in records)
+        missing_remote = [gid for gid in expected_ids if gid not in runtime._remote_audit_summaries]
+        missing_local = [gid for gid in expected_ids if gid not in runtime._local_audit_summaries]
+        logger.error(
+            "[ResultAgreement] Audit bundle incomplete: local=%d remote=%d total=%d "
+            "(need 12). missing_local=%s missing_remote=%s",
+            len(local_ids), len(remote_ids), len(audits),
+            missing_local, missing_remote,
+        )
         raise ResultExchangeError(f"expected twelve bilateral audit summaries, got {len(audits)}")
     series_token_totals = dict(series_result.get("token_totals", {}))
     if runtime.counted_mode:
@@ -230,6 +251,12 @@ def agreement_from_series(runtime, series_result: dict) -> ResultAgreement:
     winner = series_result["series_winner"]
     protocol_hashes = {audit.summary.protocol_profile_hash for audit in audits}
     if len(protocol_hashes) != 1:
+        local_hashes = {a.summary.protocol_profile_hash for a in runtime._local_audit_summaries.values()}
+        remote_hashes = {a.summary.protocol_profile_hash for a in runtime._remote_audit_summaries.values()}
+        logger.error(
+            "[ResultAgreement] protocol_profile_hash mismatch: local_hashes=%s remote_hashes=%s",
+            local_hashes, remote_hashes,
+        )
         raise ResultExchangeError("audit summaries disagree on protocol profile hash")
     return ResultAgreement(
         game_uid=series_result["series_id"],
@@ -262,7 +289,11 @@ def accept_and_sign_result(runtime, game_id: str, message) -> dict:
         if len(outcomes) != 6 or [o.gamelet for o in outcomes] != list(range(1, 7)):
             raise ResultExchangeError("result is not exactly gamelets 1..6")
         remote_audits = _parse_and_verify_audits(runtime, message.signed_audit_summaries or [])
-        local_audits = list(runtime._local_audit_summaries.values())
+        series_prefix = _series_id(game_id)
+        local_audits = [
+            s for uid, s in runtime._local_audit_summaries.items()
+            if uid.startswith(f"{series_prefix}_g")
+        ]
         if len(local_audits) != 6:
             raise ResultExchangeError("local six-gamelet audit bundle is incomplete")
         if sorted(s.summary.gamelet for s in local_audits) != list(range(1, 7)):
@@ -343,6 +374,12 @@ def accept_and_sign_result(runtime, game_id: str, message) -> dict:
 
 
 async def exchange_series_result(runtime, series_result: dict) -> dict:
+    logger.info(
+        "[exchange_series_result] Starting: local_audits=%d remote_audits=%d gamelets=%d",
+        len(runtime._local_audit_summaries),
+        len(runtime._remote_audit_summaries),
+        len(series_result.get("gamelets", [])),
+    )
     agreement = agreement_from_series(runtime, series_result)
     local = create_signed_result_agreement(agreement, runtime._signing_private_key)
     last_game_id = series_result["gamelets"][-1]["game_id"]

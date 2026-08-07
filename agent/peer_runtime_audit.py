@@ -198,9 +198,18 @@ async def do_final_audit(
             logger.warning("[PeerRuntime/%s] Failed to parse opponent AuditSummary: %s", role, exc)
             details["opponent_audit_parse_error"] = str(exc)
             audit_ok = False
-    elif runtime is not None and runtime.counted_mode:
-        details["opponent_audit_parse_error"] = "missing signed audit summary"
-        audit_ok = False
+    elif runtime is not None:
+        if runtime.counted_mode:
+            details["opponent_audit_parse_error"] = "missing signed audit summary"
+            audit_ok = False
+        else:
+            logger.warning(
+                "[PeerRuntime/%s] game_id=%s: opponent did not return signed_audit_summary "
+                "— remote audit NOT stored (result_agreement will fail if all 6 gamelets "
+                "are missing remote audits)",
+                role, game_id,
+            )
+            details["opponent_audit_warning"] = "missing signed_audit_summary (non-counted, continuing)"
 
     if audit_ok:
         # Advance SM: AUDITING → RESULT_AGREEMENT.  DONE is authorized only

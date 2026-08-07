@@ -76,4 +76,4 @@ class AgentMCPServer:
 
     async def run_async(self, host: str = "localhost", port: int = 5000) -> None:
         logger.info(f"Starting Agent MCP server on {host}:{port}")
-        await self.mcp.run_async(transport="sse", host=host, port=port)
+        await self.mcp.run_async(transport="http", host=host, port=port)

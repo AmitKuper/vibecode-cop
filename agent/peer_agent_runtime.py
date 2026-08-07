@@ -7,7 +7,9 @@ Passive helpers (thief commit/reveal) are in peer_agent_passive.py.
 """
 
 import asyncio
+import json
 import logging
+import threading
 from pathlib import Path
 
 from agent.mcp.server import AgentMCPServer
@@ -152,10 +154,36 @@ class PeerAgentRuntime(_DiscoveryMixin):
         if phase == "result_agreement":
             from agent.peer_result import accept_and_sign_result
 
-            return accept_and_sign_result(self._peer_runtime, game_id, message)
+            result = accept_and_sign_result(self._peer_runtime, game_id, message)
+            if result.get("ok"):
+                self._send_report_async(game_id, result.get("signed_result_agreement"))
+            return result
         if phase == "game_end":
             return handle_passive_game_end(self._peer_runtime, game_id, message, self._rules_ref)
         return {"ok": False, "error": f"Unknown phase: {phase}"}
+
+    def _send_report_async(self, game_id: str, signed_result: dict | None) -> None:
+        rt = self._peer_runtime
+        if rt.orchestrator is None or signed_result is None:
+            logger.warning("[PeerAgentRuntime/%s] Cannot schedule report: missing orchestrator or result", rt.role)
+            return
+        series_id = signed_result.get("agreement", {}).get("game_uid", game_id)
+        idempotency_key = f"{series_id}_{rt.role}"
+        result_json = json.dumps(signed_result, sort_keys=True)
+
+        def _send() -> None:
+            try:
+                delivery_id = rt.orchestrator.send_report_via_gatekeeper(
+                    idempotency_key=idempotency_key,
+                    game_id=series_id,
+                    result_json=result_json,
+                )
+                logger.info("[PeerAgentRuntime/%s] Report delivered: %s", rt.role, delivery_id)
+            except Exception as exc:
+                logger.warning("[PeerAgentRuntime/%s] Report delivery failed: %s", rt.role, exc)
+
+        threading.Thread(target=_send, daemon=True, name=f"gmail-{series_id}").start()
+        logger.info("[PeerAgentRuntime/%s] Gmail report scheduled for %s", rt.role, series_id)
 
     async def run_async(self, host: str = "0.0.0.0", port: int = 5000) -> None:
         """Start the MCP server. Cop's PeerRuntime loop starts on first start_game call."""

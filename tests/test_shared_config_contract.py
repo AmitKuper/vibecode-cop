@@ -16,7 +16,6 @@ from agent.config.shared_config import (
 _VALID_CONFIG = {
     "board_and_agents": {"grid_size": 7},
     "movement_and_barriers": {
-        "diagonal_moves": False,
         "max_barriers": 14,
         "max_moves": 35,
         "survival_threshold": 35,
@@ -35,12 +34,7 @@ _VALID_CONFIG = {
         "pheromone_decay": 0.10,
         "pheromone_grid_size": 5,
     },
-    "network_and_league": {
-        "num_gamelets": 6,
-        "minimum_games": 2,
-        "maximum_counted_games": 10,
-    },
-    "rate_limiter_gatekeeper": {},
+    "network_and_league": {},
 }
 
 
@@ -88,12 +82,6 @@ class TestValidate:
         with pytest.raises(ValueError, match="scoring"):
             _validate(cfg)
 
-    def test_diagonal_moves_must_be_false(self):
-        cfg = json.loads(json.dumps(_VALID_CONFIG))
-        cfg["movement_and_barriers"]["diagonal_moves"] = True
-        with pytest.raises(ValueError, match="diagonal_moves"):
-            _validate(cfg)
-
     def test_technical_loss_must_be_zero(self):
         cfg = json.loads(json.dumps(_VALID_CONFIG))
         cfg["scoring"]["technical_loss"] = 5
@@ -118,12 +106,6 @@ class TestValidate:
         with pytest.raises(ValueError, match="max_moves"):
             _validate(cfg)
 
-    def test_num_gamelets_fixed_at_six(self):
-        cfg = json.loads(json.dumps(_VALID_CONFIG))
-        cfg["network_and_league"]["num_gamelets"] = 4
-        with pytest.raises(ValueError, match="num_gamelets"):
-            _validate(cfg)
-
     def test_reports_section_forbidden(self):
         cfg = json.loads(json.dumps(_VALID_CONFIG))
         cfg["reports"] = {"gmail": {"mode": "send"}}
@@ -133,19 +115,19 @@ class TestValidate:
 
 class TestLoadSharedConfig:
     def test_loads_real_config(self):
-        cfg = load_shared_config(Path("config/game.json"))
+        cfg = load_shared_config(Path("cop/config.toml"))
         assert "board_and_agents" in cfg
         assert "movement_and_barriers" in cfg
 
     def test_missing_file_raises_file_not_found(self):
         with pytest.raises(FileNotFoundError):
-            load_shared_config(Path("config/nonexistent.json"))
+            load_shared_config(Path("config/nonexistent.toml"))
 
     def test_sha256_is_deterministic(self):
-        sha1 = config_sha256(load_shared_config(Path("config/game.json")))
-        sha2 = config_sha256(load_shared_config(Path("config/game.json")))
+        sha1 = config_sha256(load_shared_config(Path("cop/config.toml")))
+        sha2 = config_sha256(load_shared_config(Path("cop/config.toml")))
         assert sha1 == sha2
 
-    def test_config_json_passes_validation(self):
-        cfg = load_shared_config(Path("config/game.json"))
+    def test_config_toml_passes_validation(self):
+        cfg = load_shared_config(Path("cop/config.toml"))
         _validate(cfg)  # should not raise

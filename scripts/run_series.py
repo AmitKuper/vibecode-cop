@@ -29,10 +29,6 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="[%(asctime)s] [%(name)s] %(levelname)s: %(message)s",
-)
 logger = logging.getLogger(__name__)
 
 _TOKEN_KEYS = ("prompt_tokens", "completion_tokens", "total_tokens")
@@ -258,35 +254,67 @@ async def run_series(
 
     if mode in (RuntimeMode.COUNTED, RuntimeMode.WARMUP):
         from agent.mcp.coordinator import gamelet_from_game_id, get_coordinator
-        from agent.peer_result import exchange_series_result
+        from agent.peer_result import ResultExchangeError, exchange_series_result
 
         is_counted = mode == RuntimeMode.COUNTED
-        agreement_artifact = await exchange_series_result(runtime, series_result)
-        series_result["result_agreement"] = agreement_artifact
-        signed = runtime._signed_series_result
-        last_game_id = gamelets[-1]["game_id"]
-        remote_sig = agreement_artifact["remote_signature_hex"]
-        result_hash = signed.agreement.agreement_hash()
-        step0 = runtime._step0_agreements[last_game_id]
-        runtime.orchestrator.record_match_in_ledger(
-            opponent_id=runtime._remote_step0[last_game_id].declaration.group_id,
-            match_id=series_id,
-            counted=is_counted,
-            declaration_hash=step0.agreement_hash,
-            result_hash=result_hash,
-            both_result_signatures=[signed.signature_hex, remote_sig],
-        )
-        delivery_id = runtime.orchestrator.send_report_via_gatekeeper(
-            idempotency_key=f"{series_id}_{runtime.role}",
-            game_id=series_id,
-            result_json=json.dumps(series_result, sort_keys=True, default=str),
-        )
-        series_result["report_delivery_id"] = delivery_id
-        get_coordinator().on_done(
-            last_game_id,
-            gamelet_from_game_id(last_game_id, strict=True),
-            runtime.role,
-        )
+        all_audits_ok = all(g.get("audit_ok") for g in gamelets)
+        any_audit_ok = any(g.get("audit_ok") for g in gamelets)
+        # Skip only if counted mode requires all-pass, or if no gamelet passed at all
+        _skip_exchange = not is_counted and not any_audit_ok
+        if not all_audits_ok and not _skip_exchange and not is_counted:
+            logger.warning(
+                "[run_series] Partial audit pass — attempting warmup result exchange "
+                "(%d/%d passed)",
+                sum(1 for g in gamelets if g.get("audit_ok")),
+                len(gamelets),
+            )
+        elif _skip_exchange:
+            logger.warning(
+                "[run_series] Skipping result exchange — no gamelets passed audit "
+                "(warmup mode, 0/%d passed)",
+                len(gamelets),
+            )
+        else:
+            try:
+                agreement_artifact = await exchange_series_result(runtime, series_result)
+            except ResultExchangeError as exc:
+                if is_counted:
+                    raise
+                logger.warning("[run_series] WARMUP result exchange failed (non-fatal): %s", exc)
+                agreement_artifact = None
+            if agreement_artifact is not None:
+                series_result["result_agreement"] = agreement_artifact
+                signed = runtime._signed_series_result
+                last_game_id = gamelets[-1]["game_id"]
+                remote_sig = agreement_artifact["remote_signature_hex"]
+                result_hash = signed.agreement.agreement_hash()
+                step0 = runtime._step0_agreements[last_game_id]
+                runtime.orchestrator.record_match_in_ledger(
+                    opponent_id=runtime._remote_step0[last_game_id].declaration.group_id,
+                    match_id=series_id,
+                    counted=is_counted,
+                    declaration_hash=step0.agreement_hash,
+                    result_hash=result_hash,
+                    both_result_signatures=[signed.signature_hex, remote_sig],
+                )
+                try:
+                    delivery_id = runtime.orchestrator.send_report_via_gatekeeper(
+                        idempotency_key=f"{series_id}_{runtime.role}",
+                        game_id=series_id,
+                        result_json=json.dumps(series_result, sort_keys=True, default=str),
+                    )
+                    series_result["report_delivery_id"] = delivery_id
+                except Exception as exc:
+                    if is_counted:
+                        raise
+                    logger.warning(
+                        "[run_series] WARMUP report delivery skipped (non-fatal): %s", exc
+                    )
+                get_coordinator().on_done(
+                    last_game_id,
+                    gamelet_from_game_id(last_game_id, strict=True),
+                    runtime.role,
+                )
 
     out_path = games_dir / f"result_{series_id}_series.json"
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -299,7 +327,10 @@ async def run_series(
 
 
 async def main() -> int:
+    from agent.logging_setup import setup_dual_logging
+
     args = _parse_args()
+    setup_dual_logging(prefix="run_series_cop")
     config = _load_config(args)
 
     secret = (
@@ -325,6 +356,19 @@ async def main() -> int:
 
     mode = RuntimeMode.COUNTED if args.counted else RuntimeMode(args.mode)
 
+    # Build orchestrator config with Gmail sender if configured
+    orchestrator_config: dict | None = None
+    gmail_cfg = config.get("reports", {}).get("gmail", {})
+    if gmail_cfg.get("mode") == "send" or gmail_cfg.get("token_path"):
+        try:
+            from agent.gmail.sender import GmailApiSender
+
+            token_path = gmail_cfg.get("token_path", "secrets/gmail/token.json")
+            orchestrator_config = {"gmail_sender": GmailApiSender(token_path)}
+            logger.info("[run_series] Gmail sender loaded from %s", token_path)
+        except Exception as exc:
+            logger.warning("[run_series] Gmail sender not available: %s", exc)
+
     # Counted series must be exactly 6 gamelets (binding league rule).
     if args.n_gamelets != 6:
         logger.error(
@@ -342,6 +386,7 @@ async def main() -> int:
         group_name=group_name,
         llm_dict=llm_dict,
         mode=mode,
+        orchestrator_config=orchestrator_config,
     )
     print(json.dumps(result, indent=2))
     return 0

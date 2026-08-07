@@ -18,7 +18,7 @@ class NaturalLanguagePolicy:
     """
     Generates free-language hints independent of physical movement.
     Movement is controlled by RL/heuristic — this only controls language.
-    LLM may be injected for high-quality text but defaults to templates.
+    LLM may be injected for high-quality text; templates are the fallback.
     """
 
     TRUTH_TEMPLATES = {
@@ -42,11 +42,12 @@ class NaturalLanguagePolicy:
         "Adapting to the situation.",
     ]
 
-    def __init__(self, role: str, bluff_probability: float = 0.3):
+    def __init__(self, role: str, bluff_probability: float = 0.3, llm_hint_generator=None):
         self.role = role
         self.bluff_probability = bluff_probability
         self._opponent_move_history: list[str] = []
         self._trust_history: list[bool] = []
+        self._llm_hint = llm_hint_generator  # LLMHintGenerator | None
 
     def choose_intent(
         self,
@@ -86,7 +87,18 @@ class NaturalLanguagePolicy:
         return DeceptionIntent.TRUTH
 
     def generate(self, move: str, intent: DeceptionIntent) -> str:
-        """Generate a free-language hint. Never numeric-location protocol."""
+        """Generate a free-language hint, preferring LLM text over templates."""
+        if self._llm_hint is not None:
+            try:
+                text = self._llm_hint.generate(move, intent.value)
+                if text:
+                    return text
+            except Exception:
+                pass  # fall through to templates
+        return self._template(move, intent)
+
+    def _template(self, move: str, intent: DeceptionIntent) -> str:
+        """Template fallback — always works, zero latency."""
         if intent == DeceptionIntent.TRUTH:
             templates = self.TRUTH_TEMPLATES.get(move, ["Moving strategically."])
             return random.choice(templates)

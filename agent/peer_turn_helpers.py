@@ -124,13 +124,16 @@ async def send_commit(runtime: PeerRuntime, step: int, h_commit: str) -> dict | 
             phase="commit",
             h_commit=h_commit,
         ).to_dict()
+        _adapter_resp = None
+        _adapter_ok = False
         try:
-            return await _bounded_exchange(
+            _adapter_resp = await _bounded_exchange(
                 runtime,
                 "commit",
                 step,
                 lambda: _call_adapted_phase(runtime, "commit", msg_dict, {"commitment": h_commit}),
             )
+            _adapter_ok = True
         except Exception as exc:
             if runtime.counted_mode:
                 raise RuntimeError(
@@ -144,6 +147,20 @@ async def send_commit(runtime: PeerRuntime, step: int, h_commit: str) -> dict | 
                 exc,
             )
             runtime.protocol_adapter = None
+            runtime._adaptive_profile = None
+        if _adapter_ok:
+            # Adapter call succeeded — return if h_commit present, else fall to dev fallback
+            if _adapter_resp and _adapter_resp.get("h_commit"):
+                return _adapter_resp
+            if runtime.counted_mode:
+                raise RuntimeError(
+                    f"Deterministic COMMIT adapter returned no h_commit at step {step}"
+                )
+            logger.warning(
+                "[PeerTurn] Adapter COMMIT returned no h_commit at step %s — dev fallback", step
+            )
+            runtime.protocol_adapter = None
+            runtime._adaptive_profile = None
     msg = ActionMessage(
         game_id=runtime.game_id,
         step=step,
@@ -179,8 +196,10 @@ async def send_reveal(runtime: PeerRuntime, step: int, reveal_payload: dict) -> 
             intent=reveal_payload["intent"],
             state_hash=reveal_payload["state_hash"],
         ).to_dict()
+        _reveal_resp = None
+        _reveal_ok = False
         try:
-            return await _bounded_exchange(
+            _reveal_resp = await _bounded_exchange(
                 runtime,
                 "reveal",
                 step,
@@ -196,6 +215,7 @@ async def send_reveal(runtime: PeerRuntime, step: int, reveal_payload: dict) -> 
                     },
                 ),
             )
+            _reveal_ok = True
         except Exception as exc:
             if runtime.counted_mode:
                 raise RuntimeError(
@@ -209,6 +229,19 @@ async def send_reveal(runtime: PeerRuntime, step: int, reveal_payload: dict) -> 
                 exc,
             )
             runtime.protocol_adapter = None
+            runtime._adaptive_profile = None
+        if _reveal_ok:
+            if _reveal_resp and _reveal_resp.get("move"):
+                return _reveal_resp
+            if runtime.counted_mode:
+                raise RuntimeError(
+                    f"Deterministic REVEAL adapter returned no move at step {step}"
+                )
+            logger.warning(
+                "[PeerTurn] Adapter REVEAL returned no move at step %s — dev fallback", step
+            )
+            runtime.protocol_adapter = None
+            runtime._adaptive_profile = None
     msg = ActionMessage(
         game_id=runtime.game_id,
         step=step,

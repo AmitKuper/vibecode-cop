@@ -149,6 +149,8 @@ class ProtocolCoordinator:
         with entry.lock:
             sm = entry.sm
             if sm.state in (ProtocolState.READY, ProtocolState.STEP_VERIFIED):
+                if sm.state == ProtocolState.STEP_VERIFIED:
+                    sm.advance_step()
                 sm.transition(ProtocolState.COMPUTING_MOVE)
                 logger.debug("[Coordinator] begin_step %s step=%d → COMPUTING_MOVE", game_id, step)
 
@@ -385,6 +387,8 @@ class ProtocolCoordinator:
             prev_state = sm.state
             # Accept READY / STEP_VERIFIED → auto-advance to COMPUTING_MOVE (passive side)
             if sm.state in (ProtocolState.READY, ProtocolState.STEP_VERIFIED):
+                if sm.state == ProtocolState.STEP_VERIFIED:
+                    sm.advance_step()
                 sm.transition(ProtocolState.COMPUTING_MOVE)
             ok, err = sm.guard_commit_received()
             if not ok:

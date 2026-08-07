@@ -41,33 +41,21 @@ def build_email_message(
 
 
 def build_email_body(context: ReportContext, mode: str) -> str:
-    """Build plain-text email body."""
+    """Build plain-text email cover note; the JSON attachment is the mandatory report."""
     winner = (
         context.result.get("winner").upper()
         if context.result and context.result.get("winner")
         else "UNKNOWN"
     )
 
-    return f"""Cop-Thief Game Report
-
-Game ID: {context.game_id}
-Group: {context.group_id}
-Role: {context.role}
-Opponent Group: {context.opponent_group_id or "Unknown"}
-
-Result: {winner}
-Start: {context.start_timestamp}
-End: {context.end_timestamp}
-
-Config Hash: {context.config_hash or "N/A"}
-Log Hash: {context.log_hash or "N/A"}
-
-Mode: {mode}
-Attachments: See below
-
----
-This is an automated report from the Cop-Thief game system.
-"""
+    return (
+        f"Automated match report from group {context.group_id} (role: {context.role}).\n\n"
+        f"Game: {context.game_id}\n"
+        f"Opponent: {context.opponent_group_id or 'unknown'}\n"
+        f"Result: {winner}\n\n"
+        f"The mandatory signed JSON report is attached as result_{context.game_id}.json.\n"
+        f"Additional files (declaration, config, log) are also attached per §9.3.3.\n"
+    )
 
 
 def collect_attachments(

@@ -226,7 +226,13 @@ def handle_passive_reveal(rt: PeerRuntime, game_id: str, message, rules_ref: lis
                     subsystem="step_evidence",
                     step=message.step,
                 )
-            raise RuntimeError("passive counted evidence persistence failed") from exc
+                raise RuntimeError("passive counted evidence persistence failed") from exc
+            logger.warning(
+                "[PeerAgentPassive/%s] Non-fatal: step evidence persistence failed at step %d: %s",
+                rt.role,
+                message.step,
+                exc,
+            )
 
     return {
         "ok": True,

@@ -43,6 +43,18 @@ def _load_private(path: str) -> dict:
         return tomllib.load(stream)
 
 
+def _detect_public_ip() -> str:
+    """Return public IP: env var → ipify → empty string."""
+    if ip := os.getenv("PUBLIC_IP", "").strip():
+        return ip
+    try:
+        import urllib.request
+        with urllib.request.urlopen("https://api.ipify.org", timeout=3) as resp:
+            return resp.read().decode().strip()
+    except Exception:
+        return ""
+
+
 def _model_sha(role: str, manifest_path: Path) -> str:
     if not manifest_path.exists():
         return "placeholder"
@@ -90,10 +102,10 @@ def _resolved(role: str, args: argparse.Namespace) -> tuple[dict, dict]:
     scent_hash = hashlib.sha256(
         json.dumps(pheromones, sort_keys=True, separators=(",", ":")).encode()
     ).hexdigest()
-    my_endpoint = role_cfg.get("mcp_url") or role_cfg.get("public_url", "")
-    if args.port is not None:
-        advertised_host = "127.0.0.1" if args.host in {"0.0.0.0", "::"} else args.host
-        my_endpoint = f"http://{advertised_host}:{args.port}/mcp"
+    port = args.port or int(role_cfg.get("local_port", 5000))
+    public_ip = _detect_public_ip()
+    advertised_host = public_ip or ("127.0.0.1" if args.host in {"0.0.0.0", "::"} else args.host)
+    my_endpoint = f"http://{advertised_host}:{port}/mcp"
     runtime = {
         "role": role,
         "secret": secret,
@@ -173,11 +185,13 @@ async def _run(role: str, args: argparse.Namespace) -> int:
         print(json.dumps(result, sort_keys=True))
         return 0
     agent = PeerAgentRuntime(**runtime, mode=mode, orchestrator_config=orchestrator)
-    port = args.port or int(_load_private(args.config).get(role, {}).get("local_port", 5000))
     await agent.run_async(host=args.host, port=port)
     return 0
 
 
 def run_role_cli(role: str, argv: list[str] | None = None) -> int:
+    from agent.logging_setup import setup_dual_logging
+
     args = _parser(role).parse_args(_normalise_legacy(list(sys.argv[1:] if argv is None else argv)))
+    setup_dual_logging(prefix=f"serve_{role}")
     return asyncio.run(_run(role, args))

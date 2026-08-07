@@ -46,10 +46,26 @@ class AgentOrchestrator:
         if self.mode == RuntimeMode.COUNTED:
             self._validate_counted_preconditions()
 
-        # Language policy
+        # Language policy — optionally backed by an LLM for hint text
         from agent.language.deception_policy import NaturalLanguagePolicy
+        from agent.language.llm_hint import LLMHintGenerator
 
-        self.language_policy: NaturalLanguagePolicy = NaturalLanguagePolicy(role)
+        _llm_cfg = self.config.get("llm", {})
+        _llm_hint_gen: LLMHintGenerator | None = None
+        if _llm_cfg.get("provider") and _llm_cfg.get("provider") != "none":
+            try:
+                _llm_hint_gen = LLMHintGenerator.from_llm_config(_llm_cfg)
+                logger.info(
+                    "LLM hint generation enabled: provider=%s model=%s",
+                    _llm_cfg.get("provider"),
+                    _llm_cfg.get("model"),
+                )
+            except Exception as _hint_init_err:
+                logger.warning("LLM hint generator init failed: %s", _hint_init_err)
+
+        self.language_policy: NaturalLanguagePolicy = NaturalLanguagePolicy(
+            role, llm_hint_generator=_llm_hint_gen
+        )
 
         # Protocol state
         from agent.mcp.coordinator import get_coordinator

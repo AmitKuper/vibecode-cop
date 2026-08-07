@@ -1,52 +1,264 @@
-# Cop process configuration (private, per-agent)
-[cop]
+# ================================================================
+# VIBECODE COP — COMPLETE CONFIGURATION
+# ================================================================
+# This is the single configuration file for the cop agent.
+#
+# Two categories of settings live here:
+#
+#   [runtime], [paths], [timeouts], [llm], [reports.*]
+#     → Private to this agent. Never shared with the opponent.
+#
+#   [game.*]
+#     → Shared game parameters. Must match the opponent exactly.
+#       Cryptographically locked via SHA-256 before the first move.
+#       Fixed values (marked FIXED) are set by the course spec and
+#       cannot be changed without violating Appendix F.
+#
+# ================================================================
+
+
+# ----------------------------------------------------------------
+# RUNTIME — network and process identity
+# ----------------------------------------------------------------
+
+[runtime]
 role = "cop"
+
+# TCP port this MCP server listens on locally
 local_port = 61224
-public_url = "http://62.56.220.143:61224"  # share this with the opponent as your cop endpoint
+
+# Internal MCP URL for self-reference / health checks
+# The public endpoint advertised to opponents is auto-detected at startup
+# (env PUBLIC_IP → api.ipify.org → 127.0.0.1 fallback)
 mcp_url = "http://localhost:61224"
-peer_url = "http://localhost:61223"  # thief's endpoint (use public IP for real match)
+
+# Opponent's MCP endpoint (the thief's public URL)
+peer_url = "http://localhost:61223"
+
+
+# ----------------------------------------------------------------
+# PATHS — where artifacts are written
+# ----------------------------------------------------------------
 
 [paths]
+
+# Directory where per-game files (result, journal, step0) are saved
 games_root = "./cop/games"
-logs_suffix = "logs"
+
+
+# ----------------------------------------------------------------
+# TIMEOUTS — deadline budgets
+# ----------------------------------------------------------------
 
 [timeouts]
+
+# Seconds before the watchdog process kills a silent game
 watchdog_threshold_seconds = 60
-state_transition_timeout_seconds = 10
-opponent_response_timeout_seconds = 30
+
+
+
+# ----------------------------------------------------------------
+# LLM — language model for free-text hint generation
+# ----------------------------------------------------------------
+# Movement is always algorithmic (RL policy). The LLM is used only
+# to generate the natural-language hints sent with each turn.
+# Set provider = "none" to use built-in template strings (zero cost,
+# zero latency — good for testing or when Ollama is unavailable).
 
 [llm]
-# LLM backend: "ollama" | "anthropic" | "openai" | "azure"
-provider = "ollama"
-model = "llama3.1:8b"
-temperature = 0.1
-base_url = "http://localhost:11434"
-max_tokens = 1024
 
-# To switch to Anthropic:
-# provider = "anthropic"
-# model = "claude-haiku-4-5-20251001"
-# api_key = "sk-ant-..."   # or set ANTHROPIC_API_KEY env var
+# Backend: "ollama" | "anthropic" | "openai" | "azure" | "none"
+provider = "ollama"
+
+# Model identifier (provider-specific string)
+model = "llama3.1:8b"
+
+# Base URL of the local Ollama server (ignored for cloud providers)
+base_url = "http://localhost:11434"
+
+# Sampling temperature: 0 = deterministic, 1 = more creative
+temperature = 0.7
+
+# Max tokens to generate per hint response (keep small for speed)
+max_tokens = 30
+
+# Seconds to wait for an LLM hint before falling back to templates
+hint_timeout = 3.0
+
+# Anthropic / OpenAI API key — leave empty and set via environment
+# variable ANTHROPIC_API_KEY / OPENAI_API_KEY instead.
+# api_key = ""
+
+
+# ----------------------------------------------------------------
+# REPORTS — post-game reporting pipeline
+# ----------------------------------------------------------------
+# Plugins run in order after each counted game.
+# The Gmail plugin sends the mandatory signed JSON report (§9.3.3).
 
 [reports]
 enabled = true
+
+# Active plugins (run left to right)
+# Available: "file_json"     — write result_<game_id>.json to games directory
+#            "file_markdown" — write human-readable report.md summary
+#            "gmail"         — send signed JSON report via Gmail OAuth (§9.3.3)
 plugins = ["file_json", "file_markdown", "gmail"]
 
 [reports.file_json]
+# Write result_<game_id>.json to the games directory
 enabled = true
-format = "json"
 
 [reports.file_markdown]
+# Write a human-readable report.md summary
 enabled = true
-format = "markdown"
 
 [reports.gmail]
 enabled = true
-mode = "send"  # disabled | dry_run | draft | send
-recipient = "rmisegal+uoh26finalgame@gmail.com"
+
+# Delivery mode:
+#   "disabled" — do nothing
+#   "dry_run"  — save a preview text file locally (no email sent)
+#   "draft"    — save a .eml file locally (no email sent)
+#   "send"     — send via Gmail OAuth (requires token at token_path)
+mode = "send"
+
+# Recipient for automatic JSON reports (official league address)
+recipient = "agentsorch@gmail.com"
+
+# Path to the Gmail OAuth2 credentials file (keep outside git)
 credentials_path = "secrets/gmail/credentials.json"
+
+# Path to the stored OAuth2 token (obtained by running gmail_auth.py)
 token_path = "secrets/gmail/token.json"
+
+# Attach the four mandatory files (result, declaration, config, log)
 attach_required_files = true
+
+# Also attach the human-readable markdown summary
 attach_markdown_summary = true
+
+# Maximum total attachment size in megabytes
 max_attachments_mb = 20
+
+# Hard cap on emails sent per day (Gatekeeper flood protection)
 max_sends_per_day = 10
+
+
+# ================================================================
+# SHARED GAME PARAMETERS
+# ================================================================
+# Everything below this line must be identical on both the cop and
+# thief sides. Both agents compute SHA-256 of these sections and
+# exchange the hash in Step-0 before the first move. A mismatch
+# aborts the game.
+#
+# Fields marked "FIXED — Appendix F" are set by the course spec.
+# Changing them violates the league rules.
+# ================================================================
+
+
+# ----------------------------------------------------------------
+# GAME: board and agents
+# ----------------------------------------------------------------
+
+[game.board_and_agents]
+
+# Board is a square grid of grid_size × grid_size cells
+grid_size = 7
+
+# Starting cell for the cop agent [row, col]
+cop_start = [0, 0]
+
+# Starting cell for the thief agent [row, col]
+thief_start = [3, 3]
+
+
+# ----------------------------------------------------------------
+# GAME: world flavour
+# ----------------------------------------------------------------
+
+[game.world]
+
+# Maximum words allowed in a single free-text hint
+# (sender's responsibility; receiver records over-cap hints)
+hint_max_words = 15
+
+
+# ----------------------------------------------------------------
+# GAME: movement and barriers
+# ----------------------------------------------------------------
+
+[game.movement_and_barriers]
+
+# Maximum barriers the cop may place across the whole game
+max_barriers = 14
+
+# Maximum steps before the sub-game ends as a timeout
+max_moves = 35
+
+# Thief wins by survival if it reaches this step without capture
+survival_threshold = 35
+
+
+# ----------------------------------------------------------------
+# GAME: scoring
+# ----------------------------------------------------------------
+# All values are FIXED by Appendix F — do not change.
+
+[game.scoring]
+
+# Points awarded to the cop when it captures the thief
+capture_cop = 20          # FIXED — Appendix F
+
+# Points deducted from (or scored against) the thief on capture
+capture_thief = 5         # FIXED — Appendix F
+
+# Points awarded to the cop when the thief survives (cop loses)
+survival_cop = 5          # FIXED — Appendix F
+
+# Points awarded to the thief when it survives to the step limit
+survival_thief = 10       # FIXED — Appendix F
+
+# Points for both sides when the sub-game ends as a tie
+tie_score = 2             # FIXED — Appendix F
+
+# Points for a technical loss (protocol violation / forfeit)
+technical_loss = 0        # FIXED — Appendix F
+
+# Bonus points for beating a group you have never played before
+diversity_reward = 10     # FIXED — Appendix F
+
+
+# ----------------------------------------------------------------
+# GAME: pheromones (scent field)
+# ----------------------------------------------------------------
+# All values are FIXED by Appendix F — do not change.
+
+[game.pheromones]
+
+# Scent intensity emitted at the agent's current cell each step
+pheromone_center_intensity = 0.9   # FIXED — Appendix F
+
+# Fraction of scent lost per step (exponential decay)
+pheromone_decay = 0.10             # FIXED — Appendix F
+
+# Side length of the scent observation window (N×N grid)
+pheromone_grid_size = 5            # FIXED — Appendix F
+
+
+# ----------------------------------------------------------------
+# GAME: network and league
+# ----------------------------------------------------------------
+
+[game.network_and_league]
+
+# Your group's public display name (appears in reports and ledger)
+group_name = "vibecode"
+
+# Seconds before the watchdog kills a silent game process
+watchdog_timeout_sec = 60
+
+# Total LLM token budget for one six-gamelet counted series
+token_budget_per_series = 200000
+

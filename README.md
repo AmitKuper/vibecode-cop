@@ -49,6 +49,29 @@ The compatibility driver remains available as
 `uv run python scripts/run_series.py --mode counted --thief-url <thief-mcp-url>`;
 it resolves into the same counted composition and does not permit a non-six count.
 
+## Network Connectivity
+
+Transport: **MCP streamable-HTTP** — the reference-v3 protocol endpoint.
+
+| Role | Public endpoint |
+|---|---|
+| **Cop** | `http://<STATIC_IP>:61223/mcp` |
+| **Thief** | `http://<STATIC_IP>:61224/mcp` |
+
+Connection method: static IP with port forwarding (no tunnel required).
+- Port 61223 → cop MCP server
+- Port 61224 → thief MCP server
+
+Give the other group both URLs before the agreed start time (T).
+They dial our cop URL when they run as thief, and our thief URL when they run as cop.
+
+To verify our endpoint is up before a match:
+```bash
+# Should return HTTP 406 (not a browser — that means the MCP server is ready)
+curl -I http://<STATIC_IP>:61223/mcp
+curl -I http://<STATIC_IP>:61224/mcp
+```
+
 ## Strategy
 
 Counted movement: `LocalObservation` + Bayesian `BeliefState` + recurrent history,
@@ -140,7 +163,7 @@ are never presented as real Gmail or public-network evidence.
   counted provenance requires a clean, resolvable Git HEAD.
 - **Champion fails to load:** run `uv sync --frozen` and compare the artifact
   SHA-256 with `models/MANIFEST.json`; counted mode never substitutes a heuristic.
-- **Peer negotiation fails:** confirm the peer URL exposes SSE/MCP tools and inspect
+- **Peer negotiation fails:** confirm the peer URL exposes a streamable-HTTP `/mcp` endpoint and inspect
   the incompatibility report; rejection before commitment is intentional.
 - **Gmail fails:** keep send-only OAuth files outside Git. The fake-outbox option is
   local acceptance only and never evidence of real delivery.

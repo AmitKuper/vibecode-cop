@@ -23,21 +23,8 @@ class ScoringConfig(BaseModel):
 
 class NetworkLeagueConfig(BaseModel):
     group_name: str = ""
-    response_timeout_sec: int = Field(ge=1, default=30)
     watchdog_timeout_sec: int = Field(ge=1, default=60)
-    num_gamelets: int = Field(default=6)
-    diversity_reward: int = Field(default=10)
-    min_games_to_pass: int = Field(default=2)
-    max_games_per_team: int = Field(default=10)
     token_budget_per_series: int = Field(ge=1, default=200000)
-
-
-class RateLimiterConfig(BaseModel):
-    requests_per_minute: int = Field(ge=1, default=30)
-    concurrent_requests: int = Field(ge=1, default=2)
-    retry_backoff_sec: int = Field(ge=0, default=5)
-    max_retries: int = Field(ge=0, default=3)
-    queue_depth: int = Field(ge=1, default=100)
 
 
 class GameConfig(BaseModel):
@@ -49,7 +36,6 @@ class GameConfig(BaseModel):
 
     schema_version: str = "1.2"
     grid_size: int = Field(default=7)
-    num_agents: int = Field(default=2)
     cop_start: tuple[int, int] = (0, 0)
     thief_start: tuple[int, int] = (3, 3)
     max_barriers: int = Field(default=14)
@@ -58,7 +44,6 @@ class GameConfig(BaseModel):
     hint_max_words: int = Field(default=15)
     scoring: ScoringConfig = Field(default_factory=ScoringConfig)
     network: NetworkLeagueConfig = Field(default_factory=NetworkLeagueConfig)
-    rate_limiter: RateLimiterConfig = Field(default_factory=RateLimiterConfig)
 
     @model_validator(mode="after")
     def _enforce_appendix_f(self) -> GameConfig:
@@ -67,8 +52,6 @@ class GameConfig(BaseModel):
         # Fixed values (Appendix-F — must match exactly)
         if self.grid_size != 7:
             errors.append(f"grid_size must be 7 (got {self.grid_size})")
-        if self.num_agents != 2:
-            errors.append(f"num_agents must be 2 (got {self.num_agents})")
         if self.max_barriers != 14:
             errors.append(f"max_barriers must be 14 (got {self.max_barriers})")
         if self.max_moves < 35:
@@ -79,16 +62,6 @@ class GameConfig(BaseModel):
             errors.append(
                 "max_moves must be >= survival_threshold "
                 f"(got {self.max_moves} < {self.survival_threshold})"
-            )
-        if self.network.num_gamelets != 6:
-            errors.append(f"num_gamelets must be 6 (got {self.network.num_gamelets})")
-        if self.network.diversity_reward != 10:
-            errors.append(f"diversity_reward must be 10 (got {self.network.diversity_reward})")
-        if self.network.min_games_to_pass < 2:
-            errors.append(f"min_games_to_pass must be >= 2 (got {self.network.min_games_to_pass})")
-        if self.network.max_games_per_team > 10:
-            errors.append(
-                f"max_games_per_team must be <= 10 (got {self.network.max_games_per_team})"
             )
 
         # Fixed scoring (Appendix-F)
@@ -113,12 +86,10 @@ def game_config_from_dict(raw: dict) -> GameConfig:
     world = raw.get("world", {})
     scoring_raw = raw.get("scoring", {})
     network_raw = raw.get("network_and_league", {})
-    rate_raw = raw.get("rate_limiter_gatekeeper", {})
 
     return GameConfig(
         schema_version=raw.get("schema_version", "1.2"),
         grid_size=board.get("grid_size", 7),
-        num_agents=board.get("num_agents", 2),
         cop_start=tuple(board.get("cop_start", [0, 0])),
         thief_start=tuple(board.get("thief_start", [3, 3])),
         max_barriers=movement.get("max_barriers", 14),
@@ -127,7 +98,6 @@ def game_config_from_dict(raw: dict) -> GameConfig:
         hint_max_words=world.get("hint_max_words", 15),
         scoring=ScoringConfig(**scoring_raw),
         network=NetworkLeagueConfig(**network_raw),
-        rate_limiter=RateLimiterConfig(**rate_raw),
     )
 
 

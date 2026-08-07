@@ -236,23 +236,36 @@ class PeerRuntime(_CrewMixin):
                 self.orchestrator.stop_watchdog()
 
         gamelet = gamelet_from_game_id(game_id)
-        audit_ok, audit_details = await do_final_audit(
-            self.opponent_client,
-            game_id,
-            self.role,
-            self.config_sha256,
-            self._my_commits,
-            self.game_dir,
-            self.opponent_role,
-            final_step,
-            _now,
-            gamelet=gamelet,
-            runtime=self,
-        )
-        if not audit_ok:
-            winner = "TECHNICAL_LOSS"
-            abort_reason = "commitment_mismatch"
-            logger.warning(f"[PeerRuntime/{self.role}] Audit failed — overriding winner")
+        if abort_reason is not None:
+            # Turn loop aborted before normal game end — sending final_audit would violate
+            # the opponent's SM (it may still be in BOTH_COMMITTED or REVEAL_RECEIVED).
+            audit_ok = False
+            audit_details = {"error": abort_reason, "audit_status": "SKIPPED"}
+            if winner is None:
+                winner = "TECHNICAL_LOSS"
+            logger.warning(
+                "[PeerRuntime/%s] Skipping final_audit — turn loop aborted: %s",
+                self.role,
+                abort_reason,
+            )
+        else:
+            audit_ok, audit_details = await do_final_audit(
+                self.opponent_client,
+                game_id,
+                self.role,
+                self.config_sha256,
+                self._my_commits,
+                self.game_dir,
+                self.opponent_role,
+                final_step,
+                _now,
+                gamelet=gamelet,
+                runtime=self,
+            )
+            if not audit_ok:
+                winner = "TECHNICAL_LOSS"
+                abort_reason = "commitment_mismatch"
+                logger.warning(f"[PeerRuntime/{self.role}] Audit failed — overriding winner")
 
         transition = self._last_transition_result
         if audit_ok and transition is not None and transition.outcome.value != "ongoing":
@@ -295,6 +308,9 @@ class PeerRuntime(_CrewMixin):
             audit_ok,
             self._my_commits,
             count_opponent_commits(self.game_dir),
+            my_endpoint=self.my_endpoint,
+            opponent_group_id=getattr(self, "_opponent_group_id", ""),
+            token_counts=getattr(self, "_token_counts", None),
         )
         await notify_game_end(
             self.opponent_client,
@@ -362,17 +378,41 @@ class PeerRuntime(_CrewMixin):
                 from agent.peer_turn_helpers import _call_adapted_phase
 
                 msg_dict = msg.to_dict()
-                resp = await _call_adapted_phase(
-                    self,
-                    "start_game",
-                    msg_dict,
-                    {
-                        **msg_dict,
-                        "phase": "start_game",
-                        "role": self.role,
-                        "gamelet": gamelet,
-                    },
-                )
+                try:
+                    resp = await _call_adapted_phase(
+                        self,
+                        "start_game",
+                        msg_dict,
+                        {
+                            **msg_dict,
+                            "phase": "start_game",
+                            "role": self.role,
+                            "gamelet": gamelet,
+                        },
+                    )
+                except Exception as adapter_exc:
+                    if counted_mode:
+                        raise RuntimeError(
+                            f"[PeerRuntime/{self.role}] start_game adapter failed: {adapter_exc}"
+                        ) from adapter_exc
+                    logger.warning(
+                        "[PeerRuntime/%s] start_game adapter failed (%s) — clearing adapter, "
+                        "retrying with native client",
+                        self.role,
+                        adapter_exc,
+                    )
+                    self.protocol_adapter = None
+                    self._adaptive_profile = None
+                    resp = await self.opponent_client.start_game(msg)
+                if not resp.get("ok") and self.protocol_adapter is not None:
+                    logger.warning(
+                        "[PeerRuntime/%s] start_game adapter returned non-ok — clearing adapter, "
+                        "retrying with native client",
+                        self.role,
+                    )
+                    self.protocol_adapter = None
+                    self._adaptive_profile = None
+                    resp = await self.opponent_client.start_game(msg)
             else:
                 resp = await self.opponent_client.start_game(msg)
             if resp.get("ok"):
