@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 
 from cop_worker.gamelet import Gamelet, GameletError
 from cop_worker.synthetic_belief import SyntheticBeliefProvider
@@ -11,6 +12,29 @@ logger = logging.getLogger(__name__)
 
 # Registry: (game_uid, sub_game_number) -> Gamelet
 _GAMELETS: dict[tuple[str, int], Gamelet] = {}
+
+# Module-level RL policy (None if load failed)
+_POLICY = None
+
+
+def _load_policy():
+    """Attempt to load the cop RL policy from models/MANIFEST.json.
+
+    Sets module-level _POLICY on success; logs and leaves None on failure.
+    """
+    global _POLICY
+    try:
+        from cop_worker.rl.recurrent_policy import load_recurrent_policy
+
+        manifest = Path(__file__).parent.parent / "models" / "MANIFEST.json"
+        _POLICY = load_recurrent_policy(manifest, "cop")
+        logger.info("RL cop policy loaded from %s", manifest)
+    except Exception as exc:
+        logger.warning("RL cop policy not loaded (random fallback active): %s", exc)
+        _POLICY = None
+
+
+_load_policy()
 
 
 def _key(game_uid: str, sub_game_number: int) -> tuple[str, int]:
@@ -50,6 +74,7 @@ def start_gamelet(
         opponent_group=opponent_group,
         role=role,
         belief_provider=SyntheticBeliefProvider(),
+        policy=_POLICY,
     )
     _GAMELETS[k] = g
     logger.info("start_gamelet %s sg%d role=%s", game_uid[:8], sub_game_number, role)

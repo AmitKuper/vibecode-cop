@@ -9,6 +9,7 @@ from typing import Any
 
 from cop_worker.commit_reveal import CommitRevealStateMachine, ProtocolViolationError
 from cop_worker.crypto import build_commitment
+from cop_worker.observation import BeliefState, LocalObservation
 from cop_worker.observation_processor import ObservationProcessor
 from cop_worker.parameter_registry import validate_terms
 from cop_worker.state_machine import GameletState, GameletStateMachine
@@ -17,6 +18,21 @@ logger = logging.getLogger(__name__)
 
 # Cop can move in cardinal directions or place a barrier, or stay
 _COP_ACTIONS = ["N", "S", "E", "W", "stay", "barrier_N", "barrier_S", "barrier_E", "barrier_W"]
+
+# Mapping from policy uppercase names to gamelet action dict format
+_POLICY_TO_GAMELET_COP = {
+    "N": "N",
+    "S": "S",
+    "E": "E",
+    "W": "W",
+    "STAY": "stay",
+    "PLACE_N": "barrier_N",
+    "PLACE_S": "barrier_S",
+    "PLACE_E": "barrier_E",
+    "PLACE_W": "barrier_W",
+}
+
+_GRID_SIZE = 7  # canonical grid size matching manifest
 
 
 class GameletError(Exception):
@@ -38,6 +54,7 @@ class Gamelet:
         opponent_group: str,
         role: str,
         belief_provider: Any = None,
+        policy: Any = None,
     ) -> None:
         """Initialise gamelet and validate terms.
 
@@ -48,6 +65,7 @@ class Gamelet:
             opponent_group: Opponent's group_id.
             role: This worker's role ("police" or "thief").
             belief_provider: BeliefEngine or SyntheticBeliefProvider instance.
+            policy: Optional RecurrentRolePolicy for RL-driven move generation.
 
         Raises:
             GameletError: If terms fail validation.
@@ -61,6 +79,11 @@ class Gamelet:
         self.opponent_group = opponent_group
         self.role = role
         self.belief_provider = belief_provider
+        self._policy = policy
+        # Tracked position for RL observation (placeholder: centre of board)
+        self._own_position: tuple[int, int] = (_GRID_SIZE // 2, _GRID_SIZE // 2)
+        self._known_barriers: list[tuple[int, int]] = []
+        self._own_barriers_remaining: int = terms.get("barriers_per_cop", 3)
         self._sm = GameletStateMachine()
         # Terms already agreed — fast-path to LOCKED
         self._sm.transition(GameletState.NEGOTIATING)
@@ -105,12 +128,56 @@ class Gamelet:
             return self._handle_control(payload)
         raise GameletError(f"Unknown event_type: {event_type!r}")
 
-    def _generate_move(self) -> dict:
-        """Generate a heuristic move action for the cop (police) role.
+    def _build_obs(self) -> tuple[LocalObservation, BeliefState]:
+        """Build a LocalObservation and BeliefState for policy inference.
 
         Returns:
-            Action dict with a randomly chosen direction or barrier placement.
+            Tuple of (LocalObservation, BeliefState) using current tracked state.
         """
+        n = _GRID_SIZE
+        scent = [[0.0] * n for _ in range(n)]
+        obs = LocalObservation(
+            own_position=self._own_position,
+            own_barriers_remaining=self._own_barriers_remaining,
+            known_barriers=list(self._known_barriers),
+            opponent_scent=scent,
+            last_hint="",
+            step=self._step,
+            gamelet=self.sub_game_number,
+            grid_size=n,
+        )
+        belief = BeliefState.uniform(n, step=self._step)
+        return obs, belief
+
+    def _action_to_dict(self, action_name: str) -> dict:
+        """Convert policy uppercase action name to gamelet action dict.
+
+        Args:
+            action_name: Uppercase action string from policy (e.g. "STAY", "PLACE_N").
+
+        Returns:
+            Action dict with 'type' and 'direction' keys.
+        """
+        direction = _POLICY_TO_GAMELET_COP.get(action_name, action_name)
+        return {"type": "move", "direction": direction}
+
+    def _generate_move(self) -> dict:
+        """Generate a move action for the cop (police) role.
+
+        Uses the RL policy if available, with random fallback on any error.
+
+        Returns:
+            Action dict with a direction or barrier placement.
+        """
+        if self._policy is not None:
+            try:
+                from cop_worker.rl.action_space import COP_ACTIONS
+
+                obs, belief = self._build_obs()
+                action_name = self._policy.select_action(obs, belief, list(COP_ACTIONS))
+                return self._action_to_dict(action_name)
+            except Exception as exc:
+                logger.warning("RL policy inference failed, falling back to random: %s", exc)
         direction = random.choice(_COP_ACTIONS)
         return {"type": "move", "direction": direction}
 
