@@ -185,7 +185,8 @@ async def _run(role: str, args: argparse.Namespace) -> int:
         print(json.dumps(result, sort_keys=True))
         return 0
     agent = PeerAgentRuntime(**runtime, mode=mode, orchestrator_config=orchestrator)
-    await agent.run_async(host=args.host, port=port)
+    listen_port = args.port or int(_load_private(args.config).get(role, {}).get("local_port", 5000))
+    await agent.run_async(host=args.host, port=listen_port)
     return 0
 
 

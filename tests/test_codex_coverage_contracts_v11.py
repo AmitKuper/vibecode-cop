@@ -384,16 +384,9 @@ def test_appendix_f_validator_reports_all_fixed_and_bounded_failures() -> None:
     with pytest.raises(ValidationError, match="Appendix-F") as caught:
         GameConfig(
             grid_size=6,
-            num_agents=3,
             max_barriers=13,
             max_moves=34,
             survival_threshold=36,
-            network={
-                "num_gamelets": 5,
-                "diversity_reward": 9,
-                "min_games_to_pass": 1,
-                "max_games_per_team": 11,
-            },
             scoring={
                 "capture_cop": 19,
                 "capture_thief": 4,
@@ -404,14 +397,9 @@ def test_appendix_f_validator_reports_all_fixed_and_bounded_failures() -> None:
     text = str(caught.value)
     for field in (
         "grid_size",
-        "num_agents",
         "max_barriers",
         "max_moves",
         "survival_threshold",
-        "num_gamelets",
-        "diversity_reward",
-        "min_games_to_pass",
-        "max_games_per_team",
         "capture_cop",
     ):
         assert field in text

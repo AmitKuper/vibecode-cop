@@ -29,6 +29,8 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 logger = logging.getLogger(__name__)
 
 _TOKEN_KEYS = ("prompt_tokens", "completion_tokens", "total_tokens")

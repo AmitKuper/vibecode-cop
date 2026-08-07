@@ -65,7 +65,8 @@ model = "fixture-model"
 """,
         encoding="utf-8",
     )
-    runtime, orchestrator = _resolved("cop", _args(config, tmp_path))
+    with patch("agent.role_cli._detect_public_ip", return_value=""):
+        runtime, orchestrator = _resolved("cop", _args(config, tmp_path))
 
     assert runtime["my_endpoint"] == "http://127.0.0.1:61234/mcp"
     assert runtime["opponent_url"] == "http://peer.example/mcp"

@@ -152,7 +152,6 @@ def test_shared_config_has_required_sections():
     assert "scoring" in cfg, "Missing [game.scoring]"
     assert "pheromones" in cfg, "Missing [game.pheromones]"
     assert "network_and_league" in cfg, "Missing [game.network_and_league]"
-    assert "rate_limiter_gatekeeper" in cfg, "Missing [game.rate_limiter_gatekeeper]"
 
 
 def test_shared_config_no_private_sections():

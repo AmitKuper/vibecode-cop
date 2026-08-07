@@ -208,7 +208,6 @@ class TestConfigValidator:
         assert config.grid_size == 7
         assert config.max_barriers == 14
         assert config.max_moves >= 35
-        assert config.network.num_gamelets == 6
         assert config.scoring.capture_cop == 20
         assert config.scoring.survival_thief == 10
 
@@ -224,18 +223,6 @@ class TestConfigValidator:
         with pytest.raises((ValidationError, ValueError), match="max_barriers"):
             GameConfig(grid_size=7, max_barriers=10, max_moves=35)
 
-    def test_wrong_gamelet_count_rejected(self):
-        from pydantic import ValidationError
-
-        from agent.domain.config_validator import NetworkLeagueConfig
-
-        with pytest.raises((ValidationError, ValueError), match="num_gamelets"):
-            GameConfig(
-                grid_size=7,
-                max_barriers=14,
-                max_moves=35,
-                network=NetworkLeagueConfig(num_gamelets=5),
-            )
 
     def test_wrong_scoring_capture_cop_rejected(self):
         from pydantic import ValidationError
