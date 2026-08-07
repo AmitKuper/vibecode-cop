@@ -1,4 +1,4 @@
-"""Entry point for cop_worker subprocess."""
+"""Entry point for cop_worker subprocess — starts internal MCP server."""
 
 from __future__ import annotations
 
@@ -30,9 +30,60 @@ def main() -> None:
     setup_logging(log_dir=args.log_dir)
     logger = logging.getLogger(__name__)
     logger.info("cop_worker starting port=%d config=%s", args.port, args.config)
-    # MCP server wiring will be added in Phase 3/4 when FastMCP or equivalent is chosen.
-    # For now, log startup and keep process alive for integration testing.
-    logger.info("cop_worker ready (stub — MCP transport pending)")
+
+    from mcp.server.fastmcp import FastMCP
+
+    from cop_worker import mcp_server
+
+    app = FastMCP(
+        "cop_worker",
+        host="0.0.0.0",
+        port=args.port,
+    )
+
+    @app.tool()
+    def start_gamelet(
+        game_uid: str,
+        sub_game_number: int,
+        terms: dict,
+        opponent_group: str,
+        role: str,
+    ) -> dict:
+        """Start a new gamelet."""
+        return mcp_server.start_gamelet(game_uid, sub_game_number, terms, opponent_group, role)
+
+    @app.tool()
+    def deliver_event(
+        game_uid: str,
+        sub_game_number: int,
+        event_type: str,
+        payload: dict,
+    ) -> dict:
+        """Deliver an event to a gamelet."""
+        return mcp_server.deliver_event(game_uid, sub_game_number, event_type, payload)
+
+    @app.tool()
+    def get_status(game_uid: str, sub_game_number: int) -> dict:
+        """Get gamelet status."""
+        return mcp_server.get_status(game_uid, sub_game_number)
+
+    @app.tool()
+    def prepare_audit(game_uid: str, sub_game_number: int) -> dict:
+        """Prepare audit bundle."""
+        return mcp_server.prepare_audit(game_uid, sub_game_number)
+
+    @app.tool()
+    def get_result(game_uid: str, sub_game_number: int) -> dict:
+        """Get gamelet result."""
+        return mcp_server.get_result(game_uid, sub_game_number)
+
+    @app.tool()
+    def shutdown_gamelet(game_uid: str, sub_game_number: int) -> dict:
+        """Shutdown a gamelet."""
+        return mcp_server.shutdown_gamelet(game_uid, sub_game_number)
+
+    logger.info("cop_worker MCP server ready on port %d (streamable-http)", args.port)
+    app.run(transport="streamable-http")
 
 
 if __name__ == "__main__":
