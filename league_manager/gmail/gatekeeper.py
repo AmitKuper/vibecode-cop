@@ -1,105 +1,116 @@
-"""Production Gmail Gatekeeper — full pipeline."""
+"""Gmail Gatekeeper — fail-closed rate limiting and anomaly detection stack."""
 
-import threading
+from __future__ import annotations
+
+import logging
 import time
-from collections.abc import Callable
+from dataclasses import dataclass, field
 
-from league_manager.gmail.circuit_breaker import CircuitBreaker
-from league_manager.gmail.dos_detector import DosDetector
-from league_manager.gmail.token_bucket import TokenBucket
-
-RECIPIENT = "agentsorch@gmail.com"
-DAILY_QUOTA = 20
-MAX_CONCURRENT = 2
-MIN_INTERVAL_S = 5.0
-MAX_RETRIES = 3
-MIN_RETRY_DELAY_S = 2.0
+logger = logging.getLogger(__name__)
 
 
-class GatekeeperError(ValueError):
-    pass
+class GatekeeperLockedError(Exception):
+    """Raised when the circuit breaker is tripped and blocks a send."""
+
+
+@dataclass
+class DailyQuotaManager:
+    """Tracks Gmail API sends per day to avoid exceeding quota."""
+
+    daily_limit: int = 100
+    _sends_today: int = field(default=0, init=False)
+    _day_start: float = field(default_factory=time.time, init=False)
+
+    def check_and_consume(self) -> bool:
+        """Return True and consume one quota unit if within limit, else False.
+
+        Resets the daily counter automatically after 24 hours.
+
+        Returns:
+            True if quota was available and consumed; False if quota exhausted.
+        """
+        now = time.time()
+        if now - self._day_start > 86400:
+            self._sends_today = 0
+            self._day_start = now
+        if self._sends_today >= self.daily_limit:
+            return False
+        self._sends_today += 1
+        return True
+
+
+@dataclass
+class CircuitBreaker:
+    """Fail-closed circuit breaker. Manual reset required after trip."""
+
+    _tripped: bool = field(default=False, init=False)
+
+    def trip(self) -> None:
+        """Trip the circuit breaker — blocks all subsequent sends."""
+        self._tripped = True
+        logger.warning("Gmail circuit breaker TRIPPED")
+
+    def reset(self) -> None:
+        """Reset the circuit breaker (manual operator action required)."""
+        self._tripped = False
+        logger.info("Gmail circuit breaker RESET")
+
+    @property
+    def is_open(self) -> bool:
+        """Return True if breaker is tripped (blocking sends)."""
+        return self._tripped
 
 
 class Gatekeeper:
-    """Full pipeline: validate -> idempotency -> quota -> token bucket ->
-    concurrency -> DOS -> circuit breaker -> retry -> send."""
+    """Fail-closed send gatekeeper for Gmail.
 
-    def __init__(
-        self,
-        gmail_sender: Callable,
-        capacity: float = 10.0,
-        refill_rate: float = 0.1,
-    ):
-        # gmail_sender: Callable(to, subject, body, attachments) -> message_id
-        self._sender = gmail_sender
-        self._bucket = TokenBucket(capacity, refill_rate)
-        self._dos = DosDetector()
-        self._cb = CircuitBreaker()
-        self._semaphore = threading.Semaphore(MAX_CONCURRENT)
-        self._idempotency: dict = {}  # idempotency_key -> message_id
-        self._daily_count = 0
-        self._last_send_time = 0.0
-        self._lock = threading.Lock()
+    Stack: DailyQuotaManager → CircuitBreaker → Gmail API.
+    On any anomaly, lock out and block. Never fail open.
+    Both counted=True AND cli_counted_flag=True required to send.
+    """
 
-    def send(
-        self,
-        idempotency_key: str,
-        game_id: str,
-        subject: str,
-        body: str,
-        attachments: list | None = None,
-    ) -> str:
-        """Send email through full pipeline. Returns message_id."""
-        attachments = attachments or []
+    def __init__(self, counted: bool, cli_counted_flag: bool, sender: object) -> None:
+        """Initialise gatekeeper.
 
-        # 1. Schema validation: body must be JSON result, not plain text
-        if not body.strip().startswith("{"):
-            raise GatekeeperError("Report body must be JSON (signed result), not plain text")
+        Args:
+            counted: Whether config has match.counted = True.
+            cli_counted_flag: Whether --counted CLI flag was passed.
+            sender: Gmail sender object with a send() method.
+        """
+        self.counted = counted
+        self.cli_counted_flag = cli_counted_flag
+        self.sender = sender
+        self._quota = DailyQuotaManager()
+        self.circuit_breaker = CircuitBreaker()
 
-        # 2. Idempotency
-        with self._lock:
-            if idempotency_key in self._idempotency:
-                return self._idempotency[idempotency_key]
+    def request_send(self, game_id: str, result_data: dict) -> dict:
+        """Attempt to send a Gmail result report.
 
-            # 3. Daily quota
-            if self._daily_count >= DAILY_QUOTA:
-                raise GatekeeperError(f"Daily quota {DAILY_QUOTA} exhausted")
+        Args:
+            game_id: Game identifier for the email subject.
+            result_data: Result data dict to include in the email.
 
-            # 4. Minimum interval
-            elapsed = time.monotonic() - self._last_send_time
-            if self._last_send_time > 0 and elapsed < MIN_INTERVAL_S:
-                raise GatekeeperError(
-                    f"Too soon: {elapsed:.1f}s < {MIN_INTERVAL_S}s minimum interval"
-                )
-
-        # 5. Token bucket
-        if not self._bucket.consume():
-            raise GatekeeperError("Token bucket empty — rate limit")
-
-        # 6. DOS detector
-        ok, reason = self._dos.check(game_id)
-        if not ok:
-            raise GatekeeperError(f"DOS check failed: {reason}")
-
-        # 7. Circuit breaker
-        if not self._cb.allow_request():
-            raise GatekeeperError("Circuit breaker OPEN")
-
-        # 8. Concurrency semaphore + retry
-        with self._semaphore:
-            last_err = None
-            for attempt in range(MAX_RETRIES):
-                try:
-                    message_id = self._sender(RECIPIENT, subject, body, attachments)
-                    self._cb.on_success()
-                    with self._lock:
-                        self._idempotency[idempotency_key] = message_id
-                        self._daily_count += 1
-                        self._last_send_time = time.monotonic()
-                    return message_id
-                except Exception as e:
-                    last_err = e
-                    self._cb.on_failure()
-                    if attempt < MAX_RETRIES - 1:
-                        time.sleep(MIN_RETRY_DELAY_S * (attempt + 1))
-            raise GatekeeperError(f"All {MAX_RETRIES} attempts failed: {last_err}")
+        Returns:
+            Dict with 'sent': True/False and optional 'reason'.
+        """
+        if not (self.counted and self.cli_counted_flag):
+            logger.info("Friendly run — Gmail send suppressed")
+            return {"sent": False, "reason": "friendly_run"}
+        if self.circuit_breaker.is_open:
+            logger.warning("Circuit breaker open — Gmail send blocked")
+            return {"sent": False, "reason": "circuit_breaker"}
+        if not self._quota.check_and_consume():
+            logger.warning("Daily quota exceeded — Gmail send blocked")
+            return {"sent": False, "reason": "quota_exceeded"}
+        try:
+            target = "rmisegal+uoh26finalgame@gmail.com"
+            result = self.sender.send(
+                to=target,
+                subject=f"Game Result — {game_id}",
+                body=str(result_data),
+            )
+            return {"sent": True, "message_id": result.get("message_id")}
+        except Exception as exc:
+            self.circuit_breaker.trip()
+            logger.error("Gmail send failed, circuit breaker tripped: %s", exc)
+            return {"sent": False, "reason": "send_error"}

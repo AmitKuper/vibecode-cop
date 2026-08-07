@@ -8,6 +8,19 @@ from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 
 
+@dataclass
+class GameletDeclarationFields:
+    """Fields added to gamelet declarations per new design.
+
+    Captures the sub-game number, role, and canonical series identity
+    needed to trace each gamelet back to its parent series declaration.
+    """
+
+    sub_game_number: int
+    role: str
+    game_uid: str
+
+
 def _utc_now() -> str:
     return datetime.now(UTC).isoformat()
 
