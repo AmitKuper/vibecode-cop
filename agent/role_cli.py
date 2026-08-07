@@ -90,7 +90,7 @@ def _resolved(role: str, args: argparse.Namespace) -> tuple[dict, dict]:
     from agent.config.shared_config import config_sha256, load_shared_config
 
     private = _load_private(args.config)
-    role_cfg = private.get(role, private.get("agent", {}))
+    role_cfg = private.get(role, private.get("runtime", private.get("agent", {})))
     shared = load_shared_config()
     manifest = Path("models/MANIFEST.json")
     model = _model_record(role, manifest)
@@ -185,7 +185,9 @@ async def _run(role: str, args: argparse.Namespace) -> int:
         print(json.dumps(result, sort_keys=True))
         return 0
     agent = PeerAgentRuntime(**runtime, mode=mode, orchestrator_config=orchestrator)
-    listen_port = args.port or int(_load_private(args.config).get(role, {}).get("local_port", 5000))
+    _priv = _load_private(args.config)
+    _rcfg = _priv.get(role, _priv.get("runtime", _priv.get("agent", {})))
+    listen_port = args.port or int(_rcfg.get("local_port", 5000))
     await agent.run_async(host=args.host, port=listen_port)
     return 0
 
