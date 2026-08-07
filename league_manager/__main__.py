@@ -115,24 +115,29 @@ def main() -> None:
     )
 
     @app.tool()
-    def negotiate(payload: dict) -> dict:
-        """Handle negotiate tool call from peer."""
-        return lm_server.negotiate(payload)
+    def negotiate(message: dict) -> dict:
+        """Receive the opponent's signed game agreement."""
+        return lm_server.negotiate(message)
 
     @app.tool()
-    def receive_turn(payload: dict) -> dict:
-        """Handle receive_turn tool call from peer."""
-        return lm_server.receive_turn(payload)
+    def receive_turn(message: dict) -> dict:
+        """Receive the opponent's turn message."""
+        return lm_server.receive_turn(message)
 
     @app.tool()
     def submit_audit(payload: dict) -> dict:
-        """Handle submit_audit tool call from peer."""
+        """Receive the opponent's end-of-game audit reveal (records + nonces).
+
+        ``submit_audit`` takes ``payload``; the other three tools take ``message``.
+        This asymmetry is load-bearing: the external ref-v3 client sends
+        ``{"payload": ...}`` to this tool and ``{"message": ...}`` to the others.
+        """
         return lm_server.submit_audit(payload)
 
     @app.tool()
-    def receive_control(payload: dict) -> dict:
-        """Handle receive_control tool call from peer."""
-        return lm_server.receive_control(payload)
+    def receive_control(message: dict) -> dict:
+        """Receive an opponent control signal."""
+        return lm_server.receive_control(message)
 
     logger.info("LeagueManager MCP server ready on port %d (streamable-http)", args.port)
     app.run(transport="streamable-http")

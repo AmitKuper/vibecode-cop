@@ -44,14 +44,19 @@ class LMMCPServer:
     def receive_turn(self, payload: dict) -> dict:
         """Handle a receive_turn tool call — forward opponent turn to worker.
 
+        The ``receive_turn`` tool takes a ``message`` argument (not ``payload``);
+        the handler receives the raw turn dict directly after the __main__ fix.
+        ``game_uid`` and ``sub_game_number`` may not be present in all turn shapes,
+        so both use ``.get()`` with safe defaults.
+
         Args:
-            payload: Raw turn payload including game_uid, sub_game_number, turn data.
+            payload: Raw turn payload dict from peer (may be the turn dict directly).
 
         Returns:
             Worker response dict.
         """
-        game_uid = payload["game_uid"]
-        sg = payload["sub_game_number"]
+        game_uid = payload.get("game_uid", "")
+        sg = payload.get("sub_game_number", 1)
         normalised = self._adapter.normalise_turn(payload)
         return self._router.route(
             game_uid,
@@ -66,14 +71,19 @@ class LMMCPServer:
     def submit_audit(self, payload: dict) -> dict:
         """Handle a submit_audit tool call — forward audit bundle to worker.
 
+        ``submit_audit`` takes a ``payload`` argument (not ``message``); this is
+        the load-bearing asymmetry in the ref-v3 wire.  The outer ``payload``
+        parameter here IS the audit dict; ``game_uid`` and ``sub_game_number`` are
+        not present in audit messages, so both use ``.get()`` with safe defaults.
+
         Args:
-            payload: Raw audit payload from peer.
+            payload: Raw audit payload dict from peer (the AuditPayload wire form).
 
         Returns:
             Worker response dict.
         """
-        game_uid = payload["game_uid"]
-        sg = payload["sub_game_number"]
+        game_uid = payload.get("game_uid", "")
+        sg = payload.get("sub_game_number", 1)
         normalised = self._adapter.normalise_audit(payload)
         return self._router.route(
             game_uid,
