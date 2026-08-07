@@ -18,6 +18,7 @@ dependencies = [
     "numpy>=1.26",
     "sympy>=1.14.0",
     "torch>=2.2",
+    "pyyaml>=6.0.3",
 ]
 
 [project.optional-dependencies]
@@ -57,7 +58,7 @@ ignore = ["N999"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-testpaths = ["tests", "agent/tests"]
+testpaths = ["tests", "agent/tests", "league_manager/tests"]
 pythonpath = ["."]
 
 [tool.coverage.run]
