@@ -14,10 +14,10 @@ from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from agent.peer_runtime import PeerRuntime
 
 from agent.board import Board
 from agent.mcp.crypto import create_commitment, hash_game_state
-from agent.peer_runtime import PeerRuntime
 
 logger = logging.getLogger(__name__)
 

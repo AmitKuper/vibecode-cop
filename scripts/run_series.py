@@ -147,8 +147,9 @@ async def run_series(
             sha = "unknown"
         if not sha or sha == "unknown":
             raise ValueError("COUNTED mode rejected: git SHA unknown")
-    from agent.config.shared_config import load_shared_config
     from agent.peer_runtime import PeerRuntime
+
+    from agent.config.shared_config import load_shared_config
 
     shared_cfg = load_shared_config()
     scoring = shared_cfg.get("scoring", {})
@@ -255,8 +256,9 @@ async def run_series(
     }
 
     if mode in (RuntimeMode.COUNTED, RuntimeMode.WARMUP):
-        from agent.mcp.coordinator import gamelet_from_game_id, get_coordinator
         from agent.peer_result import ResultExchangeError, exchange_series_result
+
+        from agent.mcp.coordinator import gamelet_from_game_id, get_coordinator
 
         is_counted = mode == RuntimeMode.COUNTED
         all_audits_ok = all(g.get("audit_ok") for g in gamelets)

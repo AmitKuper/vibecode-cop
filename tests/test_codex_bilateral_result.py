@@ -5,6 +5,12 @@ from __future__ import annotations
 import json
 from types import SimpleNamespace
 
+from agent.peer_result import (
+    _audit_bundle_hash,
+    _serializable_agreement_artifact,
+    accept_and_sign_result,
+)
+
 from agent.audit.audit_summary import AuditSummary, create_signed_audit_summary
 from agent.audit.result_consensus import (
     GameletOutcome,
@@ -12,11 +18,6 @@ from agent.audit.result_consensus import (
     SignedResultAgreement,
     create_signed_result_agreement,
     verify_bilateral_consensus,
-)
-from agent.peer_result import (
-    _audit_bundle_hash,
-    _serializable_agreement_artifact,
-    accept_and_sign_result,
 )
 from agent.step0.declaration import PeerDeclaration, SignedDeclaration
 from agent.step0.signing import generate_key_pair

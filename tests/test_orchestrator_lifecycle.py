@@ -16,6 +16,7 @@ import pytest
 
 def _make_orchestrator(tmp_path, mode_str="DEVELOPMENT", config=None):
     from agent.agent_orchestrator import AgentOrchestrator
+
     from agent.runtime_mode import RuntimeMode
 
     mode_map = {

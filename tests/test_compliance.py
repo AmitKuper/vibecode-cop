@@ -3,9 +3,9 @@
 from pathlib import Path
 
 import pytest
+from agent.orchestrator import GameOrchestrator
 
 from agent.board import Board
-from agent.orchestrator import GameOrchestrator
 from agent.rules_engine import RulesEngine
 
 # ---------------------------------------------------------------------------
@@ -135,6 +135,7 @@ def test_rules_engine_enforces_minimum_35_turns():
 def _load_game_config() -> dict:
     """Load the [game.*] sections from cop/config.toml."""
     import tomllib
+
     config_path = Path("cop/config.toml")
     assert config_path.exists(), "cop/config.toml must exist"
     with open(config_path, "rb") as f:
@@ -178,9 +179,7 @@ def test_shared_config_scent_fixed_values():
     assert ph.get("pheromone_center_intensity") == pytest.approx(0.9), (
         "pheromone_center_intensity must be fixed at 0.9"
     )
-    assert ph.get("pheromone_decay") == pytest.approx(0.10), (
-        "pheromone_decay must be fixed at 0.10"
-    )
+    assert ph.get("pheromone_decay") == pytest.approx(0.10), "pheromone_decay must be fixed at 0.10"
     assert ph.get("pheromone_grid_size") == 5, "pheromone_grid_size must be fixed at 5"
 
 

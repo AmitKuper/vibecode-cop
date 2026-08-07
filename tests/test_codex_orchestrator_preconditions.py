@@ -6,8 +6,8 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from agent.agent_orchestrator import AgentOrchestrator
+
 from agent.runtime_mode import RuntimeMode
 
 

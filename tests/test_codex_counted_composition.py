@@ -213,12 +213,13 @@ def test_counted_peer_agent_passes_mode_to_passive_runtime(tmp_path):
 
 
 def test_counted_step0_is_bilateral_signed_and_identity_bound(tmp_path):
-    from agent.adaptive.pipeline import native_adapter
     from agent.peer_step0 import (
         Step0ExchangeError,
         accept_remote_signed_declaration,
         build_local_signed_declaration,
     )
+
+    from agent.adaptive.pipeline import native_adapter
 
     cop = _runtime(tmp_path / "cop", role="cop")
     thief = _runtime(tmp_path / "thief", role="thief")

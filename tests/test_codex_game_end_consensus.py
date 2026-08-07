@@ -8,13 +8,13 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from agent.peer_agent_passive import handle_passive_game_end
+from agent.peer_runtime_audit import do_final_audit, notify_game_end
 
 from agent.audit.audit_summary import AuditSummary, create_signed_audit_summary
 from agent.board import Board
 from agent.domain.types import DomainState
 from agent.mcp.crypto import canonical_domain_state_root, combined_protocol_hash
-from agent.peer_agent_passive import handle_passive_game_end
-from agent.peer_runtime_audit import do_final_audit, notify_game_end
 from agent.rules_engine import GameOutcome, RulesEngine
 from agent.step0.signing import generate_key_pair
 

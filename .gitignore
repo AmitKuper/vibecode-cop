@@ -36,3 +36,5 @@ cop_out.log
 thief_err.log
 thief_out.log
 .claude/worktrees/
+
+agent/skills/*.mcp.py

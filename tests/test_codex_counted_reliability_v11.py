@@ -6,11 +6,11 @@ import json
 from types import SimpleNamespace
 
 import pytest
+from agent.peer_turn_helpers import _bounded_exchange
 
 from agent.mcp.coordinator import ProtocolCoordinator
 from agent.mcp.protocol import ProtocolState
 from agent.mcp.session_registry import SessionRegistry
-from agent.peer_turn_helpers import _bounded_exchange
 from agent.reliability.deadline_tracker import DeadlineTracker
 from agent.reliability.durable_io import PersistenceError, atomic_write_json
 

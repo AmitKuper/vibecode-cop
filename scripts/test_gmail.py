@@ -25,6 +25,7 @@ def main():
 
     print(f"Loading token from {TOKEN_PATH}...")
     from agent.reports.gmail_send import load_oauth_credentials
+
     try:
         creds = load_oauth_credentials(TOKEN_PATH)
     except Exception as exc:
@@ -33,8 +34,9 @@ def main():
         sys.exit(1)
 
     print(f"Sending test email to {recipient}...")
-    from email.mime.text import MIMEText
     from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+
     from agent.reports.gmail_send import gmail_api_send
 
     msg = MIMEMultipart()

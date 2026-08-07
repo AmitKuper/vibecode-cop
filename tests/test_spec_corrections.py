@@ -146,8 +146,9 @@ class TestAuditCompleteness:
         """A verifiable commit/reveal/nonce triple must yield PASSED."""
         import json
 
-        from agent.mcp.crypto import create_commitment
         from agent.peer_audit import run_final_audit
+
+        from agent.mcp.crypto import create_commitment
 
         game_dir = tmp_path / "game"
         game_dir.mkdir()

@@ -99,8 +99,9 @@ class TestBuildBoardState:
         assert state["config_sha256"] == sha
 
     def test_different_barriers_produce_different_hash(self):
-        from agent.mcp.crypto import hash_game_state
         from agent.peer_turn_helpers import build_board_state
+
+        from agent.mcp.crypto import hash_game_state
 
         rt1 = self._make_runtime(barriers=[])
         rt2 = self._make_runtime(barriers=[[2, 2]])
@@ -109,8 +110,9 @@ class TestBuildBoardState:
         assert h1 != h2
 
     def test_different_config_sha256_produces_different_hash(self):
-        from agent.mcp.crypto import hash_game_state
         from agent.peer_turn_helpers import build_board_state
+
+        from agent.mcp.crypto import hash_game_state
 
         rt1 = self._make_runtime(config_sha256="a" * 64)
         rt2 = self._make_runtime(config_sha256="b" * 64)

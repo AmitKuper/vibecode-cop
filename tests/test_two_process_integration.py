@@ -858,9 +858,10 @@ class TestFix2FinalAuditWiring:
         import asyncio
         import unittest.mock
 
+        from agent.peer_runtime_audit import do_final_audit
+
         from agent.mcp.coordinator import ProtocolCoordinator
         from agent.mcp.session_registry import SessionRegistry
-        from agent.peer_runtime_audit import do_final_audit
 
         reg = SessionRegistry()
         coord = ProtocolCoordinator(registry=reg)
@@ -917,9 +918,10 @@ class TestFix2FinalAuditWiring:
         """After a failed final_audit, coordinator SM reaches TECHNICAL_LOSS."""
         import asyncio
 
+        from agent.peer_runtime_audit import do_final_audit
+
         from agent.mcp.coordinator import ProtocolCoordinator
         from agent.mcp.session_registry import SessionRegistry
-        from agent.peer_runtime_audit import do_final_audit
 
         reg = SessionRegistry()
         coord = ProtocolCoordinator(registry=reg)

@@ -22,17 +22,25 @@ _SYSTEM_PROMPT = (
 )
 
 _INTENT_INSTRUCTION = {
-    "truth":     "Tell the truth about your direction.",
-    "lie":       "Lie — describe the opposite direction.",
+    "truth": "Tell the truth about your direction.",
+    "lie": "Lie — describe the opposite direction.",
     "ambiguous": "Be vague — do not reveal your direction.",
-    "bluff":     "Sound confident but be misleading.",
+    "bluff": "Sound confident but be misleading.",
 }
 
 _DIRECTION_NAMES = {
-    "N": "north", "S": "south", "E": "east", "W": "west", "STAY": "staying put",
+    "N": "north",
+    "S": "south",
+    "E": "east",
+    "W": "west",
+    "STAY": "staying put",
 }
 _OPPOSITES = {
-    "N": "south", "S": "north", "E": "west", "W": "east", "STAY": "away from here",
+    "N": "south",
+    "S": "north",
+    "E": "west",
+    "W": "east",
+    "STAY": "away from here",
 }
 
 
@@ -118,7 +126,7 @@ class LLMHintGenerator:
         return None
 
     @classmethod
-    def from_llm_config(cls, llm_config: dict, llm=None) -> "LLMHintGenerator":
+    def from_llm_config(cls, llm_config: dict, llm=None) -> LLMHintGenerator:
         """Build from the [llm] config section dict."""
         return cls(
             provider=llm_config.get("provider", "ollama"),

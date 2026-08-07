@@ -19,13 +19,15 @@ _SEARCH_PATHS = [
 ]
 
 # Mandatory top-level game sections
-_REQUIRED_SECTIONS = frozenset([
-    "board_and_agents",
-    "movement_and_barriers",
-    "scoring",
-    "pheromones",
-    "network_and_league",
-])
+_REQUIRED_SECTIONS = frozenset(
+    [
+        "board_and_agents",
+        "movement_and_barriers",
+        "scoring",
+        "pheromones",
+        "network_and_league",
+    ]
+)
 
 # Fixed values mandated by Appendix F — any deviation is a compliance failure
 _FIXED_VALUES = {

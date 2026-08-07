@@ -86,9 +86,7 @@ class ReportBundleBuilder:
                 required["config"] = game_state
             missing = [str(p) for p in required.values() if not p.exists()]
             if missing:
-                raise FileNotFoundError(
-                    f"Required report files missing for {game_id}: {missing}."
-                )
+                raise FileNotFoundError(f"Required report files missing for {game_id}: {missing}.")
             return required
 
         # GameRunner legacy path: declaration/config/log/result
@@ -97,13 +95,9 @@ class ReportBundleBuilder:
         required = {
             "declaration": gd / f"declaration_{game_id}.json",
             "config": (
-                config_candidates[0] if config_candidates
-                else gd / f"config_{game_id}_g01.json"
+                config_candidates[0] if config_candidates else gd / f"config_{game_id}_g01.json"
             ),
-            "log": (
-                log_candidates[0] if log_candidates
-                else gd / f"log_{game_id}_g01.json"
-            ),
+            "log": (log_candidates[0] if log_candidates else gd / f"log_{game_id}_g01.json"),
             "result": result_path,
         }
         missing = [str(p) for p in required.values() if not p.exists()]
@@ -119,9 +113,15 @@ class ReportBundleBuilder:
         optional: dict[str, Path] = {}
 
         # Fixed-name optional files
-        for name in ["report.json", "report.md", "moves.jsonl", "game_state.json",
-                     "step0_evidence.json", "my_commitments_cop.json",
-                     "my_commitments_thief.json"]:
+        for name in [
+            "report.json",
+            "report.md",
+            "moves.jsonl",
+            "game_state.json",
+            "step0_evidence.json",
+            "my_commitments_cop.json",
+            "my_commitments_thief.json",
+        ]:
             path = self.game_dir / name
             if path.exists():
                 optional[name] = path

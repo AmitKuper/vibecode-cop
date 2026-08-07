@@ -425,13 +425,18 @@ class ReferenceV3Session:
         return await self._call("receive_control", {"message": message})
 
     def receive_turn(self, message: dict) -> list[dict]:
-        if (self.expected_turn_sender is not None
-                and isinstance(message, dict)
-                and message.get("sender") != self.expected_turn_sender):
+        if (
+            self.expected_turn_sender is not None
+            and isinstance(message, dict)
+            and message.get("sender") != self.expected_turn_sender
+        ):
             import logging as _lg
+
             _lg.getLogger(__name__).warning(
-                "receive_turn: discarding turn from %r (expected %r) — late arrival from prev sub-game",
-                message.get("sender"), self.expected_turn_sender,
+                "receive_turn: discarding turn from %r (expected %r)"
+                " — late arrival from prev sub-game",
+                message.get("sender"),
+                self.expected_turn_sender,
             )
             return []
         self.turn_messages.append(dict(message))
@@ -450,26 +455,36 @@ class ReferenceV3Session:
 def register_reference_v3_tools(mcp, session: ReferenceV3Session) -> None:
     """Expose the exact non-blocking FastMCP surface used by the unmodified league kit."""
     import logging as _logging
+
     _log = _logging.getLogger(__name__)
 
     @mcp.tool
     def negotiate(message: dict) -> dict:
         """Receive the opponent's signed game agreement."""
-        _log.info("TOOL_CALLED negotiate keys=%s", list(message.keys()) if isinstance(message, dict) else type(message))
+        _log.info(
+            "TOOL_CALLED negotiate keys=%s",
+            list(message.keys()) if isinstance(message, dict) else type(message),
+        )
         session.receive_negotiation(message)
         return {"ok": True}
 
     @mcp.tool
     def receive_turn(message: dict) -> dict:
         """Receive the opponent's turn message."""
-        _log.info("TOOL_CALLED receive_turn keys=%s", list(message.keys()) if isinstance(message, dict) else type(message))
+        _log.info(
+            "TOOL_CALLED receive_turn keys=%s",
+            list(message.keys()) if isinstance(message, dict) else type(message),
+        )
         session.receive_turn(message)
         return {"ok": True}
 
     @mcp.tool
     def submit_audit(payload: dict) -> dict:
         """Receive the opponent's end-of-game audit reveal (records + nonces)."""
-        _log.info("TOOL_CALLED submit_audit keys=%s", list(payload.keys()) if isinstance(payload, dict) else type(payload))
+        _log.info(
+            "TOOL_CALLED submit_audit keys=%s",
+            list(payload.keys()) if isinstance(payload, dict) else type(payload),
+        )
         session.receive_audit(payload)
         return {"ok": True}
 
@@ -478,7 +493,9 @@ def register_reference_v3_tools(mcp, session: ReferenceV3Session) -> None:
         """Receive an opponent control signal (enable / status / restart / quit)."""
         _log.info(
             "TOOL_CALLED receive_control session_id=%s controls_before=%d keys=%s",
-            id(session), len(session.controls), list(message.keys()) if isinstance(message, dict) else type(message)
+            id(session),
+            len(session.controls),
+            list(message.keys()) if isinstance(message, dict) else type(message),
         )
         session.receive_control(message)
         _log.info("receive_control DONE controls_after=%d", len(session.controls))

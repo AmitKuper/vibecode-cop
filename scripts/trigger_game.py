@@ -3,9 +3,10 @@
 import asyncio
 import logging
 
+from agent.game_initiator import GameInitiator
+
 from agent.config.shared_config import config_sha256 as sha256_fn
 from agent.config.shared_config import load_shared_config
-from agent.game_initiator import GameInitiator
 
 logging.basicConfig(level=logging.INFO, format="[%(name)s] %(levelname)s: %(message)s")
 

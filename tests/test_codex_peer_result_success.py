@@ -8,15 +8,6 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import pytest
-
-from agent.adaptive.profile import ProtocolProfile
-from agent.audit.audit_summary import AuditSummary, create_signed_audit_summary
-from agent.audit.result_consensus import (
-    GameletOutcome,
-    ResultAgreement,
-    SignedResultAgreement,
-    create_signed_result_agreement,
-)
 from agent.peer_result import (
     ResultExchangeError,
     _audit_bundle_hash,
@@ -25,6 +16,15 @@ from agent.peer_result import (
     accept_and_sign_result,
     agreement_from_series,
     exchange_series_result,
+)
+
+from agent.adaptive.profile import ProtocolProfile
+from agent.audit.audit_summary import AuditSummary, create_signed_audit_summary
+from agent.audit.result_consensus import (
+    GameletOutcome,
+    ResultAgreement,
+    SignedResultAgreement,
+    create_signed_result_agreement,
 )
 from agent.step0.declaration import DeclarationAgreement, PeerDeclaration, SignedDeclaration
 from agent.step0.signing import generate_key_pair

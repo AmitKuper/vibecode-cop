@@ -223,7 +223,6 @@ class TestConfigValidator:
         with pytest.raises((ValidationError, ValueError), match="max_barriers"):
             GameConfig(grid_size=7, max_barriers=10, max_moves=35)
 
-
     def test_wrong_scoring_capture_cop_rejected(self):
         from pydantic import ValidationError
 

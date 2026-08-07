@@ -1147,6 +1147,7 @@ class TestInitPassiveGame:
 
     def test_initializes_new_game(self, tmp_path):
         from agent.peer_agent_passive import init_passive_game
+
         from agent.rules_engine import RulesEngine
 
         rt = MagicMock()
@@ -1181,8 +1182,9 @@ class TestInitPassiveGame:
 
 class TestHandlePassiveCommit:
     def test_returns_h_commit(self, tmp_path):
-        from agent.board import Board
         from agent.peer_agent_passive import handle_passive_commit
+
+        from agent.board import Board
         from agent.rules_engine import RulesEngine
 
         board = Board(cop_position=[0, 0], thief_position=[3, 3])
@@ -1215,8 +1217,9 @@ class TestHandlePassiveCommit:
         assert "h_commit" in result
 
     def test_initializes_if_no_game_id(self, tmp_path):
-        from agent.board import Board
         from agent.peer_agent_passive import handle_passive_commit
+
+        from agent.board import Board
         from agent.rules_engine import RulesEngine
 
         board = Board(cop_position=[0, 0], thief_position=[3, 3])
@@ -1270,8 +1273,9 @@ class TestHandlePassiveReveal:
         assert "No commit" in result["error"]
 
     def test_returns_reveal_payload(self, tmp_path):
-        from agent.board import Board
         from agent.peer_agent_passive import handle_passive_reveal
+
+        from agent.board import Board
         from agent.rules_engine import RulesEngine
 
         board = Board(cop_position=[0, 0], thief_position=[3, 3])

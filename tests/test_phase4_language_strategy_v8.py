@@ -9,6 +9,7 @@ class TestSymmetricLanguagePolicy:
     def test_generate_strategic_hint_uses_actual_step(self):
         """generate_strategic_hint() receives real step, not hardcoded 0."""
         from agent.agent_orchestrator import AgentOrchestrator
+
         from agent.runtime_mode import RuntimeMode
 
         orch = AgentOrchestrator(
@@ -29,6 +30,7 @@ class TestSymmetricLanguagePolicy:
     def test_generate_strategic_hint_default_step_zero(self):
         """Default step argument is 0 for backward compatibility."""
         from agent.agent_orchestrator import AgentOrchestrator
+
         from agent.language.deception_policy import DeceptionIntent
         from agent.runtime_mode import RuntimeMode
 
@@ -55,8 +57,9 @@ class TestSymmetricLanguagePolicy:
 
     def test_passive_hint_never_contains_numeric_coordinates(self):
         """Passive hints must not contain numeric coordinates."""
-        from agent.language.deception_policy import NaturalLanguagePolicy
         from agent.peer_agent_passive import _generate_hint
+
+        from agent.language.deception_policy import NaturalLanguagePolicy
 
         policy = NaturalLanguagePolicy("thief")
         for move in ("N", "S", "E", "W", "STAY"):
@@ -79,8 +82,9 @@ class TestSymmetricLanguagePolicy:
         """handle_passive_commit uses orchestrator.generate_strategic_hint when wired."""
         from unittest.mock import MagicMock, patch
 
-        from agent.board import Board
         from agent.peer_agent_passive import handle_passive_commit
+
+        from agent.board import Board
 
         rt = MagicMock()
         rt.game_id = "test_g1"  # matches game_id to skip init_passive_game

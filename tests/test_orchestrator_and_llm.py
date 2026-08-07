@@ -1492,8 +1492,9 @@ class TestGameOrchestrator:
         assert orch.role == "thief"
 
     def test_initialize_llm_with_config(self, tmp_path):
-        from agent.llm.config import LLMConfigBuilder
         from agent.orchestrator import GameOrchestrator
+
+        from agent.llm.config import LLMConfigBuilder
 
         cfg = LLMConfigBuilder.ollama()
         mock_llm = MagicMock()

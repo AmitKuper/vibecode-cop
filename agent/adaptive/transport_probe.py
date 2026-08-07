@@ -78,29 +78,31 @@ async def _try_streamable_http(base_url: str, timeout: float) -> ProbeResult | N
         t0 = time.monotonic()
         bodies: list[dict] = []
         status_code = 0
-        async with httpx.AsyncClient(timeout=timeout) as c:
-            async with c.stream(
+        async with (
+            httpx.AsyncClient(timeout=timeout) as c,
+            c.stream(
                 "POST",
                 endpoint,
                 json=payload,
                 headers={"Accept": "application/json, text/event-stream"},
-            ) as r:
-                status_code = r.status_code
-                content_type = r.headers.get("content-type", "")
-                # Read only the first chunk (avoid blocking on persistent SSE connections)
-                raw_lines: list[str] = []
-                async for line in r.aiter_lines():
-                    raw_lines.append(line)
-                    if line.startswith("data:"):
-                        with suppress(ValueError, TypeError):
-                            bodies.append(json.loads(line.removeprefix("data:").strip()))
-                        break  # got first data line — enough for detection
-                    if len(raw_lines) > 20:
-                        break
-                if not bodies and "application/json" in content_type:
-                    text = "\n".join(raw_lines)
+            ) as r,
+        ):
+            status_code = r.status_code
+            content_type = r.headers.get("content-type", "")
+            # Read only the first chunk (avoid blocking on persistent SSE connections)
+            raw_lines: list[str] = []
+            async for line in r.aiter_lines():
+                raw_lines.append(line)
+                if line.startswith("data:"):
                     with suppress(ValueError, TypeError):
-                        bodies.append(json.loads(text))
+                        bodies.append(json.loads(line.removeprefix("data:").strip()))
+                    break  # got first data line — enough for detection
+                if len(raw_lines) > 20:
+                    break
+            if not bodies and "application/json" in content_type:
+                text = "\n".join(raw_lines)
+                with suppress(ValueError, TypeError):
+                    bodies.append(json.loads(text))
         latency_ms = (time.monotonic() - t0) * 1000
         valid_initialize = any(
             isinstance(body, dict)

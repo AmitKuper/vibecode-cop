@@ -5,6 +5,12 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import pytest
+from agent.peer_step0 import (
+    Step0ExchangeError,
+    accept_remote_signed_declaration,
+    build_local_signed_declaration,
+    persist_step0_evidence,
+)
 from pydantic import ValidationError
 
 from agent.adaptive import reference_v3 as ref
@@ -17,12 +23,6 @@ from agent.adaptive.mapping_plan import (
 )
 from agent.adaptive.protocol_agent import ProtocolUnderstandingAgent
 from agent.domain.config_validator import GameConfig
-from agent.peer_step0 import (
-    Step0ExchangeError,
-    accept_remote_signed_declaration,
-    build_local_signed_declaration,
-    persist_step0_evidence,
-)
 from agent.reports.base import ReportContext
 from agent.reports.gmail_report import GmailReportPlugin
 from agent.step0.declaration import (

@@ -29,7 +29,7 @@ if os.name == "nt":
     def _get_key() -> str:
         """Return a normalised key name (one blocking read, no Enter needed)."""
         ch = msvcrt.getch()
-        if ch in (b"\xe0", b"\x00"):          # arrow / function-key prefix
+        if ch in (b"\xe0", b"\x00"):  # arrow / function-key prefix
             ch2 = msvcrt.getch()
             return {b"H": "UP", b"P": "DOWN", b"K": "LEFT", b"M": "RIGHT"}.get(ch2, "")
         if ch == b" ":
@@ -43,8 +43,8 @@ if os.name == "nt":
         except UnicodeDecodeError:
             return ""
 else:
-    import tty
     import termios
+    import tty
 
     def _get_key() -> str:  # type: ignore[misc]
         fd = sys.stdin.fileno()
@@ -68,27 +68,27 @@ else:
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, old)
 
+
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
-from agent.belief_engine import BeliefEngine
-from agent.domain.config_validator import GameConfig
-from agent.domain.transition import apply_joint_action
-from agent.domain.types import DomainState
-from agent.observation import LocalObservation
-from agent.rl.action_space import (
+from agent.belief_engine import BeliefEngine  # noqa: E402
+from agent.domain.config_validator import GameConfig  # noqa: E402
+from agent.domain.transition import apply_joint_action  # noqa: E402
+from agent.domain.types import DomainState  # noqa: E402
+from agent.observation import LocalObservation  # noqa: E402
+from agent.rl.action_space import (  # noqa: E402
     COP_ACTIONS,
     THIEF_ACTIONS,
     compute_legal_mask_cop,
     compute_legal_mask_thief,
 )
-from agent.rl.recurrent_policy import load_recurrent_policy
-from agent.rules_outcomes import GameOutcome
-
+from agent.rl.recurrent_policy import load_recurrent_policy  # noqa: E402
+from agent.rules_outcomes import GameOutcome  # noqa: E402
 
 # ── Visual constants ──────────────────────────────────────────────────────────
 
-_SCENT_RAMP = " ·░▒▓"   # 5 levels: empty → faint → dense
+_SCENT_RAMP = " ·░▒▓"  # 5 levels: empty → faint → dense
 
 
 def _scent_ch(v: float) -> str:
@@ -101,6 +101,7 @@ def _clear() -> None:
 
 
 # ── Board rendering ───────────────────────────────────────────────────────────
+
 
 def _render_board(
     state: DomainState,
@@ -124,10 +125,7 @@ def _render_board(
     thief_pos = tuple(state.thief_position)
 
     # Scent the human sees: opponent's emission trail
-    if human_role == "cop":
-        scent = state.thief_scent
-    else:
-        scent = state.cop_scent
+    scent = state.thief_scent if human_role == "cop" else state.cop_scent
 
     if numeric:
         col_header = "    " + "  ".join(str(x) for x in range(g))
@@ -153,10 +151,7 @@ def _render_board(
                 ch = " t  " if numeric else " t "
             else:
                 sv = scent[row][col] if scent else 0.0
-                if numeric:
-                    ch = f"{sv:4.2f}" if sv > 0 else "   ."
-                else:
-                    ch = f" {_scent_ch(sv)} "
+                ch = (f"{sv:4.2f}" if sv > 0 else "   .") if numeric else f" {_scent_ch(sv)} "
             cells.append(ch)
         rows.append("".join(cells))
 
@@ -190,48 +185,55 @@ def _render_board(
 
 # ── Legal move display ────────────────────────────────────────────────────────
 
+
 def _legal_moves_for(role: str, state: DomainState) -> list[str]:
     if role == "cop":
         mask = compute_legal_mask_cop(
-            tuple(state.cop_position), state.barriers,
-            state.cop_barriers_remaining, state.grid_size,
+            tuple(state.cop_position),
+            state.barriers,
+            state.cop_barriers_remaining,
+            state.grid_size,
         )
-        return [a for a, ok in zip(COP_ACTIONS, mask) if ok]
+        return [a for a, ok in zip(COP_ACTIONS, mask, strict=False) if ok]
     else:
         mask = compute_legal_mask_thief(
-            tuple(state.thief_position), state.barriers, state.grid_size,
+            tuple(state.thief_position),
+            state.barriers,
+            state.grid_size,
         )
-        return [a for a, ok in zip(THIEF_ACTIONS, mask) if ok]
+        return [a for a, ok in zip(THIEF_ACTIONS, mask, strict=False) if ok]
 
 
 # ── Human input (keyboard) ────────────────────────────────────────────────────
 
 # Maps raw key name → movement action
 _KEY_TO_MOVE = {
-    "UP": "N", "W": "N",
-    "DOWN": "S", "S": "S",
-    "LEFT": "W", "A": "W",
-    "RIGHT": "E", "D": "E",
+    "UP": "N",
+    "W": "N",
+    "DOWN": "S",
+    "S": "S",
+    "LEFT": "W",
+    "A": "W",
+    "RIGHT": "E",
+    "D": "E",
     "SPACE": "STAY",
 }
 
 # Maps raw key name → barrier-placement action (used in barrier mode)
 _KEY_TO_PLACE = {
-    "UP": "PLACE_N", "W": "PLACE_N",
-    "DOWN": "PLACE_S", "S": "PLACE_S",
-    "LEFT": "PLACE_W", "A": "PLACE_W",
-    "RIGHT": "PLACE_E", "D": "PLACE_E",
+    "UP": "PLACE_N",
+    "W": "PLACE_N",
+    "DOWN": "PLACE_S",
+    "S": "PLACE_S",
+    "LEFT": "PLACE_W",
+    "A": "PLACE_W",
+    "RIGHT": "PLACE_E",
+    "D": "PLACE_E",
 }
 
-_CONTROLS_THIEF = (
-    "  ↑W  ↓S  ←A  →D  Space=STAY   Q/Esc=quit"
-)
-_CONTROLS_COP = (
-    "  ↑W  ↓S  ←A  →D  Space=STAY   B=barrier mode   Q/Esc=quit"
-)
-_CONTROLS_COP_BARRIER = (
-    "  [BARRIER MODE] ↑W↓S←A→D=place direction   Esc=cancel"
-)
+_CONTROLS_THIEF = "  ↑W  ↓S  ←A  →D  Space=STAY   Q/Esc=quit"
+_CONTROLS_COP = "  ↑W  ↓S  ←A  →D  Space=STAY   B=barrier mode   Q/Esc=quit"
+_CONTROLS_COP_BARRIER = "  [BARRIER MODE] ↑W↓S←A→D=place direction   Esc=cancel"
 
 
 def _get_human_move(legal: list[str], role: str) -> str:
@@ -262,7 +264,7 @@ def _get_human_move(legal: list[str], role: str) -> str:
                 continue
             else:
                 # No barriers left — flash message
-                print(f"\r  No barriers remaining.      ", end="", flush=True)
+                print("\r  No barriers remaining.      ", end="", flush=True)
                 continue
 
         # Cancel barrier mode
@@ -272,10 +274,7 @@ def _get_human_move(legal: list[str], role: str) -> str:
             continue
 
         # Resolve action
-        if barrier_mode:
-            action = _KEY_TO_PLACE.get(key, "")
-        else:
-            action = _KEY_TO_MOVE.get(key, "")
+        action = _KEY_TO_PLACE.get(key, "") if barrier_mode else _KEY_TO_MOVE.get(key, "")
 
         if action and action in legal:
             label = f"[barrier] {action}" if barrier_mode else action
@@ -287,6 +286,7 @@ def _get_human_move(legal: list[str], role: str) -> str:
 
 # ── Agent move ────────────────────────────────────────────────────────────────
 
+
 def _get_agent_move(
     agent_role: str,
     state: DomainState,
@@ -296,20 +296,25 @@ def _get_agent_move(
 ) -> str:
     if agent_role == "cop":
         mask = compute_legal_mask_cop(
-            tuple(state.cop_position), state.barriers,
-            state.cop_barriers_remaining, state.grid_size,
+            tuple(state.cop_position),
+            state.barriers,
+            state.cop_barriers_remaining,
+            state.grid_size,
         )
-        legal = [a for a, ok in zip(COP_ACTIONS, mask) if ok]
+        legal = [a for a, ok in zip(COP_ACTIONS, mask, strict=False) if ok]
         scent = state.thief_scent
     else:
         mask = compute_legal_mask_thief(
-            tuple(state.thief_position), state.barriers, state.grid_size,
+            tuple(state.thief_position),
+            state.barriers,
+            state.grid_size,
         )
-        legal = [a for a, ok in zip(THIEF_ACTIONS, mask) if ok]
+        legal = [a for a, ok in zip(THIEF_ACTIONS, mask, strict=False) if ok]
         scent = state.cop_scent
 
+    own_pos = tuple(state.cop_position) if agent_role == "cop" else tuple(state.thief_position)
     obs = LocalObservation(
-        own_position=tuple(state.cop_position) if agent_role == "cop" else tuple(state.thief_position),
+        own_position=own_pos,
         own_barriers_remaining=state.cop_barriers_remaining if agent_role == "cop" else 0,
         known_barriers=list(state.barriers),
         opponent_scent=scent,
@@ -322,6 +327,7 @@ def _get_agent_move(
 
 
 # ── Gamelet ───────────────────────────────────────────────────────────────────
+
 
 def _run_gamelet(
     gamelet_num: int,
@@ -366,17 +372,21 @@ def _run_gamelet(
 
         # Status info
         if human_role == "cop":
-            print(f"  Your position: {tuple(state.cop_position)}  "
-                  f"Barriers left: {state.cop_barriers_remaining}/{config.max_barriers}")
+            print(
+                f"  Your position: {tuple(state.cop_position)}  "
+                f"Barriers left: {state.cop_barriers_remaining}/{config.max_barriers}"
+            )
         else:
-            print(f"  Your position: {tuple(state.thief_position)}  "
-                  f"Survive {config.survival_threshold - state.turn} more turns to win")
+            print(
+                f"  Your position: {tuple(state.thief_position)}  "
+                f"Survive {config.survival_threshold - state.turn} more turns to win"
+            )
 
         # Get both moves
         human_legal = _legal_moves_for(human_role, state)
         human_move = _get_human_move(human_legal, human_role)
 
-        print(f"  Agent thinking", end="", flush=True)
+        print("  Agent thinking", end="", flush=True)
         agent_move = _get_agent_move(agent_role, state, policy, agent_belief, gamelet_num)
         print(f"\r  Agent chose: {agent_move}      ")
 
@@ -392,8 +402,7 @@ def _run_gamelet(
         # Update agent belief
         agent_scent = state.thief_scent if agent_role == "cop" else state.cop_scent
         agent_belief = (
-            agent_belief
-            .predict(list(state.barriers))
+            agent_belief.predict(list(state.barriers))
             .observe_scent(agent_scent, list(state.barriers))
             .step_complete(state.turn)
         )
@@ -441,6 +450,7 @@ def _run_gamelet(
 
 # ── Series ────────────────────────────────────────────────────────────────────
 
+
 def _run_series(human_role: str, n_gamelets: int, reveal: bool, numeric: bool = False) -> None:
     agent_role = "thief" if human_role == "cop" else "cop"
 
@@ -455,17 +465,17 @@ def _run_series(human_role: str, n_gamelets: int, reveal: bool, numeric: bool = 
 
     scent_mode = "numeric floats" if numeric else "visual ░▒▓"
     print(f"  Policy loaded: {agent_role} ({policy.inference_mode})")
-    print(f"\n  Rules:")
+    print("\n  Rules:")
     print(f"    Grid: {config.grid_size}×{config.grid_size}")
     print(f"    Max turns per gamelet: {config.max_moves}")
     print(f"    Cop starts at {config.cop_start}, Thief at {config.thief_start}")
-    print(f"    Cop wins by: capture or trapping the thief")
+    print("    Cop wins by: capture or trapping the thief")
     print(f"    Thief wins by: surviving {config.survival_threshold} turns")
     print(f"    Cop barriers: {config.max_barriers} total per gamelet")
     print(f"    Scent display: {scent_mode}  (toggle with --numeric)")
-    print(f"    Board legend: C=Cop  T=Thief  █=Barrier")
+    print("    Board legend: C=Cop  T=Thief  █=Barrier")
     if reveal:
-        print(f"    --reveal: both positions shown (training/debug mode)")
+        print("    --reveal: both positions shown (training/debug mode)")
     print(f"\n  {n_gamelets} gamelets. You play as {human_role.upper()}.")
     input("\n  Press Enter to start...")
 
@@ -505,6 +515,7 @@ def _run_series(human_role: str, n_gamelets: int, reveal: bool, numeric: bool = 
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(

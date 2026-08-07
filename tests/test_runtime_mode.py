@@ -162,6 +162,7 @@ def test_orchestrator_hint_generation(tmp_path):
 
 def test_orchestrator_journal_created(tmp_path):
     from agent.agent_orchestrator import AgentOrchestrator
+
     from agent.audit.step_journal import StepJournal
 
     orch = AgentOrchestrator(

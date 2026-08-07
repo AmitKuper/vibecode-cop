@@ -32,6 +32,7 @@ def _make_peer_runtime(tmp_path):
 
 def _make_orchestrator(tmp_path):
     from agent.agent_orchestrator import AgentOrchestrator
+
     from agent.runtime_mode import RuntimeMode
 
     return AgentOrchestrator(
@@ -59,6 +60,7 @@ class TestPeerRuntimeCreatesOrchestrator:
     def test_peer_runtime_orchestrator_set_after_run_game_init(self, tmp_path):
         """AgentOrchestrator is initialised inside run_game before gameplay."""
         from agent.agent_orchestrator import AgentOrchestrator
+
         from agent.runtime_mode import RuntimeMode
 
         runtime = _make_peer_runtime(tmp_path)
@@ -133,6 +135,7 @@ class TestStep0ValidationInCountedMode:
         runtime = _make_peer_runtime(tmp_path)
         # Give it an orchestrator
         from agent.agent_orchestrator import AgentOrchestrator
+
         from agent.runtime_mode import RuntimeMode
 
         runtime.orchestrator = AgentOrchestrator(

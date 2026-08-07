@@ -1,6 +1,7 @@
 """Phase 5 v7: Tests for SafeLiveView production wiring and GameProtocolPort."""
 
 from agent.agent_orchestrator import AgentOrchestrator
+
 from agent.mcp.protocol_port import GameProtocolPort
 
 

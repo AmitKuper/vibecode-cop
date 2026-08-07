@@ -1,7 +1,6 @@
-"""Agent infrastructure: crewAI-based orchestrator with MCP communication."""
+"""Agent infrastructure: MCP communication and game engine."""
 
 from agent.board import Board
-from agent.game_initiator import GameInitiator
 from agent.llm import LLMConfig, LLMConfigBuilder, LLMFactory, LLMProvider
 from agent.mcp.client import GameMCPClient
 from agent.mcp.crypto import (
@@ -29,16 +28,6 @@ from agent.mcp.protocol import (
 )
 from agent.mcp.server import AgentMCPServer
 from agent.rules_engine import GameOutcome, RulesEngine
-
-
-# Lazy-load GameOrchestrator to avoid crewai import issues on Python 3.14
-def __getattr__(name):
-    if name == "GameOrchestrator":
-        from agent.orchestrator import GameOrchestrator
-
-        return GameOrchestrator
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
 
 __all__ = [
     # Board & Rules
@@ -73,7 +62,4 @@ __all__ = [
     # Validation
     "validate_start_game_message",
     "validate_action_message",
-    # Orchestrator (lazy-loaded)
-    "GameOrchestrator",
-    "GameInitiator",
 ]

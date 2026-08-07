@@ -33,6 +33,7 @@ def _signed_declaration(declaration: PeerDeclaration, private: bytes) -> SignedD
 
 def _fixture(tmp_path: Path):
     from agent.config.shared_config import load_shared_config
+
     raw_config = load_shared_config()
     config_path = tmp_path / "game.json"
     config_path.write_text(json.dumps(raw_config), encoding="utf-8")

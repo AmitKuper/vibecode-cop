@@ -11,12 +11,12 @@ What this proves:
   - Our cop actively drives a full sub-game against sparring thief
   - Reference-v3 bidirectional game loop works end-to-end
 """
+
 from __future__ import annotations
 
 import argparse
 import asyncio
 import json
-import os
 import random
 import secrets
 import socket
@@ -77,8 +77,8 @@ async def _poll_inbox_step(inbox, step: int, *, timeout: float = 20.0) -> None:
 
 
 async def _game_loop(
-    out_session,   # ReferenceV3Session connected to sparring (outbound)
-    in_session,    # ReferenceV3Session served by our server (inbound from sparring)
+    out_session,  # ReferenceV3Session connected to sparring (outbound)
+    in_session,  # ReferenceV3Session served by our server (inbound from sparring)
     n_sub_games: int,
 ) -> list[dict]:
     """Run n_sub_games of cop-vs-thief reference-v3 sub-games."""
@@ -167,18 +167,22 @@ async def _game_loop(
         print(f"[demo]   Audit: ok={ok} errors={errors[:3] if errors else []}")
 
         control_msg = {
-            "kind": "done", "sender": "police",
-            "sub_game_number": sub_game_n, "status": "complete",
-            "step_budget": float(max_steps), "payload": {},
+            "kind": "done",
+            "sender": "police",
+            "sub_game_number": sub_game_n,
+            "status": "complete",
+            "step_budget": float(max_steps),
+            "payload": {},
         }
         await out_session.send_control(control_msg)
-        try:
+        import contextlib
+
+        with contextlib.suppress(TimeoutError):
             await _poll_deque(in_session.controls, label="receive_control", timeout=8.0)
-        except TimeoutError:
-            pass
 
         # Reset inbox for next sub-game
         from agent.adaptive.reference_v3 import ReferenceV3Inbox
+
         in_session.turns = ReferenceV3Inbox(window=4)
 
         results.append({"sub_game": sub_game_n, "steps": max_steps, "audit_ok": ok})
@@ -190,8 +194,10 @@ async def _game_loop(
 async def _run_all(our_port: int, sparring_port: int, kit: Path, n_sub_games: int) -> dict:
     """Start server, then sparring, then play."""
     import json as _json
+
     from fastmcp import Client, FastMCP
     from fastmcp.client.transports import StreamableHttpTransport
+
     from agent.adaptive.pipeline import discover_reference_v3
     from agent.adaptive.reference_v3 import ReferenceV3Session, register_reference_v3_tools
 
@@ -201,9 +207,9 @@ async def _run_all(our_port: int, sparring_port: int, kit: Path, n_sub_games: in
     sparring_mcp_url = f"{sparring_url}/mcp"
 
     # Inbound session — populated when sparring calls OUR tools
-    in_session = ReferenceV3Session(lambda t, p: (_ for _ in ()).throw(
-        RuntimeError(f"outbound not configured in server ({t})")
-    ))
+    in_session = ReferenceV3Session(
+        lambda t, p: (_ for _ in ()).throw(RuntimeError(f"outbound not configured in server ({t})"))
+    )
 
     # Start our SSE server as a background task
     app = FastMCP(name="vibecode-demo-cop")
@@ -221,12 +227,20 @@ async def _run_all(our_port: int, sparring_port: int, kit: Path, n_sub_games: in
         # Start sparring thief server, telling it to connect to OUR SSE server
         sparring_proc = subprocess.Popen(
             [
-                sys.executable, "-m", "sparring.cli", "serve",
-                "--role", "thief",
-                "--port", str(sparring_port),
-                "--host", host,
-                "--peer", our_mcp_url,
-                "--group-id", "sparring-demo-thief",
+                sys.executable,
+                "-m",
+                "sparring.cli",
+                "serve",
+                "--role",
+                "thief",
+                "--port",
+                str(sparring_port),
+                "--host",
+                host,
+                "--peer",
+                our_mcp_url,
+                "--group-id",
+                "sparring-demo-thief",
                 "--await-peer",
             ],
             cwd=kit,
@@ -246,6 +260,7 @@ async def _run_all(our_port: int, sparring_port: int, kit: Path, n_sub_games: in
         print(f"[demo] Connecting persistent session to sparring at {sparring_mcp_url}...")
         sparring_transport = StreamableHttpTransport(sparring_mcp_url)
         async with Client(sparring_transport) as sparring_client:
+
             def _make_caller(client):
                 async def _call(tool_name: str, params: dict) -> dict:
                     result = await client.call_tool(tool_name, params)
@@ -260,6 +275,7 @@ async def _run_all(our_port: int, sparring_port: int, kit: Path, n_sub_games: in
                     except (ValueError, TypeError):
                         return {"ok": True, "raw": value}
                     return parsed if isinstance(parsed, dict) else {"ok": True, "raw": parsed}
+
                 return _call
 
             _profile, out_session = await discover_reference_v3(
@@ -271,10 +287,10 @@ async def _run_all(our_port: int, sparring_port: int, kit: Path, n_sub_games: in
 
     finally:
         server_task.cancel()
-        try:
+        import contextlib
+
+        with contextlib.suppress(asyncio.CancelledError, Exception):
             await server_task
-        except (asyncio.CancelledError, Exception):
-            pass
         if sparring_proc:
             sparring_proc.terminate()
             try:
@@ -305,7 +321,7 @@ def main() -> int:
 
     try:
         result = asyncio.run(_run_all(args.our_port, args.sparring_port, kit, args.sub_games))
-        print(f"\n[demo] === RESULT ===")
+        print("\n[demo] === RESULT ===")
         print(json.dumps(result, indent=2))
         passed = sum(1 for sg in result["sub_games"] if sg.get("audit_ok") is not False)
         total = result["n"]
@@ -315,6 +331,7 @@ def main() -> int:
     except Exception as exc:
         print(f"[demo] ERROR: {exc}", file=sys.stderr)
         import traceback
+
         traceback.print_exc()
         return 1
 

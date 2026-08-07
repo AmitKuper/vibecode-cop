@@ -6,7 +6,6 @@ from argparse import Namespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-
 from agent.role_cli import (
     _assert_counted_worktree_clean,
     _model_record,
@@ -16,6 +15,7 @@ from agent.role_cli import (
     _run,
     run_role_cli,
 )
+
 from agent.runtime_mode import RuntimeMode
 
 

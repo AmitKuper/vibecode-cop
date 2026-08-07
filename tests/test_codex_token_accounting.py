@@ -3,17 +3,17 @@
 from __future__ import annotations
 
 import pytest
+from agent.peer_result import (
+    ResultExchangeError,
+    _validate_counted_token_accounting,
+    _validate_token_totals,
+)
 
 from agent.audit.result_consensus import (
     GameletOutcome,
     ResultAgreement,
     SignedResultAgreement,
     create_signed_result_agreement,
-)
-from agent.peer_result import (
-    ResultExchangeError,
-    _validate_counted_token_accounting,
-    _validate_token_totals,
 )
 from agent.step0.signing import generate_key_pair
 from scripts.run_series import _validated_token_totals

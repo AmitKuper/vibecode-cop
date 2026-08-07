@@ -106,8 +106,9 @@ def test_build_local_observation_no_hidden_coords():
 
 def test_build_board_state_has_both_positions():
     """build_board_state is the private commitment dict — it must contain both positions."""
-    from agent.board import Board
     from agent.peer_turn_helpers import build_board_state
+
+    from agent.board import Board
 
     class _FakeRuntime:
         role = "cop"

@@ -14,9 +14,6 @@ from pathlib import Path
 from unittest.mock import AsyncMock
 
 import pytest
-
-from agent.board import Board
-from agent.mcp.crypto import create_commitment, hash_game_state, verify_commitment
 from agent.peer_audit import (
     append_opponent_commit,
     append_opponent_reveal,
@@ -25,6 +22,9 @@ from agent.peer_audit import (
 )
 from agent.peer_runtime import PeerRuntime
 from agent.peer_turn_loop import run_peer_turn
+
+from agent.board import Board
+from agent.mcp.crypto import create_commitment, hash_game_state, verify_commitment
 
 # ---------------------------------------------------------------------------
 # Helpers

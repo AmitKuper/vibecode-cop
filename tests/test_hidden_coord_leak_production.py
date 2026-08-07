@@ -10,9 +10,9 @@ Verifies that:
 from __future__ import annotations
 
 import numpy as np
+from agent.peer_turn_helpers import build_local_observation
 
 from agent.observation import BeliefState, LocalObservation
-from agent.peer_turn_helpers import build_local_observation
 from agent.rl.local_obs_adapter import local_obs_to_tensor, obs_tensor_shape
 
 # ---------------------------------------------------------------------------
@@ -228,6 +228,7 @@ class TestOrchestratorBeliefNormalizes:
 class TestApplyTurnUsesDomainEngine:
     def test_apply_turn_uses_domain_engine(self):
         from agent.agent_orchestrator import AgentOrchestrator
+
         from agent.domain.types import DomainState
 
         orch = AgentOrchestrator(role="cop", game_uid="test-g03", grid_size=7)
@@ -254,6 +255,7 @@ class TestApplyTurnUsesDomainEngine:
     def test_apply_turn_illegal_cop_action_propagates(self):
         """Illegal cop actions should NOT be silently converted to STAY in domain engine."""
         from agent.agent_orchestrator import AgentOrchestrator
+
         from agent.domain.types import DomainState
 
         orch = AgentOrchestrator(role="cop", game_uid="test-g04", grid_size=7)
