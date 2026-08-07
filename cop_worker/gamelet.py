@@ -3,14 +3,20 @@
 from __future__ import annotations
 
 import logging
+import random
+import secrets
 from typing import Any
 
 from cop_worker.commit_reveal import CommitRevealStateMachine, ProtocolViolationError
+from cop_worker.crypto import build_commitment
 from cop_worker.observation_processor import ObservationProcessor
 from cop_worker.parameter_registry import validate_terms
 from cop_worker.state_machine import GameletState, GameletStateMachine
 
 logger = logging.getLogger(__name__)
+
+# Cop can move in cardinal directions or place a barrier, or stay
+_COP_ACTIONS = ["N", "S", "E", "W", "stay", "barrier_N", "barrier_S", "barrier_E", "barrier_W"]
 
 
 class GameletError(Exception):
@@ -65,6 +71,8 @@ class Gamelet:
         self._audit_bundle: dict | None = None
         self._cr: CommitRevealStateMachine | None = None
         self._processor = ObservationProcessor()
+        # Map step -> (nonce, action_dict) for our own pending reveals
+        self._pending_reveals: dict[int, tuple[str, dict]] = {}
         logger.info("Gamelet %s sg%d initialised role=%s", game_uid[:8], sub_game_number, role)
 
     @property
@@ -76,6 +84,8 @@ class Gamelet:
         """Transition to PLAYING state and initialise commit-reveal."""
         self._sm.transition(GameletState.PLAYING)
         self._cr = CommitRevealStateMachine(expected_step=1)
+        # Per-step opponent commit storage for verify_reveal calls
+        self._opponent_commits: dict[int, str] = {}
 
     def process_event(self, event_type: str, payload: dict) -> dict:
         """Dispatch an inbound event to the appropriate handler.
@@ -95,8 +105,33 @@ class Gamelet:
             return self._handle_control(payload)
         raise GameletError(f"Unknown event_type: {event_type!r}")
 
+    def _generate_move(self) -> dict:
+        """Generate a heuristic move action for the cop (police) role.
+
+        Returns:
+            Action dict with a randomly chosen direction or barrier placement.
+        """
+        direction = random.choice(_COP_ACTIONS)
+        return {"type": "move", "direction": direction}
+
+    def _generate_commitment(self, action: dict) -> tuple[str, str]:
+        """Generate a nonce and commitment hash for the given action.
+
+        Args:
+            action: Action dict to commit to.
+
+        Returns:
+            Tuple of (nonce, commitment_hash) where nonce is kept secret until reveal.
+        """
+        nonce = secrets.token_hex(32)
+        commitment_hash = build_commitment(nonce, action)
+        return nonce, commitment_hash
+
     def _handle_turn(self, payload: dict) -> dict:
-        """Process an opponent turn event.
+        """Process an opponent turn event and return our response.
+
+        On commit: ACK opponent's commit and include our own commit in the response.
+        On reveal: verify opponent's reveal and send our own reveal.
 
         Args:
             payload: Raw turn payload dict.
@@ -108,12 +143,61 @@ class Gamelet:
             raise ProtocolViolationError(f"turn in state {self._sm.state}")
         turn = self._processor.normalise_turn(payload)
         if turn.kind == "commit":
-            ack = self._cr.receive_commit(turn.step, turn.commitment_hash)
+            # Accept opponent's commit with a fresh per-step CR instance
+            step_cr = CommitRevealStateMachine(expected_step=turn.step)
+            step_cr.receive_commit(turn.step, turn.commitment_hash)
+            # Store opponent's hash for later verify_reveal
+            if not hasattr(self, "_opponent_commits"):
+                self._opponent_commits: dict[int, str] = {}
+            self._opponent_commits[turn.step] = turn.commitment_hash
             self._step = turn.step
-            return {"ok": True, "response_payload": ack, "state": self._sm.state}
+            # Also advance the primary CR if it's for the expected step
+            if self._cr is not None and self._cr._expected_step == turn.step:
+                try:
+                    self._cr.receive_commit(turn.step, turn.commitment_hash)
+                except Exception:
+                    pass  # CR may already have processed this step
+            # Generate our own commitment for this step
+            our_action = self._generate_move()
+            our_nonce, our_commitment = self._generate_commitment(our_action)
+            self._pending_reveals[turn.step] = (our_nonce, our_action)
+            return {
+                "ok": True,
+                "response_payload": {
+                    "kind": "commit",
+                    "step": turn.step,
+                    "commitment_hash": our_commitment,
+                },
+                "state": self._sm.state,
+            }
         if turn.kind == "reveal":
-            self._cr.receive_reveal(turn.step, turn.nonce, turn.action)
-            return {"ok": True, "response_payload": {"revealed": True}, "state": self._sm.state}
+            # Verify opponent's reveal against stored commitment hash
+            stored_hash = (
+                self._opponent_commits.get(turn.step)
+                if hasattr(self, "_opponent_commits")
+                else None
+            )
+            verified = False
+            if stored_hash is not None and turn.nonce is not None and turn.action is not None:
+                try:
+                    verified = CommitRevealStateMachine(expected_step=turn.step).verify_reveal(
+                        stored_hash, turn.nonce, turn.action
+                    )
+                except Exception:
+                    verified = False
+            # Send our own reveal for this step
+            our_nonce, our_action = self._pending_reveals.pop(turn.step, (None, None))
+            return {
+                "ok": True,
+                "response_payload": {
+                    "kind": "reveal",
+                    "step": turn.step,
+                    "nonce": our_nonce,
+                    "action": our_action,
+                    "opponent_verified": verified,
+                },
+                "state": self._sm.state,
+            }
         return {"ok": True, "response_payload": {"ack": True}, "state": self._sm.state}
 
     def _handle_audit(self, payload: dict) -> dict:

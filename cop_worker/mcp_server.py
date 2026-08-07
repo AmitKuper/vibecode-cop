@@ -56,6 +56,22 @@ def start_gamelet(
     return {"ok": True}
 
 
+def start_playing(game_uid: str, sub_game_number: int) -> dict:
+    """Transition the gamelet from LOCKED to PLAYING state.
+
+    Args:
+        game_uid: Canonical series identity.
+        sub_game_number: Sub-game index.
+
+    Returns:
+        {'ok': True, 'state': 'PLAYING'} on success.
+    """
+    g = _get(game_uid, sub_game_number)
+    g.start_playing()
+    logger.info("start_playing %s sg%d", game_uid[:8], sub_game_number)
+    return {"ok": True, "state": g.state}
+
+
 def deliver_event(
     game_uid: str,
     sub_game_number: int,
