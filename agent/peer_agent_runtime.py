@@ -189,4 +189,119 @@ class PeerAgentRuntime(_DiscoveryMixin):
         """Start the MCP server. Cop's PeerRuntime loop starts on first start_game call."""
         self._loop = asyncio.get_running_loop()
         logger.info(f"[PeerAgentRuntime/{self.role}] Starting MCP server on {host}:{port}")
+        # Start reference-v3 background tasks if opponent is configured
+        if self._peer_url:
+            if self.role == "cop":
+                asyncio.ensure_future(self._reference_v3_cop_task())
+            else:
+                asyncio.ensure_future(self._reference_v3_thief_task())
         await self._mcp_server.run_async(host=host, port=port)
+
+    def _build_reference_v3_outbound_caller(self):
+        """Return an async callable that calls tools on the opponent's MCP endpoint."""
+        from agent.adaptive.transport_probe import normalize_mcp_base_url
+        peer_mcp = normalize_mcp_base_url(self._peer_url) + "/mcp"
+
+        async def _call(tool_name: str, params: dict) -> dict:
+            from fastmcp import Client
+            from fastmcp.client.transports import StreamableHttpTransport
+            transport = StreamableHttpTransport(peer_mcp)
+            async with Client(transport) as client:
+                result = await client.call_tool(tool_name, params)
+            if not result.content:
+                return {"ok": True}
+            item = result.content[0]
+            value = item.text if hasattr(item, "text") else str(item)
+            try:
+                import json
+                parsed = json.loads(value)
+                return parsed if isinstance(parsed, dict) else {"ok": True, "raw": parsed}
+            except Exception:
+                return {"ok": True, "raw": value}
+
+        return _call
+
+    async def _reference_v3_cop_task(self) -> None:
+        """Background: wait for startup, probe opponent; if reference-v3, drive series."""
+        import asyncio as _asyncio
+        await _asyncio.sleep(1.0)  # let our server finish binding
+        try:
+            from agent.adaptive.introspector import MCPIntrospector
+            from agent.adaptive.reference_v3 import is_reference_v3_surface, default_terms
+            from agent.adaptive.transport_probe import TransportProbe, normalize_mcp_base_url
+            from agent.reference_v3_game import play_reference_v3_series
+
+            peer_base = normalize_mcp_base_url(self._peer_url)
+            peer_mcp = peer_base + "/mcp"  # used for the outbound caller only
+            # Retry probing for up to 45s (opponent may start after us)
+            probe = None
+            for _attempt in range(15):
+                probe = await TransportProbe(timeout_s=4.0).probe(peer_base)
+                if probe.transport.value != "unknown":
+                    break
+                logger.info("[PeerAgentRuntime/cop] Waiting for ref-v3 opponent at %s (attempt %d)", peer_mcp, _attempt + 1)
+                await _asyncio.sleep(3.0)
+            if probe is None or probe.transport.value == "unknown":
+                logger.info("[PeerAgentRuntime/cop] Ref-v3 opponent never came up at %s; giving up", peer_mcp)
+                return
+            intro = await MCPIntrospector(timeout_s=10.0).introspect(probe)
+            if not is_reference_v3_surface(intro):
+                logger.info("[PeerAgentRuntime/cop] Opponent is not reference-v3; skipping ref-v3 series")
+                return
+            logger.info("[PeerAgentRuntime/cop] Reference-v3 opponent detected — initiating series")
+            caller = self._build_reference_v3_outbound_caller()
+            rt = self._peer_runtime
+            orchestrator = rt.orchestrator if rt.orchestrator is not None else None
+            from agent.config.shared_config import load_shared_config
+            shared = load_shared_config()
+            group_id = getattr(rt, "group_name", "vibecode")
+            group_name = group_id
+            result = await play_reference_v3_series(
+                local_session=self._mcp_server.reference_v3_session,
+                outbound_caller=caller,
+                starting_role="police",
+                group_id=group_id,
+                group_name=group_name,
+                orchestrator=orchestrator,
+                games_dir=rt.games_dir,
+            )
+            logger.info("[PeerAgentRuntime/cop] Ref-v3 series done: %s", result)
+        except Exception as exc:
+            logger.warning("[PeerAgentRuntime/cop] Ref-v3 cop task failed: %s", exc, exc_info=True)
+
+    async def _reference_v3_thief_task(self) -> None:
+        """Background: wait for police to send negotiate, then drive thief series."""
+        import asyncio as _asyncio
+        logger.info("[PeerAgentRuntime/thief] Ref-v3 thief task started; waiting for police negotiate")
+        await _asyncio.sleep(1.0)
+        session = self._mcp_server.reference_v3_session
+        # Wait up to 300s for first negotiate (gives police time to start)
+        deadline = _asyncio.get_event_loop().time() + 300.0
+        while _asyncio.get_event_loop().time() < deadline:
+            if session.agreements:
+                break
+            await _asyncio.sleep(0.2)
+        if not session.agreements:
+            logger.info("[PeerAgentRuntime/thief] No police negotiate received; ref-v3 task idle")
+            return
+        try:
+            from agent.adaptive.reference_v3 import default_terms
+            from agent.reference_v3_game import play_reference_v3_series
+
+            caller = self._build_reference_v3_outbound_caller()
+            rt = self._peer_runtime
+            orchestrator = rt.orchestrator if rt.orchestrator is not None else None
+            group_id = getattr(rt, "group_name", "vibecode")
+            group_name = group_id
+            result = await play_reference_v3_series(
+                local_session=session,
+                outbound_caller=caller,
+                starting_role="thief",
+                group_id=group_id,
+                group_name=group_name,
+                orchestrator=orchestrator,
+                games_dir=rt.games_dir,
+            )
+            logger.info("[PeerAgentRuntime/thief] Ref-v3 series done: %s", result)
+        except Exception as exc:
+            logger.warning("[PeerAgentRuntime/thief] Ref-v3 thief task failed: %s", exc, exc_info=True)

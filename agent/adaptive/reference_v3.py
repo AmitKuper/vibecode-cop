@@ -387,9 +387,14 @@ class ReferenceV3Session:
         self.agreements: deque[dict] = deque()
         self.audits: deque[dict] = deque()
         self.controls: deque[dict] = deque()
+        self.turn_messages: deque[dict] = deque()  # full wire-turn messages (for smell_grid access)
         self.local_records: list[dict] = []
         self._local_records_by_step: dict[int, dict] = {}
         self.per_turn_llm_calls = 0
+        # Expected sender: "police" or "thief". Turns from the wrong sender are silently
+        # discarded. This prevents late-arriving turns from a previous sub-game (different
+        # sender role) from polluting the inbox for the current sub-game.
+        self.expected_turn_sender: str | None = None
 
     async def send_negotiation(self, message: dict) -> dict:
         return await self._call("negotiate", {"message": message})
@@ -420,6 +425,16 @@ class ReferenceV3Session:
         return await self._call("receive_control", {"message": message})
 
     def receive_turn(self, message: dict) -> list[dict]:
+        if (self.expected_turn_sender is not None
+                and isinstance(message, dict)
+                and message.get("sender") != self.expected_turn_sender):
+            import logging as _lg
+            _lg.getLogger(__name__).warning(
+                "receive_turn: discarding turn from %r (expected %r) — late arrival from prev sub-game",
+                message.get("sender"), self.expected_turn_sender,
+            )
+            return []
+        self.turn_messages.append(dict(message))
         return self.turns.offer(message)
 
     def receive_negotiation(self, message: dict) -> None:
@@ -434,29 +449,39 @@ class ReferenceV3Session:
 
 def register_reference_v3_tools(mcp, session: ReferenceV3Session) -> None:
     """Expose the exact non-blocking FastMCP surface used by the unmodified league kit."""
+    import logging as _logging
+    _log = _logging.getLogger(__name__)
 
     @mcp.tool
     def negotiate(message: dict) -> dict:
         """Receive the opponent's signed game agreement."""
+        _log.info("TOOL_CALLED negotiate keys=%s", list(message.keys()) if isinstance(message, dict) else type(message))
         session.receive_negotiation(message)
         return {"ok": True}
 
     @mcp.tool
     def receive_turn(message: dict) -> dict:
         """Receive the opponent's turn message."""
+        _log.info("TOOL_CALLED receive_turn keys=%s", list(message.keys()) if isinstance(message, dict) else type(message))
         session.receive_turn(message)
         return {"ok": True}
 
     @mcp.tool
     def submit_audit(payload: dict) -> dict:
         """Receive the opponent's end-of-game audit reveal (records + nonces)."""
+        _log.info("TOOL_CALLED submit_audit keys=%s", list(payload.keys()) if isinstance(payload, dict) else type(payload))
         session.receive_audit(payload)
         return {"ok": True}
 
     @mcp.tool
     def receive_control(message: dict) -> dict:
         """Receive an opponent control signal (enable / status / restart / quit)."""
+        _log.info(
+            "TOOL_CALLED receive_control session_id=%s controls_before=%d keys=%s",
+            id(session), len(session.controls), list(message.keys()) if isinstance(message, dict) else type(message)
+        )
         session.receive_control(message)
+        _log.info("receive_control DONE controls_after=%d", len(session.controls))
         return {"ok": True}
 
 

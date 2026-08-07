@@ -76,23 +76,32 @@ async def _try_streamable_http(base_url: str, timeout: float) -> ProbeResult | N
         import time
 
         t0 = time.monotonic()
+        bodies: list[dict] = []
+        status_code = 0
         async with httpx.AsyncClient(timeout=timeout) as c:
-            r = await c.post(
+            async with c.stream(
+                "POST",
                 endpoint,
                 json=payload,
                 headers={"Accept": "application/json, text/event-stream"},
-            )
-        latency_ms = (time.monotonic() - t0) * 1000
-        content_type = r.headers.get("content-type", "")
-        bodies: list[dict] = []
-        if "application/json" in content_type:
-            with suppress(ValueError, TypeError):
-                bodies.append(r.json())
-        elif "event-stream" in content_type:
-            for line in r.text.splitlines():
-                if line.startswith("data:"):
+            ) as r:
+                status_code = r.status_code
+                content_type = r.headers.get("content-type", "")
+                # Read only the first chunk (avoid blocking on persistent SSE connections)
+                raw_lines: list[str] = []
+                async for line in r.aiter_lines():
+                    raw_lines.append(line)
+                    if line.startswith("data:"):
+                        with suppress(ValueError, TypeError):
+                            bodies.append(json.loads(line.removeprefix("data:").strip()))
+                        break  # got first data line — enough for detection
+                    if len(raw_lines) > 20:
+                        break
+                if not bodies and "application/json" in content_type:
+                    text = "\n".join(raw_lines)
                     with suppress(ValueError, TypeError):
-                        bodies.append(json.loads(line.removeprefix("data:").strip()))
+                        bodies.append(json.loads(text))
+        latency_ms = (time.monotonic() - t0) * 1000
         valid_initialize = any(
             isinstance(body, dict)
             and body.get("jsonrpc") == "2.0"
@@ -100,13 +109,13 @@ async def _try_streamable_http(base_url: str, timeout: float) -> ProbeResult | N
             and ("protocolVersion" in body["result"] or "serverInfo" in body["result"])
             for body in bodies
         )
-        if r.status_code == 200 and valid_initialize:
+        if status_code == 200 and valid_initialize:
             return ProbeResult(
                 transport=TransportType.STREAMABLE_HTTP,
                 base_url=base_url,
                 mcp_endpoint=endpoint,
                 latency_ms=latency_ms,
-                probe_notes=f"HTTP {r.status_code}",
+                probe_notes=f"HTTP {status_code}",
             )
     except Exception as exc:
         logger.debug("Streamable HTTP probe failed for %s: %s", base_url, exc)
