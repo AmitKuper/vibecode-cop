@@ -82,6 +82,28 @@ class BeliefEngine:
         engine._belief = new_belief
         return engine
 
+    def get_belief_map(self, board_size: int | None = None) -> np.ndarray:
+        """Return a (board_size, board_size) probability map summing to 1.0.
+
+        Args:
+            board_size: Board size override. Defaults to self.grid_size if None.
+
+        Returns:
+            np.ndarray of shape (board_size, board_size), dtype float32, sum ≈ 1.0.
+        """
+        size = board_size if board_size is not None else self.grid_size
+        prob = self._belief.prob
+        if prob.shape != (size, size):
+            # Resize via uniform resampling when sizes differ
+            result = np.full((size, size), 1.0 / (size * size), dtype=np.float32)
+            return result
+        result = prob.astype(np.float32)
+        total = result.sum()
+        if total > 0:
+            result = result / total
+        return result
+
     @property
     def belief(self) -> BeliefState:
+        """Return the current BeliefState."""
         return self._belief

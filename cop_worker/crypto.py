@@ -213,6 +213,21 @@ def public_transition_hash(
     return hashlib.sha256(canonical_json(payload).encode("utf-8")).hexdigest()
 
 
+def build_commitment(nonce: str, action: dict) -> str:
+    """Build a simple SHA256 commitment: SHA256(nonce + canonical_json(action)).
+
+    Args:
+        nonce: Secret nonce string (withheld until reveal phase).
+        action: Action dict to commit to (e.g. {"type": "move", "direction": "N"}).
+
+    Returns:
+        64-char hex SHA256 digest.
+    """
+    action_json = json.dumps(action, sort_keys=True, separators=(",", ":"))
+    data = (nonce + action_json).encode("utf-8")
+    return hashlib.sha256(data).hexdigest()
+
+
 def canonical_domain_state_root(state: Any, config_sha256: str) -> str:
     """Commit to a complete canonical domain state for final-audit replay."""
     state_payload = state.model_dump(mode="json") if hasattr(state, "model_dump") else state

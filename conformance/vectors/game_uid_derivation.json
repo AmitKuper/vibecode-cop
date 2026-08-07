@@ -1,0 +1,17 @@
+{
+  "description": "game_uid derivation from game_id and group_ids",
+  "cases": [
+    {
+      "id": "uid_001",
+      "game_id": "GAME2026A",
+      "group_ids": ["vibecode", "opponent"],
+      "expected_uid": "79d9dc472c82fcd75089cfe1d6337d9a2cfd9803d64a97396d1ccb6f2cc02155"
+    },
+    {
+      "id": "uid_002",
+      "game_id": "GAME2026B",
+      "group_ids": ["alpha123", "beta4567"],
+      "expected_uid": "4a3c89d83ef38c337b4efd4afb81a49a28361d5a85f7e02bd7ec624820844109"
+    }
+  ]
+}

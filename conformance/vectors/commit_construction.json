@@ -1,0 +1,17 @@
+{
+  "description": "SHA256 commitment construction vectors",
+  "cases": [
+    {
+      "id": "commit_001",
+      "nonce": "abc123def456",
+      "action": {"type": "move", "direction": "N"},
+      "expected_hash": "de4a81d01fba96555fac3eaf5042109ad39e04b1338b4d18b77c71ccf94e959b"
+    },
+    {
+      "id": "commit_002",
+      "nonce": "xyz789uvw012",
+      "action": {"type": "stay"},
+      "expected_hash": "bf89ef1dc0469d596fa5348fc6ea30bae9d518b6d6615fcd475c32d28d9494d1"
+    }
+  ]
+}

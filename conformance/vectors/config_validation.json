@@ -1,0 +1,55 @@
+{
+  "description": "Parameter validation pass/fail cases for the ParameterSpec registry",
+  "cases": [
+    {
+      "id": "cfg_valid_001",
+      "proposed_terms": {
+        "board_size": 7,
+        "smell_grid_size": 5,
+        "decay_per_step": 0.1,
+        "emit_intensity": 0.9,
+        "max_steps": 35,
+        "survival_threshold": 35,
+        "barriers_max": 14,
+        "num_games": 6,
+        "setting": "Haifa",
+        "hint_max_words": 15,
+        "axis_origin_corner": "top-left",
+        "axis_start_index": 0,
+        "thief_start": [3, 3],
+        "cop_start": [0, 0]
+      },
+      "expected_valid": true
+    },
+    {
+      "id": "cfg_invalid_001",
+      "proposed_terms": {
+        "board_size": 7,
+        "smell_grid_size": 3,
+        "decay_per_step": 0.1,
+        "emit_intensity": 0.9,
+        "max_steps": 35,
+        "survival_threshold": 35,
+        "barriers_max": 14,
+        "num_games": 6
+      },
+      "expected_valid": false,
+      "expected_violation_contains": "smell_grid_size"
+    },
+    {
+      "id": "cfg_invalid_002",
+      "proposed_terms": {
+        "board_size": 5,
+        "smell_grid_size": 5,
+        "decay_per_step": 0.1,
+        "emit_intensity": 0.9,
+        "max_steps": 35,
+        "survival_threshold": 35,
+        "barriers_max": 14,
+        "num_games": 6
+      },
+      "expected_valid": false,
+      "expected_violation_contains": "board_size"
+    }
+  ]
+}
