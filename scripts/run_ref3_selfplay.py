@@ -66,6 +66,98 @@ ROLE_SCHEDULE: dict[int, str] = {
 # ---------------------------------------------------------------------------
 
 
+class _MCPSession:
+    """Stateful MCP session for streamable-http transport.
+
+    Handles initialize handshake and reuses the MCP-Session-Id header
+    for all subsequent calls within one run.
+    """
+
+    def __init__(self, base_url: str, timeout: int = 10) -> None:
+        """Create session; does NOT connect until first call.
+
+        Args:
+            base_url: Base URL of the FastMCP server (e.g. http://localhost:8001).
+            timeout: Request timeout in seconds.
+        """
+        import requests  # noqa: PLC0415
+
+        self._base_url = base_url
+        self._timeout = timeout
+        self._session = requests.Session()
+        self._session.headers.update(
+            {"Content-Type": "application/json", "Accept": "application/json, text/event-stream"}
+        )
+        self._session_id: str | None = None
+        self._call_id = 0
+
+    def _ensure_initialized(self) -> None:
+        """Run MCP initialize handshake if not yet done."""
+        if self._session_id is not None:
+            return
+        self._call_id += 1
+        payload = {
+            "jsonrpc": "2.0",
+            "id": self._call_id,
+            "method": "initialize",
+            "params": {
+                "protocolVersion": "2024-11-05",
+                "capabilities": {},
+                "clientInfo": {"name": "run_ref3_selfplay", "version": "1.0"},
+            },
+        }
+        resp = self._session.post(f"{self._base_url}/mcp", json=payload, timeout=self._timeout)
+        resp.raise_for_status()
+        sid = resp.headers.get("mcp-session-id")
+        if sid:
+            self._session_id = sid
+            self._session.headers["mcp-session-id"] = sid
+
+    def call_tool(self, tool_name: str, arguments: dict) -> dict:
+        """Call an MCP tool and return the parsed result dict.
+
+        Args:
+            tool_name: MCP tool name.
+            arguments: Tool arguments dict.
+
+        Returns:
+            Parsed result dict from the MCP response.
+
+        Raises:
+            RuntimeError: If the server returns an MCP-level error.
+        """
+        self._ensure_initialized()
+        self._call_id += 1
+        payload = {
+            "jsonrpc": "2.0",
+            "id": self._call_id,
+            "method": "tools/call",
+            "params": {"name": tool_name, "arguments": arguments},
+        }
+        resp = self._session.post(f"{self._base_url}/mcp", json=payload, timeout=self._timeout)
+        resp.raise_for_status()
+        # Response is SSE text/event-stream — extract the data: line
+        text = resp.text
+        result_json: dict = {}
+        for line in text.splitlines():
+            if line.startswith("data: "):
+                result_json = json.loads(line[6:])
+                break
+        if "error" in result_json:
+            raise RuntimeError(f"MCP error: {result_json['error']}")
+        content = result_json.get("result", {}).get("content", [{}])
+        if result_json.get("result", {}).get("isError"):
+            raise RuntimeError(f"Tool error: {content[0].get('text', '') if content else ''}")
+        if content and content[0].get("type") == "text":
+            return json.loads(content[0]["text"])
+        return result_json.get("result", {})
+
+
+# Module-level HTTP sessions, created lazily when HTTP transport is active
+_cop_session: _MCPSession | None = None
+_thief_session: _MCPSession | None = None
+
+
 def _call_tool_http(base_url: str, tool_name: str, arguments: dict, timeout: int = 10) -> dict:
     """Call an MCP tool via HTTP POST (streamable-http transport).
 
@@ -81,27 +173,19 @@ def _call_tool_http(base_url: str, tool_name: str, arguments: dict, timeout: int
     Raises:
         RuntimeError: If the server returns an MCP-level error.
     """
-    import requests  # noqa: PLC0415
-
-    payload = {
-        "jsonrpc": "2.0",
-        "id": 1,
-        "method": "tools/call",
-        "params": {"name": tool_name, "arguments": arguments},
-    }
-    resp = requests.post(f"{base_url}/mcp", json=payload, timeout=timeout)
-    resp.raise_for_status()
-    result = resp.json()
-    if "error" in result:
-        raise RuntimeError(f"MCP error: {result['error']}")
-    content = result.get("result", {}).get("content", [{}])
-    if content and content[0].get("type") == "text":
-        return json.loads(content[0]["text"])
-    return result.get("result", {})
+    global _cop_session, _thief_session  # noqa: PLW0603
+    if "8001" in base_url:
+        if _cop_session is None:
+            _cop_session = _MCPSession(base_url, timeout)
+        return _cop_session.call_tool(tool_name, arguments)
+    else:
+        if _thief_session is None:
+            _thief_session = _MCPSession(base_url, timeout)
+        return _thief_session.call_tool(tool_name, arguments)
 
 
 def _probe_http(url: str) -> bool:
-    """Return True if the FastMCP server at url/mcp responds to a GET.
+    """Return True if the FastMCP server at url/mcp responds to POST initialize.
 
     Args:
         url: Base URL to probe.
@@ -112,8 +196,22 @@ def _probe_http(url: str) -> bool:
     try:
         import requests  # noqa: PLC0415
 
-        r = requests.get(f"{url}/mcp", timeout=3)
-        return r.status_code < 500
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json, text/event-stream",
+        }
+        payload = {
+            "jsonrpc": "2.0",
+            "id": 0,
+            "method": "initialize",
+            "params": {
+                "protocolVersion": "2024-11-05",
+                "capabilities": {},
+                "clientInfo": {"name": "probe", "version": "1.0"},
+            },
+        }
+        r = requests.post(f"{url}/mcp", json=payload, headers=headers, timeout=3)
+        return r.status_code == 200
     except Exception:
         return False
 
@@ -211,56 +309,111 @@ def run_one_subgame(
     thief_ms,
     max_steps: int,
     cop_role: str,
+    http_probe: dict | None = None,
 ) -> list[dict]:
     """Run one sub-game using ref-v3 commit-reveal message exchange.
 
     The cop_worker's role alternates according to ROLE_SCHEDULE.  When
     cop_worker plays 'thief', thief_worker plays 'police' (and vice-versa).
+    When http_probe indicates both servers are reachable, all calls go via
+    real HTTP (streamable-http transport); otherwise in-process.
 
     Args:
         game_uid: Series identity.
         sg: Sub-game number (1-based).
-        cop_ms: cop_worker.mcp_server module.
-        thief_ms: thief_worker.mcp_server module.
+        cop_ms: cop_worker.mcp_server module (used for in-process fallback).
+        thief_ms: thief_worker.mcp_server module (used for in-process fallback).
         max_steps: Number of commit steps to exchange.
         cop_role: 'police' or 'thief' — cop_worker's role in this sub-game.
+        http_probe: Result of _try_real_http_probe(); if None, in-process only.
 
     Returns:
         List of step dicts, each with step / cop_commit / thief_commit.
     """
     thief_role = "thief" if cop_role == "police" else "police"
+    use_http = (
+        http_probe is not None
+        and http_probe.get("cop_reachable")
+        and http_probe.get("thief_reachable")
+    )
+    cop_url = (http_probe or {}).get("cop_url", "http://localhost:8001")
+    thief_url = (http_probe or {}).get("thief_url", "http://localhost:8002")
+
+    def _cop(tool: str, **kw: object) -> dict:
+        if use_http:
+            return _call_tool_http(cop_url, tool, kw)
+        return getattr(cop_ms, tool)(**kw)
+
+    def _thief(tool: str, **kw: object) -> dict:
+        if use_http:
+            return _call_tool_http(thief_url, tool, kw)
+        return getattr(thief_ms, tool)(**kw)
 
     # --- Start both gamelets ---
-    _ip_start_gamelet(cop_ms, game_uid, sg, role=cop_role)
-    _ip_start_gamelet(thief_ms, game_uid, sg, role=thief_role)
+    _cop(
+        "start_gamelet",
+        game_uid=game_uid,
+        sub_game_number=sg,
+        terms=TERMS,
+        opponent_group="ref3_peer",
+        role=cop_role,
+    )
+    _thief(
+        "start_gamelet",
+        game_uid=game_uid,
+        sub_game_number=sg,
+        terms=TERMS,
+        opponent_group="ref3_peer",
+        role=thief_role,
+    )
 
     # --- Transition to PLAYING ---
-    _ip_start_playing(cop_ms, game_uid, sg)
-    _ip_start_playing(thief_ms, game_uid, sg)
+    _cop("start_playing", game_uid=game_uid, sub_game_number=sg)
+    _thief("start_playing", game_uid=game_uid, sub_game_number=sg)
 
-    cop_status = cop_ms.get_status(game_uid, sg)
-    thief_status = thief_ms.get_status(game_uid, sg)
+    cop_status = _cop("get_status", game_uid=game_uid, sub_game_number=sg)
+    thief_status = _thief("get_status", game_uid=game_uid, sub_game_number=sg)
     logger.info(
-        "SG%d cop_state=%s thief_state=%s cop_role=%s thief_role=%s",
+        "SG%d cop_state=%s thief_state=%s cop_role=%s thief_role=%s transport=%s",
         sg,
         cop_status["state"],
         thief_status["state"],
         cop_role,
         thief_role,
+        "HTTP" if use_http else "in-process",
     )
 
     step_log: list[dict] = []
+    commit_payload = {
+        "step": 0,
+        "kind": "commit",
+        "commitment_hash": "0" * 64,
+        "nonce": None,
+        "action": None,
+    }
 
     for step in range(1, max_steps + 1):
         # --- ref-v3 commit exchange ---
-        # Side-A (cop) receives a synthetic opponent commit and responds with its own
-        init_hash = "0" * 64  # bootstrap: no real opponent commit yet for step 1
-        cop_resp = _ip_deliver_commit(cop_ms, game_uid, sg, step, init_hash)
+        commit_payload["step"] = step
+        cop_resp = _cop(
+            "deliver_event",
+            game_uid=game_uid,
+            sub_game_number=sg,
+            event_type="opponent_turn",
+            payload=dict(commit_payload),
+        )
         cop_hash = cop_resp.get("response_payload", {}).get("commitment_hash", "0" * 64)
 
-        # Side-B (thief) receives cop's commit, responds with its own
-        thief_resp = _ip_deliver_commit(thief_ms, game_uid, sg, step, cop_hash)
+        commit_payload["commitment_hash"] = cop_hash
+        thief_resp = _thief(
+            "deliver_event",
+            game_uid=game_uid,
+            sub_game_number=sg,
+            event_type="opponent_turn",
+            payload=dict(commit_payload),
+        )
         thief_hash = thief_resp.get("response_payload", {}).get("commitment_hash", "0" * 64)
+        commit_payload["commitment_hash"] = thief_hash
 
         entry = {
             "step": step,
@@ -271,8 +424,8 @@ def run_one_subgame(
         print(f"    step {step:2d}/{max_steps}  cop={cop_hash[:12]}…  thief={thief_hash[:12]}…")
 
     # --- Shutdown both gamelets ---
-    _ip_shutdown(cop_ms, game_uid, sg)
-    _ip_shutdown(thief_ms, game_uid, sg)
+    _cop("shutdown_gamelet", game_uid=game_uid, sub_game_number=sg)
+    _thief("shutdown_gamelet", game_uid=game_uid, sub_game_number=sg)
 
     return step_log
 
@@ -289,7 +442,7 @@ def _try_real_http_probe() -> dict:
         Dict with 'cop_reachable', 'thief_reachable', 'cop_url', 'thief_url'.
     """
     cop_url = "http://localhost:8001"
-    thief_url = "http://localhost:8012"
+    thief_url = "http://localhost:8002"
     return {
         "cop_reachable": _probe_http(cop_url),
         "thief_reachable": _probe_http(thief_url),
@@ -347,9 +500,10 @@ def main() -> int:
     sl = SeriesLifecycle(game_uid=game_uid, game_id=game_id)
     jsonl = SeriesJSONL(jsonl_path)
 
-    # Reset registries for a clean run
-    cop_ms.clear_all_gamelets()
-    thief_ms.clear_all_gamelets()
+    # Reset in-process registries for a clean run (no-op when using real HTTP)
+    if transport_mode == "in-process":
+        cop_ms.clear_all_gamelets()
+        thief_ms.clear_all_gamelets()
 
     cop_wins = 0
     thief_wins = 0
@@ -388,6 +542,7 @@ def main() -> int:
             thief_ms=thief_ms,
             max_steps=args.max_steps,
             cop_role=cop_role,
+            http_probe=http_probe if transport_mode == "real-http" else None,
         )
 
         # Determine winner: police wins odd sub-games, thief wins even

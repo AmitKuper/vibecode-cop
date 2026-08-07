@@ -85,6 +85,11 @@ def main() -> None:
         return mcp_server.start_gamelet(game_uid, sub_game_number, terms, opponent_group, role)
 
     @app.tool()
+    def start_playing(game_uid: str, sub_game_number: int) -> dict:
+        """Transition gamelet to PLAYING state."""
+        return mcp_server.start_playing(game_uid, sub_game_number)
+
+    @app.tool()
     def deliver_event(
         game_uid: str,
         sub_game_number: int,
