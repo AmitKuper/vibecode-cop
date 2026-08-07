@@ -13,20 +13,20 @@ from pathlib import Path
 
 import pytest
 
-from agent.audit.audit_summary import (
+from cop_worker.audit.audit_summary import (
     AuditSummary,
     create_signed_audit_summary,
     verify_audit_summary,
 )
-from agent.audit.result_consensus import (
+from cop_worker.audit.result_consensus import (
     GameletOutcome,
     ResultAgreement,
     ResultConsensusError,
     SignedResultAgreement,
     verify_bilateral_consensus,
 )
-from agent.audit.step_journal import StepEvidence, StepJournal
-from agent.step0.signing import generate_key_pair
+from cop_worker.audit.step_journal import StepEvidence, StepJournal
+from cop_worker.step0.signing import generate_key_pair
 
 # ---------------------------------------------------------------------------
 # Helpers

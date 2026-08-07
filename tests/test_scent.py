@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from agent.scent import KERNEL_RADIUS, ScentFields, _radial_kernel
+from cop_worker.scent import KERNEL_RADIUS, ScentFields, _radial_kernel
 
 
 class TestRadialKernel:

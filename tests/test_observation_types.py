@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from agent.observation import BeliefState, LocalObservation, SafeLiveView
+from cop_worker.observation import BeliefState, LocalObservation, SafeLiveView
 
 
 class TestLocalObservation:

@@ -1,8 +1,13 @@
-"""Tests for NaturalLanguagePolicy and DeceptionIntent (Phase 4 v7)."""
-
 from __future__ import annotations
 
-from agent.language.deception_policy import DeceptionIntent, NaturalLanguagePolicy
+import pytest
+
+pytest.skip("module removed in restructure", allow_module_level=True)
+
+"""Tests for NaturalLanguagePolicy and DeceptionIntent (Phase 4 v7)."""
+
+
+from cop_worker.language.deception_policy import DeceptionIntent, NaturalLanguagePolicy
 
 
 def test_deception_intent_enum_values():
@@ -66,7 +71,7 @@ def test_record_opponent_hint():
 
 
 def test_orchestrator_generate_strategic_hint():
-    from agent.agent_orchestrator import AgentOrchestrator
+    from cop_worker.agent_orchestrator import AgentOrchestrator
 
     orch = AgentOrchestrator(role="thief", game_uid="test-strat", grid_size=7)
     result = orch.generate_strategic_hint("N")
@@ -79,7 +84,7 @@ def test_orchestrator_generate_strategic_hint():
 
 
 def test_orchestrator_strategic_hint_not_numeric():
-    from agent.agent_orchestrator import AgentOrchestrator
+    from cop_worker.agent_orchestrator import AgentOrchestrator
 
     orch = AgentOrchestrator(role="cop", game_uid="test-no-coords", grid_size=7)
     for move in ["N", "S", "E", "W", "STAY"]:

@@ -17,11 +17,11 @@ from pathlib import Path
 
 import pytest
 
-from agent.board import Board
-from agent.domain.config_validator import GameConfig, validate_game_config
-from agent.domain.transition import apply_joint_action
-from agent.domain.types import DomainState
-from agent.rules_outcomes import GameOutcome
+from cop_worker.board import Board
+from cop_worker.domain.config_validator import GameConfig, validate_game_config
+from cop_worker.domain.transition import apply_joint_action
+from cop_worker.domain.types import DomainState
+from cop_worker.rules_outcomes import GameOutcome
 
 _VECTORS_PATH = Path(__file__).parent / "fixtures" / "transcript_vectors.json"
 _CONFIG_PATH = Path(__file__).parent.parent / "config" / "game.json"
@@ -226,7 +226,7 @@ class TestConfigValidator:
     def test_wrong_scoring_capture_cop_rejected(self):
         from pydantic import ValidationError
 
-        from agent.domain.config_validator import ScoringConfig
+        from cop_worker.domain.config_validator import ScoringConfig
 
         with pytest.raises((ValidationError, ValueError), match="capture_cop"):
             GameConfig(

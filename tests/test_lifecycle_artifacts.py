@@ -2,7 +2,7 @@
 
 import json
 
-from agent.step0.lifecycle_artifacts import (
+from cop_worker.step0.lifecycle_artifacts import (
     LifecycleArtifactSet,
     build_artifact_set,
     config_path,

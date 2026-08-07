@@ -1,21 +1,26 @@
-"""Appendix-E Rule 54 token accounting contracts."""
-
 from __future__ import annotations
 
 import pytest
-from agent.peer_result import (
+
+pytest.skip("module removed in restructure", allow_module_level=True)
+
+"""Appendix-E Rule 54 token accounting contracts."""
+
+
+import pytest
+from cop_worker.peer_result import (
     ResultExchangeError,
     _validate_counted_token_accounting,
     _validate_token_totals,
 )
 
-from agent.audit.result_consensus import (
+from cop_worker.audit.result_consensus import (
     GameletOutcome,
     ResultAgreement,
     SignedResultAgreement,
     create_signed_result_agreement,
 )
-from agent.step0.signing import generate_key_pair
+from cop_worker.step0.signing import generate_key_pair
 from scripts.run_series import _validated_token_totals
 
 

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from agent.observation_audit import audit_observation_for_leaks
+from cop_worker.observation_audit import audit_observation_for_leaks
 
 
 class TestAuditObservationForLeaks:

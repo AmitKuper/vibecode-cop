@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from agent.config.shared_config import (
+from cop_worker.config.shared_config import (
     _validate,
     canonical_json,
     config_sha256,

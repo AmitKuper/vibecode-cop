@@ -195,11 +195,10 @@ async def _run_all(our_port: int, sparring_port: int, kit: Path, n_sub_games: in
     """Start server, then sparring, then play."""
     import json as _json
 
-    from fastmcp import Client, FastMCP
-    from fastmcp.client.transports import StreamableHttpTransport
-
     from agent.adaptive.pipeline import discover_reference_v3
     from agent.adaptive.reference_v3 import ReferenceV3Session, register_reference_v3_tools
+    from fastmcp import Client, FastMCP
+    from fastmcp.client.transports import StreamableHttpTransport
 
     host = "127.0.0.1"
     our_mcp_url = f"http://{host}:{our_port}/mcp"

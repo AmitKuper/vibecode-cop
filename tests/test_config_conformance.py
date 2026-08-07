@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import pytest
 
-from agent.config.canonical_config import CanonicalConfig, ConfigError, FieldKind
+from cop_worker.config.canonical_config import CanonicalConfig, ConfigError, FieldKind
 
 # ---------------------------------------------------------------------------
 # Minimal valid flat config (all Appendix-F fields, all constraints met)

@@ -1,6 +1,6 @@
 """Tests that commitment payloads include all required fields including gamelet."""
 
-from agent.mcp.crypto import create_commitment, verify_commitment
+from cop_worker.crypto import create_commitment, verify_commitment
 
 
 class TestCommitmentPayloadFields:

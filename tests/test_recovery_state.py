@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from agent.reliability.recovery_state import RecoveryState, RecoveryStore
+from cop_worker.reliability.recovery_state import RecoveryState, RecoveryStore
 
 
 @pytest.fixture

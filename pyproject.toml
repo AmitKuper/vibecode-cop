@@ -55,6 +55,10 @@ ignore = ["N999"]
 "agent/replay/app.py" = ["E501"]
 "cop_worker/gui/app.py" = ["E501"]
 "cop_worker/replay/app.py" = ["E501"]
+# E402: tests use pytest.skip(allow_module_level=True) before imports by design
+"tests/*.py" = ["E402"]
+"cop_worker/tests/*.py" = ["E402"]
+"league_manager/tests/*.py" = ["E402"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

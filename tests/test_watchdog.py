@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agent.reliability.watchdog import (
+from league_manager.reliability.watchdog import (
     HeartbeatRecord,
     _read_heartbeat,
     _write_failure_evidence,
@@ -119,8 +119,8 @@ class TestRunWatchdog:
                 original_sleep(0.01)
 
             with (
-                patch("agent.reliability.watchdog.time.sleep", fast_sleep),
-                patch("agent.reliability.watchdog.os.kill", fake_kill),
+                patch("league_manager.reliability.watchdog.time.sleep", fast_sleep),
+                patch("league_manager.reliability.watchdog.os.kill", fake_kill),
                 contextlib.suppress(SystemExit),
             ):
                 run_watchdog(hb_path, ev_path, threshold_s=0.1)
@@ -152,8 +152,8 @@ class TestRunWatchdog:
                 original_sleep(0.01)
 
             with (
-                patch("agent.reliability.watchdog.time.sleep", fast_sleep),
-                patch("agent.reliability.watchdog.os.kill", fake_kill),
+                patch("league_manager.reliability.watchdog.time.sleep", fast_sleep),
+                patch("league_manager.reliability.watchdog.os.kill", fake_kill),
                 contextlib.suppress(SystemExit),
             ):
                 run_watchdog(hb_path, ev_path, threshold_s=100.0)

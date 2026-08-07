@@ -7,10 +7,10 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from agent.observation import BeliefState, LocalObservation
-from agent.rl.action_space import COP_ACTIONS, THIEF_ACTIONS
-from agent.rl.local_obs_adapter import obs_tensor_shape
-from agent.rl.recurrent_policy import (
+from cop_worker.observation import BeliefState, LocalObservation
+from cop_worker.rl.action_space import COP_ACTIONS, THIEF_ACTIONS
+from cop_worker.rl.local_obs_adapter import obs_tensor_shape
+from cop_worker.rl.recurrent_policy import (
     RecurrentActorCritic,
     RecurrentPolicyLoadError,
     RecurrentRolePolicy,
@@ -70,8 +70,10 @@ def _patch_loader(monkeypatch, tmp_path, *, entry=None, checkpoint=None):
     manifest = tmp_path / "MANIFEST.json"
     manifest.write_text("{}", encoding="utf-8")
     chosen_entry = entry or _entry()
-    monkeypatch.setattr("agent.rl.model_schema.load_manifest", lambda _path: {"cop": chosen_entry})
-    monkeypatch.setattr("agent.rl.model_schema.validate_model_file", lambda *_args: None)
+    monkeypatch.setattr(
+        "cop_worker.rl.model_schema.load_manifest", lambda _path: {"cop": chosen_entry}
+    )
+    monkeypatch.setattr("cop_worker.rl.model_schema.validate_model_file", lambda *_args: None)
     monkeypatch.setattr(torch, "load", lambda *_args, **_kwargs: checkpoint or _checkpoint())
     return manifest
 
@@ -98,7 +100,7 @@ def test_policy_rejects_empty_and_undeployable_legal_masks() -> None:
 def test_loader_rejects_missing_role(monkeypatch, tmp_path) -> None:
     manifest = tmp_path / "MANIFEST.json"
     manifest.write_text("{}", encoding="utf-8")
-    monkeypatch.setattr("agent.rl.model_schema.load_manifest", lambda _path: {})
+    monkeypatch.setattr("cop_worker.rl.model_schema.load_manifest", lambda _path: {})
     with pytest.raises(RecurrentPolicyLoadError, match="manifest has no"):
         load_recurrent_policy(manifest, "cop")
 
@@ -114,7 +116,7 @@ def test_loader_rejects_missing_role(monkeypatch, tmp_path) -> None:
 def test_loader_rejects_bad_manifest_entry(monkeypatch, tmp_path, entry, match) -> None:
     manifest = tmp_path / "MANIFEST.json"
     manifest.write_text("{}", encoding="utf-8")
-    monkeypatch.setattr("agent.rl.model_schema.load_manifest", lambda _path: {"cop": entry})
+    monkeypatch.setattr("cop_worker.rl.model_schema.load_manifest", lambda _path: {"cop": entry})
     with pytest.raises(RecurrentPolicyLoadError, match=match):
         load_recurrent_policy(manifest, "cop")
 

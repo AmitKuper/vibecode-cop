@@ -2,7 +2,7 @@
 
 import time
 
-from agent.gmail.circuit_breaker import CircuitBreaker, CircuitState
+from league_manager.gmail.circuit_breaker import CircuitBreaker, CircuitState
 
 
 def test_initial_state_closed():

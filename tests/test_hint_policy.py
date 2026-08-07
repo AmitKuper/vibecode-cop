@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from agent.language.hint_policy import DIRECTION_NAMES, generate_hint
+from cop_worker.language.hint_policy import DIRECTION_NAMES, generate_hint
 
 
 class TestGenerateHint:

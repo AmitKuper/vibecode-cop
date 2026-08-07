@@ -2,7 +2,7 @@
 
 import pytest
 
-from agent.reports.plugin_factory import ReportPluginFactory
+from league_manager.reports.plugin_factory import ReportPluginFactory
 
 
 class TestGmailRecipientConfigDriven:

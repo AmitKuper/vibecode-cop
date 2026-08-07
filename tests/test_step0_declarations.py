@@ -2,9 +2,9 @@
 
 import json
 
-from agent.step0.declaration import DeclarationAgreement, PeerDeclaration, SignedDeclaration
-from agent.step0.signing import generate_key_pair, sign, verify
-from agent.step0.validator import validate_for_counted_mode
+from cop_worker.step0.declaration import DeclarationAgreement, PeerDeclaration, SignedDeclaration
+from cop_worker.step0.signing import generate_key_pair, sign, verify
+from cop_worker.step0.validator import validate_for_counted_mode
 
 # ---------------------------------------------------------------------------
 # PeerDeclaration

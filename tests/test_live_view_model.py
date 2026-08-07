@@ -5,8 +5,8 @@ import json
 
 import pytest
 
-from agent.gui.live_view_model import LiveViewModel, LiveViewUpdate
-from agent.observation import SafeLiveView
+from cop_worker.gui.live_view_model import LiveViewModel, LiveViewUpdate
+from cop_worker.observation import SafeLiveView
 
 
 def _make_view(**kwargs) -> SafeLiveView:
@@ -67,7 +67,7 @@ class TestLiveViewModelUpdate:
         view_dict["cop_position"] = [1, 2]  # hidden coord leaked
 
         with (
-            mock.patch("agent.gui.live_view_model.asdict", return_value=view_dict),
+            mock.patch("cop_worker.gui.live_view_model.asdict", return_value=view_dict),
             pytest.raises(ValueError, match="cop_position"),
         ):
             vm._verify_no_hidden_coord(view)

@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from agent.observation import BeliefState, LocalObservation
-from agent.observation_audit import audit_observation_for_leaks
-from agent.rl.local_obs_adapter import local_obs_to_tensor
+from cop_worker.observation import BeliefState, LocalObservation
+from cop_worker.observation_audit import audit_observation_for_leaks
+from cop_worker.rl.local_obs_adapter import local_obs_to_tensor
 
 
 def _make_local_obs_at(own_pos, grid_size=7) -> LocalObservation:

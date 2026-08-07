@@ -8,13 +8,13 @@ import numpy as np
 import pytest
 import torch
 
-from agent.belief_engine import BeliefEngine
-from agent.domain.types import DomainState
-from agent.observation import BeliefState
-from agent.rl.action_space import COP_ACTIONS
-from agent.rl.local_obs_adapter import obs_tensor_shape
-from agent.rl.recurrent_policy import RecurrentActorCritic
-from agent.rl.train_recurrent import (
+from cop_worker.belief_engine import BeliefEngine
+from cop_worker.domain.types import DomainState
+from cop_worker.observation import BeliefState
+from cop_worker.rl.action_space import COP_ACTIONS
+from cop_worker.rl.local_obs_adapter import obs_tensor_shape
+from cop_worker.rl.recurrent_policy import RecurrentActorCritic
+from cop_worker.rl.train_recurrent import (
     FAMILIES,
     _belief_expert_action,
     _collect_demonstrations,
@@ -37,7 +37,7 @@ def test_evaluation_uses_exact_six_gamelet_series_and_official_scores():
         calls.append((args, kwargs))
         return [], "cop", 7
 
-    with patch("agent.rl.train_recurrent._run_episode", side_effect=fake_episode):
+    with patch("cop_worker.rl.train_recurrent._run_episode", side_effect=fake_episode):
         result = evaluate(
             network=object(),
             role="cop",
@@ -167,10 +167,10 @@ def test_episode_actor_modes_finish_via_canonical_transition(
     monkeypatch, training, temperature, force_expert
 ) -> None:
     monkeypatch.setattr(
-        "agent.rl.train_recurrent._initial_state",
+        "cop_worker.rl.train_recurrent._initial_state",
         lambda *_args, **_kwargs: _state(cop=(0, 0), thief=(1, 0)),
     )
-    monkeypatch.setattr("agent.rl.train_recurrent._opponent_action", lambda *_a, **_kw: "STAY")
+    monkeypatch.setattr("cop_worker.rl.train_recurrent._opponent_action", lambda *_a, **_kw: "STAY")
     latency = []
     trajectory, winner, turns = _run_episode(
         _EastNetwork(),
@@ -189,13 +189,15 @@ def test_episode_actor_modes_finish_via_canonical_transition(
 
 
 def test_training_resume_schedules_and_promotion_contract(monkeypatch) -> None:
-    monkeypatch.setattr("agent.rl.train_recurrent._pretrain_imitation", lambda *_a, **_kw: None)
+    monkeypatch.setattr(
+        "cop_worker.rl.train_recurrent._pretrain_imitation", lambda *_a, **_kw: None
+    )
 
     def fake_episode(network, *_args, **_kwargs):
         scalar = next(network.parameters()).reshape(-1)[0]
         return [(scalar, True, scalar, scalar, scalar, 1.0)], "cop", 1
 
-    monkeypatch.setattr("agent.rl.train_recurrent._run_episode", fake_episode)
+    monkeypatch.setattr("cop_worker.rl.train_recurrent._run_episode", fake_episode)
     cop_network = train("cop", 1, 5, 8, object())
     thief_network = train("thief", 1, 6, 8, object())
     checkpoint = {
@@ -250,7 +252,7 @@ def test_random_start_collision_demonstrations_and_empty_episode(monkeypatch) ->
     assert len(features) == len(labels) > 0
 
     monkeypatch.setattr(
-        "agent.rl.train_recurrent._initial_state",
+        "cop_worker.rl.train_recurrent._initial_state",
         lambda *_args, **_kwargs: _state(turn=35),
     )
     trajectory, winner, turns = _run_episode(
@@ -261,7 +263,7 @@ def test_random_start_collision_demonstrations_and_empty_episode(monkeypatch) ->
     one_feature = torch.zeros((1, obs_tensor_shape(7)))
     one_label = torch.zeros(1, dtype=torch.long)
     monkeypatch.setattr(
-        "agent.rl.train_recurrent._collect_demonstrations",
+        "cop_worker.rl.train_recurrent._collect_demonstrations",
         lambda *_args, **_kwargs: (one_feature, one_label),
     )
     network = RecurrentActorCritic(obs_tensor_shape(7), len(COP_ACTIONS), 8)
@@ -269,12 +271,12 @@ def test_random_start_collision_demonstrations_and_empty_episode(monkeypatch) ->
 
 
 def test_evaluation_thief_scoring_and_cli_modes(monkeypatch, tmp_path) -> None:
-    with patch("agent.rl.train_recurrent._run_episode", return_value=([], "thief", 3)):
+    with patch("cop_worker.rl.train_recurrent._run_episode", return_value=([], "thief", 3)):
         thief_result = evaluate(object(), "thief", 1, 3, object(), inference_temperature=0.5)
     assert thief_result["official_role_score"] == len(FAMILIES) * 6 * 10
     assert thief_result["inference_mode"] == "low_temp"
 
-    import agent.rl.train_recurrent as training_module
+    import cop_worker.rl.train_recurrent as training_module
 
     historical = tmp_path / "historical.pt"
     historical.write_bytes(b"historical")
@@ -293,7 +295,7 @@ def test_evaluation_thief_scoring_and_cli_modes(monkeypatch, tmp_path) -> None:
     )
     evidence = tmp_path / "evidence"
     models = tmp_path / "models"
-    monkeypatch.setattr("agent.rl.policy_loader.load_checkpoint", lambda *_a, **_kw: object())
+    monkeypatch.setattr("cop_worker.rl.policy_loader.load_checkpoint", lambda *_a, **_kw: object())
     monkeypatch.setattr(training_module, "evaluate", lambda *_a, **_kw: {})
     monkeypatch.setattr(
         training_module, "_promotion_comparison", lambda *_a, **_kw: {"passed": True}

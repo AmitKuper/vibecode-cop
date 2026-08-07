@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from agent.audit.step_journal import StepEvidence, StepJournal
+from cop_worker.audit.step_journal import StepEvidence, StepJournal
 
 
 def _ev(step: int, role: str = "cop") -> StepEvidence:

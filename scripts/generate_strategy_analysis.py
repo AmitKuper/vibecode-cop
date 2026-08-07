@@ -11,7 +11,6 @@ from pathlib import Path
 
 import numpy as np
 import torch
-
 from agent.rl.action_space import COP_ACTIONS, THIEF_ACTIONS
 from agent.rl.policy_loader import load_checkpoint
 from agent.rl.recurrent_policy import RecurrentActorCritic, file_sha256

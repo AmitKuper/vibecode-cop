@@ -10,17 +10,17 @@ import tempfile
 import numpy as np
 import pytest
 
-from agent.observation import BeliefState, LocalObservation
-from agent.rl.action_space import (
+from cop_worker.observation import BeliefState, LocalObservation
+from cop_worker.rl.action_space import (
     COP_ACTIONS,
     THIEF_ACTIONS,
     compute_legal_mask_cop,
     compute_legal_mask_thief,
     sample_action,
 )
-from agent.rl.heuristics import evasion_thief, pursuit_cop
-from agent.rl.local_obs_adapter import local_obs_to_tensor, obs_tensor_shape
-from agent.rl.model_schema import (
+from cop_worker.rl.heuristics import evasion_thief, pursuit_cop
+from cop_worker.rl.local_obs_adapter import local_obs_to_tensor, obs_tensor_shape
+from cop_worker.rl.model_schema import (
     CURRENT_ACTION_SCHEMA_VERSION,
     CURRENT_OBSERVATION_SCHEMA_VERSION,
     ModelLoadError,

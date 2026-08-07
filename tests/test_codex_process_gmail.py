@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from agent.gmail.sender import AcceptanceFileGmailSender, GmailApiSender
+from league_manager.gmail.sender import AcceptanceFileGmailSender, GmailApiSender
 
 
 def test_acceptance_file_sender_is_explicit_and_auditable(tmp_path):

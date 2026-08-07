@@ -23,9 +23,10 @@ def _run(cmd: list[str], timeout: int = 30) -> subprocess.CompletedProcess:
 
 
 def test_peer_agent_runtime_import():
-    result = _run(["-c", "import agent.peer_agent_runtime; print('OK')"])
-    assert result.returncode == 0, result.stderr
-    assert "OK" in result.stdout
+    # peer_agent_runtime was removed in Phase 1 restructure — cop now uses cop_worker
+    import pytest
+
+    pytest.skip("agent.peer_agent_runtime removed in restructure")
 
 
 def test_cop_main_import():
@@ -35,14 +36,10 @@ def test_cop_main_import():
 
 
 def test_combined_entry_point_import():
-    result = _run(
-        [
-            "-c",
-            "import agent.peer_agent_runtime; import cop.__main__; print('cop imports OK')",
-        ]
-    )
-    assert result.returncode == 0, result.stderr
-    assert "cop imports OK" in result.stdout
+    # agent.peer_agent_runtime removed in Phase 1 restructure
+    import pytest
+
+    pytest.skip("agent.peer_agent_runtime removed in restructure")
 
 
 def test_run_series_help():
@@ -55,7 +52,7 @@ def test_language_hints_import():
     result = _run(
         [
             "-c",
-            "from agent.language.hints import generate_hint; print(generate_hint('NORTH'))",
+            "from cop_worker.language.hints import generate_hint; print(generate_hint('NORTH'))",
         ]
     )
     assert result.returncode == 0, result.stderr

@@ -2,7 +2,7 @@
 
 import pytest
 
-from agent.step0.league_ledger import (
+from league_manager.league_ledger import (
     MAX_COUNTED_MATCHES,
     LeagueLedger,
     LeagueLedgerError,

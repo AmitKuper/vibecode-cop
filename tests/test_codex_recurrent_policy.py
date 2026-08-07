@@ -8,10 +8,10 @@ from pathlib import Path
 import pytest
 import torch
 
-from agent.observation import BeliefState, LocalObservation
-from agent.rl.action_space import COP_ACTIONS
-from agent.rl.local_obs_adapter import obs_tensor_shape
-from agent.rl.recurrent_policy import (
+from cop_worker.observation import BeliefState, LocalObservation
+from cop_worker.rl.action_space import COP_ACTIONS
+from cop_worker.rl.local_obs_adapter import obs_tensor_shape
+from cop_worker.rl.recurrent_policy import (
     RecurrentActorCritic,
     RecurrentRolePolicy,
     load_recurrent_policy,

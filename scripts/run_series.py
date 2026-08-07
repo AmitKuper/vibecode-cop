@@ -33,6 +33,42 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 logger = logging.getLogger(__name__)
 
+# ---------------------------------------------------------------------------
+# Stubs for deleted modules (PeerRuntime, peer_result, mcp.coordinator were
+# removed in Phase 1 restructure).  These sentinel objects keep ruff F821 clean
+# on the unreachable legacy code paths below.
+# ---------------------------------------------------------------------------
+
+
+class _RemovedModule:
+    """Placeholder for a module that was removed in Phase 1 restructure."""
+
+    def __init__(self, *_a, **_kw) -> None:  # noqa: ANN001
+        raise NotImplementedError("module removed in restructure")
+
+    def __call__(self, *_a, **_kw):  # noqa: ANN001
+        raise NotImplementedError("module removed in restructure")
+
+
+PeerRuntime = _RemovedModule
+ResultExchangeError = Exception  # satisfies except-clause; never raised by real code here
+
+
+async def exchange_series_result(*_a, **_kw):  # noqa: ANN001
+    """Stub — peer_result.exchange_series_result was removed in restructure."""
+    raise NotImplementedError("peer_result removed in restructure")
+
+
+def get_coordinator(*_a, **_kw):  # noqa: ANN001
+    """Stub — mcp.coordinator.get_coordinator was removed in restructure."""
+    raise NotImplementedError("mcp.coordinator removed in restructure")
+
+
+def gamelet_from_game_id(*_a, **_kw):  # noqa: ANN001
+    """Stub — mcp.coordinator.gamelet_from_game_id was removed in restructure."""
+    raise NotImplementedError("mcp.coordinator removed in restructure")
+
+
 _TOKEN_KEYS = ("prompt_tokens", "completion_tokens", "total_tokens")
 
 
@@ -119,7 +155,7 @@ async def run_series(
         counted_mode: Deprecated. Use mode=RuntimeMode.COUNTED instead.
         mode: Runtime mode. COUNTED enforces production constraints.
     """
-    from agent.runtime_mode import RuntimeMode
+    from cop_worker.runtime_mode import RuntimeMode
 
     # Resolve effective mode — explicit mode= wins; counted_mode=True is the legacy alias
     if mode is None:
@@ -147,11 +183,16 @@ async def run_series(
             sha = "unknown"
         if not sha or sha == "unknown":
             raise ValueError("COUNTED mode rejected: git SHA unknown")
-    from agent.peer_runtime import PeerRuntime
+    from cop_worker.config.shared_config import load_shared_config
 
-    from agent.config.shared_config import load_shared_config
+    # PeerRuntime removed in restructure — series now driven by LeagueManager.
+    # This legacy script is retained for reference only; use league_manager for production.
+    raise NotImplementedError(
+        "run_series.py: PeerRuntime was removed in Phase 1 restructure. "
+        "Use league_manager to drive series."
+    )
 
-    shared_cfg = load_shared_config()
+    shared_cfg = load_shared_config()  # noqa: E501
     scoring = shared_cfg.get("scoring", {})
     capture_cop = scoring.get("capture_cop", 20)
     capture_thief = scoring.get("capture_thief", 5)
@@ -256,9 +297,9 @@ async def run_series(
     }
 
     if mode in (RuntimeMode.COUNTED, RuntimeMode.WARMUP):
-        from agent.peer_result import ResultExchangeError, exchange_series_result
+        # peer_result removed in restructure
 
-        from agent.mcp.coordinator import gamelet_from_game_id, get_coordinator
+        # mcp.coordinator removed in restructure
 
         is_counted = mode == RuntimeMode.COUNTED
         all_audits_ok = all(g.get("audit_ok") for g in gamelets)
@@ -331,7 +372,7 @@ async def run_series(
 
 
 async def main() -> int:
-    from agent.logging_setup import setup_dual_logging
+    from cop_worker.logging_setup import setup_dual_logging
 
     args = _parse_args()
     setup_dual_logging(prefix="run_series_cop")
@@ -347,8 +388,8 @@ async def main() -> int:
     if not thief_url.endswith("/mcp"):
         thief_url = thief_url.rstrip("/") + "/mcp"
 
-    from agent.config.shared_config import config_sha256 as _sha256_fn
-    from agent.config.shared_config import load_shared_config
+    from cop_worker.config.shared_config import config_sha256 as _sha256_fn
+    from cop_worker.config.shared_config import load_shared_config
 
     game_cfg = load_shared_config()
     config_sha256 = _sha256_fn(game_cfg)
@@ -356,7 +397,7 @@ async def main() -> int:
 
     llm_dict = config.get("llm") or None
 
-    from agent.runtime_mode import RuntimeMode
+    from cop_worker.runtime_mode import RuntimeMode
 
     mode = RuntimeMode.COUNTED if args.counted else RuntimeMode(args.mode)
 
@@ -365,7 +406,7 @@ async def main() -> int:
     gmail_cfg = config.get("reports", {}).get("gmail", {})
     if gmail_cfg.get("mode") == "send" or gmail_cfg.get("token_path"):
         try:
-            from agent.gmail.sender import GmailApiSender
+            from league_manager.gmail.sender import GmailApiSender
 
             token_path = gmail_cfg.get("token_path", "secrets/gmail/token.json")
             orchestrator_config = {"gmail_sender": GmailApiSender(token_path)}

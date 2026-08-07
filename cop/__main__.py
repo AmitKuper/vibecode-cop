@@ -1,8 +1,8 @@
-"""Cop process entry point."""
+"""Cop process entry point — delegates to cop_worker MCP server."""
 
 import sys
 
-from agent.role_cli import run_role_cli
+from cop_worker.__main__ import main
 
 if __name__ == "__main__":
-    sys.exit(run_role_cli("cop"))
+    sys.exit(main())

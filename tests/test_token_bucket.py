@@ -4,7 +4,7 @@ import time
 
 import pytest
 
-from agent.gmail.token_bucket import TokenBucket
+from league_manager.gmail.token_bucket import TokenBucket
 
 
 def test_initial_tokens_full():

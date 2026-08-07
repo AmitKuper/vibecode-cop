@@ -4,7 +4,7 @@ import contextlib
 
 import pytest
 
-from agent.reports.bundle import ReportBundleBuilder
+from league_manager.reports.bundle import ReportBundleBuilder
 
 
 class TestNoStubCreation:

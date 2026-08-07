@@ -2,9 +2,9 @@
 
 import contextlib
 
-from agent.board import Board
-from agent.rl.observation import cop_observation
-from agent.rules_engine import RulesEngine
+from cop_worker.board import Board
+from cop_worker.rl.observation import cop_observation
+from cop_worker.rules_engine import RulesEngine
 
 
 def _one_hot_pos(channel, n=7):
@@ -71,7 +71,7 @@ class TestCopObservationHiddenInfo:
 
         import torch
 
-        from agent.rl.policy import RLPolicy
+        from cop_worker.rl.policy import RLPolicy
 
         policy = RLPolicy.__new__(RLPolicy)
         policy.net = MagicMock()
@@ -86,8 +86,8 @@ class TestCopObservationHiddenInfo:
         rules = RulesEngine(board)
 
         with (
-            patch("agent.rl.policy.cop_observation") as mock_cop_obs,
-            patch("agent.rl.policy.thief_observation") as mock_thief_obs,
+            patch("cop_worker.rl.policy.cop_observation") as mock_cop_obs,
+            patch("cop_worker.rl.policy.thief_observation") as mock_thief_obs,
         ):
             mock_cop_obs.return_value = [[[0.0] * 7 for _ in range(7)]] * 4
             with contextlib.suppress(Exception):

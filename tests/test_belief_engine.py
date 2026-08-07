@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from agent.belief_engine import BeliefEngine
-from agent.observation import BeliefState
+from cop_worker.belief_engine import BeliefEngine
+from cop_worker.observation import BeliefState
 
 
 class TestBeliefEngineInit:

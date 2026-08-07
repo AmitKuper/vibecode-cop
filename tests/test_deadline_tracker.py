@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from agent.reliability.deadline_tracker import DeadlineTracker
+from cop_worker.reliability.deadline_tracker import DeadlineTracker
 
 
 @pytest.fixture

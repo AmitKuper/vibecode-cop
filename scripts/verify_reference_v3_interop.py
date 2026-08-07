@@ -144,9 +144,8 @@ def _external_client_to_ours(kit: Path, url: str) -> dict:
 
 
 def _serve_local(host: str, port: int) -> int:
-    from fastmcp import FastMCP
-
     from agent.adaptive.reference_v3 import ReferenceV3Session, register_reference_v3_tools
+    from fastmcp import FastMCP
 
     async def unavailable(_tool: str, _params: dict) -> dict:
         raise RuntimeError("outbound transport is not configured in the verifier server")

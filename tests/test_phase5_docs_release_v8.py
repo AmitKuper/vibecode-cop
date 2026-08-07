@@ -14,7 +14,7 @@ class TestVersionConsistency:
             pyproject = tomllib.load(f)
         pyproject_version = pyproject["project"]["version"]
 
-        from agent.version import __version__
+        from cop_worker.version import __version__
 
         assert pyproject_version == __version__, (
             f"pyproject.toml version {pyproject_version!r} != agent/version.py {__version__!r}"
@@ -22,7 +22,7 @@ class TestVersionConsistency:
 
     def test_version_is_3_0_0(self):
         """Package version should be 3.0.0 for this submission."""
-        from agent.version import __version__
+        from cop_worker.version import __version__
 
         assert __version__ == "3.0.0", f"Expected 3.0.0, got {__version__!r}"
 
@@ -115,7 +115,7 @@ class TestSafetyNoHiddenCoordInSafeLiveView:
         """SafeLiveView must not expose opponent_position."""
         import dataclasses
 
-        from agent.observation import SafeLiveView
+        from cop_worker.observation import SafeLiveView
 
         fields = {f.name for f in dataclasses.fields(SafeLiveView)}
         forbidden = {"opponent_position", "cop_position", "thief_position"}
@@ -126,7 +126,7 @@ class TestSafetyNoHiddenCoordInSafeLiveView:
         """LocalObservation must not expose opponent_position."""
         import dataclasses
 
-        from agent.observation import LocalObservation
+        from cop_worker.observation import LocalObservation
 
         fields = {f.name for f in dataclasses.fields(LocalObservation)}
         forbidden = {"opponent_position", "cop_position", "thief_position"}
