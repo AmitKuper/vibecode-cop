@@ -25,6 +25,9 @@ def test_scent_output_matches_pinned_vectors(case):
             emit_intensity=case["emit_intensity"],
             decay_per_step=case["decay_per_step"],
         )
-        assert result == pytest.approx(case["expected_output"], abs=1e-4)
+        expected = case["expected_output"]
+        assert len(result) == len(expected), "grid row count mismatch"
+        for row_idx, (res_row, exp_row) in enumerate(zip(result, expected)):
+            assert res_row == pytest.approx(exp_row, abs=1e-4), f"row {row_idx} mismatch"
     except ImportError:
         pytest.skip("compute_scent_grid not yet implemented")

@@ -58,6 +58,23 @@ class Router:
         self._series[game_uid] = {"schedule": schedule}
         logger.info("Registered series %s starting=%s", game_uid[:8], starting_role)
 
+    def get_role_for_sub_game(self, game_uid: str, sub_game_number: int) -> str:
+        """Return the role ('cop' or 'thief') that plays the given sub-game.
+
+        Args:
+            game_uid: Series identity.
+            sub_game_number: Sub-game index 1..6.
+
+        Returns:
+            'cop' or 'thief'.
+
+        Raises:
+            RouterError: If game_uid is unknown.
+        """
+        if game_uid not in self._series:
+            raise RouterError(f"unknown game_uid: {game_uid!r}")
+        return self._series[game_uid]["schedule"].get(sub_game_number, "cop")
+
     def route(self, game_uid: str, sub_game_number: int, tool: str, payload: dict) -> dict:
         """Route a tool call to the correct worker.
 

@@ -11,6 +11,50 @@ DECAY = 0.9
 KERNEL_RADIUS = 2  # 5x5 kernel
 
 
+def compute_scent_grid(
+    cop_position: list[int],
+    board_size: int,
+    grid_size: int,
+    emit_intensity: float,
+    decay_per_step: float,
+) -> list[list[float]]:
+    """Compute the scent grid around cop_position.
+
+    The grid spans grid_size × grid_size cells starting from the board-clamped
+    top-left corner max(0, cx - half) × max(0, cy - half). Each cell's value
+    is emit_intensity × (1 - decay_per_step)^(Manhattan distance from cop).
+    Cells outside the board have scent 0.0.
+
+    Args:
+        cop_position: [x, y] position of the cop on the board.
+        board_size: Size of the board (N×N).
+        grid_size: Size of the scent grid (e.g. 5 → 5×5 grid).
+        emit_intensity: Intensity at the cop cell.
+        decay_per_step: Fraction of intensity lost per Manhattan step.
+
+    Returns:
+        grid_size × grid_size list of floats.
+    """
+    cx, cy = cop_position
+    half = grid_size // 2
+    start_x = max(0, cx - half)
+    start_y = max(0, cy - half)
+    grid = []
+    for row_idx in range(grid_size):
+        ny = start_y + row_idx
+        row = []
+        for col_idx in range(grid_size):
+            nx = start_x + col_idx
+            if 0 <= nx < board_size and 0 <= ny < board_size:
+                dist = abs(nx - cx) + abs(ny - cy)
+                value = emit_intensity * ((1.0 - decay_per_step) ** dist)
+            else:
+                value = 0.0
+            row.append(round(value, 9))
+        grid.append(row)
+    return grid
+
+
 def _radial_kernel(radius: int) -> np.ndarray:
     """Fixed Appendix-F 5x5 Euclidean radial kernel."""
     size = 2 * radius + 1
