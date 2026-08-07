@@ -51,8 +51,6 @@ select = ["E", "F", "I", "N", "W", "UP", "B", "C4", "SIM"]
 ignore = ["N999"]
 
 [tool.ruff.lint.per-file-ignores]
-"agent/gui/app.py" = ["E501"]
-"agent/replay/app.py" = ["E501"]
 "cop_worker/gui/app.py" = ["E501"]
 "cop_worker/replay/app.py" = ["E501"]
 # E402: tests use pytest.skip(allow_module_level=True) before imports by design
@@ -67,36 +65,11 @@ pythonpath = ["."]
 
 [tool.coverage.run]
 omit = [
-    # Superseded pre-GRU experiment stack; the counted RecurrentA2C trainer,
-    # evaluator, loader, and inference path are deliberately measured.
-    "agent/rl/train.py",
-    "agent/rl/train_advanced.py",
-    "agent/rl/train_cli.py",
-    "agent/rl/train_config.py",
-    "agent/rl/train_multi.py",
-    "agent/rl/train_selfplay.py",
-    "agent/rl/trainer.py",
-    "agent/rl/league.py",
-    "agent/rl/ppo.py",
-    "agent/rl/ppo_update.py",
-    "agent/rl/dqn.py",
-    "agent/rl/rollout.py",
-    "agent/rl/replay_buffer.py",
-    "agent/rl/cross_train.py",
-    "agent/rl/eval_compare.py",
-    "agent/rl/evaluate.py",
-    "agent/rl/strategies.py",
-    "agent/rl/strategies_base.py",
-    "agent/rl/strategies_combo.py",
-    "agent/rl/strategies_qtable.py",
-    # Historical generated discovery snapshots, never imported by the composition root.
-    "agent/skills/game_game_20260801_011757_f0450bda_mcp.py",
-    "agent/skills/game_game_20260801_012126_eafdb10d_mcp.py",
-    "agent/skills/game_game_20260801_045923_2cd89753_mcp.py",
-    "agent/skills/game_game_20260801_050125_2ddba68d_mcp.py",
-    "agent/skills/game_game_20260801_135945_3abcf9a7_mcp.py",
-    # Disabled legacy SMTP plugin; counted reporting uses gmail_*.py through Gatekeeper.
-    "agent/reports/email_report.py",
+    # GUI and replay launcher entrypoints — visual-only, not unit-testable.
+    "cop_worker/gui/app.py",
+    "cop_worker/replay/app.py",
+    # Scripts are integration entrypoints, not library code.
+    "scripts/*",
 ]
 
 [tool.coverage.report]

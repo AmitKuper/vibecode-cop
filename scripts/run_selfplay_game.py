@@ -21,7 +21,7 @@ THIEF_REPO = _COP_REPO.parent / "vibecode-thief"
 if THIEF_REPO.is_dir() and str(THIEF_REPO) not in sys.path:
     sys.path.insert(0, str(THIEF_REPO))
 
-from cop_worker import mcp_server as cop_ms
+from cop_worker import mcp_server as cop_ms  # noqa: E402
 
 logger = logging.getLogger(__name__)
 

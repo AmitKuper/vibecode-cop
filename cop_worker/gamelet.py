@@ -220,10 +220,9 @@ class Gamelet:
             self._step = turn.step
             # Also advance the primary CR if it's for the expected step
             if self._cr is not None and self._cr._expected_step == turn.step:
-                try:
+                import contextlib
+                with contextlib.suppress(Exception):
                     self._cr.receive_commit(turn.step, turn.commitment_hash)
-                except Exception:
-                    pass  # CR may already have processed this step
             # Generate our own commitment for this step
             our_action = self._generate_move()
             our_nonce, our_commitment = self._generate_commitment(our_action)
