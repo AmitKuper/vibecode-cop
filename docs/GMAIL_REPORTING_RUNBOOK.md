@@ -2,9 +2,27 @@
 
 ## Overview
 
-Game results are emailed to the course evaluator after bilateral consensus is
-reached by both peers.  The Gatekeeper pipeline enforces safety invariants
-before any real API call is made.
+Game results are emailed after **signed bilateral consensus** is reached by both
+peers. A Gatekeeper pipeline enforces safety invariants before any real API call:
+one Gatekeeper in the worker (`cop_worker/gmail/gatekeeper.py`) and one in the
+LeagueManager (`league_manager/gmail/gatekeeper.py`) for the counted-match report.
+
+Authority for the reporting requirements is `docs/mail_specification.md`.
+
+---
+
+## Recipients — test vs counted
+
+| Context | Recipient | Where set |
+|---------|-----------|-----------|
+| Local / self-play / development | `agentsorch@gmail.com` | Hardcoded in `cop_worker/gmail/gatekeeper.py:RECIPIENT` — the owner's own inbox |
+| Counted match vs another group | `rmisegal+uoh26finalgame@gmail.com` | LeagueManager config (`league_manager/gmail/gatekeeper.py`, recipient comes from config) |
+
+During development every send goes to `agentsorch@gmail.com` (the owner's mailbox,
+used for all test runs). For a counted match against another group, the
+LeagueManager sends the structured result to the course address
+`rmisegal+uoh26finalgame@gmail.com`. Both are Gmail-API sends using the `gmail.send`
+scope; only the recipient differs.
 
 ---
 
@@ -22,36 +40,26 @@ OAuth scope must be **gmail.send only** — never broader scopes (e.g., gmail.mo
 
 ---
 
-## Recipient
-
-```
-rmisegal+uoh26finalgame@gmail.com
-```
-
-This is hardcoded in `agent/gmail/gatekeeper.py:RECIPIENT`.  Do not change it.
-
----
-
 ## Reporting Preconditions
 
-A real send may only proceed after **bilateral consensus** is verified:
+A real send may only proceed after **signed bilateral consensus** is verified:
 
-1. Both cop and thief produce a `SignedResultAgreement`
+1. Both cop and thief produce a `SignedResultAgreement`.
 2. `verify_bilateral_consensus(local, remote)` passes without raising
-   `ResultConsensusError` (see `agent/audit/result_consensus.py`)
-3. The body passed to `Gatekeeper.send()` must be a JSON-serialised signed result
-   (body must start with `{`)
-
-Plain-text bodies are rejected at the schema-validation step.
+   `ResultConsensusError` (see `cop_worker/audit/result_consensus.py`).
+3. The body passed to the Gatekeeper must be a JSON-serialised signed result
+   (body must start with `{`). Plain-text bodies are rejected at schema validation.
+4. A counted-match send additionally requires the two-factor counted guard — the
+   `--counted` CLI flag **and** counted config (DESIGN Decision 30).
 
 ---
 
 ## Credential Security
 
-- **Never commit** `credentials.json`, `token.json`, or any `*.token.json` file
-- These paths are covered by `.gitignore`
-- Store credentials in `secrets/gmail/` (also gitignored via `secrets/`)
-- Rotate the OAuth token if it is ever accidentally exposed
+- **Never commit** `credentials.json`, `token.json`, or any `*.token.json` file.
+- These paths are covered by `.gitignore`.
+- Store credentials in `secrets/gmail/` (also gitignored via `secrets/`).
+- Rotate the OAuth token if it is ever accidentally exposed.
 
 ---
 
@@ -75,8 +83,8 @@ secrets/gmail/token.json
 > Tests use a fake sender — do NOT run real sends from pytest.
 
 ```python
-from agent.gmail.gatekeeper import Gatekeeper
-from agent.reports.gmail_send import load_oauth_credentials, gmail_api_send
+from cop_worker.gmail.gatekeeper import Gatekeeper
+from league_manager.reports.gmail_send import load_oauth_credentials, gmail_api_send
 from pathlib import Path
 import json
 
