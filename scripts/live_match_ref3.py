@@ -32,6 +32,9 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 KIT_ROOT = REPO_ROOT.parent / "external" / "copthief-league-protocol"
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
+# Ensure the sibling ref3_artifacts module is importable regardless of how we're launched.
+if str(Path(__file__).resolve().parent) not in sys.path:
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 # Cop barrier placement: target cell = own_position + delta (mirrors domain/transition.py).
 _PLACE_DELTAS = {"PLACE_N": (0, -1), "PLACE_S": (0, 1), "PLACE_E": (1, 0), "PLACE_W": (-1, 0)}
