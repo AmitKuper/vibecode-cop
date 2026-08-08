@@ -628,6 +628,7 @@ def _emit_artifacts(result: dict, args) -> None:
         build_result,
         email_result,
         score_series,
+        update_counted_ledger,
         write_artifact,
     )
 
@@ -673,6 +674,7 @@ def _emit_artifacts(result: dict, args) -> None:
     print(f"[match] artifacts: {len(played)}x(config+log) + declaration + result "
           f"under results/ and config/games/")
     print(f"[match] result: {final_result['total_score']} winner={final_result['winner_group']}")
+    mid = None
     if not args.no_email:
         try:
             token = REPO_ROOT / "secrets" / "gmail" / "token.json"
@@ -680,6 +682,13 @@ def _emit_artifacts(result: dict, args) -> None:
             print(f"[match] emailed result ONLY to {args.report_to} (id={mid})")
         except Exception as exc:
             print(f"[match] email FAILED ({type(exc).__name__}: {str(exc)[:140]})")
+    # League ledger: record ONLY counted series (rules 37-38, the counted tracker).
+    if counted:
+        ledger = update_counted_ledger(
+            results_dir / "counted_series.json", game_id=game_id, game_uid=game_uid,
+            opponent=opp, result_obj=result_obj, message_id=mid, our_counted_before=our_counted)
+        print(f"[match] counted ledger updated: counted_games_played={ledger['counted_games_played']} "
+              f"(results/counted_series.json)")
 
 
 def main() -> int:
