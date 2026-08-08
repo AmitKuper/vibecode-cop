@@ -54,8 +54,17 @@ def _build_user_prompt(move: str, intent: str) -> str:
     )
 
 
-def _call_ollama(base_url: str, model: str, move: str, intent: str, timeout: float) -> str | None:
-    """Blocking Ollama /api/chat call. Returns text or None on any error."""
+def _call_ollama(
+    base_url: str, model: str, move: str, intent: str, timeout: float,
+    keep_alive: str = "30m",
+) -> str | None:
+    """Blocking Ollama /api/chat call. Returns text or None on any error.
+
+    ``keep_alive`` tells Ollama how long to keep the model resident in VRAM after
+    the request. Without it the model may unload between hint calls, so the next
+    call cold-loads (tens of seconds), blows past ``timeout``, and silently falls
+    back to a template — while the GPU cycles the model in and out.
+    """
     try:
         import httpx
 
@@ -67,6 +76,7 @@ def _call_ollama(base_url: str, model: str, move: str, intent: str, timeout: flo
                 {"role": "user", "content": _build_user_prompt(move, intent)},
             ],
             "stream": False,
+            "keep_alive": keep_alive,
             "options": {"num_predict": 30, "temperature": 0.7},
         }
         resp = httpx.post(url, json=payload, timeout=timeout)
@@ -109,21 +119,45 @@ class LLMHintGenerator:
         model: str = "llama3.1:8b",
         base_url: str = "http://localhost:11434",
         timeout: float = 3.0,
+        keep_alive: str = "30m",
         llm=None,
     ) -> None:
         self.provider = provider
         self.model = model
         self.base_url = base_url
         self.timeout = timeout
+        self.keep_alive = keep_alive
         self._llm = llm  # crewai LLM object for non-Ollama providers
 
     def generate(self, move: str, intent: str) -> str | None:
         """Return LLM-generated hint text, or None if unavailable/too slow."""
         if self.provider == "ollama":
-            return _call_ollama(self.base_url, self.model, move, intent, self.timeout)
+            return _call_ollama(
+                self.base_url, self.model, move, intent, self.timeout,
+                keep_alive=self.keep_alive,
+            )
         if self._llm is not None:
             return _call_crewai_llm(self._llm, move, intent, self.timeout)
         return None
+
+    def warmup(self, timeout: float = 90.0) -> bool:
+        """Load the model into VRAM before play so hint calls hit a warm model.
+
+        Uses a generous timeout because the first (cold) load can take tens of
+        seconds. Returns True if the model responded, False otherwise.
+        """
+        if self.provider != "ollama":
+            return self._llm is not None
+        text = _call_ollama(
+            self.base_url, self.model, "N", "truth", timeout,
+            keep_alive=self.keep_alive,
+        )
+        ok = text is not None
+        logger.info(
+            "LLM warmup %s: model=%s keep_alive=%s",
+            "OK" if ok else "FAILED", self.model, self.keep_alive,
+        )
+        return ok
 
     @classmethod
     def from_llm_config(cls, llm_config: dict, llm=None) -> LLMHintGenerator:
@@ -133,5 +167,6 @@ class LLMHintGenerator:
             model=llm_config.get("model", "llama3.1:8b"),
             base_url=llm_config.get("base_url", "http://localhost:11434"),
             timeout=float(llm_config.get("hint_timeout", 3.0)),
+            keep_alive=str(llm_config.get("keep_alive", "30m")),
             llm=llm,
         )
