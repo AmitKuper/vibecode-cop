@@ -1,0 +1,82 @@
+{
+  "_schema": "p2p-police-artifacts",
+  "consensus_signature": "3f967ab22d0d5e5b2445f2c0881197e791588c47a46ee59509122d346368bfa2",
+  "declaration_type": "pre_game_declaration",
+  "declared_at": "2026-08-08T19:16:13.127548+00:00",
+  "game_ended_at": "2026-08-08T19:16:13.127548+00:00",
+  "game_id": "anrbj666-vs-vibecode",
+  "game_started_at": "2026-08-08T19:14:06.093026+00:00",
+  "game_uid": "b2a16946-2cad-909f-60aa-b0cc8a8b7c4f",
+  "groups": {
+    "group_1": {
+      "code_version": "1.00",
+      "counted_games_played": 0,
+      "group_id": "vibecode",
+      "group_name": "vibecode",
+      "hardware_spec": {
+        "cpu_cores": 16,
+        "cpu_type": "Intel64 Family 6 Model 158 Stepping 13, GenuineIntel",
+        "os": "Windows 11",
+        "python": "3.14.3",
+        "ram_gb": 34
+      },
+      "hardware_spec_sha256": "31d5c666b0bd015073171ac1368b9b9722344eefe8d7c9212e54d7b9cb4f781d",
+      "llm_model": "role-specific-recurrent-policy",
+      "mcp_servers": {
+        "cop": "http://62.56.220.143:61224/mcp",
+        "thief": "http://62.56.220.143:61223/mcp"
+      },
+      "members": [
+        "Ron Marom",
+        "Amit Kuperminz"
+      ],
+      "repos": {
+        "cop": "https://github.com/AmitKuper/vibecode-cop",
+        "thief": "https://github.com/AmitKuper/vibecode-thief"
+      },
+      "signature": "sha256:7006227f68e4c1ddf377cc89808f81ae2be052b160f5be48882230918edbdedf"
+    },
+    "group_2": {
+      "group_id": "anrbj666",
+      "group_name": "anrbj666",
+      "counted_games_played": 1,
+      "hardware_spec": {
+        "os": "Windows 10",
+        "cpu_type": "Intel64 Family 6 Model 183 Stepping 1, GenuineIntel",
+        "cpu_cores": 24,
+        "cpu_freq_mhz": 3418,
+        "ram_gb": 32,
+        "gpu_model": "AMD Radeon RX 7900 XTX",
+        "vram_gb": 24,
+        "python": "3.13.13"
+      },
+      "hardware_spec_sha256": "",
+      "llm_model": "template",
+      "mcp_servers": {
+        "cop": "https://cop-mcp.alon.website/mcp",
+        "thief": "https://thief-mcp.alon.website/mcp"
+      },
+      "members": [
+        "Alon Engel",
+        "Renat Karimov"
+      ],
+      "repos": {
+        "cop": "https://github.com/alonengel/P2P-Police",
+        "thief": "https://github.com/alonengel/P2P-Thief"
+      },
+      "signature": "undeclared"
+    }
+  },
+  "links": {
+    "config": "config_anrbj666-vs-vibecode_g<NN>.json",
+    "declaration": "declaration_anrbj666-vs-vibecode.json",
+    "log": "log_anrbj666-vs-vibecode_g<NN>.json",
+    "result": "result_anrbj666-vs-vibecode.json"
+  },
+  "max_tokens_per_game": 200000,
+  "num_sub_games": 6,
+  "report_type": "declaration",
+  "schema_version": "1.00",
+  "timezone": "Asia/Jerusalem",
+  "token_budget_per_series": 200000
+}

@@ -1,0 +1,1342 @@
+{
+  "_schema": "p2p-police-artifacts",
+  "game_id": "anrbj666-vs-vibecode",
+  "game_uid": "b2a16946-2cad-909f-60aa-b0cc8a8b7c4f",
+  "links": {
+    "config": "config_anrbj666-vs-vibecode_g02.json",
+    "declaration": "declaration_anrbj666-vs-vibecode.json",
+    "log": "log_anrbj666-vs-vibecode_g02.json",
+    "result": "result_anrbj666-vs-vibecode.json"
+  },
+  "opponent_records": [
+    {
+      "commit": "f4714d60d39efbb4ef6f9159fa273164d675faced2ffb109118ed473d4e39167",
+      "declared": {},
+      "nonce": "069097b6da53526cc929dc3857619d91",
+      "payload": {
+        "step": 0,
+        "type": "step_zero",
+        "declaration_ref": "declaration_anrbj666-vs-vibecode.json",
+        "group_id": "anrbj666",
+        "role": "thief",
+        "sub_game_number": 2,
+        "github_commit": "623a71d5925e1c8a943fe44a0fbab0e13096031e"
+      }
+    },
+    {
+      "commit": "7b43af0215a20e3f99c30d4178ef086187a161fcba163b5b46beb86b3b3877c8",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Comfortable right where I am."
+      },
+      "nonce": "8ab0e29aa86c706110e9e4bcd47169eb",
+      "payload": {
+        "step": 1,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "0c5ca9f08652e92f20c81ed58187e277be20384203a4be0748df24fc896aec52",
+        "action": {
+          "type": "move",
+          "move": "STAY"
+        },
+        "hint": "Comfortable right where I am.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "41a655d6aa0643a8cb985b6c9795669c75fd75cf5d6d9874456ad0af0888e939",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Downtown crowds hide me well."
+      },
+      "nonce": "5e2b3f93328efca3abe78b9036eaa25c",
+      "payload": {
+        "step": 2,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "4b8aa95e480314a81eef86c36e0bbc38cd0d8cd04dbae7426c1feb19bcc6ac3d",
+        "action": {
+          "type": "move",
+          "move": "S"
+        },
+        "hint": "Downtown crowds hide me well.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "51b4cf608d1655bc6fa070aa61962bd0737f55229cb0c8bd674e5396a74d9dfd",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Slipping south past the docks."
+      },
+      "nonce": "8c18d66a6f97b31ada6521b97da0a905",
+      "payload": {
+        "step": 3,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "bbf04118cf9d49d9b4b512bfac197b06f240d39eb0de7de98bd98717b3be5dea",
+        "action": {
+          "type": "move",
+          "move": "S"
+        },
+        "hint": "Slipping south past the docks.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "5c1849ac1fed6fcd8d3069cd8481d77ece35554612c507003a813a3e29fe5596",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "East side alleys are friendly tonight."
+      },
+      "nonce": "5c6ce8052c73c2affb027d538e34e240",
+      "payload": {
+        "step": 4,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "d9e8cd0c8ed8012e6cbc873d1627c324312a79e2730f642f79ca180ede2366b0",
+        "action": {
+          "type": "move",
+          "move": "E"
+        },
+        "hint": "East side alleys are friendly tonight.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "f4c81dbe50a15f84e162c7fda984a555c9c77f459758ce210909d919b59901be",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "East side alleys are friendly tonight."
+      },
+      "nonce": "8caeff0c6e1c986dd8d6f45dacbae343",
+      "payload": {
+        "step": 5,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "b8b20f69ad438c5d74c003a94e31501dadb9f114c45ccdc2331edca9ee5fe0e0",
+        "action": {
+          "type": "move",
+          "move": "E"
+        },
+        "hint": "East side alleys are friendly tonight.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "dfcc802898762407dca0b417c42b4472efd2b218dd8ae1ecfcfb7a1f6247ba30",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Comfortable right where I am."
+      },
+      "nonce": "d2af014ebcc26e5337c2b1eb3d217086",
+      "payload": {
+        "step": 6,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "b8b20f69ad438c5d74c003a94e31501dadb9f114c45ccdc2331edca9ee5fe0e0",
+        "action": {
+          "type": "move",
+          "move": "STAY"
+        },
+        "hint": "Comfortable right where I am.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "102ee7a7975293170e6b84b6ac42417f59bf294899cf769ebbcba67983fa67cd",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "East side alleys are friendly tonight."
+      },
+      "nonce": "665480365b217266c9eb72620f5290b3",
+      "payload": {
+        "step": 7,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "16f0fbc11668ff27759e9bf1dfb2d7d416299dab627a2b20f557d8218cc60be6",
+        "action": {
+          "type": "move",
+          "move": "E"
+        },
+        "hint": "East side alleys are friendly tonight.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "d52f5049b336052affa6b6aaf783c5d664ffa131ff0513abe034bd7cc4b06f05",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Downtown crowds hide me well."
+      },
+      "nonce": "de091a3970a1030ff0128c31d50c0baa",
+      "payload": {
+        "step": 8,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "4092c1caf88e6fe4bbace59517dea4e6fb02e1ad603895c7b081167e9e76b8a5",
+        "action": {
+          "type": "move",
+          "move": "S"
+        },
+        "hint": "Downtown crowds hide me well.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "a362e28a44890b77dc2ea90beb012a34f7ccc93d2aa2a6110b110d90fdb47139",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Not moving an inch, promise."
+      },
+      "nonce": "a1cacb0bc8daa44629ee62072a6be95c",
+      "payload": {
+        "step": 9,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "4092c1caf88e6fe4bbace59517dea4e6fb02e1ad603895c7b081167e9e76b8a5",
+        "action": {
+          "type": "move",
+          "move": "STAY"
+        },
+        "hint": "Not moving an inch, promise.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "a55a6c6978399a2fa5d1a1138101200274419af1a73aa2b7b5c1d507a4290414",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Not moving an inch, promise."
+      },
+      "nonce": "4bb734df5de0e707831ed1aaaf8ed9a9",
+      "payload": {
+        "step": 10,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "3865d3c538f6085b8bcf3a7df4a6f36876cd3963038b06ee2d3bcad5c1083239",
+        "action": {
+          "type": "move",
+          "move": "STAY"
+        },
+        "hint": "Not moving an inch, promise.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "981069d0425994ce7ff73e0086299ae2ff8164917d2dd64160f2c4b9bbd9bfd7",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Comfortable right where I am."
+      },
+      "nonce": "9913153f3a8140a0c82a60286e13c27b",
+      "payload": {
+        "step": 11,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "3865d3c538f6085b8bcf3a7df4a6f36876cd3963038b06ee2d3bcad5c1083239",
+        "action": {
+          "type": "move",
+          "move": "STAY"
+        },
+        "hint": "Comfortable right where I am.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "eb13935069dd2f4d9f11989e1bfa73c343f92f19724f2cf4813615f9de625c0d",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Comfortable right where I am."
+      },
+      "nonce": "9eec6ba160add15f729d02f3e1c08343",
+      "payload": {
+        "step": 12,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "c9dcfba85fd95ec8e6a0c794acfa8ea35865e6f333d1cf463b45c3d930a49d34",
+        "action": {
+          "type": "move",
+          "move": "STAY"
+        },
+        "hint": "Comfortable right where I am.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "8980ef56422d60dde1b0e9aafa30556dfc448b53bc56ecbccd718d567ad395d4",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Heading uptown, try to keep up."
+      },
+      "nonce": "ff63439863241228403896bd8b30a433",
+      "payload": {
+        "step": 13,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "372067f9b9ead3044ea6bab27d6bcb5719e891fe9ae23abc1fe43fa87ad18d48",
+        "action": {
+          "type": "move",
+          "move": "N"
+        },
+        "hint": "Heading uptown, try to keep up.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "5f5061420f84838c8cbe6dd4795c0e8815fa371202aa3711a94e1b09b4c67873",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Slipping south past the docks."
+      },
+      "nonce": "51f798a24243c67946eaa383d0395e6c",
+      "payload": {
+        "step": 14,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "c9dcfba85fd95ec8e6a0c794acfa8ea35865e6f333d1cf463b45c3d930a49d34",
+        "action": {
+          "type": "move",
+          "move": "S"
+        },
+        "hint": "Slipping south past the docks.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "60c9224292fd7858760870ef2d31be38835f9b2dadbe1614342a050e55d0869b",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Comfortable right where I am."
+      },
+      "nonce": "944f1a4ee569118636b6dbdd9b0b1448",
+      "payload": {
+        "step": 15,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "c9dcfba85fd95ec8e6a0c794acfa8ea35865e6f333d1cf463b45c3d930a49d34",
+        "action": {
+          "type": "move",
+          "move": "STAY"
+        },
+        "hint": "Comfortable right where I am.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "2822600ad50d8ff489a5978f648f9795739fe66ccf0627aa2e087d899852c604",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Not moving an inch, promise."
+      },
+      "nonce": "300598282458f58af84fd08df7490ae8",
+      "payload": {
+        "step": 16,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "4e476546b1af57bfbc6a692f99bbb9d908a438cd165ddd481103e4559601dca3",
+        "action": {
+          "type": "move",
+          "move": "STAY"
+        },
+        "hint": "Not moving an inch, promise.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "3d35bc64dfe62e21297c538a415af050358d3bd642b653f4d4d8addbe29ebb0f",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Heading uptown, try to keep up."
+      },
+      "nonce": "caf0df6e1d21c138880e7863c39c8b63",
+      "payload": {
+        "step": 17,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "f9080d672f8315f71c397b4b491bb52ed8b87c0527576093cb2ee5e12ee4b136",
+        "action": {
+          "type": "move",
+          "move": "N"
+        },
+        "hint": "Heading uptown, try to keep up.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "8c455069a7435c6ebe0ae97403024272216139d664834e86dbde0f2fbe4e6de0",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Slipping south past the docks."
+      },
+      "nonce": "0692754dec598ffcd55479ca3879f0aa",
+      "payload": {
+        "step": 18,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "4f7ace761bda321fc1069c850b82695c62e6afa77521069e1100952f42c2f5bf",
+        "action": {
+          "type": "move",
+          "move": "S"
+        },
+        "hint": "Slipping south past the docks.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "8811951a909befc569a422d7371aa382430ad137aa8c07791975aadc415d2ee2",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "North wind suits me fine today."
+      },
+      "nonce": "aae8f59531ee615fecc475fa55008b5e",
+      "payload": {
+        "step": 19,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "6b107db45d7e4757d02cfa89b3b5d4a970de6dceb836b88ca1a2a0fb07948334",
+        "action": {
+          "type": "move",
+          "move": "N"
+        },
+        "hint": "North wind suits me fine today.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "080a3b3d786ad927eb18f1e083004a50f09cade87ff98f6dc77bb1c919548313",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "West end, catch me if you can."
+      },
+      "nonce": "d3c4bb4156ff356e284b381c0e0f4a6a",
+      "payload": {
+        "step": 20,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "0d037abfe7798b7dd4f3b2959e574709ce40be8be252553bb68bea2521c1fcb1",
+        "action": {
+          "type": "move",
+          "move": "W"
+        },
+        "hint": "West end, catch me if you can.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "410aebc4a552c25ca8a7f9343d4deef35882ad12079dd0d7a19a5cc4d22d68ac",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Comfortable right where I am."
+      },
+      "nonce": "1d7f667b1bb150bae5395dc8e243b259",
+      "payload": {
+        "step": 21,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "0d037abfe7798b7dd4f3b2959e574709ce40be8be252553bb68bea2521c1fcb1",
+        "action": {
+          "type": "move",
+          "move": "STAY"
+        },
+        "hint": "Comfortable right where I am.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "0d978167f4ebb9814c15303a6982a624a5fdfedeff9dd5977e501c08c79b298c",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Heading uptown, try to keep up."
+      },
+      "nonce": "79bc13e2d7f8914202f4bca5eaf48fa6",
+      "payload": {
+        "step": 22,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "74e18f81cee4c4b33ba840bab601c3a9d62b588e491c390996f3fe0e229b4d62",
+        "action": {
+          "type": "move",
+          "move": "N"
+        },
+        "hint": "Heading uptown, try to keep up.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "78922ddfa547c4e22c14aaf376fc28023d58fe4bd206c05ac56fd833a9a3f7ad",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Downtown crowds hide me well."
+      },
+      "nonce": "5a6954151971b9cbb7f9a34057078848",
+      "payload": {
+        "step": 23,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "0d037abfe7798b7dd4f3b2959e574709ce40be8be252553bb68bea2521c1fcb1",
+        "action": {
+          "type": "move",
+          "move": "S"
+        },
+        "hint": "Downtown crowds hide me well.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "44291747be83020f8adee8675c276cde4ffd64fa63b329119d69d54931996b05",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Heading uptown, try to keep up."
+      },
+      "nonce": "a4102d4ada9fd7d7c673fc94bdfdf6aa",
+      "payload": {
+        "step": 24,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "74e18f81cee4c4b33ba840bab601c3a9d62b588e491c390996f3fe0e229b4d62",
+        "action": {
+          "type": "move",
+          "move": "N"
+        },
+        "hint": "Heading uptown, try to keep up.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "f676bc9b8ca2b4b58674acaebf41aa15001d96d7a869c9c5dc7931bef87213a3",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Downtown crowds hide me well."
+      },
+      "nonce": "28fad0a425a89fdfd52ad8cb2417cfc2",
+      "payload": {
+        "step": 25,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "0d037abfe7798b7dd4f3b2959e574709ce40be8be252553bb68bea2521c1fcb1",
+        "action": {
+          "type": "move",
+          "move": "S"
+        },
+        "hint": "Downtown crowds hide me well.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "271e907d4dd6dffe5f54e788be2f83775d2afca7a1da4cbd42f1b0b8b51f9a5e",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "North wind suits me fine today."
+      },
+      "nonce": "cdf052c3c7520caa7356751ee9e7f544",
+      "payload": {
+        "step": 26,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "74e18f81cee4c4b33ba840bab601c3a9d62b588e491c390996f3fe0e229b4d62",
+        "action": {
+          "type": "move",
+          "move": "N"
+        },
+        "hint": "North wind suits me fine today.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "588efc445f48796766259f3eb7f5f014ace9b460e85e29f50788c30b47da2999",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Slipping south past the docks."
+      },
+      "nonce": "2c5e2a2410cfb1c02e80e1ca11b820a3",
+      "payload": {
+        "step": 27,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "0d037abfe7798b7dd4f3b2959e574709ce40be8be252553bb68bea2521c1fcb1",
+        "action": {
+          "type": "move",
+          "move": "S"
+        },
+        "hint": "Slipping south past the docks.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "620834fef149b9c6ed274e94c5b89e74f2763b1156e5d0f307398149cb066035",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "North wind suits me fine today."
+      },
+      "nonce": "70382e7d8e17a411bb3eacba22370f1a",
+      "payload": {
+        "step": 28,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "74e18f81cee4c4b33ba840bab601c3a9d62b588e491c390996f3fe0e229b4d62",
+        "action": {
+          "type": "move",
+          "move": "N"
+        },
+        "hint": "North wind suits me fine today.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "a795aca710e6b310c02b739731f4de09338eb491a24b58a4dea1e3326b875e8e",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "North wind suits me fine today."
+      },
+      "nonce": "83745122e699adeec4ea9a0213d0ab42",
+      "payload": {
+        "step": 29,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "1531d143a8db67ec13d5939ff70d169769ad73c1d250975ee4f9ae7533d61560",
+        "action": {
+          "type": "move",
+          "move": "N"
+        },
+        "hint": "North wind suits me fine today.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "49da95373f8b83b8f6243dd1efbf6a232f67d5067983d3f2f5f8f0e81875fef5",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Heading uptown, try to keep up."
+      },
+      "nonce": "a9b6aed0348c8c1115d8ae0fca02d55f",
+      "payload": {
+        "step": 30,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "baae627364a6cce1e2515e974fe733689f0ef20aca5929801e7fefc75f6a615a",
+        "action": {
+          "type": "move",
+          "move": "N"
+        },
+        "hint": "Heading uptown, try to keep up.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "45dfdfa132d818cf1d5107f28086d9f65f53f26ba7bb3e76f1490ee83d42b52e",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "North wind suits me fine today."
+      },
+      "nonce": "cc4b5826e2275ca2fa9919b3a1d1f216",
+      "payload": {
+        "step": 31,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "c273e68705c977159a854970cce391452b3567e3cac94d427e3df05cedf66779",
+        "action": {
+          "type": "move",
+          "move": "N"
+        },
+        "hint": "North wind suits me fine today.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "4075b4d6d7d1e6f308a993c6a6f3e1869311246a7c4710484889099c03217972",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "North wind suits me fine today."
+      },
+      "nonce": "b1f097f31e232404700e6e16eeed46d9",
+      "payload": {
+        "step": 32,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "df0dfdfc2ceb581b0a00b06a93f3ef4754bb5c5d0d67b63fadf46cceefdbf6cc",
+        "action": {
+          "type": "move",
+          "move": "N"
+        },
+        "hint": "North wind suits me fine today.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "036fff0b3df1e8e594c2e7e5160440fe59127ddf63d14990533b29c9ee9ff5ec",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Slipping south past the docks."
+      },
+      "nonce": "d9c2bd574a0a792fb682bdfa2a83a82a",
+      "payload": {
+        "step": 33,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "c273e68705c977159a854970cce391452b3567e3cac94d427e3df05cedf66779",
+        "action": {
+          "type": "move",
+          "move": "S"
+        },
+        "hint": "Slipping south past the docks.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "486fc985d6fd107bcf51ac0b1cb7ae611632cc56fc870cc2b70565eabd075246",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "North wind suits me fine today."
+      },
+      "nonce": "8f929be409f27ed094be7c544bb704e3",
+      "payload": {
+        "step": 34,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "df0dfdfc2ceb581b0a00b06a93f3ef4754bb5c5d0d67b63fadf46cceefdbf6cc",
+        "action": {
+          "type": "move",
+          "move": "N"
+        },
+        "hint": "North wind suits me fine today.",
+        "verdict": true
+      }
+    },
+    {
+      "commit": "12a8bf99670a82d336f3975afea91e5abde2615c481aa34fc5d3d0d43f4414b1",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Slipping south past the docks."
+      },
+      "nonce": "09472ca998fad4005320a28aa1e9e67a",
+      "payload": {
+        "step": 35,
+        "role": "thief",
+        "sub_game": 2,
+        "state_digest": "c273e68705c977159a854970cce391452b3567e3cac94d427e3df05cedf66779",
+        "action": {
+          "type": "move",
+          "move": "S"
+        },
+        "hint": "Slipping south past the docks.",
+        "verdict": true
+      }
+    }
+  ],
+  "records": [
+    {
+      "commit": "086b5a43dd8bf8a9c40b44535b327f9733fad380e94f7a5b05894b549d3b08fb",
+      "nonce": "1bf6afcd71962f6cef8f3f0a2533a3e4",
+      "payload": {
+        "declaration_ref": "declaration_anrbj666-vs-vibecode.json",
+        "github_commit": "23c8711e235bf66f0be59173024483149584db1d",
+        "group_id": "vibecode",
+        "role": "police",
+        "step": 0,
+        "sub_game_number": 2,
+        "type": "step_zero"
+      }
+    },
+    {
+      "commit": "6275939ff306a1821014b0481dbbb39372a3444fefb44e2b19202d24292d1186",
+      "nonce": "b3ddb2d2ac9f6f90ee863ac58cfd5d6a",
+      "payload": {
+        "step": 1,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          0,
+          1
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "bff7082cb1df7176080d95203e03bfa2c63c2fccc12fa152745f844da31dfc3b",
+      "nonce": "8dee95448f5141524591b85a84ac5737",
+      "payload": {
+        "step": 2,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          0,
+          2
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "e002c8cde06e5995d2a07da19606c2dc121748cea7dbe3aa70c260fd05aac2c5",
+      "nonce": "666ced080867ab584aa64bb8efcaad8d",
+      "payload": {
+        "step": 3,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          0,
+          2
+        ],
+        "move": "PLACE_E",
+        "intent": "truth",
+        "barrier_placed": [
+          1,
+          2
+        ]
+      }
+    },
+    {
+      "commit": "7954341270362f2e6cec3b0da1d76b8eeee9e6bcfd02142f2617aa99fc06a49a",
+      "nonce": "611bf5e6753152d157cbdd3d2435c40f",
+      "payload": {
+        "step": 4,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          0,
+          3
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "9d956d368357dc451c6712e8c19926725460a3b1be6195afd0f1a0a39e597c78",
+      "nonce": "641fe430d5f838cbc7c44f7d1f99417c",
+      "payload": {
+        "step": 5,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          1,
+          3
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "649ceadd7c4d157ed922a8990a365f714d329dad195fe1c8d503e897b041dfc4",
+      "nonce": "eb87db4e9172e191d23c35992d52ca95",
+      "payload": {
+        "step": 6,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          2,
+          3
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "ca60f6292679d6334fb55fdeb11ae3e9f84d031c2e0fbbfbc2c260c6131d0fb8",
+      "nonce": "8fa65dd77c7d657e83292b288316a119",
+      "payload": {
+        "step": 7,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          3,
+          3
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "b380d2165a8dab06a9a0d6e403df6f44f8487ebd93b71914f73a8ce3ab08147f",
+      "nonce": "eff2a158a984906db305195de28fb938",
+      "payload": {
+        "step": 8,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          4,
+          3
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "e6283d8dc12236d4145fd1aa8c0853e92bbd5547d36c3c9f9ff4b93ec5dd5674",
+      "nonce": "53f7346ac8f35e4c8217b7bd39bc46d0",
+      "payload": {
+        "step": 9,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          4,
+          3
+        ],
+        "move": "PLACE_E",
+        "intent": "truth",
+        "barrier_placed": [
+          5,
+          3
+        ]
+      }
+    },
+    {
+      "commit": "f5ce0622fca45cee9b770475b54c7d1631ef82933627ec8f00ff833b989bd1cf",
+      "nonce": "be01b361bf09fe48ad3438ba2ada06d7",
+      "payload": {
+        "step": 10,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          5,
+          3
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "0a59b6f2251e3e54a8b3719affb3ab369c6f95630e99cde81dedba7cdfb63601",
+      "nonce": "b5467b6a6b4e6549a439852923c1446d",
+      "payload": {
+        "step": 11,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          5,
+          3
+        ],
+        "move": "PLACE_E",
+        "intent": "truth",
+        "barrier_placed": [
+          6,
+          3
+        ]
+      }
+    },
+    {
+      "commit": "5fd17097d75504efd73f0ee68bf4fdd953e4e67dfe5bdc76f98667220251a95f",
+      "nonce": "3c7bd88dfd61c9797c175e6e7f302990",
+      "payload": {
+        "step": 12,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          5,
+          2
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "dd6f1d970b8b3e6c0d794a6cd032fbbe4ce9e1a8d39e4740e912ab27096793a7",
+      "nonce": "fa157d06736feff2643d2e49965c0fef",
+      "payload": {
+        "step": 13,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          5,
+          3
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "887fb04c74feba20a0660cebd51bb29269defdeba5808f85bb9f7666ee8378da",
+      "nonce": "2155b042f06a46800905d5deaeb4df41",
+      "payload": {
+        "step": 14,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          5,
+          2
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "037a4616d24c799956a80f3e430498f00f7c82bafedf045be03cceed339250b0",
+      "nonce": "b3dc67f6fd1de0ac194d06656c41ddd0",
+      "payload": {
+        "step": 15,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          5,
+          2
+        ],
+        "move": "PLACE_E",
+        "intent": "truth",
+        "barrier_placed": [
+          6,
+          2
+        ]
+      }
+    },
+    {
+      "commit": "b41cf6e268920cce6ac7c8cfeff1ce4f575259235036c154df74f445238c4e5a",
+      "nonce": "52c35308c81844ffc9c205692909b7d0",
+      "payload": {
+        "step": 16,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          5,
+          1
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "43d879e0cb9d9fac69121179a92c79aa61df060629969dbf6f07519e72ab21c4",
+      "nonce": "8c79162b11176d53bb65b639ed528df1",
+      "payload": {
+        "step": 17,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          5,
+          1
+        ],
+        "move": "PLACE_E",
+        "intent": "truth",
+        "barrier_placed": [
+          6,
+          1
+        ]
+      }
+    },
+    {
+      "commit": "f6960bf17da29ec0100a8e53ef365a6e1472bc3f1f1c03d65763b6eed01e97df",
+      "nonce": "ddf705b3000f35d594690631484c9553",
+      "payload": {
+        "step": 18,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          4,
+          1
+        ],
+        "move": "W",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "33a4f5780d50ad644c66efe923d5edc567f5039e5ba7ae37f8bee3e5ef286eaa",
+      "nonce": "db043a10b590b922df7a375f46e1aeae",
+      "payload": {
+        "step": 19,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          4,
+          1
+        ],
+        "move": "PLACE_E",
+        "intent": "truth",
+        "barrier_placed": [
+          5,
+          1
+        ]
+      }
+    },
+    {
+      "commit": "a31fb87fb2fac05a138293cf65d896539129b7adc6274b5965ed42560e2b1ac3",
+      "nonce": "14f1f02a1e542bb09cd6c528adbccb65",
+      "payload": {
+        "step": 20,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          3,
+          1
+        ],
+        "move": "W",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "f4be4b446be42f0718ac7c91af6d61eee170fbe0aae100d35585aa66992550fc",
+      "nonce": "b9bc064c7f4d1c27f3efd665bfeae289",
+      "payload": {
+        "step": 21,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          3,
+          0
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "b12dd3f5f7a66d44627690057183b191fb9228ff23573d38b17890bb86835a05",
+      "nonce": "b6e0fb0b4999c32d0e27cbd7e6cc08cc",
+      "payload": {
+        "step": 22,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          3,
+          1
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "f53a2f731a50d03e5dd0d2403404939f35462223f156ddda7791c1a6ffe60a99",
+      "nonce": "a427310ea189ed3eaa0bc37773f7c740",
+      "payload": {
+        "step": 23,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          3,
+          0
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "ef43af1e3d11ba058e7b7bd7bf88fc338c5455406b3c24e212b7053d00c5a44a",
+      "nonce": "93725cbcd907e2c9f7a52aaeff8d82c2",
+      "payload": {
+        "step": 24,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          3,
+          1
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "c4ef7d97de1967749f1977f03f817fb157f27abbc867e4b8216c53d20d1eefd0",
+      "nonce": "b02e7239e8b4cf89374668f2b64bcab3",
+      "payload": {
+        "step": 25,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          3,
+          0
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "0a17a371f8ca2a3822c340bcccdcf19910d8e123b717a78fd53e75f79a53d6af",
+      "nonce": "ee3fbee6fe3e32ce6704b4bbf3c3303a",
+      "payload": {
+        "step": 26,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          4,
+          0
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "5539e3d00ca7570c637aa2936889c12353fd554625ad8cdcd64b6fd1f5a8444c",
+      "nonce": "44c25f6d2be608daa134514f9cde27d2",
+      "payload": {
+        "step": 27,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          3,
+          0
+        ],
+        "move": "W",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "7c4e215b8f2fbaf93a00090579fd25fef5191f90885c18325be3cc55b8293700",
+      "nonce": "c6e2e0368f9b0037b66f404ab2fb7e9c",
+      "payload": {
+        "step": 28,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          2,
+          0
+        ],
+        "move": "W",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "ac33d7ba3363a5a47a72253efeaa23687a2f1df16b98258ad0da2c828f3004a7",
+      "nonce": "f9e61d0bc2249e08eb07f1ff4fab8405",
+      "payload": {
+        "step": 29,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          1,
+          0
+        ],
+        "move": "W",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "0a027987983b9db5092cec176c8b4069b9099d07414b9dac193388cf842ae5b3",
+      "nonce": "4db055294b7f63f9924818f9d1e9a43f",
+      "payload": {
+        "step": 30,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          1,
+          0
+        ],
+        "move": "PLACE_E",
+        "intent": "truth",
+        "barrier_placed": [
+          2,
+          0
+        ]
+      }
+    },
+    {
+      "commit": "f1d45616e1b6f8f5a9b28633734039ca5ccc08567edf7f3ad5cf2c8336e485b9",
+      "nonce": "2d2a1b3ed6aef42c3b112718558fd479",
+      "payload": {
+        "step": 31,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          1,
+          0
+        ],
+        "move": "PLACE_E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "bea5fbec04cbd89737b3c7fee1b3610f7a4feb396220c58e106a378c90ca6927",
+      "nonce": "b02fe1152bf2d77634b646756b9eb220",
+      "payload": {
+        "step": 32,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          1,
+          0
+        ],
+        "move": "PLACE_E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "88b325898159b2b8751f75f5ba558f731a9cc446cd73fb5b70548ed5f1d77191",
+      "nonce": "def4f51e1eadda4328bb6e2ba44151bb",
+      "payload": {
+        "step": 33,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          1,
+          0
+        ],
+        "move": "STAY",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "c78d9da0069577dcc3778af79fab4f7f45656a3819fbd0b6ceab149951481954",
+      "nonce": "b963f27856783c11cc506183c2f6044e",
+      "payload": {
+        "step": 34,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          1,
+          1
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    }
+  ],
+  "report_type": "log",
+  "schema_version": "1.3",
+  "sub_game_number": 2,
+  "summary": {
+    "audit": "Verified OK",
+    "outcome": "survival",
+    "digest_match": null,
+    "disputed_capture": null,
+    "turns_completed": 34,
+    "steps_sealed": 35,
+    "opponent_step_zero": {
+      "step": 0,
+      "type": "step_zero",
+      "declaration_ref": "declaration_anrbj666-vs-vibecode.json",
+      "group_id": "anrbj666",
+      "role": "thief",
+      "sub_game_number": 2,
+      "github_commit": "623a71d5925e1c8a943fe44a0fbab0e13096031e"
+    },
+    "step_zero_mismatch": null,
+    "started_at": "2026-08-08T19:14:26.351322+00:00",
+    "ended_at": "2026-08-08T19:14:39.452488+00:00",
+    "role": "police",
+    "group_id": "vibecode",
+    "opponent_group_id": "anrbj666"
+  },
+  "wire_shape": "reference"
+}

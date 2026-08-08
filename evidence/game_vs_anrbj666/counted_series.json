@@ -1,0 +1,32 @@
+{
+  "group_id": "vibecode",
+  "counted_games_played": 1,
+  "series": [
+    {
+      "game_id": "anrbj666-vs-vibecode",
+      "game_uid": "b2a16946-2cad-909f-60aa-b0cc8a8b7c4f",
+      "opponent": "anrbj666",
+      "winner_group": "anrbj666",
+      "total_score": {
+        "vibecode": 35,
+        "anrbj666": 75
+      },
+      "sub_games_won": {
+        "vibecode": 1,
+        "anrbj666": 5
+      },
+      "diversity_reward_applied": {
+        "vibecode": false,
+        "anrbj666": true
+      },
+      "mutual_agreement": {
+        "sha256": "b4db10c24e330682393c6d3dea432de040f93116710851bf8e41f6ac5c3ae67d",
+        "confirmed": true
+      },
+      "report_message_id": "19fe2cdea7a51125",
+      "reported_at": "2026-08-08T19:16:15.045328+00:00",
+      "result_file": "result_anrbj666-vs-vibecode.json"
+    }
+  ],
+  "updated_at": "2026-08-08T19:16:15.045340+00:00"
+}

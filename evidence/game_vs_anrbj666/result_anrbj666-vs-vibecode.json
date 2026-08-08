@@ -1,0 +1,253 @@
+{
+  "_schema": "Summary and final result for the WHOLE series between two teams: per-sub-game scores + aggregate; identity lives in the declaration.",
+  "schema_version": "1.1",
+  "report_type": "final_game_result",
+  "game_id": "anrbj666-vs-vibecode",
+  "game_uid": "b2a16946-2cad-909f-60aa-b0cc8a8b7c4f",
+  "links": {
+    "declaration": "declaration_anrbj666-vs-vibecode.json",
+    "config": "config_anrbj666-vs-vibecode_g<NN>.json",
+    "log": "log_anrbj666-vs-vibecode_g<NN>.json",
+    "result": "result_anrbj666-vs-vibecode.json",
+    "github": {
+      "vibecode": {
+        "cop": "https://github.com/AmitKuper/vibecode-cop",
+        "thief": "https://github.com/AmitKuper/vibecode-thief"
+      },
+      "anrbj666": {
+        "cop": "https://github.com/alonengel/P2P-Police",
+        "thief": "https://github.com/alonengel/P2P-Thief"
+      }
+    }
+  },
+  "timezone": "Asia/Jerusalem",
+  "groups": [
+    "anrbj666",
+    "vibecode"
+  ],
+  "num_sub_games": 6,
+  "sub_games": [
+    {
+      "sub_game_number": 1,
+      "roles": {
+        "vibecode": "thief",
+        "anrbj666": "police"
+      },
+      "started_at": "2026-08-08T19:14:06.093026+00:00",
+      "ended_at": "2026-08-08T19:14:13.106954+00:00",
+      "result": "capture",
+      "winner_group": "anrbj666",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "89a314a83c91f945dc3d8c0aed623dc8749b3e35",
+        "anrbj666": "630ea874c6e648f4f95248dadd82033b645d4eca"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "anrbj666": 0
+      },
+      "score": {
+        "vibecode": 5,
+        "anrbj666": 20
+      },
+      "log_files": {
+        "vibecode": "log_anrbj666-vs-vibecode_g01.json",
+        "anrbj666": "log_anrbj666-vs-vibecode_g01.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 2,
+      "roles": {
+        "vibecode": "police",
+        "anrbj666": "thief"
+      },
+      "started_at": "2026-08-08T19:14:26.351322+00:00",
+      "ended_at": "2026-08-08T19:14:39.452488+00:00",
+      "result": "survival",
+      "winner_group": "anrbj666",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "23c8711e235bf66f0be59173024483149584db1d",
+        "anrbj666": "623a71d5925e1c8a943fe44a0fbab0e13096031e"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "anrbj666": 0
+      },
+      "score": {
+        "vibecode": 5,
+        "anrbj666": 10
+      },
+      "log_files": {
+        "vibecode": "log_anrbj666-vs-vibecode_g02.json",
+        "anrbj666": "log_anrbj666-vs-vibecode_g02.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 3,
+      "roles": {
+        "vibecode": "thief",
+        "anrbj666": "police"
+      },
+      "started_at": "2026-08-08T19:14:52.497720+00:00",
+      "ended_at": "2026-08-08T19:14:57.703530+00:00",
+      "result": "capture",
+      "winner_group": "anrbj666",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "89a314a83c91f945dc3d8c0aed623dc8749b3e35",
+        "anrbj666": "630ea874c6e648f4f95248dadd82033b645d4eca"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "anrbj666": 0
+      },
+      "score": {
+        "vibecode": 5,
+        "anrbj666": 20
+      },
+      "log_files": {
+        "vibecode": "log_anrbj666-vs-vibecode_g03.json",
+        "anrbj666": "log_anrbj666-vs-vibecode_g03.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 4,
+      "roles": {
+        "vibecode": "police",
+        "anrbj666": "thief"
+      },
+      "started_at": "2026-08-08T19:15:10.839223+00:00",
+      "ended_at": "2026-08-08T19:15:22.611713+00:00",
+      "result": "survival",
+      "winner_group": "anrbj666",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "23c8711e235bf66f0be59173024483149584db1d",
+        "anrbj666": "623a71d5925e1c8a943fe44a0fbab0e13096031e"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "anrbj666": 0
+      },
+      "score": {
+        "vibecode": 5,
+        "anrbj666": 10
+      },
+      "log_files": {
+        "vibecode": "log_anrbj666-vs-vibecode_g04.json",
+        "anrbj666": "log_anrbj666-vs-vibecode_g04.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 5,
+      "roles": {
+        "vibecode": "thief",
+        "anrbj666": "police"
+      },
+      "started_at": "2026-08-08T19:15:35.774260+00:00",
+      "ended_at": "2026-08-08T19:15:47.827833+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "89a314a83c91f945dc3d8c0aed623dc8749b3e35",
+        "anrbj666": "630ea874c6e648f4f95248dadd82033b645d4eca"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "anrbj666": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "anrbj666": 5
+      },
+      "log_files": {
+        "vibecode": "log_anrbj666-vs-vibecode_g05.json",
+        "anrbj666": "log_anrbj666-vs-vibecode_g05.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 6,
+      "roles": {
+        "vibecode": "police",
+        "anrbj666": "thief"
+      },
+      "started_at": "2026-08-08T19:16:00.882843+00:00",
+      "ended_at": "2026-08-08T19:16:13.127548+00:00",
+      "result": "survival",
+      "winner_group": "anrbj666",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "23c8711e235bf66f0be59173024483149584db1d",
+        "anrbj666": "623a71d5925e1c8a943fe44a0fbab0e13096031e"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "anrbj666": 0
+      },
+      "score": {
+        "vibecode": 5,
+        "anrbj666": 10
+      },
+      "log_files": {
+        "vibecode": "log_anrbj666-vs-vibecode_g06.json",
+        "anrbj666": "log_anrbj666-vs-vibecode_g06.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    }
+  ],
+  "final_result": {
+    "total_score": {
+      "vibecode": 35,
+      "anrbj666": 75
+    },
+    "sub_games_won": {
+      "vibecode": 1,
+      "anrbj666": 5
+    },
+    "ties": 0,
+    "winner_group": "anrbj666",
+    "series_tie": false,
+    "tokens_total_series": {
+      "vibecode": 0,
+      "anrbj666": 0
+    },
+    "games_played_including_this": {
+      "vibecode": 1,
+      "anrbj666": 2
+    },
+    "first_meeting_between_groups": true,
+    "diversity_reward_applied": {
+      "vibecode": false,
+      "anrbj666": true
+    }
+  },
+  "mutual_agreement": {
+    "sha256": "b4db10c24e330682393c6d3dea432de040f93116710851bf8e41f6ac5c3ae67d",
+    "confirmed": true
+  }
+}
