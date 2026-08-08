@@ -271,12 +271,22 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     mover = RLMover(role, terms)
     we_move_first = (role == "thief")  # reference-v3: THIEF moves first every sub-game
     rl_moves: list[str] = []
+    pending_answer: dict | None = None  # thief's answer to a cop capture_claim (rides next turn)
+    captured = False  # True if this sub-game ended in a capture (either direction)
 
     for step in range(1, max_steps + 1):
         if not we_move_first:
             # cop: wait for the thief's sealed turn first, absorb its scent/hint.
             await _poll_turn(in_session.turns, step, timeout=120.0)
-        opp = _latest_turn(in_session, step)
+            opp = _latest_turn(in_session, step)
+            # Thief concedes our capture (barrier on its cell / claim) via caught=true.
+            if (opp.get("claim_response") or {}).get("caught") is True:
+                print(f"[match] sg{sub_game} thief conceded capture at step {step}")
+                captured = True
+                break
+        else:
+            opp = _latest_turn(in_session, step)
+
         action = mover.decide(step, sub_game, opp.get("smell_grid", {}), opp.get("hint", ""))
         rl_moves.append(action)
         mover.apply(action)
@@ -286,23 +296,34 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
         }
         if mover.last_barrier is not None:
             record_payload["barrier_placed"] = mover.last_barrier
+        # A pending capture-claim answer (thief only) rides this turn; caught => terminal.
+        answer, pending_answer = pending_answer, None
+        caught = bool(answer and answer.get("caught"))
         step_nonce = secrets.token_hex(16)
-        # The cop is blind: only the thief can announce a terminal. On the final
-        # step, a surviving thief must carry win_claim={"type":"survival"} or the
-        # cop waits out its budget (kit turnloop.py:183,303).
-        win_claim = {"type": "survival"} if (role == "thief" and step == max_steps) else None
+        # Survival terminal on the thief's final step (unless it's a caught answer);
+        # the blind cop needs it or it waits out its budget (kit turnloop.py:183,303).
+        win_claim = ({"type": "survival"}
+                     if (role == "thief" and step == max_steps and not caught) else None)
         turn, record = build_turn(
             record_payload=record_payload, nonce=step_nonce, sender=role,
             hint=f"moving {action.lower()}", smell_grid=mover.our_smell_grid(),
-            barrier_placed=mover.last_barrier, win_claim=win_claim,
+            barrier_placed=mover.last_barrier, claim_response=answer, win_claim=win_claim,
         )
         await out_session.send_turn(turn, record)
+        if caught:
+            print(f"[match] sg{sub_game} our thief answered caught=true at step {step}")
+            captured = True
+            break
         if we_move_first and win_claim is None:
-            # After a survival terminal the blind cop ends the game and sends no
-            # matching turn — don't wait for one.
+            # Thief waits for the cop's turn, then prepares an answer to any capture claim
+            # it carries (rides our next turn — kit turnloop.py:271-273).
             await _poll_turn(in_session.turns, step, timeout=120.0)
+            claim = _latest_turn(in_session, step).get("capture_claim")
+            if claim is not None:
+                pending_answer = {"claim": list(mover.pos),
+                                  "caught": list(claim) == list(mover.pos)}
 
-    await out_session.send_audit(role, "timeout")
+    await out_session.send_audit(role, "capture" if captured else "timeout")
     import contextlib
     with contextlib.suppress(Exception):
         await out_session.send_control({
@@ -313,9 +334,10 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     ok, errors = verify_audit(their_audit, dict(in_session.turns.played))
     in_session.turns = ReferenceV3Inbox(window=4)  # reset for next sub-game
     distinct = len(set(rl_moves))
-    print(f"[match] sg{sub_game} audit ok={ok} errors={errors[:2]} "
+    outcome = "capture" if captured else "survival"
+    print(f"[match] sg{sub_game} audit ok={ok} errors={errors[:2]} outcome={outcome} "
           f"rl_moves={len(rl_moves)} distinct={distinct} sample={rl_moves[:8]}")
-    return {"sub_game": sub_game, "role": role, "audit_ok": ok,
+    return {"sub_game": sub_game, "role": role, "audit_ok": ok, "outcome": outcome,
             "rl_move_count": len(rl_moves), "distinct_moves": distinct}
 
 
