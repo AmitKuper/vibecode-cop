@@ -59,7 +59,7 @@ def main() -> None:
     """Parse CLI args and start the LeagueManager."""
     parser = argparse.ArgumentParser(description="LeagueManager MCP server")
     parser.add_argument("--config", default="league_manager.yaml", help="Config YAML path")
-    parser.add_argument("--port", type=int, default=8000, help="External MCP port")
+    parser.add_argument("--port", type=int, default=61222, help="External MCP port")
     parser.add_argument(
         "--admin-port", type=int, default=8080, help="Admin HTTP port (localhost only)"
     )

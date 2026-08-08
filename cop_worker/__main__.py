@@ -36,7 +36,7 @@ def main() -> None:
         "serve",
         help="Serve the cop MCP endpoint (counted mode enforced in production).",
     )
-    serve_parser.add_argument("--port", type=int, default=8001, help="MCP server port")
+    serve_parser.add_argument("--port", type=int, default=61224, help="MCP server port")
     serve_parser.add_argument("--config", default="cop_config.yaml", help="Config YAML path")
     serve_parser.add_argument("--log-dir", default="logs", help="Log output directory")
     serve_parser.add_argument("--report-dir", default="reports", help="Report output directory")
@@ -47,7 +47,7 @@ def main() -> None:
         help="Enable counted (production) mode — enforces all COUNTED constraints.",
     )
     # Top-level flags for direct invocation (no subcommand)
-    parser.add_argument("--port", type=int, default=8001, help="MCP server port")
+    parser.add_argument("--port", type=int, default=61224, help="MCP server port")
     parser.add_argument("--config", default="cop_config.yaml", help="Config YAML path")
     parser.add_argument("--log-dir", default="logs", help="Log output directory")
     parser.add_argument("--report-dir", default="reports", help="Report output directory")

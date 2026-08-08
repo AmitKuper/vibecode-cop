@@ -27,12 +27,11 @@ role = "cop"
 # TCP port this MCP server listens on locally
 local_port = 61224
 
-# Internal MCP URL for self-reference / health checks
-# The public endpoint advertised to opponents is auto-detected at startup
-# (env PUBLIC_IP → api.ipify.org → 127.0.0.1 fallback)
-mcp_url = "http://localhost:61224"
+# Public endpoint advertised to opponents (static IP, no tunnel needed)
+mcp_url = "http://62.56.220.143:61224/mcp"
 
 # Opponent's MCP endpoint (the thief's public URL)
+# For self-play use localhost; for external matches set to opponent's public URL
 peer_url = "http://localhost:61223"
 
 
