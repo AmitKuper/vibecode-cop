@@ -58,19 +58,34 @@ def test_scent_accumulates_after_moves():
 
 
 def test_scent_decays_when_thief_moves_away():
-    """Old scent cells must decay once the thief has moved away."""
+    """Old scent follows the book model (multiplicative_book_v1), verified byte-exact vs the
+    league kit's ``book_full_turn`` oracle: ``tau' = min(0.9, max(0, 0.9*old + emission))``.
+
+    A cell still inside the 5x5 emission field is re-emitted and holds at the 0.9 ceiling;
+    a cell the thief has left OUT of range decays purely multiplicatively (x0.9 per turn).
+    (This replaces the pre-book additive expectation of ``0.9*0.9 + 0.62 = 1.43``, which the
+    kit's registered book model does not produce.)
+    """
     board, rules = _make_rules()
     rules.apply_moves("STAY", "STAY")
-    old_tx, old_ty = 3, 3
-    scent_at_old = rules.get_scent_field()[old_ty][old_tx]
-    assert scent_at_old == pytest.approx(0.9, abs=0.01)
+    field_before = rules.get_scent_field()
+    assert field_before[3][3] == pytest.approx(0.9, abs=0.01)
+    # A far cell inside the 5x5 field at deposit time (chebyshev 2 from (3,3)).
+    far_before = field_before[5][3]
+    assert far_before == pytest.approx(0.20, abs=0.01)
 
-    rules.apply_moves("STAY", "NORTH")
-    scent_after = rules.get_scent_field()[old_ty][old_tx]
-    assert scent_after == pytest.approx(0.9 * 0.9 + 0.62, abs=0.01), (
-        "Scent must follow additive model: 0.9 * old + emission"
+    rules.apply_moves("STAY", "NORTH")  # thief 3,3 -> 3,2
+    field_after = rules.get_scent_field()
+    # (3,3) is now adjacent to the thief: re-emitted, so min(0.9, 0.9*0.9 + 0.62) = 0.9 ceiling.
+    assert field_after[3][3] == pytest.approx(0.9, abs=0.01), (
+        "book model clamps re-emitted scent to the 0.9 emission ceiling"
     )
-    assert scent_after < 1.5, "Scent value must remain bounded"
+    assert field_after[3][3] <= 0.9 + 1e-9, "book model bounds scent at the 0.9 ceiling"
+    # (3,5) is now out of the thief's 5x5 field: pure multiplicative decay x0.9.
+    assert field_after[5][3] == pytest.approx(0.9 * far_before, abs=0.01), (
+        "old scent out of range must decay multiplicatively (x0.9), not vanish or persist"
+    )
+    assert field_after[5][3] < far_before, "scent must decay once the thief has moved away"
 
 
 def test_fresh_snapshot_unchanged_for_rl():
