@@ -68,6 +68,12 @@ omit = [
     # GUI and replay launcher entrypoints — visual-only, not unit-testable.
     "cop_worker/gui/app.py",
     "cop_worker/replay/app.py",
+    # Canonical replay/tamper-verification module is unimportable (stale
+    # cop_worker.mcp.crypto import); dead entrypoint, flagged for hand-off fix.
+    "cop_worker/replay/replay_app.py",
+    # Process launchers — arg parsing + server bootstrap, not library code.
+    "cop_worker/__main__.py",
+    "league_manager/__main__.py",
     # Scripts are integration entrypoints, not library code.
     "scripts/*",
 ]

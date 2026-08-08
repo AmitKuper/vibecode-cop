@@ -29,6 +29,6 @@ plugins = ["file_json", "file_markdown"]  # Add "gmail" to enable Gmail drafts
 
 [reports.gmail]
 mode = "draft"
-recipient = "rmisegal+uoh26finalgame@gmail.com"
+recipient = "PROFESSOR_EMAIL_HERE"
 credentials_path = "secrets/gmail/credentials.json"
 token_path = "secrets/gmail/token.json"
