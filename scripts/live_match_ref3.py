@@ -674,16 +674,28 @@ def _emit_artifacts(result: dict, args) -> None:
     print(f"[match] artifacts: {len(played)}x(config+log) + declaration + result "
           f"under results/ and config/games/")
     print(f"[match] result: {final_result['total_score']} winner={final_result['winner_group']}")
+    # Settlement guard: a report is filed ONLY when the WHOLE series settled — all six windows
+    # played AND each audit "Verified OK". A partial/failed series never auto-files a broken or
+    # empty result to the league (matches anrbj666's runner). Re-run the missing windows, then
+    # report. Artifacts are always kept locally regardless.
+    EXPECTED_SUB_GAMES = 6
+    n_settled = sum(1 for sg in played if sg.get("audit_ok"))
+    series_complete = len(played) == EXPECTED_SUB_GAMES and n_settled == EXPECTED_SUB_GAMES
     mid = None
-    if not args.no_email:
+    if not series_complete:
+        print(f"[match] REPORT WITHHELD (settlement guard): series not fully settled — "
+              f"{n_settled}/{EXPECTED_SUB_GAMES} Verified OK, {len(played)}/{EXPECTED_SUB_GAMES} "
+              f"windows played. No email, no ledger entry. Artifacts kept locally; re-run the "
+              f"missing/failed windows before reporting.")
+    elif not args.no_email:
         try:
             token = REPO_ROOT / "secrets" / "gmail" / "token.json"
             mid = email_result(result_obj, args.report_to, f"result_{game_id}.json", token)
             print(f"[match] emailed result ONLY to {args.report_to} (id={mid})")
         except Exception as exc:
             print(f"[match] email FAILED ({type(exc).__name__}: {str(exc)[:140]})")
-    # League ledger: record ONLY counted series (rules 37-38, the counted tracker).
-    if counted:
+    # League ledger: record ONLY a fully-settled counted series (rules 37-38, the counted tracker).
+    if counted and series_complete:
         ledger = update_counted_ledger(
             results_dir / "counted_series.json", game_id=game_id, game_uid=game_uid,
             opponent=opp, result_obj=result_obj, message_id=mid, our_counted_before=our_counted)
