@@ -628,10 +628,11 @@ def _emit_artifacts(result: dict, args) -> None:
     members = [m.strip() for m in args.members.split(",") if m.strip()]
     starts = [sg.get("started_at", "") for sg in played]
     ends = [sg.get("ended_at", "") for sg in played]
+    thief_commit = _git_head(REPO_ROOT.parent / "vibecode-thief")
     write_artifact(build_declaration(game_id, game_uid, opp, members, cop_commit,
                                      starts[0] if starts else "", ends[-1] if ends else "",
                                      opp_identity=(opp_ids[0] if opp_ids else None),
-                                     our_counted=our_counted),
+                                     our_counted=our_counted, thief_commit=thief_commit),
                    results_dir / f"declaration_{game_id}.json")
     result_obj = build_result(game_id, game_uid, opp, rows, final_result, opp_repos=opp_repos)
     write_artifact(result_obj, results_dir / f"result_{game_id}.json")

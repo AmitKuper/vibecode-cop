@@ -153,15 +153,18 @@ def _hardware_spec() -> dict:
 
 def build_declaration(game_id: str, game_uid: str, opponent: str, members: list,
                       cop_commit: str, started_at: str, ended_at: str,
-                      opp_identity: dict | None = None, our_counted: int = 0) -> dict:
+                      opp_identity: dict | None = None, our_counted: int = 0,
+                      thief_commit: str | None = None) -> dict:
     hw = _hardware_spec()
+    # Role-split: declare both repo HEADs (ADR: cop is the single-string fallback).
+    commit = {"cop": cop_commit, "thief": thief_commit or cop_commit}
     ours = {
-        "code_version": "1.00", "counted_games_played": our_counted, "github_commit": cop_commit,
+        "code_version": "1.00", "counted_games_played": our_counted, "github_commit": commit,
         "group_id": "vibecode", "group_name": "vibecode",
         "hardware_spec": hw, "hardware_spec_sha256": _sha(hw) if hw else "",
         "llm_model": "role-specific-recurrent-policy",
         "mcp_servers": OUR_MCP, "members": members, "repos": OUR_REPOS,
-        "signature": f"sha256:{_sha({'group_id': 'vibecode', 'commit': cop_commit})}",
+        "signature": f"sha256:{_sha({'group_id': 'vibecode', 'commit': commit})}",
     }
     oi = opp_identity or {}
     theirs = {
@@ -189,27 +192,36 @@ def build_declaration(game_id: str, game_uid: str, opponent: str, members: list,
     }
 
 
-def mutual_agreement_sha(game_uid: str, rows: list, final_result: dict) -> str:
-    """Preimage for mutual_agreement.sha256 — the agreed series facts, canonical-hashed.
+def mutual_agreement_sha(game_id: str, rows: list, final_result: dict) -> str:
+    """anrbj666/imreeyal ADR-0012 symmetric-outcome scope — the two-team standard.
 
-    Fields (both sides must hash these exact fields to converge):
-      game_uid, and per sub-game [sub_game_number, result, winner_group,
-      score.<a>, score.<b>], plus final total_score and winner_group.
+    Preimage keyed on game_id; aggregate {series_tie, sub_games_won, ties, total_score,
+    winner_group}; rows {sub_game_number, roles, result, winner_group, score}. Serialized
+    in the SETTLEMENT form: sort_keys=True, ensure_ascii=False, DEFAULT (spaced) separators
+    (NOT the compact commit canonical).
     """
-    facts = {
-        "game_uid": game_uid,
-        "sub_games": [{"sub_game_number": r["sub_game_number"], "result": r["result"],
-                       "winner_group": r["winner_group"], "score": r["score"]} for r in rows],
-        "total_score": final_result["total_score"],
-        "winner_group": final_result["winner_group"],
+    preimage = {
+        "game_id": game_id,
+        "aggregate": {
+            "series_tie": final_result["series_tie"],
+            "sub_games_won": final_result["sub_games_won"],
+            "ties": final_result["ties"],
+            "total_score": final_result["total_score"],
+            "winner_group": final_result["winner_group"],
+        },
+        "sub_games": [{"sub_game_number": r["sub_game_number"], "roles": r["roles"],
+                       "result": r["result"], "winner_group": r["winner_group"],
+                       "score": r["score"]} for r in rows],
     }
-    return _sha(facts)
+    return hashlib.sha256(
+        json.dumps(preimage, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
 
 
 def build_result(game_id: str, game_uid: str, opponent: str, rows: list,
                  final_result: dict, opp_repos: dict | None = None) -> dict:
     """The emailed final_game_result (series aggregate). Key order mirrors anrbj666's."""
-    mutual = {"sha256": mutual_agreement_sha(game_uid, rows, final_result), "confirmed": False}
+    confirmed = bool(rows) and all(r.get("audit", {}).get("log_verified") for r in rows)
+    mutual = {"sha256": mutual_agreement_sha(game_id, rows, final_result), "confirmed": confirmed}
     return {
         "_schema": ("Summary and final result for the WHOLE series between two teams: "
                     "per-sub-game scores + aggregate; identity lives in the declaration."),
