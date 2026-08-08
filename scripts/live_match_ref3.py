@@ -32,6 +32,9 @@ KIT_ROOT = REPO_ROOT.parent / "external" / "copthief-league-protocol"
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+# Cop barrier placement: target cell = own_position + delta (mirrors domain/transition.py).
+_PLACE_DELTAS = {"PLACE_N": (0, -1), "PLACE_S": (0, 1), "PLACE_E": (1, 0), "PLACE_W": (-1, 0)}
+
 
 # ---------------------------------------------------------------------------
 # RL move engine — the whole point: real policy, not random.
@@ -59,6 +62,10 @@ class RLMover:
         self.policy = load_recurrent_policy(manifest, manifest_role)
         start = terms["cop_start"] if role == "police" else terms["thief_start"]
         self.pos = [int(start[0]), int(start[1])]  # [x, y]
+        # Cop barrier state (thief never places): quota, placed cells, last placement.
+        self.barriers_remaining = int(terms.get("barriers_max", 0)) if role == "police" else 0
+        self.barriers: list[list[int]] = []
+        self.last_barrier: list[int] | None = None
         # A board whose "thief" cell we drive to OUR position, so update_scent emits
         # the byte-exact book field around us regardless of role.
         self._board = Board(
@@ -85,11 +92,10 @@ class RLMover:
         """Return the RL-chosen action for this step (never random)."""
         from cop_worker.observation import BeliefState, LocalObservation
 
-        barriers = self.terms.get("barriers_max", 0) if self.role == "police" else 0
         obs = LocalObservation(
             own_position=(self.pos[0], self.pos[1]),
-            own_barriers_remaining=barriers,
-            known_barriers=[],
+            own_barriers_remaining=self.barriers_remaining,
+            known_barriers=[tuple(b) for b in self.barriers],
             opponent_scent=self._opponent_scent_grid(opponent_smell),
             last_hint=opponent_hint or "",
             step=step,
@@ -101,7 +107,22 @@ class RLMover:
         return action
 
     def apply(self, action: str) -> None:
-        """Update our own position by the chosen move (barriers ignored for position)."""
+        """Apply the chosen action: move (N/S/E/W), STAY, or place a barrier.
+
+        A PLACE_* forfeits movement (position unchanged) and, if legal (quota left,
+        target in-bounds and not already blocked), records the barrier cell so it goes
+        on the wire as barrier_placed and is fed back into the next observation.
+        """
+        self.last_barrier = None
+        if action in _PLACE_DELTAS:
+            if self.role == "police" and self.barriers_remaining > 0:
+                dx, dy = _PLACE_DELTAS[action]
+                bx, by = self.pos[0] + dx, self.pos[1] + dy
+                if 0 <= bx < self.grid and 0 <= by < self.grid and [bx, by] not in self.barriers:
+                    self.barriers.append([bx, by])
+                    self.barriers_remaining -= 1
+                    self.last_barrier = [bx, by]
+            return  # placement (legal or not) forfeits the move
         x, y = self.pos
         if action == "N" and y > 0:
             y -= 1
@@ -263,6 +284,8 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
             "step": step, "role": role, "sub_game": sub_game,
             "position": list(mover.pos), "move": action, "intent": "truth",
         }
+        if mover.last_barrier is not None:
+            record_payload["barrier_placed"] = mover.last_barrier
         step_nonce = secrets.token_hex(16)
         # The cop is blind: only the thief can announce a terminal. On the final
         # step, a surviving thief must carry win_claim={"type":"survival"} or the
@@ -271,7 +294,7 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
         turn, record = build_turn(
             record_payload=record_payload, nonce=step_nonce, sender=role,
             hint=f"moving {action.lower()}", smell_grid=mover.our_smell_grid(),
-            win_claim=win_claim,
+            barrier_placed=mover.last_barrier, win_claim=win_claim,
         )
         await out_session.send_turn(turn, record)
         if we_move_first and win_claim is None:
