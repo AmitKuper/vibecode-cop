@@ -85,9 +85,10 @@ class RLMover:
         """Return the RL-chosen action for this step (never random)."""
         from cop_worker.observation import BeliefState, LocalObservation
 
+        barriers = self.terms.get("barriers_max", 0) if self.role == "police" else 0
         obs = LocalObservation(
             own_position=(self.pos[0], self.pos[1]),
-            own_barriers_remaining=self.terms.get("barriers_max", 0) if self.role == "police" else 0,
+            own_barriers_remaining=barriers,
             known_barriers=[],
             opponent_scent=self._opponent_scent_grid(opponent_smell),
             last_hint=opponent_hint or "",
@@ -250,7 +251,8 @@ def _latest_turn(in_session, step: int) -> dict:
 # ---------------------------------------------------------------------------
 # Self-test harness: play vs the local sparring peer.
 # ---------------------------------------------------------------------------
-async def _self_test(role: str, sub_games: int, our_port: int, sparring_port: int, kit: Path) -> dict:
+async def _self_test(role: str, sub_games: int, our_port: int,
+                     sparring_port: int, kit: Path) -> dict:
     from fastmcp import Client, FastMCP
     from fastmcp.client.transports import StreamableHttpTransport
 
@@ -305,7 +307,8 @@ async def _self_test(role: str, sub_games: int, our_port: int, sparring_port: in
                     return parsed if isinstance(parsed, dict) else {"ok": True}
                 return _call
 
-            _profile, out_session = await discover_reference_v3(sparring_url, tool_caller=_caller(client))
+            _profile, out_session = await discover_reference_v3(
+                sparring_url, tool_caller=_caller(client))
             other = {"police": "thief", "thief": "police"}
             for sg in range(1, sub_games + 1):
                 # Roles alternate every sub-game; our sub-game-1 role is `role`.
@@ -326,6 +329,90 @@ async def _self_test(role: str, sub_games: int, our_port: int, sparring_port: in
     return {"role": role, "sub_games": results}
 
 
+async def _play_match(*, opp_cop_url: str, opp_thief_url: str, our_cop_port: int,
+                      our_thief_port: int, opponent_group: str, setting: str,
+                      sub_games: int) -> dict:
+    """Real match vs a live peer over reference-v3, role-split, RL moves.
+
+    We alternate: thief on odd sub-games (peer is cop → dial its cop URL), police on
+    even (peer is thief → dial its thief URL). We serve both our endpoints so the peer
+    can dial the active one; moves come from the trained RL policy.
+    """
+    from fastmcp import Client, FastMCP
+    from fastmcp.client.transports import StreamableHttpTransport
+
+    from cop_worker.protocol.pipeline import discover_reference_v3
+    from cop_worker.protocol.reference_v3 import (
+        ReferenceV3Session,
+        default_terms,
+        register_reference_v3_tools,
+    )
+
+    host = "0.0.0.0"
+    terms = default_terms({"setting": setting})
+    sessions, apps, tasks = {}, {}, []
+
+    def _caller(client):
+        async def _call(tool: str, params: dict) -> dict:
+            r = await client.call_tool(tool, params)
+            if not r.content:
+                return {"ok": getattr(r, "is_error", False) is not True}
+            val = getattr(r.content[0], "text", str(r.content[0]))
+            try:
+                parsed = _json.loads(val)
+            except (ValueError, TypeError):
+                return {"ok": True, "raw": val}
+            return parsed if isinstance(parsed, dict) else {"ok": True}
+        return _call
+
+    # Serve both our reference-v3 endpoints (cop + thief), one inbound session each.
+    for role_name, port in (("police", our_cop_port), ("thief", our_thief_port)):
+        sess = ReferenceV3Session(
+            lambda t, p: (_ for _ in ()).throw(RuntimeError(f"no outbound ({t})"))
+        )
+        app = FastMCP(name=f"vibecode-{role_name}")
+        register_reference_v3_tools(app, sess)
+        sessions[role_name] = sess
+        apps[role_name] = app
+        tasks.append(asyncio.create_task(
+            app.run_async(transport="http", host=host, port=port, show_banner=False)))
+    await _wait_port("127.0.0.1", our_cop_port, timeout=15.0)
+    await _wait_port("127.0.0.1", our_thief_port, timeout=15.0)
+    print(f"[match] serving cop:{our_cop_port} thief:{our_thief_port} vs {opponent_group}")
+
+    results = []
+    try:
+        for sg in range(1, sub_games + 1):
+            our_role = "thief" if sg % 2 == 1 else "police"
+            peer_url = opp_cop_url if our_role == "thief" else opp_thief_url
+            in_session = sessions[our_role]
+            transport = StreamableHttpTransport(peer_url.rstrip("/") + "/mcp"
+                                                if not peer_url.endswith("/mcp") else peer_url)
+            async with Client(transport) as client:
+                _profile, out_session = await discover_reference_v3(
+                    peer_url, tool_caller=_caller(client))
+                results.append(await _play_subgame(
+                    out_session, in_session, role=our_role, sub_game=sg,
+                    group_id="vibecode", group_name="vibecode", terms=terms,
+                    opponent_group_hint=opponent_group))
+    finally:
+        for t in tasks:
+            t.cancel()
+        import contextlib
+        for t in tasks:
+            with contextlib.suppress(asyncio.CancelledError, Exception):
+                await t
+    return {"opponent": opponent_group, "sub_games": results}
+
+
+def _write_result(result: dict) -> Path:
+    out_dir = REPO_ROOT / "reports" / "ref3_matches"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path = out_dir / "last_match_result.json"
+    path.write_text(_json.dumps(result, indent=2), encoding="utf-8")
+    return path
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--self-test", action="store_true", help="Play vs the local sparring peer")
@@ -334,19 +421,44 @@ def main() -> int:
     p.add_argument("--our-port", type=int, default=5011)
     p.add_argument("--sparring-port", type=int, default=8941)
     p.add_argument("--kit-root", type=Path, default=KIT_ROOT)
+    # Real-match args:
+    p.add_argument("--match", action="store_true", help="Play a live peer over reference-v3")
+    p.add_argument("--opp-cop-url", help="Opponent cop MCP URL (dialed when we are thief)")
+    p.add_argument("--opp-thief-url", help="Opponent thief MCP URL (dialed when we are cop)")
+    p.add_argument("--opponent-group", default="anrbj666")
+    p.add_argument("--our-cop-port", type=int, default=61224)
+    p.add_argument("--our-thief-port", type=int, default=61223)
+    p.add_argument("--setting", default="New York")
     args = p.parse_args()
 
+    if args.match:
+        if not (args.opp_cop_url and args.opp_thief_url):
+            print("ERROR: --match requires --opp-cop-url and --opp-thief-url")
+            return 2
+        result = asyncio.run(_play_match(
+            opp_cop_url=args.opp_cop_url, opp_thief_url=args.opp_thief_url,
+            our_cop_port=args.our_cop_port, our_thief_port=args.our_thief_port,
+            opponent_group=args.opponent_group, setting=args.setting,
+            sub_games=args.sub_games if args.sub_games > 1 else 6))
+        path = _write_result(result)
+        oks = [sg for sg in result["sub_games"] if sg.get("audit_ok")]
+        print(f"\n[match] wrote {path}")
+        print(f"[match] STATUS: audits {len(oks)}/{len(result['sub_games'])} ok")
+        return 0 if oks and len(oks) == len(result["sub_games"]) else 1
+
     if not args.self_test:
-        print("Real-match dialing not yet wired to a live peer; use --self-test for now.")
+        print("Use --self-test (vs sparring) or --match --opp-cop-url ... --opp-thief-url ...")
         return 2
     kit = args.kit_root.resolve()
     if not (kit / "verify_vectors.py").is_file():
         print(f"ERROR: not a league-protocol clone: {kit}")
         return 1
-    result = asyncio.run(_self_test(args.role, args.sub_games, args.our_port, args.sparring_port, kit))
+    result = asyncio.run(
+        _self_test(args.role, args.sub_games, args.our_port, args.sparring_port, kit))
     print("\n[match] RESULT:", _json.dumps(result, indent=2))
     oks = [sg for sg in result["sub_games"] if sg.get("audit_ok")]
-    rl_ok = all(sg["distinct_moves"] > 1 for sg in result["sub_games"]) if result["sub_games"] else False
+    sgs = result["sub_games"]
+    rl_ok = all(sg["distinct_moves"] > 1 for sg in sgs) if sgs else False
     print(f"[match] STATUS: audits {len(oks)}/{len(result['sub_games'])} ok; "
           f"RL-varied-moves={rl_ok}")
     return 0 if oks and rl_ok else 1
