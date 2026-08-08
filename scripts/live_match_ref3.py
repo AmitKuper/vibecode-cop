@@ -187,7 +187,7 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
         role=role, sub_game_number=sub_game,
     )
     await out_session.send_negotiation(greeting)
-    theirs = await _poll_deque(in_session.agreements, timeout=30.0, label="negotiate")
+    theirs = await _poll_deque(in_session.agreements, timeout=300.0, label="negotiate")
     negotiated = verify_negotiation(greeting, theirs)
     print(f"[match] sg{sub_game} role={role} handshake OK vs {negotiated.opponent_group} "
           f"uid={negotiated.game_uid[:12]}")
@@ -199,7 +199,7 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     for step in range(1, max_steps + 1):
         if not we_move_first:
             # cop: wait for the thief's sealed turn first, absorb its scent/hint.
-            await _poll_turn(in_session.turns, step, timeout=20.0)
+            await _poll_turn(in_session.turns, step, timeout=120.0)
         opp = _latest_turn(in_session, step)
         action = mover.decide(step, sub_game, opp.get("smell_grid", {}), opp.get("hint", ""))
         rl_moves.append(action)
@@ -222,7 +222,7 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
         if we_move_first and win_claim is None:
             # After a survival terminal the blind cop ends the game and sends no
             # matching turn — don't wait for one.
-            await _poll_turn(in_session.turns, step, timeout=20.0)
+            await _poll_turn(in_session.turns, step, timeout=120.0)
 
     await out_session.send_audit(role, "timeout")
     import contextlib
@@ -231,7 +231,7 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
             "kind": "done", "sender": role, "sub_game_number": sub_game,
             "status": "complete", "step_budget": float(max_steps), "payload": {},
         })
-    their_audit = await _poll_deque(in_session.audits, timeout=30.0, label="audit")
+    their_audit = await _poll_deque(in_session.audits, timeout=300.0, label="audit")
     ok, errors = verify_audit(their_audit, dict(in_session.turns.played))
     in_session.turns = ReferenceV3Inbox(window=4)  # reset for next sub-game
     distinct = len(set(rl_moves))
