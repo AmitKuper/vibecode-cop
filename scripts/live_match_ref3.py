@@ -149,6 +149,32 @@ async def _poll_deque(dq, *, timeout: float, label: str) -> dict:
     raise TimeoutError(f"timeout waiting for {label}")
 
 
+async def _poll_agreement(dq, sub_game: int, *, timeout: float) -> dict:
+    """Return the peer greeting whose sub_game_number matches, discarding stale ones.
+
+    The peer re-dials our negotiate across per-window re-runs, so greetings pile up in
+    the deque. Consuming FIFO makes us pick a stale greeting (its sub_game lags ours) →
+    SPAR-N06. Instead we match by sub_game_number: drop older greetings, keep newer.
+    """
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        keep, found = [], None
+        while dq:
+            msg = dq.popleft()
+            n = msg.get("sub_game_number")
+            if found is None and (n == sub_game or not isinstance(n, int)):
+                found = msg
+            elif isinstance(n, int) and n < sub_game:
+                continue  # drop stale greeting from an earlier sub-game
+            else:
+                keep.append(msg)  # a greeting for a later sub-game — keep it
+        dq.extend(keep)
+        if found is not None:
+            return found
+        await asyncio.sleep(0.05)
+    raise TimeoutError(f"timeout waiting for negotiate matching sub_game {sub_game}")
+
+
 async def _poll_turn(inbox, step: int, *, timeout: float) -> dict:
     """Wait until the inbox has the opponent's turn for `step`; return it."""
     deadline = time.monotonic() + timeout
@@ -205,13 +231,18 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     in_session.turns = ReferenceV3Inbox(window=4)
     in_session.turn_messages.clear()
     in_session.expected_turn_sender = None
+    in_session.audits.clear()      # drain stale end-of-game payloads from prior sub-games
+    in_session.controls.clear()
     nonce = secrets.token_hex(16)
     greeting = build_negotiation(
         terms=terms, nonce=nonce, group_id=group_id, group_name=group_name,
         role=role, sub_game_number=sub_game,
     )
     await out_session.send_negotiation(greeting)
-    theirs = await _poll_deque(in_session.agreements, timeout=300.0, label="negotiate")
+    # Match the greeting by sub_game_number (not FIFO) — the peer's re-dials pile up.
+    theirs = await _poll_agreement(in_session.agreements, sub_game, timeout=300.0)
+    print(f"[match] sg{sub_game} peer greeting sub_game={theirs.get('sub_game_number')} "
+          f"role={theirs.get('role')}")
     negotiated = verify_negotiation(greeting, theirs)
     print(f"[match] sg{sub_game} role={role} handshake OK vs {negotiated.opponent_group} "
           f"uid={negotiated.game_uid[:12]}")
@@ -410,6 +441,7 @@ async def _play_match(*, opp_cop_url: str, opp_thief_url: str, our_cop_port: int
             our_role = "thief" if sg % 2 == 1 else "police"
             peer_url = opp_cop_url if our_role == "thief" else opp_thief_url
             mcp_url = peer_url if peer_url.endswith("/mcp") else peer_url.rstrip("/") + "/mcp"
+            base_url = mcp_url.removesuffix("/mcp")  # discover probes transports off the base
             in_session = sessions[our_role]
             # Wait ONLY for the endpoint this sub-game must dial (peer binds per-window).
             print(f"[match] sg{sg} ({our_role}) — awaiting peer endpoint {mcp_url}")
@@ -423,8 +455,11 @@ async def _play_match(*, opp_cop_url: str, opp_thief_url: str, our_cop_port: int
             try:
                 transport = StreamableHttpTransport(mcp_url)
                 async with Client(transport) as client:
+                    # Generous probe/introspect deadlines: a tunnelled peer is slower
+                    # than the 5s default, which otherwise fails discovery spuriously.
                     _profile, out_session = await discover_reference_v3(
-                        peer_url, tool_caller=_caller(client))
+                        base_url, tool_caller=_caller(client),
+                        probe_timeout_s=30.0, introspect_timeout_s=30.0)
                     results.append(await _play_subgame(
                         out_session, in_session, role=our_role, sub_game=sg,
                         group_id="vibecode", group_name="vibecode", terms=terms,
