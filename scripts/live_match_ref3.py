@@ -247,6 +247,7 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
         ReferenceV3Inbox,
         build_negotiation,
         build_turn,
+        reference_commit,
         verify_audit,
         verify_negotiation,
     )
@@ -287,6 +288,21 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     negotiated = verify_negotiation(greeting, theirs)
     print(f"[match] sg{sub_game} role={role} handshake OK vs {negotiated.opponent_group} "
           f"uid={negotiated.game_uid[:12]}")
+
+    # Step-0 sealed ON the wire: a fresh-nonce commitment of our identity (github_commit,
+    # declaration_ref) that rides submit_audit as records[0] — matching anrbj666's g01 recipe
+    # byte-for-byte. The peer's verify_audit rehashes it; step 0 is exempt from the played
+    # binding (step >= 1 only), so it is a sealed record, not just the negotiate identity.
+    sz_payload = {
+        "declaration_ref": f"declaration_{negotiated.game_id}.json",
+        "github_commit": our_commit, "group_id": group_id,
+        "role": role, "step": 0, "sub_game_number": sub_game, "type": "step_zero",
+    }
+    sz_nonce = secrets.token_hex(16)
+    step_zero_record = {"payload": sz_payload, "nonce": sz_nonce,
+                        "commit": reference_commit(sz_payload, sz_nonce)}
+    out_session.local_records.append(step_zero_record)   # records[0], sent in submit_audit
+    out_session._local_records_by_step[0] = step_zero_record
 
     mover = RLMover(role, terms)
     we_move_first = (role == "thief")  # reference-v3: THIEF moves first every sub-game
@@ -368,9 +384,20 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
                     "declared": declared.get((rec.get("payload") or {}).get("step"), {}),
                     "nonce": rec.get("nonce"), "payload": rec.get("payload")}
                    for rec in (their_audit.get("records") or [])]
+    # Mutual step-0 audit: their sealed step_zero must declare the same github_commit as
+    # their negotiate identity (else they equivocated between handshake and audit).
+    opp_sz = next((r.get("payload") for r in opp_records
+                   if (r.get("payload") or {}).get("type") == "step_zero"), None)
+    sz_mismatch = None
+    if opp_sz is not None:
+        declared_commit = opp_identity.get("github_commit")
+        sealed_commit = opp_sz.get("github_commit")
+        if declared_commit and sealed_commit and declared_commit != sealed_commit:
+            sz_mismatch = {"declared": declared_commit, "sealed": sealed_commit}
     summary = {"audit": "Verified OK" if ok else "FAILED", "outcome": outcome,
                "digest_match": None, "disputed_capture": None,
                "turns_completed": len(rl_moves), "steps_sealed": len(our_records),
+               "opponent_step_zero": opp_sz, "step_zero_mismatch": sz_mismatch,
                "started_at": started_at, "ended_at": ended_at, "role": role,
                "group_id": "vibecode", "opponent_group_id": opponent_group_hint}
     return {"sub_game": sub_game, "role": role, "audit_ok": ok, "outcome": outcome,
@@ -614,7 +641,7 @@ def _emit_artifacts(result: dict, args) -> None:
         write_artifact(build_config(game_id, game_uid, n, args.setting, opp),
                        config_dir / f"config_{game_id}_g{n:02d}.json")
         write_artifact(build_log(game_id, game_uid, n, sg["role"], opp, sg["our_records"],
-                                 sg["opp_records"], sg["summary"], cop_commit),
+                                 sg["opp_records"], sg["summary"]),
                        results_dir / f"log_{game_id}_g{n:02d}.json")
     # The opponent's declared identity (rules 49/53) — repos, counted count — from their greeting.
     opp_ids = [sg.get("opp_identity") or {} for sg in played if sg.get("opp_identity")]
@@ -667,7 +694,7 @@ def main() -> int:
     # Result is emailed to OUR OWN inbox only (never the league address on friendlies).
     p.add_argument("--report-to", default="agentsorch@gmail.com")
     p.add_argument("--no-email", action="store_true", help="Skip emailing the result")
-    p.add_argument("--members", default="Amit Kuperminz,Ron Marom",
+    p.add_argument("--members", default="Ron Marom,Amit Kuperminz",
                    help="Comma-separated member names for the declaration")
     # Counted-game accounting (rules 37-38): friendly = counted=False (no increment).
     p.add_argument("--counted", action="store_true", help="Mark this as a COUNTED series")

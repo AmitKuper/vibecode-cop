@@ -20,9 +20,24 @@ OUR_REPOS = {"cop": "https://github.com/AmitKuper/vibecode-cop",
              "thief": "https://github.com/AmitKuper/vibecode-thief"}
 OUR_MCP = {"cop": "http://62.56.220.143:61224/mcp", "thief": "http://62.56.220.143:61223/mcp"}
 
+# The shared constitution (rule 11): both repos load byte-identical config/game.json.
+# config_sha256 is sha256(canonical(WHOLE game.json)) — a field subset would defeat the
+# purpose (two teams "agreeing" while unhashed sections differ). anrbj666 pins 9ed3b2e9….
+GAME_JSON_PATH = REPO_ROOT / "config" / "game.json"
+
 
 def _sha(obj: object) -> str:
     return hashlib.sha256(canonical_json(obj).encode("utf-8")).hexdigest()
+
+
+def load_constitution() -> dict:
+    """Load the shared game.json (lazy — a missing file must not crash on import)."""
+    return json.loads(GAME_JSON_PATH.read_text(encoding="utf-8"))
+
+
+def config_sha256() -> str:
+    """sha256(canonical(whole game.json)) — must equal the peer's 9ed3b2e9…."""
+    return _sha(load_constitution())
 
 
 def now_iso() -> str:
@@ -80,49 +95,36 @@ def score_series(sub_games: list, opponent: str, game_id: str, *,
 
 
 def build_config(game_id: str, game_uid: str, sub_game: int, setting: str, opponent: str) -> dict:
-    board = {"axis_origin_corner": "top-left", "axis_start_index": 0, "cop_start": [0, 0],
-             "grid_size": 7, "num_agents": 2, "thief_start": [3, 3]}
-    movement = {"max_barriers": 14, "max_moves": 35,
-                "move_set": ["N", "S", "E", "W", "STAY"], "survival_threshold": 35}
-    league = {"diversity_reward": 10, "max_games_per_team": 10, "min_games_to_pass": 2,
-              "num_games": 6, "response_timeout_sec": 30, "token_budget_per_series": 200000,
-              "watchdog_timeout_sec": 60}
-    pher = {"min_center_intensity": 0.5, "pheromone_center_intensity": 0.9,
-            "pheromone_decay": 0.1, "pheromone_grid_size": 5}
-    rate = {"concurrent_requests": 2, "max_retries": 3, "queue_depth": 100,
-            "requests_per_minute": 30, "retry_backoff_sec": 5}
-    scoring = {"capture_cop": 20, "capture_thief": 5, "survival_cop": 5,
-               "survival_thief": 10, "technical_loss": 0, "tie_score": 2}
-    world = {"hint_max_words": 15, "map_area": setting}
-    params = {"board_and_agents": board, "movement_and_barriers": movement,
-              "network_and_league": league, "pheromones": pher, "scoring": scoring, "world": world}
+    """Config artifact sourced entirely from the shared constitution (config/game.json).
+
+    Every section (including agreed_between and the whole-file config_sha256) comes from the
+    adopted file so the artifact can never drift from the hashed bytes. `setting` is retained
+    for signature compatibility but ignored — map_area lives in the constitution.
+    """
+    g = load_constitution()
     return {
         "_schema": "p2p-police-artifacts",
-        "agreed_between": sorted(["vibecode", opponent]),
-        "board_and_agents": board,
+        "agreed_between": g["agreed_between"],
+        "board_and_agents": g["board_and_agents"],
         "config_name": f"config_{game_id}_g{sub_game:02d}.json",
-        "config_sha256": _sha(params),
+        "config_sha256": config_sha256(),
         "game_id": game_id, "game_uid": game_uid,
         "links": OUR_REPOS,
-        "movement_and_barriers": movement,
-        "network_and_league": league,
-        "pheromones": pher,
-        "rate_limiter_gatekeeper": rate,
-        "report_type": "config", "schema_version": "1.3",
-        "scoring": scoring, "sub_game_number": sub_game, "world": world,
+        "movement_and_barriers": g["movement_and_barriers"],
+        "network_and_league": g["network_and_league"],
+        "pheromones": g["pheromones"],
+        "rate_limiter_gatekeeper": g["rate_limiter_gatekeeper"],
+        "report_type": "config", "schema_version": g["schema_version"],
+        "scoring": g["scoring"], "sub_game_number": sub_game, "world": g["world"],
     }
 
 
 def build_log(game_id: str, game_uid: str, sub_game: int, role: str, opponent: str,
-              our_records: list, opp_records: list, summary: dict,
-              github_commit: str) -> dict:
-    step_zero = {
-        "commit": _sha({"type": "step_zero", "sub_game": sub_game, "role": role}),
-        "nonce": "0" * 32,
-        "payload": {"declaration_ref": f"declaration_{game_id}.json",
-                    "github_commit": github_commit, "group_id": "vibecode",
-                    "role": role, "step": 0, "sub_game_number": sub_game, "type": "step_zero"},
-    }
+              our_records: list, opp_records: list, summary: dict) -> dict:
+    """Log artifact. records[0] is the REAL sealed step_zero that rode the wire in
+    submit_audit (fresh nonce, commit = reference_commit(payload, nonce)) — no longer
+    synthesized here; it comes straight from out_session.local_records.
+    """
     return {
         "_schema": "p2p-police-artifacts",
         "game_id": game_id, "game_uid": game_uid,
@@ -131,7 +133,7 @@ def build_log(game_id: str, game_uid: str, sub_game: int, role: str, opponent: s
                   "log": f"log_{game_id}_g{sub_game:02d}.json",
                   "result": f"result_{game_id}.json"},
         "opponent_records": opp_records,
-        "records": [step_zero] + our_records,
+        "records": our_records,
         "report_type": "log", "schema_version": "1.3",
         "sub_game_number": sub_game, "summary": summary, "wire_shape": "reference",
     }
@@ -156,21 +158,21 @@ def build_declaration(game_id: str, game_uid: str, opponent: str, members: list,
                       opp_identity: dict | None = None, our_counted: int = 0,
                       thief_commit: str | None = None) -> dict:
     hw = _hardware_spec()
-    # Role-split: declare both repo HEADs (ADR: cop is the single-string fallback).
-    commit = {"cop": cop_commit, "thief": thief_commit or cop_commit}
+    # No github_commit in the declaration: the reference keeps per-sub-game commit in the
+    # log step_zero and result rows (that's where both stacks already put it). cop_commit /
+    # thief_commit params are retained for caller compatibility but no longer emitted here.
     ours = {
-        "code_version": "1.00", "counted_games_played": our_counted, "github_commit": commit,
+        "code_version": "1.00", "counted_games_played": our_counted,
         "group_id": "vibecode", "group_name": "vibecode",
         "hardware_spec": hw, "hardware_spec_sha256": _sha(hw) if hw else "",
         "llm_model": "role-specific-recurrent-policy",
         "mcp_servers": OUR_MCP, "members": members, "repos": OUR_REPOS,
-        "signature": f"sha256:{_sha({'group_id': 'vibecode', 'commit': commit})}",
+        "signature": f"sha256:{_sha({'group_id': 'vibecode', 'game_uid': game_uid})}",
     }
     oi = opp_identity or {}
     theirs = {
         "group_id": oi.get("group_id", opponent), "group_name": oi.get("group_name", opponent),
         "counted_games_played": oi.get("counted_games_played", 0),
-        "github_commit": oi.get("github_commit", "unknown"),
         "hardware_spec": oi.get("hardware_spec", {}), "hardware_spec_sha256": "",
         "llm_model": oi.get("llm_model", "unknown"), "mcp_servers": oi.get("mcp_servers", {}),
         "members": oi.get("members", []), "repos": oi.get("repos", {}),
