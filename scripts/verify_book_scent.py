@@ -65,7 +65,7 @@ def main() -> int:
           f"{'OK (byte-exact)' if walk_ok else f'{walk_fails} steps differ'}")
     fails += not walk_ok
 
-    verdict = "ALL BYTE-EXACT — no rounding, clamp [0,0.9]" if fails == 0 else f"{fails} check(s) FAILED"
+    verdict = "ALL BYTE-EXACT (no rounding, clamp)" if fails == 0 else f"{fails} check(s) FAILED"
     print(f"\nRESULT: {verdict}")
     return 0 if fails == 0 else 1
 
