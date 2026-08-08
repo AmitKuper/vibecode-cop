@@ -33,5 +33,5 @@ reasons rooted in the project's architecture docs:
 - Counted runs email the result to `rmisegal+uoh26finalgame@gmail.com` (rule 51); the settlement
   guard emits the report only on a clean 6/6.
 
-> Note: the raw NotebookLM screenshot (Image) is the primary source; if the PNG is saved to a path
-> it can be dropped in alongside this file. This markdown transcribes its substance.
+> Primary source: the NotebookLM screenshot **`Email_Report_Agent_conversation.jpeg`** (in this
+> `evidence/` directory). This markdown transcribes its substance.
