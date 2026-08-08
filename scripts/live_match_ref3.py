@@ -320,6 +320,13 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
                 print(f"[match] sg{sub_game} thief conceded capture at step {step}")
                 captured = True
                 break
+            # Thief declared the survival terminal on its final step: the game is settled
+            # before the cop moves (the reference cop ends at 34). Stop sealing here — a
+            # post-terminal cop move could otherwise write a capture-shaped record into an
+            # already-settled survival (anrbj666's flagged wart). Our count = thief count - 1.
+            if (opp.get("win_claim") or {}).get("type") == "survival":
+                print(f"[match] sg{sub_game} thief declared survival terminal at step {step}; cop stops (no post-terminal move)")
+                break
         else:
             opp = _latest_turn(in_session, step)
 
