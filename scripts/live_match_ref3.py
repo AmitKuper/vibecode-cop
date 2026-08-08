@@ -25,6 +25,7 @@ import socket
 import subprocess
 import sys
 import time
+from datetime import UTC
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -254,6 +255,8 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     in_session.expected_turn_sender = None
     in_session.audits.clear()      # drain stale end-of-game payloads from prior sub-games
     in_session.controls.clear()
+    from datetime import datetime
+    started_at = datetime.now(UTC).isoformat()
     nonce = secrets.token_hex(16)
     greeting = build_negotiation(
         terms=terms, nonce=nonce, group_id=group_id, group_name=group_name,
@@ -335,10 +338,28 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     in_session.turns = ReferenceV3Inbox(window=4)  # reset for next sub-game
     distinct = len(set(rl_moves))
     outcome = "capture" if captured else "survival"
+    ended_at = datetime.now(UTC).isoformat()
     print(f"[match] sg{sub_game} audit ok={ok} errors={errors[:2]} outcome={outcome} "
           f"rl_moves={len(rl_moves)} distinct={distinct} sample={rl_moves[:8]}")
+    # Collect the sealed history for the log/result artifacts.
+    our_records = [{"commit": r.get("commit"), "nonce": r.get("nonce"), "payload": r.get("payload")}
+                   for r in out_session.local_records]
+    declared = {t.get("step"): {"barrier_placed": t.get("barrier_placed"),
+                                "capture_claim": t.get("capture_claim"), "hint": t.get("hint")}
+                for t in in_session.turn_messages}
+    opp_records = [{"commit": rec.get("commit"),
+                    "declared": declared.get((rec.get("payload") or {}).get("step"), {}),
+                    "nonce": rec.get("nonce"), "payload": rec.get("payload")}
+                   for rec in (their_audit.get("records") or [])]
+    summary = {"audit": "Verified OK" if ok else "FAILED", "outcome": outcome,
+               "digest_match": None, "disputed_capture": None,
+               "turns_completed": len(rl_moves), "steps_sealed": len(our_records),
+               "started_at": started_at, "ended_at": ended_at, "role": role,
+               "group_id": "vibecode", "opponent_group_id": opponent_group_hint}
     return {"sub_game": sub_game, "role": role, "audit_ok": ok, "outcome": outcome,
-            "rl_move_count": len(rl_moves), "distinct_moves": distinct}
+            "rl_move_count": len(rl_moves), "distinct_moves": distinct,
+            "our_records": our_records, "opp_records": opp_records, "summary": summary,
+            "started_at": started_at, "ended_at": ended_at}
 
 
 def _latest_turn(in_session, step: int) -> dict:
@@ -534,69 +555,66 @@ def _write_result(result: dict) -> Path:
     return path
 
 
-# Appendix-F scoring: capture -> cop 20 / thief 5; survival -> thief 10 / cop 5.
-def _score_series(sub_games: list, group_id: str, opponent: str) -> dict:
-    rows, ours, theirs, win_us, win_them = [], 0, 0, 0, 0
-    for sg in sub_games:
-        role = sg["role"]  # our role: "police" or "thief"
-        cop_s, thief_s = (20, 5) if sg.get("outcome") == "capture" else (5, 10)
-        us, them = (cop_s, thief_s) if role == "police" else (thief_s, cop_s)
-        ours += us
-        theirs += them
-        win_us += us > them
-        win_them += them > us
-        rows.append({
-            "sub_game_number": sg["sub_game"],
-            "roles": {group_id: role, opponent: "thief" if role == "police" else "police"},
-            "outcome": sg.get("outcome"), "audit": sg.get("audit_ok"),
-            "score": {group_id: us, opponent: them},
-            "winner_group": group_id if us > them else opponent,
-        })
-    winner = group_id if ours > theirs else opponent if theirs > ours else None
-    return {"rows": rows, "points": {group_id: ours, opponent: theirs},
-            "sub_game_wins": {group_id: win_us, opponent: win_them}, "winner_group": winner}
+def _git_head(repo: Path) -> str:
+    import subprocess
+    try:
+        out = subprocess.run(["git", "-C", str(repo), "rev-parse", "HEAD"],
+                             capture_output=True, text=True, timeout=10).stdout.strip()
+        return out or "unknown"
+    except Exception:
+        return "unknown"
 
 
-def _build_report(result: dict, *, group_id: str, opponent: str, setting: str,
-                  counted: bool = False) -> dict:
+def _emit_artifacts(result: dict, args) -> None:
+    """Write the four league artifacts to the repo; email ONLY the result."""
+    from ref3_artifacts import (
+        build_config,
+        build_declaration,
+        build_log,
+        build_result,
+        email_result,
+        score_series,
+        write_artifact,
+    )
+
     from cop_worker.protocol.reference_v3 import (
         default_terms,
         derive_game_id,
         derive_game_uid,
     )
-    terms = default_terms({"setting": setting})
-    scored = _score_series(result["sub_games"], group_id, opponent)
-    return {
-        "report_type": "final_game_result",
-        "schema_version": "1.0",
-        "counted": counted,
-        "game_id": derive_game_id(group_id, opponent),
-        "game_uid": derive_game_uid(terms, group_id, opponent),
-        "groups": sorted([group_id, opponent]),
-        "num_sub_games": len(result["sub_games"]),
-        "timezone": "Asia/Jerusalem",
-        "sub_games": scored["rows"],
-        "final_result": {
-            "points": scored["points"],
-            "sub_game_wins": scored["sub_game_wins"],
-            "winner_group": scored["winner_group"],
-        },
-        "links": {"github": {
-            "vibecode_cop": "https://github.com/AmitKuper/vibecode-cop",
-            "vibecode_thief": "https://github.com/AmitKuper/vibecode-thief",
-        }},
-    }
-
-
-def _send_report(report: dict, recipient: str) -> str:
-    """Email the report to our own inbox (friendly = self only, never the league)."""
-    from cop_worker.gmail.sender import GmailApiSender
-    token = REPO_ROOT / "secrets" / "gmail" / "token.json"
-    body = _json.dumps(report, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
-    pts = report["final_result"]["points"]
-    subject = (f"[vibecode] {'COUNTED' if report['counted'] else 'friendly'} "
-               f"{report['game_id']} {pts}")
-    return GmailApiSender(token)(recipient, subject, body, [])
+    opp = args.opponent_group
+    game_id = derive_game_id("vibecode", opp)
+    game_uid = derive_game_uid(default_terms({"setting": args.setting}), "vibecode", opp)
+    cop_commit = _git_head(REPO_ROOT)
+    results_dir = REPO_ROOT / "results"
+    config_dir = REPO_ROOT / "config" / "games"
+    played = [sg for sg in result["sub_games"] if sg.get("our_records") is not None]
+    for sg in played:
+        n = sg["sub_game"]
+        write_artifact(build_config(game_id, game_uid, n, args.setting, opp),
+                       config_dir / f"config_{game_id}_g{n:02d}.json")
+        write_artifact(build_log(game_id, game_uid, n, sg["role"], opp, sg["our_records"],
+                                 sg["opp_records"], sg["summary"], cop_commit),
+                       results_dir / f"log_{game_id}_g{n:02d}.json")
+    rows, final_result = score_series(played, opp, cop_commit, game_id)
+    members = [m.strip() for m in args.members.split(",") if m.strip()]
+    starts = [sg.get("started_at", "") for sg in played]
+    ends = [sg.get("ended_at", "") for sg in played]
+    write_artifact(build_declaration(game_id, game_uid, opp, members, cop_commit,
+                                     starts[0] if starts else "", ends[-1] if ends else ""),
+                   results_dir / f"declaration_{game_id}.json")
+    result_obj = build_result(game_id, game_uid, opp, rows, final_result, cop_commit)
+    write_artifact(result_obj, results_dir / f"result_{game_id}.json")
+    print(f"[match] artifacts: {len(played)}x(config+log) + declaration + result "
+          f"under results/ and config/games/")
+    print(f"[match] result: {final_result['total_score']} winner={final_result['winner_group']}")
+    if not args.no_email:
+        try:
+            token = REPO_ROOT / "secrets" / "gmail" / "token.json"
+            mid = email_result(result_obj, args.report_to, f"result_{game_id}.json", token)
+            print(f"[match] emailed result ONLY to {args.report_to} (id={mid})")
+        except Exception as exc:
+            print(f"[match] email FAILED ({type(exc).__name__}: {str(exc)[:140]})")
 
 
 def main() -> int:
@@ -615,9 +633,10 @@ def main() -> int:
     p.add_argument("--our-cop-port", type=int, default=61224)
     p.add_argument("--our-thief-port", type=int, default=61223)
     p.add_argument("--setting", default="New York")
-    # Friendly report is emailed to OUR OWN inbox only (never the league address).
+    # Result is emailed to OUR OWN inbox only (never the league address on friendlies).
     p.add_argument("--report-to", default="agentsorch@gmail.com")
-    p.add_argument("--no-email", action="store_true", help="Skip emailing the report")
+    p.add_argument("--no-email", action="store_true", help="Skip emailing the result")
+    p.add_argument("--members", default="", help="Comma-separated 'Name:id' for declaration")
     args = p.parse_args()
 
     if args.match:
@@ -629,21 +648,10 @@ def main() -> int:
             our_cop_port=args.our_cop_port, our_thief_port=args.our_thief_port,
             opponent_group=args.opponent_group, setting=args.setting,
             sub_games=args.sub_games if args.sub_games > 1 else 6))
-        path = _write_result(result)
+        _write_result(result)  # raw internal snapshot (debug)
         oks = [sg for sg in result["sub_games"] if sg.get("audit_ok")]
-        print(f"\n[match] wrote {path}")
-        print(f"[match] STATUS: audits {len(oks)}/{len(result['sub_games'])} ok")
-        report = _build_report(result, group_id="vibecode", opponent=args.opponent_group,
-                               setting=args.setting, counted=False)
-        (REPO_ROOT / "reports" / "ref3_matches" / "last_report.json").write_text(
-            _json.dumps(report, indent=2), encoding="utf-8")
-        print(f"[match] result: {report['final_result']}")
-        if not args.no_email:
-            try:
-                mid = _send_report(report, args.report_to)
-                print(f"[match] emailed friendly report to {args.report_to} (id={mid})")
-            except Exception as exc:
-                print(f"[match] email FAILED ({type(exc).__name__}: {str(exc)[:120]})")
+        print(f"\n[match] STATUS: audits {len(oks)}/{len(result['sub_games'])} ok")
+        _emit_artifacts(result, args)
         return 0 if oks and len(oks) == len(result["sub_games"]) else 1
 
     if not args.self_test:
