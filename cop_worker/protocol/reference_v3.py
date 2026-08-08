@@ -295,7 +295,7 @@ def validate_turn(message: dict) -> None:
     required = {"step", "sender", "commit", "hint", "smell_grid"}
     if not isinstance(message, dict) or not required.issubset(message):
         raise ReferenceV3Error(f"turn missing fields: {sorted(required - set(message or {}))}")
-    if message["sender"] not in {"police"}:
+    if message["sender"] not in {"police", "thief"}:
         raise ReferenceV3Error("turn sender must be police or thief")
     if not isinstance(message["step"], int) or message["step"] < 1:
         raise ReferenceV3Error("turn step must be a positive integer")
