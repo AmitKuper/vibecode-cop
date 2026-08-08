@@ -785,9 +785,10 @@ def evaluate(
     total_role_score = total_opponent_score = 0
     total_decisions = total_illegal_selected = 0
     latency_samples: list[float] = []
+    eval_families = [f for f in FAMILIES if f != "historical_checkpoint" or historical_policy is not None]
     torch.manual_seed(seed + 50_000)
     start = time.perf_counter()
-    for family_index, family in enumerate(FAMILIES):
+    for family_index, family in enumerate(eval_families):
         rng = random.Random(seed + 10_000 + family_index)
         wins = turns = series_wins = family_role_score = family_opponent_score = 0
         series_results = []
@@ -906,7 +907,7 @@ def evaluate(
 def _promotion_comparison(candidate: dict, baseline: dict, seed: int) -> dict:
     candidate_scores = []
     baseline_scores = []
-    for family in FAMILIES:
+    for family in candidate["families"]:
         candidate_scores.extend(
             item["role_score"] for item in candidate["families"][family]["series_results"]
         )
