@@ -19,6 +19,7 @@ def _coord():
 
 # --- helper -----------------------------------------------------------------
 
+
 def test_gamelet_from_game_id():
     assert gamelet_from_game_id("abc_g3") == 3
     assert gamelet_from_game_id("legacy") == 0  # non-strict fallback
@@ -26,6 +27,7 @@ def test_gamelet_from_game_id():
 
 def test_gamelet_from_game_id_strict_raises():
     import pytest
+
     with pytest.raises(ValueError):
         gamelet_from_game_id("legacy", strict=True)
 
@@ -35,6 +37,7 @@ def test_get_state_none_for_unknown_session():
 
 
 # --- active outbound lifecycle ----------------------------------------------
+
 
 def test_full_active_lifecycle_to_done():
     c = _coord()
@@ -69,6 +72,7 @@ def test_technical_loss_transition():
 
 
 # --- inbound commit guard + idempotency -------------------------------------
+
 
 def test_inbound_commit_accept_then_idempotent_then_conflict():
     c = _coord()
@@ -105,6 +109,7 @@ def test_rollback_inbound_commit_reverts_state_and_counter():
 
 
 # --- inbound reveal + final audit -------------------------------------------
+
 
 def test_inbound_reveal_and_final_audit_flow():
     c = _coord()

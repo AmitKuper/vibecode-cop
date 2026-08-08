@@ -54,26 +54,40 @@ def main() -> None:
     print(f"[compare] role={args.role} series/family={args.series} temp={temperature}")
     print(f"{'arm':<12}{'win_rate':>10}{'series_wr':>11}{'worst_fam_wr':>14}{'avg_turns':>11}")
     for r in rows:
-        print(f"{r['arm']:<12}{r['win_rate']:>10.4f}{r['series_win_rate']:>11.4f}"
-              f"{r['worst_family_win_rate']:>14.4f}{r['avg_turns']:>11.2f}")
-    print(f"\ncandidate - baseline win_rate delta = "
-          f"{cand_eval['win_rate'] - base_eval['win_rate']:+.4f}")
+        print(
+            f"{r['arm']:<12}{r['win_rate']:>10.4f}{r['series_win_rate']:>11.4f}"
+            f"{r['worst_family_win_rate']:>14.4f}{r['avg_turns']:>11.2f}"
+        )
+    print(
+        f"\ncandidate - baseline win_rate delta = "
+        f"{cand_eval['win_rate'] - base_eval['win_rate']:+.4f}"
+    )
     print(f"mean series-score improvement = {promotion['mean_series_role_score_improvement']:+.3f}")
-    print(f"paired bootstrap 95% CI = {promotion['bootstrap_95']}  "
-          f"(significant improvement iff lower bound > 0)")
+    print(
+        f"paired bootstrap 95% CI = {promotion['bootstrap_95']}  "
+        f"(significant improvement iff lower bound > 0)"
+    )
     print(f"promotion gate passed = {promotion['passed']}")
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps({
-        "role": args.role, "series_per_family": args.series, "seed": args.seed,
-        "temperature": temperature,
-        "candidate_win_rate": cand_eval["win_rate"],
-        "baseline_win_rate": base_eval["win_rate"],
-        "win_rate_delta": cand_eval["win_rate"] - base_eval["win_rate"],
-        "summaries": rows, "promotion": promotion,
-        "candidate_families": {k: v["win_rate"] for k, v in cand_eval["families"].items()},
-        "baseline_families": {k: v["win_rate"] for k, v in base_eval["families"].items()},
-    }, indent=2))
+    args.out.write_text(
+        json.dumps(
+            {
+                "role": args.role,
+                "series_per_family": args.series,
+                "seed": args.seed,
+                "temperature": temperature,
+                "candidate_win_rate": cand_eval["win_rate"],
+                "baseline_win_rate": base_eval["win_rate"],
+                "win_rate_delta": cand_eval["win_rate"] - base_eval["win_rate"],
+                "summaries": rows,
+                "promotion": promotion,
+                "candidate_families": {k: v["win_rate"] for k, v in cand_eval["families"].items()},
+                "baseline_families": {k: v["win_rate"] for k, v in base_eval["families"].items()},
+            },
+            indent=2,
+        )
+    )
     print(f"\nwrote {args.out}")
 
 

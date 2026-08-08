@@ -10,11 +10,9 @@ Verifies that:
 from __future__ import annotations
 
 import numpy as np
-import pytest
 
 from cop_worker.observation import BeliefState, LocalObservation
 from cop_worker.rl.local_obs_adapter import local_obs_to_tensor, obs_tensor_shape
-
 
 # ---------------------------------------------------------------------------
 # Helpers

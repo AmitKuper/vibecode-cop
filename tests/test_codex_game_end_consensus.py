@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from league_manager.series_lifecycle import SeriesLifecycle
 
 

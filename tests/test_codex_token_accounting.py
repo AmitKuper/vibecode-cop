@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from cop_worker.audit.result_consensus import (
     GameletOutcome,
     ResultAgreement,
@@ -11,7 +9,6 @@ from cop_worker.audit.result_consensus import (
     create_signed_result_agreement,
 )
 from cop_worker.step0.signing import generate_key_pair
-
 
 # ---------------------------------------------------------------------------
 # Helpers

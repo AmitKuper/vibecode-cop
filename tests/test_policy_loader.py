@@ -23,9 +23,7 @@ def _save_ppo(path, in_channels=4, n_actions=5):
 
 def _save_dqn(path, in_channels=4, n_actions=5):
     net = DQNNet(grid_size=7, n_actions=n_actions, hidden=16, in_channels=in_channels)
-    torch.save(
-        {"net": net.state_dict(), "n_actions": n_actions, "n_channels": in_channels}, path
-    )
+    torch.save({"net": net.state_dict(), "n_actions": n_actions, "n_channels": in_channels}, path)
 
 
 def test_load_ppo_thief_checkpoint(tmp_path):

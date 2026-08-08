@@ -38,7 +38,9 @@ def test_bfs_dist_respects_barriers():
 
 
 def test_pursuit_cop_moves_toward_centroid():
-    move = pursuit_cop((0, 0), belief_centroid=(6, 6), barriers=[], barriers_remaining=0, grid_size=N)
+    move = pursuit_cop(
+        (0, 0), belief_centroid=(6, 6), barriers=[], barriers_remaining=0, grid_size=N
+    )
     assert move in ("N", "S", "E", "W")
     dx, dy = {"N": (0, -1), "S": (0, 1), "E": (1, 0), "W": (-1, 0)}[move]
     # the chosen step must reduce Manhattan distance to the centroid

@@ -15,6 +15,7 @@ from cop_worker.rules_engine import GameOutcome
 
 # --- config -----------------------------------------------------------------
 
+
 def test_config_defaults_match_mandatory_minimums():
     cfg = RLGameConfig()
     assert cfg.grid_size == 7
@@ -31,6 +32,7 @@ def test_config_from_dict_overrides_and_falls_back():
 
 
 # --- env_helpers ------------------------------------------------------------
+
 
 def test_manhattan_dist():
     board = Board(cop_position=[0, 0], thief_position=[3, 4], turn=0, barriers=[], grid_size=7)
@@ -80,6 +82,7 @@ def test_apply_place_action_noop_off_board():
 
 
 # --- env_rewards ------------------------------------------------------------
+
 
 class _Host(RewardsMixin):
     """Minimal host exposing the attributes RewardsMixin depends on."""

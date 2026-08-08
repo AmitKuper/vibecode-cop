@@ -70,7 +70,9 @@ def _patch_loader(monkeypatch, tmp_path, *, entry=None, checkpoint=None):
     manifest = tmp_path / "MANIFEST.json"
     manifest.write_text("{}", encoding="utf-8")
     chosen_entry = entry or _entry()
-    monkeypatch.setattr("cop_worker.rl.model_schema.load_manifest", lambda _path: {"cop": chosen_entry})
+    monkeypatch.setattr(
+        "cop_worker.rl.model_schema.load_manifest", lambda _path: {"cop": chosen_entry}
+    )
     monkeypatch.setattr("cop_worker.rl.model_schema.validate_model_file", lambda *_args: None)
     monkeypatch.setattr(torch, "load", lambda *_args, **_kwargs: checkpoint or _checkpoint())
     return manifest
@@ -169,4 +171,3 @@ def test_file_sha256_reads_artifact_chunks(tmp_path) -> None:
     artifact = tmp_path / "large.bin"
     artifact.write_bytes(b"a" * (1024 * 1024 + 3))
     assert len(file_sha256(artifact)) == 64
-

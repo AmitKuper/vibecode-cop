@@ -20,6 +20,7 @@ from league_manager.gmail.dos_detector import DosDetector
 
 # --- deception policy (templates, no LLM) -----------------------------------
 
+
 def test_choose_intent_low_token_budget_is_ambiguous():
     pol = NaturalLanguagePolicy(role="cop")
     assert pol.choose_intent(step=1, token_budget=3) == DeceptionIntent.AMBIGUOUS
@@ -28,8 +29,12 @@ def test_choose_intent_low_token_budget_is_ambiguous():
 def test_choose_intent_returns_valid_enum_across_contexts():
     pol = NaturalLanguagePolicy(role="thief", bluff_probability=0.3)
     random.seed(0)
-    seen = {pol.choose_intent(step=s, belief_entropy=e, physical_action=a)
-            for s in range(6) for e in (0.0, 2.0, 4.0) for a in ("N", "STAY", "PLACE_E")}
+    seen = {
+        pol.choose_intent(step=s, belief_entropy=e, physical_action=a)
+        for s in range(6)
+        for e in (0.0, 2.0, 4.0)
+        for a in ("N", "STAY", "PLACE_E")
+    }
     assert seen and seen.issubset(set(DeceptionIntent))
 
 
@@ -77,6 +82,7 @@ def test_hint_is_numeric_location_detection():
 
 # --- DoS detector (uses monotonic clock; no sleeps needed) ------------------
 
+
 def test_dos_detector_allows_under_limits():
     d = DosDetector(max_per_minute=10, max_per_game=2)
     allowed, reason = d.check("g1")
@@ -109,6 +115,7 @@ def test_dos_detector_reset_lock():
 
 
 # --- league config ----------------------------------------------------------
+
 
 def test_validate_group_id_accepts_8_alnum():
     validate_group_id("abcd1234")  # must not raise

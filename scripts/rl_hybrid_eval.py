@@ -69,8 +69,12 @@ def main() -> None:
     parser.add_argument("--historical", type=Path, required=True)
     parser.add_argument("--series", type=int, default=8, help="series per family")
     parser.add_argument("--seed", type=int, default=20260805)
-    parser.add_argument("--temperature", type=float, default=None,
-                        help="inference temperature; default per role (thief=0.5)")
+    parser.add_argument(
+        "--temperature",
+        type=float,
+        default=None,
+        help="inference temperature; default per role (thief=0.5)",
+    )
     parser.add_argument("--out", type=Path, default=Path("results/rl_hybrid_eval.json"))
     args = parser.parse_args()
 
@@ -89,12 +93,18 @@ def main() -> None:
     arms: dict[str, dict] = {}
     arms["champion"] = run(champion)
     arms["greedy"] = evaluate(
-        champion, args.role, args.series, args.seed, historical,
-        temperature, force_expert_actor=True,
+        champion,
+        args.role,
+        args.series,
+        args.seed,
+        historical,
+        temperature,
+        force_expert_actor=True,
     )
     for strength, threshold in HYBRID_GRID:
-        wrapped = HybridActorCritic(champion, args.role, strength=strength,
-                                    conf_threshold=threshold)
+        wrapped = HybridActorCritic(
+            champion, args.role, strength=strength, conf_threshold=threshold
+        )
         arms[f"hybrid_s{strength}_c{threshold}"] = run(wrapped)
 
     summaries = [summarise(name, res) for name, res in arms.items()]
@@ -104,21 +114,34 @@ def main() -> None:
 
     print(f"\n{'arm':<22}{'win_rate':>10}{'series_wr':>11}{'worst_fam_wr':>14}{'avg_turns':>11}")
     for s in summaries:
-        print(f"{s['arm']:<22}{s['win_rate']:>10.4f}{s['series_win_rate']:>11.4f}"
-              f"{s['worst_family_win_rate']:>14.4f}{s['avg_turns']:>11.2f}")
+        print(
+            f"{s['arm']:<22}{s['win_rate']:>10.4f}{s['series_win_rate']:>11.4f}"
+            f"{s['worst_family_win_rate']:>14.4f}{s['avg_turns']:>11.2f}"
+        )
     print(f"\nchampion win_rate = {champ_wr:.4f}")
     print(f"best arm          = {best_name} @ {best['win_rate']:.4f}")
-    print(f"paired promotion vs champion: passed={promotion['passed']} "
-          f"mean_score_delta={promotion['mean_series_role_score_improvement']:.3f} "
-          f"bootstrap95={promotion['bootstrap_95']}")
+    print(
+        f"paired promotion vs champion: passed={promotion['passed']} "
+        f"mean_score_delta={promotion['mean_series_role_score_improvement']:.3f} "
+        f"bootstrap95={promotion['bootstrap_95']}"
+    )
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps({
-        "role": args.role, "series_per_family": args.series, "seed": args.seed,
-        "temperature": temperature, "champion_win_rate": champ_wr,
-        "best_arm": best_name, "summaries": summaries,
-        "best_vs_champion_promotion": promotion,
-    }, indent=2))
+    args.out.write_text(
+        json.dumps(
+            {
+                "role": args.role,
+                "series_per_family": args.series,
+                "seed": args.seed,
+                "temperature": temperature,
+                "champion_win_rate": champ_wr,
+                "best_arm": best_name,
+                "summaries": summaries,
+                "best_vs_champion_promotion": promotion,
+            },
+            indent=2,
+        )
+    )
     print(f"\nwrote {args.out}")
 
 

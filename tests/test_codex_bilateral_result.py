@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict
+import pytest
 
 from cop_worker.audit.result_consensus import (
     GameletOutcome,
@@ -13,8 +13,6 @@ from cop_worker.audit.result_consensus import (
     verify_bilateral_consensus,
 )
 from cop_worker.step0.signing import generate_key_pair
-
-import pytest
 
 
 def _make_agreement(game_uid: str = "series_fixture") -> ResultAgreement:

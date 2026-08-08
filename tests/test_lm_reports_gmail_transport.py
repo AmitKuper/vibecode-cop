@@ -18,6 +18,7 @@ from league_manager.reports.example_plugin import ExampleCustomPlugin
 
 # --- gmail sender -----------------------------------------------------------
 
+
 def test_acceptance_file_sender_writes_fake_record(tmp_path):
     outbox = tmp_path / "outbox.jsonl"
     sender = AcceptanceFileGmailSender(outbox)
@@ -48,11 +49,14 @@ def test_gmail_api_sender_validate_ok(tmp_path):
 
 # --- example report plugin (async) ------------------------------------------
 
+
 async def test_example_plugin_generates_stats(tmp_path):
     plugin = ExampleCustomPlugin()
     (tmp_path / "G1").mkdir()
     state = {
-        "winner": "cop", "cop_position": [1, 1], "thief_position": [4, 5],
+        "winner": "cop",
+        "cop_position": [1, 1],
+        "thief_position": [4, 5],
         "move_history": [{"cop": "N", "thief": "S"}, {"cop": "N", "thief": "E"}],
     }
     result = await plugin.generate("G1", state, str(tmp_path))
@@ -71,6 +75,7 @@ async def test_example_plugin_error_path_returns_not_ok(tmp_path):
 
 
 # --- transport-probe URL normalisation --------------------------------------
+
 
 def test_normalize_strips_exact_mcp_and_sse_suffix():
     assert normalize_mcp_base_url("https://team.com/mcp") == "https://team.com"

@@ -29,8 +29,11 @@ def _coord():
 
 def _start(**over):
     fields = {
-        "game_id": GID, "roles": {"cop": "p1", "police": "p2"}, "config_sha256": CFG,
-        "protocol_version": "1.0", "endpoint": "http://localhost:5000/mcp",
+        "game_id": GID,
+        "roles": {"cop": "p1", "police": "p2"},
+        "config_sha256": CFG,
+        "protocol_version": "1.0",
+        "endpoint": "http://localhost:5000/mcp",
         "timestamp": "2026-01-01T00:00:00Z",
     }
     fields.update(over)
@@ -40,8 +43,14 @@ def _start(**over):
 
 
 def _action(**over):
-    fields = {"game_id": GID, "step": 1, "role": "cop", "config_sha256": CFG,
-              "timestamp": "t", "phase": "commit"}
+    fields = {
+        "game_id": GID,
+        "step": 1,
+        "role": "cop",
+        "config_sha256": CFG,
+        "timestamp": "t",
+        "phase": "commit",
+    }
     fields.update(over)
     msg = ActionMessage(**fields)
     d = msg.to_dict()
@@ -55,6 +64,7 @@ def _start_game(coord, msg_json, sig, role="cop", cfg=CFG, callbacks=None):
 
 
 # --- start_game -------------------------------------------------------------
+
 
 def test_start_game_happy_path_reaches_ready():
     coord = _coord()
@@ -99,6 +109,7 @@ def test_start_game_callback_gate():
 
 # --- action: commit / reveal ------------------------------------------------
 
+
 def _handshake(coord, callbacks=None):
     mj, sig = _start()
     _start_game(coord, mj, sig, callbacks=callbacks)
@@ -116,20 +127,27 @@ def test_action_signature_and_config_and_invalid_paths():
     coord = _coord()
     _handshake(coord)
     mj, _ = _action(phase="commit", h_commit="b" * 64)
-    assert sh.handle_action("cop", SECRET, CFG, GD, {}, {}, GID, mj, "0" * 64,
-                            coordinator=coord)["ok"] is False  # bad sig
+    assert (
+        sh.handle_action("cop", SECRET, CFG, GD, {}, {}, GID, mj, "0" * 64, coordinator=coord)["ok"]
+        is False
+    )  # bad sig
     mj2, sig2 = _action(phase="commit", h_commit="b" * 64)
-    assert sh.handle_action("cop", SECRET, "c" * 64, GD, {}, {}, GID, mj2, sig2,
-                            coordinator=coord)["ok"] is False  # config mismatch
+    assert (
+        sh.handle_action("cop", SECRET, "c" * 64, GD, {}, {}, GID, mj2, sig2, coordinator=coord)[
+            "ok"
+        ]
+        is False
+    )  # config mismatch
 
 
 def test_action_commit_then_reveal_with_passive_advance():
     coord = _coord()
     # callback returns peer's h_commit (commit) and move (reveal) to advance the SM
-    cbs = {"on_action": lambda gid, m: (
-        {"ok": True, "h_commit": "c" * 64} if m.phase == "commit"
-        else {"ok": True, "move": "N"}
-    )}
+    cbs = {
+        "on_action": lambda gid, m: (
+            {"ok": True, "h_commit": "c" * 64} if m.phase == "commit" else {"ok": True, "move": "N"}
+        )
+    }
     _handshake(coord)
     cm, cs = _action(phase="commit", h_commit="b" * 64)
     assert sh.handle_action("cop", SECRET, CFG, GD, {}, cbs, GID, cm, cs, coordinator=coord)["ok"]
@@ -139,6 +157,7 @@ def test_action_commit_then_reveal_with_passive_advance():
 
 
 # --- notify_* wrappers (drive module-singleton coordinator; just must not raise) ---
+
 
 def test_notify_wrappers_do_not_raise():
     g = "NOTIFY_g1"

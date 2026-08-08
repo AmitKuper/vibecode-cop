@@ -47,9 +47,7 @@ def test_barrier_placement_on_thief_is_capture():
 
 
 def test_shaped_rewards_config_path_runs():
-    env = CopThiefEnv(
-        RLGameConfig(cop_start=[0, 0], thief_start=[6, 6], use_shaped_rewards=True)
-    )
+    env = CopThiefEnv(RLGameConfig(cop_start=[0, 0], thief_start=[6, 6], use_shaped_rewards=True))
     env.reset()
     _c, _t, cop_r, thief_r, done, _info = env.step(STAY, STAY)
     assert isinstance(cop_r, float) and isinstance(thief_r, float) and not done

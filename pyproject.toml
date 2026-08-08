@@ -53,10 +53,13 @@ ignore = ["N999"]
 [tool.ruff.lint.per-file-ignores]
 "cop_worker/gui/app.py" = ["E501"]
 "cop_worker/replay/app.py" = ["E501"]
-# E402: tests use pytest.skip(allow_module_level=True) before imports by design
-"tests/*.py" = ["E402"]
-"cop_worker/tests/*.py" = ["E402"]
-"league_manager/tests/*.py" = ["E402"]
+# E402: tests use pytest.skip(allow_module_level=True) before imports by design.
+# The rest are idiomatic in tests: blind-exception asserts (B017), unused loop/
+# locals (B007/F841), uppercase constants (N806), and style suggestions (SIM105/
+# SIM117) that hurt test readability.
+"tests/*.py" = ["E402", "B017", "B007", "F841", "N806", "SIM105", "SIM117"]
+"cop_worker/tests/*.py" = ["E402", "B017", "B007", "F841", "N806", "SIM105", "SIM117"]
+"league_manager/tests/*.py" = ["E402", "B017", "B007", "F841", "N806", "SIM105", "SIM117"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

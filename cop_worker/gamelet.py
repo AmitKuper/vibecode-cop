@@ -221,6 +221,7 @@ class Gamelet:
             # Also advance the primary CR if it's for the expected step
             if self._cr is not None and self._cr._expected_step == turn.step:
                 import contextlib
+
                 with contextlib.suppress(Exception):
                     self._cr.receive_commit(turn.step, turn.commitment_hash)
             # Generate our own commitment for this step

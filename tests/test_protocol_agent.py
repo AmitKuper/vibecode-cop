@@ -20,14 +20,21 @@ PKGS = [(cop_fx, cop_intro, cop_pa), (lm_fx, lm_intro, lm_pa)]
 
 def _empty_intro(intro_mod):
     return intro_mod.IntrospectionResult(
-        server_name="srv", server_version="1.0", protocol_version="1.0",
-        tools=[], resources=[], prompts=[], raw_capabilities={}, schema_digest="d0",
+        server_name="srv",
+        server_version="1.0",
+        protocol_version="1.0",
+        tools=[],
+        resources=[],
+        prompts=[],
+        raw_capabilities={},
+        schema_digest="d0",
     )
 
 
 def _signed_envelope_intro(intro_mod):
     action = intro_mod.ToolSchema(
-        "action", "signed action",
+        "action",
+        "signed action",
         {"properties": {"game_id": {}, "message_json": {}, "signature": {}}},
     )
     start = intro_mod.ToolSchema(
@@ -35,8 +42,13 @@ def _signed_envelope_intro(intro_mod):
     )
     conf = intro_mod.ToolSchema("protocol_conformance", "conformance probe", {})
     return intro_mod.IntrospectionResult(
-        server_name="signed", server_version="1.0", protocol_version="1.0",
-        tools=[action, start, conf], resources=[], prompts=[], raw_capabilities={},
+        server_name="signed",
+        server_version="1.0",
+        protocol_version="1.0",
+        tools=[action, start, conf],
+        resources=[],
+        prompts=[],
+        raw_capabilities={},
         schema_digest="sig16",
     )
 

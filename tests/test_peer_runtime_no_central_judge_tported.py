@@ -10,7 +10,6 @@ Key design invariants tested:
 """
 
 import json
-from pathlib import Path
 
 import pytest
 
@@ -20,7 +19,6 @@ from cop_worker.commit_reveal import (
     ProtocolViolationError,
 )
 from cop_worker.crypto import create_commitment, hash_game_state, verify_commitment
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -82,12 +80,24 @@ class TestVerifyOpponentReveal:
         role = "cop"
         state_hash = hash_game_state({"cop_position": [1, 1], "thief_position": [5, 5], "turn": 2})
         h_commit, nonce = create_commitment(
-            game_id=game_id, step=step, role=role,
-            state_hash=state_hash, move="N", hint="going north", intent="truth",
+            game_id=game_id,
+            step=step,
+            role=role,
+            state_hash=state_hash,
+            move="N",
+            hint="going north",
+            intent="truth",
         )
         ok = verify_commitment(
-            h_commit=h_commit, game_id=game_id, step=step, role=role,
-            state_hash=state_hash, move="S", hint="going north", intent="truth", nonce=nonce,
+            h_commit=h_commit,
+            game_id=game_id,
+            step=step,
+            role=role,
+            state_hash=state_hash,
+            move="S",
+            hint="going north",
+            intent="truth",
+            nonce=nonce,
         )
         assert ok is False
 
@@ -95,12 +105,23 @@ class TestVerifyOpponentReveal:
         game_id = "g3"
         state_hash = hash_game_state({"cop_position": [0, 0], "thief_position": [3, 3], "turn": 3})
         h_commit, nonce = create_commitment(
-            game_id=game_id, step=3, role="thief",
-            state_hash=state_hash, move="E", hint="east", intent="truth",
+            game_id=game_id,
+            step=3,
+            role="thief",
+            state_hash=state_hash,
+            move="E",
+            hint="east",
+            intent="truth",
         )
         ok = verify_commitment(
-            h_commit=h_commit, game_id=game_id, step=3, role="thief",
-            state_hash=state_hash, move="E", hint="east", intent="truth",
+            h_commit=h_commit,
+            game_id=game_id,
+            step=3,
+            role="thief",
+            state_hash=state_hash,
+            move="E",
+            hint="east",
+            intent="truth",
             nonce="tampered_nonce",
         )
         assert ok is False
@@ -164,8 +185,13 @@ class TestLocalCommitStorage:
                 {"cop_position": [0, 0], "thief_position": [6, 6], "turn": step}
             )
             h, nonce = create_commitment(
-                game_id=game_id, step=step, role="thief",
-                state_hash=state_hash, move="E", hint="east", intent="truth",
+                game_id=game_id,
+                step=step,
+                role="thief",
+                state_hash=state_hash,
+                move="E",
+                hint="east",
+                intent="truth",
             )
             commits[str(step)] = h
             nonces[step] = nonce
@@ -176,12 +202,8 @@ class TestLocalCommitStorage:
                 "state_hash": state_hash,
             }
 
-        (game_dir / "opponent_commitments.json").write_text(
-            json.dumps(commits), encoding="utf-8"
-        )
-        (game_dir / "opponent_reveals.json").write_text(
-            json.dumps(reveals), encoding="utf-8"
-        )
+        (game_dir / "opponent_commitments.json").write_text(json.dumps(commits), encoding="utf-8")
+        (game_dir / "opponent_reveals.json").write_text(json.dumps(reveals), encoding="utf-8")
 
         # Verify each step independently using crypto
         for step_str, h_commit in commits.items():
@@ -211,12 +233,23 @@ class TestTechnicalLossOnMismatch:
             {"cop_position": [0, 0], "thief_position": [3, 3], "turn": step}
         )
         h_commit, nonce = create_commitment(
-            game_id=game_id, step=step, role="cop",
-            state_hash=state_hash, move="N", hint="", intent="truth",
+            game_id=game_id,
+            step=step,
+            role="cop",
+            state_hash=state_hash,
+            move="N",
+            hint="",
+            intent="truth",
         )
         ok = verify_commitment(
-            h_commit=h_commit, game_id=game_id, step=step, role="cop",
-            state_hash=state_hash, move="S",  # TAMPERED move
-            hint="", intent="truth", nonce=nonce,
+            h_commit=h_commit,
+            game_id=game_id,
+            step=step,
+            role="cop",
+            state_hash=state_hash,
+            move="S",  # TAMPERED move
+            hint="",
+            intent="truth",
+            nonce=nonce,
         )
         assert ok is False, "Commitment mismatch must be detected — TECHNICAL_LOSS required"

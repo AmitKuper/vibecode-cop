@@ -16,11 +16,18 @@ def _valid_cfg() -> dict:
         "board_and_agents": {"grid_size": 7},
         "movement_and_barriers": {"max_barriers": 14, "max_moves": 35, "survival_threshold": 35},
         "scoring": {
-            "technical_loss": 0, "capture_cop": 20, "capture_thief": 5,
-            "survival_cop": 5, "survival_thief": 10, "tie_score": 2, "diversity_reward": 10,
+            "technical_loss": 0,
+            "capture_cop": 20,
+            "capture_thief": 5,
+            "survival_cop": 5,
+            "survival_thief": 10,
+            "tie_score": 2,
+            "diversity_reward": 10,
         },
         "pheromones": {
-            "pheromone_center_intensity": 0.9, "pheromone_decay": 0.10, "pheromone_grid_size": 5,
+            "pheromone_center_intensity": 0.9,
+            "pheromone_decay": 0.10,
+            "pheromone_grid_size": 5,
         },
         "network_and_league": {},
     }

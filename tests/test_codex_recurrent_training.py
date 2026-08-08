@@ -189,7 +189,9 @@ def test_episode_actor_modes_finish_via_canonical_transition(
 
 
 def test_training_resume_schedules_and_promotion_contract(monkeypatch) -> None:
-    monkeypatch.setattr("cop_worker.rl.train_recurrent._pretrain_imitation", lambda *_a, **_kw: None)
+    monkeypatch.setattr(
+        "cop_worker.rl.train_recurrent._pretrain_imitation", lambda *_a, **_kw: None
+    )
 
     def fake_episode(network, *_args, **_kwargs):
         scalar = next(network.parameters()).reshape(-1)[0]
@@ -333,4 +335,3 @@ def test_evaluation_thief_scoring_and_cli_modes(monkeypatch, tmp_path) -> None:
         "--resume-artifact",
         str(artifact),
     )
-

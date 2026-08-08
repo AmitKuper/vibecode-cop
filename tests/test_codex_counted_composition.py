@@ -12,16 +12,12 @@ Tests prove:
 
 from __future__ import annotations
 
-import asyncio
 import json
 from hashlib import sha256
 from unittest.mock import AsyncMock, patch
 
 import pytest
 import torch
-
-from cop_worker.runtime_mode import RuntimeMode
-
 
 # ---------------------------------------------------------------------------
 # Shared helpers

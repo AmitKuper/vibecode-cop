@@ -28,6 +28,7 @@ def _idx(actions, name):
 
 # --- legal masks ------------------------------------------------------------
 
+
 def test_cop_mask_corner_blocks_offboard_moves():
     mask = compute_legal_mask_cop((0, 0), barriers=[], barriers_remaining=2, grid_size=N)
     assert not mask[_idx(COP_ACTIONS, "N")]  # off top
@@ -59,6 +60,7 @@ def test_thief_mask_shape_and_center_all_legal():
 
 # --- mask_logits / sample_action -------------------------------------------
 
+
 def test_mask_logits_sets_illegal_very_negative():
     logits = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
     mask = np.array([True, False, True, False, True])
@@ -85,6 +87,7 @@ def test_sample_action_softmax_stays_legal():
 
 # --- local_obs_adapter ------------------------------------------------------
 
+
 def _obs(own):
     return LocalObservation(
         own_position=own,
@@ -110,6 +113,7 @@ def test_obs_tensor_shape_and_layout():
 
 
 # --- risk_mask --------------------------------------------------------------
+
 
 def test_belief_safe_actions_never_empties_and_subsets():
     belief = BeliefState.uniform(N)

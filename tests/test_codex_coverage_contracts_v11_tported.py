@@ -17,7 +17,6 @@ from cop_worker.protocol.reference_v3 import (
 )
 from cop_worker.step0.signing import generate_key_pair, sign
 
-
 # ---------------------------------------------------------------------------
 # reference-v3 dialect
 # ---------------------------------------------------------------------------

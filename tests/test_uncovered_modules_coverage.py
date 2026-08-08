@@ -6,8 +6,8 @@ No LLM calls, no network calls, no heavy IO. All tests complete in < 1s each.
 from __future__ import annotations
 
 import asyncio
-import pytest
 
+import pytest
 
 # ---------------------------------------------------------------------------
 # rl/config.py
@@ -109,8 +109,8 @@ class TestRewardsMixin:
         assert cop_r == pytest.approx(1.0)
 
     def test_shaped_rewards_ongoing(self):
-        from cop_worker.rules_outcomes import GameOutcome
         from cop_worker.board import Board
+        from cop_worker.rules_outcomes import GameOutcome
 
         m = self._make_mixin()
         m.config.shaped_reward_scale = 0.1
@@ -137,6 +137,7 @@ class TestRewardsMixin:
 class TestNetworks:
     def test_mlp_backbone_forward(self):
         import torch
+
         from cop_worker.rl.networks import _MLPBackbone
 
         net = _MLPBackbone(grid_size=7, in_channels=4, hidden=64)
@@ -146,6 +147,7 @@ class TestNetworks:
 
     def test_cnn_backbone_forward(self):
         import torch
+
         from cop_worker.rl.networks import _CNNBackbone
 
         net = _CNNBackbone(grid_size=7, in_channels=4, hidden=64)
@@ -155,6 +157,7 @@ class TestNetworks:
 
     def test_dqn_net_forward(self):
         import torch
+
         from cop_worker.rl.networks import DQNNet
 
         net = DQNNet(grid_size=7, n_actions=5, hidden=32, net_type="mlp")
@@ -164,6 +167,7 @@ class TestNetworks:
 
     def test_dqn_net_cnn(self):
         import torch
+
         from cop_worker.rl.networks import DQNNet
 
         net = DQNNet(grid_size=7, n_actions=5, hidden=32, net_type="cnn")
@@ -173,6 +177,7 @@ class TestNetworks:
 
     def test_ppo_net_forward(self):
         import torch
+
         from cop_worker.rl.networks import PPONet
 
         net = PPONet(grid_size=7, n_actions=5, hidden=32)
@@ -183,6 +188,7 @@ class TestNetworks:
 
     def test_ppo_net_get_action(self):
         import torch
+
         from cop_worker.rl.networks import PPONet
 
         net = PPONet(grid_size=7, n_actions=5, hidden=32)
@@ -287,6 +293,7 @@ class TestHints:
 
     def test_generate_hint_with_rng(self):
         import random
+
         from cop_worker.language.hints import generate_hint
 
         rng = random.Random(42)
@@ -324,7 +331,12 @@ class TestLLMHint:
         from cop_worker.language.llm_hint import LLMHintGenerator
 
         gen = LLMHintGenerator.from_llm_config(
-            {"provider": "ollama", "model": "test", "base_url": "http://localhost:99999", "hint_timeout": 0.001}
+            {
+                "provider": "ollama",
+                "model": "test",
+                "base_url": "http://localhost:99999",
+                "hint_timeout": 0.001,
+            }
         )
         result = gen.generate("S", "truth")
         assert result is None  # connection will fail silently
@@ -457,6 +469,7 @@ class TestTokenCounter:
 
     def test_thread_safety(self):
         import threading
+
         from cop_worker.llm.token_counter import TokenCounter
 
         c = TokenCounter()
@@ -579,7 +592,9 @@ class TestReportGatekeeper:
         from league_manager.reports.gatekeeper import ReportGatekeeper
 
         g = ReportGatekeeper()
-        rec = g.record_send("g1", "gmail", "send", "sent", destination="test@x.com", message_id="msg-01")
+        rec = g.record_send(
+            "g1", "gmail", "send", "sent", destination="test@x.com", message_id="msg-01"
+        )
         assert rec["status"] == "sent"
         assert rec["destination"] == "test@x.com"
         assert rec["message_id"] == "msg-01"
@@ -607,8 +622,8 @@ class TestRuntimeTransition:
         assert "BADMOVE" in str(err)
 
     def test_locked_config_no_attr(self):
-        from cop_worker.domain.runtime_transition import locked_config
         from cop_worker.domain.config_validator import GameConfig
+        from cop_worker.domain.runtime_transition import locked_config
 
         class FakeRuntime:
             pass
@@ -617,8 +632,8 @@ class TestRuntimeTransition:
         assert isinstance(cfg, GameConfig)
 
     def test_locked_config_with_game_config(self):
-        from cop_worker.domain.runtime_transition import locked_config
         from cop_worker.domain.config_validator import GameConfig
+        from cop_worker.domain.runtime_transition import locked_config
 
         class FakeRuntime:
             game_config = GameConfig()  # defaults to grid_size=7 (Appendix F)
@@ -634,8 +649,8 @@ class TestRuntimeTransition:
 
 class TestSyntheticBelief:
     def test_get_belief_map_high_confidence(self):
+
         from cop_worker.synthetic_belief import SyntheticBeliefProvider
-        import numpy as np
 
         sbp = SyntheticBeliefProvider()
         belief = sbp.get_belief_map(7, (3, 3), confidence_level="high")
@@ -679,18 +694,19 @@ class TestDurableIO:
         assert dest.read_bytes() == b"hello world"
 
     def test_atomic_write_bytes_invalid_attempts(self, tmp_path):
+        import pytest
+
         from cop_worker.reliability.durable_io import atomic_write_bytes
 
-        import pytest
         dest = tmp_path / "x.bin"
         with pytest.raises(ValueError):
             atomic_write_bytes(dest, b"data", attempts=0)
 
     def test_atomic_write_bytes_retry_on_failure(self, tmp_path):
         """Force first attempt to fail via read-only directory trick."""
-        from cop_worker.reliability.durable_io import atomic_write_bytes, PersistenceError
         from unittest.mock import patch
-        import pytest
+
+        from cop_worker.reliability.durable_io import atomic_write_bytes
 
         dest = tmp_path / "sub" / "out.bin"
         call_count = [0]
@@ -707,9 +723,11 @@ class TestDurableIO:
             atomic_write_bytes(dest, b"retry", attempts=2, retry_delay_s=0)
 
     def test_atomic_write_bytes_all_attempts_fail(self, tmp_path):
-        from cop_worker.reliability.durable_io import atomic_write_bytes, PersistenceError
         from unittest.mock import patch
+
         import pytest
+
+        from cop_worker.reliability.durable_io import PersistenceError, atomic_write_bytes
 
         dest = tmp_path / "fail.bin"
 
@@ -718,8 +736,9 @@ class TestDurableIO:
                 atomic_write_bytes(dest, b"data", attempts=2, retry_delay_s=0)
 
     def test_atomic_write_json_success(self, tmp_path):
-        from cop_worker.reliability.durable_io import atomic_write_json
         import json
+
+        from cop_worker.reliability.durable_io import atomic_write_json
 
         dest = tmp_path / "data.json"
         atomic_write_json(dest, {"key": "value", "num": 42})
@@ -729,9 +748,10 @@ class TestDurableIO:
 
     def test_sync_directory_windows_noop(self):
         """On Windows (os.name=='nt'), _sync_directory should be a no-op."""
-        from cop_worker.reliability.durable_io import _sync_directory
-        from pathlib import Path
         import os
+        from pathlib import Path
+
+        from cop_worker.reliability.durable_io import _sync_directory
 
         # This test just verifies it doesn't raise on Windows
         if os.name == "nt":
@@ -835,21 +855,26 @@ class TestEnvHelpers:
         from cop_worker.rl.env_helpers import random_starts
 
         # Fill most of the board but leave at least 2 free cells
-        barriers = [[x, y] for x in range(7) for y in range(7) if not (x == 0 and y == 0) and not (x == 6 and y == 6)]
+        barriers = [
+            [x, y]
+            for x in range(7)
+            for y in range(7)
+            if not (x == 0 and y == 0) and not (x == 6 and y == 6)
+        ]
         cop, thief = random_starts(7, barriers)
         assert cop != thief
 
     def test_manhattan_dist(self):
-        from cop_worker.rl.env_helpers import manhattan_dist
         from cop_worker.board import Board
+        from cop_worker.rl.env_helpers import manhattan_dist
 
         board = Board(cop_position=[0, 0], thief_position=[3, 4])
         dist = manhattan_dist(board)
         assert dist == 7  # |0-3| + |0-4|
 
     def test_manhattan_dist_same_cell(self):
-        from cop_worker.rl.env_helpers import manhattan_dist
         from cop_worker.board import Board
+        from cop_worker.rl.env_helpers import manhattan_dist
 
         board = Board(cop_position=[2, 2], thief_position=[2, 2])
         assert manhattan_dist(board) == 0
@@ -860,16 +885,16 @@ class TestEnvHelpers:
         assert set(_PLACE_DELTAS.keys()) == {"PLACE_N", "PLACE_S", "PLACE_E", "PLACE_W"}
 
     def test_apply_place_action_no_barriers_remaining(self):
-        from cop_worker.rl.env_helpers import apply_place_action
         from cop_worker.board import Board
+        from cop_worker.rl.env_helpers import apply_place_action
 
         board = Board(cop_position=[3, 3], thief_position=[0, 0])
         result = apply_place_action(board, "PLACE_N", grid_size=7, barriers_remaining=0)
         assert result == 0  # no change
 
     def test_apply_place_action_places_barrier(self):
-        from cop_worker.rl.env_helpers import apply_place_action
         from cop_worker.board import Board
+        from cop_worker.rl.env_helpers import apply_place_action
 
         board = Board(cop_position=[3, 3], thief_position=[0, 0])
         result = apply_place_action(board, "PLACE_S", grid_size=7, barriers_remaining=3)
@@ -878,8 +903,8 @@ class TestEnvHelpers:
         assert [3, 4] in board.barriers
 
     def test_apply_place_action_out_of_bounds(self):
-        from cop_worker.rl.env_helpers import apply_place_action
         from cop_worker.board import Board
+        from cop_worker.rl.env_helpers import apply_place_action
 
         # Cop at edge — placing barrier out of bounds should no-op
         board = Board(cop_position=[0, 0], thief_position=[6, 6])
@@ -934,6 +959,7 @@ class TestFileReportPlugin:
 
     def test_generate_json_content(self, tmp_path):
         import json
+
         from league_manager.reports.file_report import FileReportPlugin
 
         ctx = _make_report_context(tmp_path)
@@ -966,8 +992,8 @@ class TestFileReportPlugin:
 
     def test_generate_markdown_many_moves(self, tmp_path):
         """Verify truncation path (>20 moves) is exercised."""
-        from league_manager.reports.file_report import FileReportPlugin
         from league_manager.reports.base import ReportContext
+        from league_manager.reports.file_report import FileReportPlugin
 
         ctx = ReportContext(
             game_id="game_002",
@@ -996,8 +1022,8 @@ class TestFileReportPlugin:
 
     def test_generate_json_no_result(self, tmp_path):
         """Exercise result=None branch."""
-        from league_manager.reports.file_report import FileReportPlugin
         from league_manager.reports.base import ReportContext
+        from league_manager.reports.file_report import FileReportPlugin
 
         ctx = ReportContext(
             game_id="game_003",
@@ -1020,8 +1046,9 @@ class TestFileReportPlugin:
 
     def test_generate_error_path(self, tmp_path):
         """Force an exception by making the path unwritable."""
-        from league_manager.reports.file_report import FileReportPlugin
         from unittest.mock import patch
+
+        from league_manager.reports.file_report import FileReportPlugin
 
         ctx = _make_report_context(tmp_path)
         plugin = FileReportPlugin("file_json")
@@ -1041,8 +1068,8 @@ class TestFileReportPlugin:
 class TestGmailSend:
     def test_load_oauth_credentials_valid_token(self, tmp_path):
         """Test load_oauth_credentials with a mocked valid token file."""
-        from unittest.mock import MagicMock, patch
         import json
+        from unittest.mock import MagicMock, patch
 
         token_file = tmp_path / "token.json"
         token_data = {
@@ -1060,16 +1087,19 @@ class TestGmailSend:
         mock_creds.expiry = "2030-01-01"
         mock_creds.refresh_token = None
 
-        with patch("google.oauth2.credentials.Credentials", return_value=mock_creds), \
-             patch("google.auth.transport.requests.Request"):
+        with (
+            patch("google.oauth2.credentials.Credentials", return_value=mock_creds),
+            patch("google.auth.transport.requests.Request"),
+        ):
             from league_manager.reports.gmail_send import load_oauth_credentials
+
             result = load_oauth_credentials(token_file)
             assert result is mock_creds
 
     def test_load_oauth_credentials_refreshes_token(self, tmp_path):
         """Test that expired token with refresh_token triggers refresh."""
-        from unittest.mock import MagicMock, patch, call
         import json
+        from unittest.mock import MagicMock, patch
 
         token_file = tmp_path / "token.json"
         token_data = {
@@ -1094,17 +1124,21 @@ class TestGmailSend:
 
         mock_request_cls = MagicMock()
 
-        with patch("google.oauth2.credentials.Credentials", return_value=mock_creds), \
-             patch("google.auth.transport.requests.Request", mock_request_cls):
+        with (
+            patch("google.oauth2.credentials.Credentials", return_value=mock_creds),
+            patch("google.auth.transport.requests.Request", mock_request_cls),
+        ):
             from league_manager.reports.gmail_send import load_oauth_credentials
+
             result = load_oauth_credentials(token_file)
             mock_creds.refresh.assert_called_once()
             assert result is mock_creds
 
     def test_load_oauth_credentials_raises_without_refresh(self, tmp_path):
         """Invalid token with no refresh_token raises RuntimeError."""
-        from unittest.mock import MagicMock, patch
         import json
+        from unittest.mock import MagicMock, patch
+
         import pytest
 
         token_file = tmp_path / "token.json"
@@ -1123,17 +1157,20 @@ class TestGmailSend:
         mock_creds.expiry = None
         mock_creds.refresh_token = None
 
-        with patch("google.oauth2.credentials.Credentials", return_value=mock_creds), \
-             patch("google.auth.transport.requests.Request"):
+        with (
+            patch("google.oauth2.credentials.Credentials", return_value=mock_creds),
+            patch("google.auth.transport.requests.Request"),
+        ):
             from league_manager.reports.gmail_send import load_oauth_credentials
+
             with pytest.raises(RuntimeError, match="re-authorize"):
                 load_oauth_credentials(token_file)
 
     def test_gmail_api_send_returns_message_id(self):
         """Test gmail_api_send with fully mocked API client."""
-        from unittest.mock import MagicMock, patch
         from email.mime.multipart import MIMEMultipart
         from email.mime.text import MIMEText
+        from unittest.mock import MagicMock, patch
 
         message = MIMEMultipart()
         message["Subject"] = "Test"
@@ -1148,13 +1185,14 @@ class TestGmailSend:
 
         with patch("googleapiclient.discovery.build", return_value=mock_service):
             from league_manager.reports.gmail_send import gmail_api_send
+
             msg_id = gmail_api_send(message, mock_creds)
             assert msg_id == "msg_123"
 
     def test_gmail_api_send_no_id_returns_unknown(self):
         """Test gmail_api_send when response has no 'id' key."""
-        from unittest.mock import MagicMock, patch
         from email.mime.multipart import MIMEMultipart
+        from unittest.mock import MagicMock, patch
 
         message = MIMEMultipart()
         message["Subject"] = "Test"
@@ -1166,6 +1204,7 @@ class TestGmailSend:
 
         with patch("googleapiclient.discovery.build", return_value=mock_service):
             from league_manager.reports.gmail_send import gmail_api_send
+
             msg_id = gmail_api_send(message, MagicMock())
             assert msg_id == "unknown"
 
@@ -1225,6 +1264,7 @@ class TestGmailReportPlugin:
     def test_send_mode_auth_runtime_error(self, tmp_path):
         """RuntimeError from load_oauth_credentials is caught correctly."""
         from unittest.mock import patch
+
         from league_manager.reports.gmail_report import GmailReportPlugin
 
         # Create a fake token file so token_path.exists() passes
@@ -1246,6 +1286,7 @@ class TestGmailReportPlugin:
     def test_send_mode_refresh_error(self, tmp_path):
         """Generic exception from load_oauth_credentials is caught correctly."""
         from unittest.mock import patch
+
         from league_manager.reports.gmail_report import GmailReportPlugin
 
         token_file = tmp_path / "token.json"
@@ -1265,7 +1306,8 @@ class TestGmailReportPlugin:
 
     def test_send_mode_send_error(self, tmp_path):
         """Exception from gmail_api_send is caught as gmail_send_error."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
+
         from league_manager.reports.gmail_report import GmailReportPlugin
 
         token_file = tmp_path / "token.json"
@@ -1274,12 +1316,15 @@ class TestGmailReportPlugin:
         plugin = GmailReportPlugin(mode="send", token_path=str(token_file))
         ctx = self._make_ctx(tmp_path)
 
-        with patch(
-            "league_manager.reports.gmail_report.load_oauth_credentials",
-            return_value=MagicMock(),
-        ), patch(
-            "league_manager.reports.gmail_report.gmail_api_send",
-            side_effect=Exception("API error"),
+        with (
+            patch(
+                "league_manager.reports.gmail_report.load_oauth_credentials",
+                return_value=MagicMock(),
+            ),
+            patch(
+                "league_manager.reports.gmail_report.gmail_api_send",
+                side_effect=Exception("API error"),
+            ),
         ):
             result = asyncio.run(plugin.generate(ctx))
 
@@ -1288,7 +1333,8 @@ class TestGmailReportPlugin:
 
     def test_send_mode_success(self, tmp_path):
         """Happy path: send returns ok=True with message_id."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
+
         from league_manager.reports.gmail_report import GmailReportPlugin
 
         token_file = tmp_path / "token.json"
@@ -1297,12 +1343,15 @@ class TestGmailReportPlugin:
         plugin = GmailReportPlugin(mode="send", token_path=str(token_file))
         ctx = self._make_ctx(tmp_path)
 
-        with patch(
-            "league_manager.reports.gmail_report.load_oauth_credentials",
-            return_value=MagicMock(),
-        ), patch(
-            "league_manager.reports.gmail_report.gmail_api_send",
-            return_value="sent_msg_id_42",
+        with (
+            patch(
+                "league_manager.reports.gmail_report.load_oauth_credentials",
+                return_value=MagicMock(),
+            ),
+            patch(
+                "league_manager.reports.gmail_report.gmail_api_send",
+                return_value="sent_msg_id_42",
+            ),
         ):
             result = asyncio.run(plugin.generate(ctx))
 
@@ -1329,24 +1378,24 @@ class TestGmailReportPlugin:
 class TestReportBundleBuilder:
     def test_build_peerruntime_path_with_step0(self, tmp_path):
         """PeerRuntime path: step0_evidence.json + result file present."""
-        from league_manager.reports.bundle import ReportBundleBuilder
         import json
+
+        from league_manager.reports.bundle import ReportBundleBuilder
 
         game_id = "peer_game_01"
         (tmp_path / "step0_evidence.json").write_text(json.dumps({"step": 0}))
         (tmp_path / f"result_{game_id}.json").write_text(json.dumps({"winner": "cop"}))
 
         builder = ReportBundleBuilder(tmp_path)
-        ctx = asyncio.run(
-            builder.build(game_id, "cop", {}, result={"winner": "cop"})
-        )
+        ctx = asyncio.run(builder.build(game_id, "cop", {}, result={"winner": "cop"}))
         assert ctx.game_id == game_id
         assert "declaration" in ctx.required_files or "result" in ctx.required_files
 
     def test_build_peerruntime_path_with_journal(self, tmp_path):
         """PeerRuntime path: journal file + result file."""
-        from league_manager.reports.bundle import ReportBundleBuilder
         import json
+
+        from league_manager.reports.bundle import ReportBundleBuilder
 
         game_id = "peer_game_02"
         journal = tmp_path / f"journal_{game_id}_g01.json"
@@ -1359,9 +1408,11 @@ class TestReportBundleBuilder:
 
     def test_build_peerruntime_missing_result_raises(self, tmp_path):
         """PeerRuntime path without result file raises FileNotFoundError."""
-        from league_manager.reports.bundle import ReportBundleBuilder
         import json
+
         import pytest
+
+        from league_manager.reports.bundle import ReportBundleBuilder
 
         game_id = "peer_game_03"
         (tmp_path / "step0_evidence.json").write_text(json.dumps({}))
@@ -1373,8 +1424,9 @@ class TestReportBundleBuilder:
 
     def test_build_gamerunner_path_all_files(self, tmp_path):
         """GameRunner legacy path: all 4 required files present."""
-        from league_manager.reports.bundle import ReportBundleBuilder
         import json
+
+        from league_manager.reports.bundle import ReportBundleBuilder
 
         game_id = "legacy_game_01"
         (tmp_path / f"declaration_{game_id}.json").write_text(json.dumps({"decl": True}))
@@ -1383,14 +1435,17 @@ class TestReportBundleBuilder:
         (tmp_path / f"result_{game_id}.json").write_text(json.dumps({"winner": "cop"}))
 
         builder = ReportBundleBuilder(tmp_path)
-        ctx = asyncio.run(builder.build(game_id, "cop", {"move_history": []}, result={"winner": "cop"}))
+        ctx = asyncio.run(
+            builder.build(game_id, "cop", {"move_history": []}, result={"winner": "cop"})
+        )
         assert ctx.role == "cop"
         assert "declaration" in ctx.required_files
 
     def test_build_gamerunner_missing_files_raises(self, tmp_path):
         """GameRunner path with missing files raises FileNotFoundError."""
-        from league_manager.reports.bundle import ReportBundleBuilder
         import pytest
+
+        from league_manager.reports.bundle import ReportBundleBuilder
 
         game_id = "missing_game"
         builder = ReportBundleBuilder(tmp_path)
@@ -1399,8 +1454,8 @@ class TestReportBundleBuilder:
 
     def test_collect_optional_files(self, tmp_path):
         """Optional files are collected when they exist."""
+
         from league_manager.reports.bundle import ReportBundleBuilder
-        import json
 
         # Create some optional files
         (tmp_path / "report.json").write_text("{}")
@@ -1419,8 +1474,8 @@ class TestReportBundleBuilder:
 
     def test_build_with_game_state_timestamps(self, tmp_path):
         """Test that created_at/ended_at from game_state populate timestamps."""
+
         from league_manager.reports.bundle import ReportBundleBuilder
-        import json
 
         game_id = "ts_game_01"
         (tmp_path / "step0_evidence.json").write_text("{}")

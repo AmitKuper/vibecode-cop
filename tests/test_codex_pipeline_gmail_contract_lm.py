@@ -134,7 +134,9 @@ async def test_negotiation_rejects_static_and_conformance_failures(monkeypatch, 
         lambda _self, _intro_result: compatible,
     )
     failed = ConformanceReport(False, [ProbeOutcome("broken", False)])
-    monkeypatch.setattr("league_manager.protocol.pipeline.ConformanceProbes.run_all", lambda _self: failed)
+    monkeypatch.setattr(
+        "league_manager.protocol.pipeline.ConformanceProbes.run_all", lambda _self: failed
+    )
     with pytest.raises(ProtocolCompatibilityError, match="Conformance probes failed"):
         await run_adaptive_negotiation("http://peer", cache_dir=tmp_path)
 

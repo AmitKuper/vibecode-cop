@@ -7,7 +7,6 @@ import pytest
 from cop_worker.board import Board
 from cop_worker.rules_engine import RulesEngine
 
-
 # ---------------------------------------------------------------------------
 # Hidden-information: LocalObservation has no opponent_position
 # ---------------------------------------------------------------------------
