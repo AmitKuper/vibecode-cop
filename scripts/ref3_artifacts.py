@@ -30,10 +30,13 @@ def now_iso() -> str:
     return datetime.now(UTC).isoformat()
 
 
-def score_series(sub_games: list, opponent: str, cop_commit: str, game_id: str) -> tuple:
+def score_series(sub_games: list, opponent: str, game_id: str, *,
+                 our_played: int = 0, opp_played: int = 0, counted: bool = False) -> tuple:
     """Return (rows, final_result) in the final_game_result schema.
 
     Appendix-F scoring: capture -> cop 20 / thief 5; survival -> thief 10 / cop 5.
+    github_commit is per-sub-game (each side's repo HEAD for the role it played).
+    games_played_including_this increments by 1 ONLY for a counted game (rules 37-38).
     """
     rows, tot_us, tot_them, won_us, won_them = [], 0, 0, 0, 0
     for sg in sub_games:
@@ -44,31 +47,34 @@ def score_series(sub_games: list, opponent: str, cop_commit: str, game_id: str) 
         tot_them += them
         won_us += us > them
         won_them += them > us
+        opp_commit = (sg.get("opp_identity") or {}).get("github_commit", "unknown")
         rows.append({
-            "audit": {"log_verified": bool(sg.get("audit_ok")), "tampered": False},
+            "sub_game_number": n,
+            "roles": {"vibecode": role, opponent: "thief" if role == "police" else "police"},
+            "started_at": sg.get("started_at", ""),
             "ended_at": sg.get("ended_at", ""),
-            "github_commit": {"vibecode": cop_commit, opponent: "unknown"},
+            "result": sg.get("outcome"),
+            "winner_group": "vibecode" if us > them else opponent,
+            "tie": False,
+            "github_commit": {"vibecode": sg.get("our_commit", "unknown"), opponent: opp_commit},
+            "tokens": {"vibecode": 0, opponent: 0},
+            "score": {"vibecode": us, opponent: them},
             "log_files": {"vibecode": f"log_{game_id}_g{n:02d}.json",
                           opponent: f"log_{game_id}_g{n:02d}.json"},
-            "result": sg.get("outcome"),
-            "roles": {"vibecode": role, opponent: "thief" if role == "police" else "police"},
-            "score": {"vibecode": us, opponent: them},
-            "started_at": sg.get("started_at", ""),
-            "sub_game_number": n, "tie": False,
-            "tokens": {"vibecode": 0, opponent: 0},
-            "winner_group": "vibecode" if us > them else opponent,
+            "audit": {"log_verified": bool(sg.get("audit_ok")), "tampered": False},
         })
+    inc = 1 if counted else 0
     final_result = {
-        "diversity_reward_applied": {"vibecode": False, opponent: False},
-        "first_meeting_between_groups": True,
-        "games_played_including_this": {"vibecode": 0, opponent: 0},
-        "series_tie": tot_us == tot_them,
+        "total_score": {"vibecode": tot_us, opponent: tot_them},
         "sub_games_won": {"vibecode": won_us, opponent: won_them},
         "ties": 0,
-        "tokens_total_series": {"vibecode": 0, opponent: 0},
-        "total_score": {"vibecode": tot_us, opponent: tot_them},
         "winner_group": ("vibecode" if tot_us > tot_them
                          else opponent if tot_them > tot_us else None),
+        "series_tie": tot_us == tot_them,
+        "tokens_total_series": {"vibecode": 0, opponent: 0},
+        "games_played_including_this": {"vibecode": our_played + inc, opponent: opp_played + inc},
+        "first_meeting_between_groups": True,
+        "diversity_reward_applied": {"vibecode": False, opponent: False},
     }
     return rows, final_result
 
@@ -147,21 +153,26 @@ def _hardware_spec() -> dict:
 
 def build_declaration(game_id: str, game_uid: str, opponent: str, members: list,
                       cop_commit: str, started_at: str, ended_at: str,
-                      opp_identity: dict | None = None) -> dict:
+                      opp_identity: dict | None = None, our_counted: int = 0) -> dict:
     hw = _hardware_spec()
     ours = {
-        "code_version": "1.00", "counted_games_played": 0, "github_commit": cop_commit,
+        "code_version": "1.00", "counted_games_played": our_counted, "github_commit": cop_commit,
         "group_id": "vibecode", "group_name": "vibecode",
         "hardware_spec": hw, "hardware_spec_sha256": _sha(hw) if hw else "",
         "llm_model": "role-specific-recurrent-policy",
         "mcp_servers": OUR_MCP, "members": members, "repos": OUR_REPOS,
         "signature": f"sha256:{_sha({'group_id': 'vibecode', 'commit': cop_commit})}",
     }
-    theirs = opp_identity or {"group_id": opponent, "group_name": opponent,
-                              "counted_games_played": 0, "github_commit": "unknown",
-                              "hardware_spec": {}, "hardware_spec_sha256": "",
-                              "llm_model": "unknown", "mcp_servers": {}, "members": [],
-                              "repos": {}, "signature": "undeclared"}
+    oi = opp_identity or {}
+    theirs = {
+        "group_id": oi.get("group_id", opponent), "group_name": oi.get("group_name", opponent),
+        "counted_games_played": oi.get("counted_games_played", 0),
+        "github_commit": oi.get("github_commit", "unknown"),
+        "hardware_spec": oi.get("hardware_spec", {}), "hardware_spec_sha256": "",
+        "llm_model": oi.get("llm_model", "unknown"), "mcp_servers": oi.get("mcp_servers", {}),
+        "members": oi.get("members", []), "repos": oi.get("repos", {}),
+        "signature": oi.get("signature", "undeclared"),
+    }
     return {
         "_schema": "p2p-police-artifacts",
         "consensus_signature": _sha({"uid": game_uid, "g": sorted(["vibecode", opponent])}),
@@ -178,45 +189,70 @@ def build_declaration(game_id: str, game_uid: str, opponent: str, members: list,
     }
 
 
+def mutual_agreement_sha(game_uid: str, rows: list, final_result: dict) -> str:
+    """Preimage for mutual_agreement.sha256 — the agreed series facts, canonical-hashed.
+
+    Fields (both sides must hash these exact fields to converge):
+      game_uid, and per sub-game [sub_game_number, result, winner_group,
+      score.<a>, score.<b>], plus final total_score and winner_group.
+    """
+    facts = {
+        "game_uid": game_uid,
+        "sub_games": [{"sub_game_number": r["sub_game_number"], "result": r["result"],
+                       "winner_group": r["winner_group"], "score": r["score"]} for r in rows],
+        "total_score": final_result["total_score"],
+        "winner_group": final_result["winner_group"],
+    }
+    return _sha(facts)
+
+
 def build_result(game_id: str, game_uid: str, opponent: str, rows: list,
-                 final_result: dict, cop_commit: str) -> dict:
-    """The emailed final_game_result (series aggregate)."""
-    mutual = {"confirmed": False,
-              "sha256": _sha({"game_uid": game_uid, "rows": rows, "final": final_result})}
+                 final_result: dict, opp_repos: dict | None = None) -> dict:
+    """The emailed final_game_result (series aggregate). Key order mirrors anrbj666's."""
+    mutual = {"sha256": mutual_agreement_sha(game_uid, rows, final_result), "confirmed": False}
     return {
         "_schema": ("Summary and final result for the WHOLE series between two teams: "
                     "per-sub-game scores + aggregate; identity lives in the declaration."),
-        "final_result": final_result,
+        "schema_version": "1.1",
+        "report_type": "final_game_result",
         "game_id": game_id, "game_uid": game_uid,
+        "links": {"declaration": f"declaration_{game_id}.json",
+                  "config": f"config_{game_id}_g<NN>.json",
+                  "log": f"log_{game_id}_g<NN>.json", "result": f"result_{game_id}.json",
+                  "github": {"vibecode": OUR_REPOS, opponent: opp_repos or {}}},
+        "timezone": "Asia/Jerusalem",
         "groups": sorted(["vibecode", opponent]),
-        "links": {"config": f"config_{game_id}_g<NN>.json",
-                  "declaration": f"declaration_{game_id}.json",
-                  "github": {"vibecode": OUR_REPOS, opponent: {}},
-                  "log": f"log_{game_id}_g<NN>.json", "result": f"result_{game_id}.json"},
+        "num_sub_games": len(rows),
+        "sub_games": rows,
+        "final_result": final_result,
         "mutual_agreement": mutual,
-        "num_sub_games": len(rows), "report_type": "final_game_result",
-        "schema_version": "1.1", "sub_games": rows, "timezone": "Asia/Jerusalem",
     }
 
 
 def write_artifact(obj: dict, path: Path) -> Path:
+    """Write a repo artifact: pretty-printed (indent 2, insertion order) like anrbj666's."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(obj, indent=1, sort_keys=True), encoding="utf-8")
+    path.write_text(json.dumps(obj, indent=2, ensure_ascii=False), encoding="utf-8")
     return path
 
 
 def email_result(result: dict, recipient: str, filename: str, token_path: Path) -> str:
-    """Email the result: body = canonical bytes, one attachment = same bytes."""
+    """Email the result: pretty-printed body + one attachment (same bytes), like anrbj666's.
+
+    Subject: 'P2P league SERIES result - <game_id> - winner=<w> - <a>:<sa> <b>:<sb>'.
+    """
     from email.mime.application import MIMEApplication
     from email.mime.multipart import MIMEMultipart
     from email.mime.text import MIMEText
 
     from league_manager.reports.gmail_send import gmail_api_send, load_oauth_credentials
 
-    body = canonical_json(result)
+    body = json.dumps(result, indent=2, ensure_ascii=False)
     fr = result["final_result"]
-    subject = (f"[vibecode] friendly {result['game_id']} "
-               f"{fr.get('total_score')} winner={fr.get('winner_group')}")
+    ts = fr["total_score"]
+    score_str = " ".join(f"{g}:{ts[g]}" for g in result["groups"])
+    subject = (f"P2P league SERIES result - {result['game_id']} - "
+               f"winner={fr['winner_group']} - {score_str}")
     msg = MIMEMultipart()
     msg["To"] = recipient
     msg["Subject"] = subject

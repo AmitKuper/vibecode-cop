@@ -239,7 +239,10 @@ async def _await_endpoint(mcp_url: str, client_cls, *, window_s: float = 900.0) 
 # ---------------------------------------------------------------------------
 async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
                         group_id: str, group_name: str, terms: dict,
-                        opponent_group_hint: str) -> dict:
+                        opponent_group_hint: str, members: list | None = None,
+                        our_counted: int = 0) -> dict:
+    from ref3_artifacts import OUR_MCP, OUR_REPOS
+
     from cop_worker.protocol.reference_v3 import (
         ReferenceV3Inbox,
         build_negotiation,
@@ -247,6 +250,16 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
         verify_audit,
         verify_negotiation,
     )
+    # Our step-zero identity on the wire (rules 49/53): repos, per-role github_commit,
+    # counted count, members — so the peer records what we actually declare.
+    our_repo = REPO_ROOT if role == "police" else REPO_ROOT.parent / "vibecode-thief"
+    our_commit = _git_head(our_repo)
+    our_identity = {
+        "group_id": group_id, "group_name": group_name,
+        "llm_model": "role-specific-recurrent-policy",
+        "mcp_servers": OUR_MCP, "repos": OUR_REPOS, "members": members or [],
+        "github_commit": our_commit, "counted_games_played": our_counted,
+    }
 
     max_steps = terms["max_steps"]
     # Fresh per-sub-game state: sealed records and the inbox must never leak across
@@ -263,11 +276,12 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     nonce = secrets.token_hex(16)
     greeting = build_negotiation(
         terms=terms, nonce=nonce, group_id=group_id, group_name=group_name,
-        role=role, sub_game_number=sub_game,
+        role=role, sub_game_number=sub_game, identity=our_identity,
     )
     await out_session.send_negotiation(greeting)
     # Match the greeting by sub_game_number (not FIFO) — the peer's re-dials pile up.
     theirs = await _poll_agreement(in_session.agreements, sub_game, timeout=300.0)
+    opp_identity = theirs.get("identity") or {}  # their declared repos/commit/counted (rules 49/53)
     print(f"[match] sg{sub_game} peer greeting sub_game={theirs.get('sub_game_number')} "
           f"role={theirs.get('role')}")
     negotiated = verify_negotiation(greeting, theirs)
@@ -362,7 +376,8 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     return {"sub_game": sub_game, "role": role, "audit_ok": ok, "outcome": outcome,
             "rl_move_count": len(rl_moves), "distinct_moves": distinct,
             "our_records": our_records, "opp_records": opp_records, "summary": summary,
-            "started_at": started_at, "ended_at": ended_at}
+            "started_at": started_at, "ended_at": ended_at,
+            "our_commit": our_commit, "opp_identity": opp_identity}
 
 
 def _latest_turn(in_session, step: int) -> dict:
@@ -455,7 +470,8 @@ async def _self_test(role: str, sub_games: int, our_port: int,
 
 async def _play_match(*, opp_cop_url: str, opp_thief_url: str, our_cop_port: int,
                       our_thief_port: int, opponent_group: str, setting: str,
-                      sub_games: int) -> dict:
+                      sub_games: int, members: list | None = None,
+                      our_counted: int = 0) -> dict:
     """Real match vs a live peer over reference-v3, role-split, RL moves.
 
     We alternate: thief on odd sub-games (peer is cop → dial its cop URL), police on
@@ -532,7 +548,8 @@ async def _play_match(*, opp_cop_url: str, opp_thief_url: str, our_cop_port: int
                     results.append(await _play_subgame(
                         out_session, in_session, role=our_role, sub_game=sg,
                         group_id="vibecode", group_name="vibecode", terms=terms,
-                        opponent_group_hint=opponent_group))
+                        opponent_group_hint=opponent_group, members=members,
+                        our_counted=our_counted))
                 print(f"[match] sg{sg} complete")
             except Exception as exc:
                 print(f"[match] sg{sg} failed "
@@ -599,14 +616,24 @@ def _emit_artifacts(result: dict, args) -> None:
         write_artifact(build_log(game_id, game_uid, n, sg["role"], opp, sg["our_records"],
                                  sg["opp_records"], sg["summary"], cop_commit),
                        results_dir / f"log_{game_id}_g{n:02d}.json")
-    rows, final_result = score_series(played, opp, cop_commit, game_id)
+    # The opponent's declared identity (rules 49/53) — repos, counted count — from their greeting.
+    opp_ids = [sg.get("opp_identity") or {} for sg in played if sg.get("opp_identity")]
+    opp_repos = next((i.get("repos") for i in opp_ids if i.get("repos")), {})
+    opp_counted = next((i.get("counted_games_played") for i in opp_ids
+                        if i.get("counted_games_played") is not None), 0)
+    our_counted = getattr(args, "counted_played", 0)
+    counted = getattr(args, "counted", False)
+    rows, final_result = score_series(played, opp, game_id, our_played=our_counted,
+                                      opp_played=opp_counted, counted=counted)
     members = [m.strip() for m in args.members.split(",") if m.strip()]
     starts = [sg.get("started_at", "") for sg in played]
     ends = [sg.get("ended_at", "") for sg in played]
     write_artifact(build_declaration(game_id, game_uid, opp, members, cop_commit,
-                                     starts[0] if starts else "", ends[-1] if ends else ""),
+                                     starts[0] if starts else "", ends[-1] if ends else "",
+                                     opp_identity=(opp_ids[0] if opp_ids else None),
+                                     our_counted=our_counted),
                    results_dir / f"declaration_{game_id}.json")
-    result_obj = build_result(game_id, game_uid, opp, rows, final_result, cop_commit)
+    result_obj = build_result(game_id, game_uid, opp, rows, final_result, opp_repos=opp_repos)
     write_artifact(result_obj, results_dir / f"result_{game_id}.json")
     print(f"[match] artifacts: {len(played)}x(config+log) + declaration + result "
           f"under results/ and config/games/")
@@ -640,17 +667,23 @@ def main() -> int:
     p.add_argument("--report-to", default="agentsorch@gmail.com")
     p.add_argument("--no-email", action="store_true", help="Skip emailing the result")
     p.add_argument("--members", default="", help="Comma-separated 'Name:id' for declaration")
+    # Counted-game accounting (rules 37-38): friendly = counted=False (no increment).
+    p.add_argument("--counted", action="store_true", help="Mark this as a COUNTED series")
+    p.add_argument("--counted-played", type=int, default=0,
+                   help="Our prior counted-games count (for games_played_including_this)")
     args = p.parse_args()
 
     if args.match:
         if not (args.opp_cop_url and args.opp_thief_url):
             print("ERROR: --match requires --opp-cop-url and --opp-thief-url")
             return 2
+        members = [m.strip() for m in args.members.split(",") if m.strip()]
         result = asyncio.run(_play_match(
             opp_cop_url=args.opp_cop_url, opp_thief_url=args.opp_thief_url,
             our_cop_port=args.our_cop_port, our_thief_port=args.our_thief_port,
             opponent_group=args.opponent_group, setting=args.setting,
-            sub_games=args.sub_games if args.sub_games > 1 else 6))
+            sub_games=args.sub_games if args.sub_games > 1 else 6,
+            members=members, our_counted=args.counted_played))
         _write_result(result)  # raw internal snapshot (debug)
         oks = [sg for sg in result["sub_games"] if sg.get("audit_ok")]
         print(f"\n[match] STATUS: audits {len(oks)}/{len(result['sub_games'])} ok")

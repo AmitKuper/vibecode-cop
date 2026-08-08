@@ -189,9 +189,20 @@ def build_negotiation(
     role: str,
     sub_game_number: int,
     opponent_group: str | None = None,
+    identity: dict | None = None,
 ) -> dict:
     if role not in {"police", "thief"} or sub_game_number not in range(1, 7):
         raise ReferenceV3Error("reference-v3 requires police/thief and sub-game 1..6")
+    # Identity is what the peer records about us (rules 49/53): repos, github_commit,
+    # counted count, members. Callers should pass a full identity; the default is empty.
+    default_identity = {
+        "group_id": group_id,
+        "group_name": group_name,
+        "llm_model": "role-specific-recurrent-policy",
+        "mcp_servers": {},
+        "repos": {},
+        "members": [],
+    }
     wire = {
         "terms": terms,
         "nonce": nonce,
@@ -199,14 +210,7 @@ def build_negotiation(
         "group_id": group_id,
         "role": role,
         "sub_game_number": sub_game_number,
-        "identity": {
-            "group_id": group_id,
-            "group_name": group_name,
-            "llm_model": "role-specific-recurrent-policy",
-            "mcp_servers": {},
-            "repos": {},
-            "members": [],
-        },
+        "identity": identity or default_identity,
         "scent_model_sha256": REFERENCE_V3_SCENT_LOCK,
         "wire_shape_sha256": REFERENCE_V3_WIRE_LOCK,
     }
