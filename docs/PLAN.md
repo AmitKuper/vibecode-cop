@@ -1,264 +1,191 @@
 # Implementation Plan — Cop Agent (vibecode-cop)
-**Version:** 1.2 | **Group:** vibecode | **Date:** 2026-07-30
+**Version:** 2.0 | **Group:** vibecode | **Date:** 2026-08-08
+
+> Architecture authority: `docs/DESIGN.md` (3-process redesign). This plan describes
+> the built structure of `vibecode-cop`, which ships **two** packages: `league_manager`
+> (the match orchestrator / external MCP facade) and `cop_worker` (the cop role).
 
 ---
 
-## 1. C4 Model — Cop Agent
+## 1. C4 Model
 
 ### Level 1 — System Context
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                         External Actors                             │
-│                                                                     │
-│  [League Admin]    [Human Auditor]    [Gmail API]    [Claude API]   │
-│       │                  │                │               │         │
-└───────┼──────────────────┼────────────────┼───────────────┼─────────┘
-        │                  │                │               │
-        ▼                  ▼                ▼               ▼
+│  [Opponent peer]      [Gmail API]        [Claude API]               │
+│   (MCP over HTTP)     (result report)    (hints + belief only)      │
+└───────┬───────────────────┬───────────────────┬────────────────────┘
+        │                   │                   │
+        ▼                   ▼                   ▼
 ┌───────────────────────────────────────────────────────────────────┐
-│                       vibecode-cop                                │
-│                                                                   │
-│  Autonomous cop agent that pursues the thief across a 7×7 grid   │
-│  using MCP-based commit-reveal protocol and RL strategy.         │
-│  No shared memory with thief; no central referee.                │
+│                         vibecode product                          │
+│  LeagueManager  +  Cop Worker  +  Thief Worker (vibecode-thief)    │
+│  Autonomous P2P cops-and-robbers: signed Step-0, commit-reveal,   │
+│  six gamelets, RL movement, mutual audit. No central referee.     │
 └───────────────────────────────────────────────────────────────────┘
 ```
 
-### Level 2 — Container Diagram
+### Level 2 — Container Diagram (3 processes)
+
+```
+                     opponent peer (MCP/HTTP)
+                              │
+                              ▼
+┌───────────────────────────────────────────────────────────┐
+│  LeagueManager  (vibecode-cop, external MCP :61222)         │
+│  admin_api (:8080)  router  worker_lifecycle                │
+│  series_lifecycle   protocol/ (ref-v3 adapter, detection)   │
+│  reports/ + gmail/  step0/series_declaration  league_ledger │
+│  — terminates transport, routes each sub-game to a worker,  │
+│    owns NO game semantics —                                 │
+└───────────┬───────────────────────────────┬────────────────┘
+            │ internal MCP (:8001)           │ internal MCP (:8002)
+            ▼                                ▼
+┌────────────────────────┐        ┌────────────────────────────┐
+│  Cop Worker            │        │  Thief Worker               │
+│  (vibecode-cop)        │        │  (vibecode-thief)           │
+│  cop_worker/           │        │  thief_worker/              │
+│  owns cop game         │        │  owns thief game semantics  │
+│  semantics             │        └────────────────────────────┘
+└────────────────────────┘
+```
+
+A peer may also connect **directly** to a worker's MCP port (cop `:61224`,
+thief `:61223`) in the direct topology — see `docs/DEPLOYMENT_TUNNEL_RUNBOOK.md`.
+
+### Level 3 — Component Diagram (Cop Worker)
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│                          vibecode-cop Process                        │
-│                                                                      │
-│  ┌─────────────────┐        MCP/HTTP         ┌──────────────────┐   │
-│  │  MCP Server     │ ◄──────────────────────► │  Thief Agent     │   │
-│  │  Port :5000     │    commit/reveal msgs    │  Port :5001      │   │
-│  │  (FastMCP)      │                          └──────────────────┘   │
-│  └─────────────────┘                                                 │
-│  ┌─────────────────┐                                                 │
-│  │  MCP Client     │ ─────────────────────────► (thief:5001)        │
-│  │  (FastMCP)      │                                                 │
-│  └─────────────────┘                                                 │
-│                                                                      │
-│  ┌─────────────────────────────────────────────────────────────┐    │
-│  │                    PeerRuntime                              │    │
-│  │   game_id, role="cop", board, config_sha256, game_dir       │    │
-│  └─────────────────────────────────────────────────────────────┘    │
-│           │                                                          │
-│    ┌──────┼──────────────────────────────────────────────┐          │
-│    ▼      ▼             ▼              ▼                 ▼          │
-│  PeerTurnLoop  RulesEngine    RLPolicy          ReportManager       │
-│  PeerAudit     Board          GreedyStrategy    FileJSON            │
-│                               LLM CrewAI        GmailPlugin         │
-└──────────────────────────────────────────────────────────────────────┘
-```
-
-### Level 3 — Component Diagram
-
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│                       cop/__main__.py                                │
-│                                                                      │
-│  ┌─────────────────────────────────────────────────────────────┐    │
-│  │  PeerRuntime (agent/peer_runtime.py)                        │    │
-│  │                                                             │    │
-│  │  ┌──────────────────┐  ┌─────────────────────────────────┐ │    │
-│  │  │ PeerTurnLoop     │  │  MCP Protocol Layer             │ │    │
-│  │  │ 1. build_state   │  │  agent/mcp/server.py (FastMCP)  │ │    │
-│  │  │ 2. hash_state    │  │  agent/mcp/client.py (FastMCP)  │ │    │
-│  │  │ 3. select_move   │  │  agent/mcp/crypto.py            │ │    │
-│  │  │ 4. commit        │  │  agent/mcp/messages.py          │ │    │
-│  │  │ 5. send_commit   │  └─────────────────────────────────┘ │    │
-│  │  │ 6. send_reveal   │                                       │    │
-│  │  │ 7. verify_opp    │  ┌─────────────────────────────────┐ │    │
-│  │  │ 8. apply_moves   │  │  Strategy Layer                 │ │    │
-│  │  │ 9. check_status  │  │  agent/rl/policy.py (DQN/Qtbl)  │ │    │
-│  │  └──────────────────┘  │  agent/rl/strategies.py         │ │    │
-│  │                        │  agent/orchestrator_crew.py     │ │    │
-│  │  ┌──────────────────┐  └─────────────────────────────────┘ │    │
-│  │  │ RulesEngine      │                                       │    │
-│  │  │ agent/rules_engine.py                                    │    │
-│  │  │ agent/board.py                                           │    │
-│  │  └──────────────────┘                                       │    │
-│  └─────────────────────────────────────────────────────────────┘    │
+│  cop/__main__.py  →  cop_worker/__main__.py                          │
+│  ┌─────────────────────────────┐  ┌───────────────────────────────┐  │
+│  │ MCP layer                   │  │ Game semantics                │  │
+│  │ mcp_server.py               │  │ gamelet.py (owns a sub-game)  │  │
+│  │ mcp/server_handlers.py      │  │ state_machine.py (lifecycle)  │  │
+│  │ mcp/coordinator.py          │  │ commit_reveal.py (protocol SM)│  │
+│  │ mcp/protocol*, client.py    │  │ rules_engine / board / scent  │  │
+│  └─────────────────────────────┘  │ observation / belief_engine   │  │
+│  ┌─────────────────────────────┐  │ parameter_registry.py         │  │
+│  │ Strategy                    │  └───────────────────────────────┘  │
+│  │ rl/ (RecurrentA2C-GRU)      │  ┌───────────────────────────────┐  │
+│  │ + deterministic heuristic   │  │ Integrity                     │  │
+│  │ language/ (free-text hints) │  │ crypto.py (commit/sign)       │  │
+│  └─────────────────────────────┘  │ audit/ (result_consensus)     │  │
+│                                    │ step0/ (declaration, signing) │  │
+│                                    │ gmail/ (gatekeeper, sender)   │  │
+│                                    └───────────────────────────────┘  │
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 2. MCP Turn Sequence (Cop's Perspective)
+## 2. Match Lifecycle
 
 ```
-cop/__main__.py         PeerTurnLoop         Thief MCP Server
-      │                      │                      │
-      │── run_peer_turn() ──►│                      │
-      │                      │── 1. build_state     │
-      │                      │── 2. hash_state      │
-      │                      │── 3. select_move ──► RLPolicy/Greedy/LLM
-      │                      │── 4. create_commit   │
-      │                      │── COMMIT(h_commit) ──────────────►│
-      │                      │◄─ ACK(opp_h_commit) ─────────────│
-      │                      │── REVEAL(move, nonce) ────────────►│
-      │                      │◄─ ACK(opp_move, opp_nonce) ───────│
-      │                      │── 7. verify_opp_reveal            │
-      │                      │       mismatch? → TECHNICAL_LOSS  │
-      │                      │── 8. apply_moves(cop, thief)      │
-      │                      │── 9. check_game_status            │
-      │◄─ (outcome) ─────────│                      │
-```
-
-### Game Startup (Step-0 Declaration)
-
-```
-League Admin          cop/__main__          Thief MCP Server
-     │                    │                      │
-     │── python -m cop ──►│                      │
-     │                    │── start_game() ──────►│
-     │                    │◄─ ACK ───────────────│
-     │                    │                      │
-     │                    │  write declaration_*.json
-     │                    │  (hardware, LLM, git SHA, config SHA-256)
-     │                    │                      │
-     │                    │── run gamelet g01 ───►│
-     │                    │   ...                │
-     │                    │── run gamelet g06 ───►│
-     │                    │── PeerAudit.audit()  │
-     │                    │── ReportManager.run()│
+CLI: python -m league_manager --counted --port 61222
+  → LeagueManager starts, auto-spawns cop_worker + thief_worker (worker_lifecycle)
+  → signed bilateral Step-0 (step0/series_declaration + worker gamelet declarations)
+  → protocol detection / ref-v3 adapter locks a profile (protocol/)
+  → six gamelets, role schedule {1:cop,2:thief,3:cop,4:thief,5:cop,6:thief}
+      each gamelet: LM routes tool calls → worker commit-reveal loop
+        commit (SHA-256) → ack → reveal → verify → apply → check terminal
+  → mutual comprehensive audit → signed result consensus (audit/result_consensus)
+  → league_ledger update → independent Gmail reports → DONE
 ```
 
 ---
 
-## 3. Strategy Selection Flowchart
+## 3. Cop Movement Selection
 
 ```
-select_move() called
-        │
-        ▼
-  models/cop_dqn.pt exists?
-    ├─ Yes ──► DQN inference ──► move  (< 1ms)
-    └─ No
-        ▼
-  models/cop_qtable.npy exists?
-    ├─ Yes ──► Q-table lookup ──► move  (< 0.1ms)
-    └─ No
-        ▼
-  GreedyCopStrategy (always available)
-    ──► minimize Chebyshev(cop_pos, scent_peak) ──► move
-        │
-        └─ OR if config.llm_fallback=true:
-            CrewAI GameManager + StrategyAgent ──► move  (1-5 sec)
+select_move():
+  1. RL path (primary): MANIFEST-pinned RecurrentA2C-GRU champion, legal-action masked
+  2. Deterministic heuristic fallback: minimise Chebyshev(cop_pos, scent_peak),
+     respecting legal-move + barrier masks
 ```
+
+Free-language hints and the belief-map update may use a direct Claude call
+(`cop_worker/language/`, `cop_worker/llm/`); the LLM never drives the movement choice.
+There is **no CrewAI / agent framework.**
 
 ---
 
 ## 4. Design Decisions
 
-### AD-1: No Central Judge (P2P Architecture)
-**Rationale:** The spec explicitly forbids a central game server. Each agent independently verifies game state.
+### AD-1: No Central Judge (P2P)
+Each side independently verifies game state via commit-reveal; disagreement →
+TECHNICAL_LOSS. The LeagueManager terminates transport and routes, but is **not** a
+referee — it owns no game semantics (`league_manager/router.py`).
 
-**Trade-offs:**
-- Pro: No single point of failure; fully decentralized
-- Con: 2 RTTs per turn (commit + reveal) instead of 1
-- Con: Both agents must apply moves identically; disagreement → TECHNICAL_LOSS
+### AD-2: SHA-256 Commit-Reveal
+Neither side can choose a move after seeing the opponent's. Commitment payload includes
+`{game_id, gamelet, step, role, state_hash, move, hint, intent, nonce}`; the `gamelet`
+field prevents cross-gamelet replay (`cop_worker/commit_reveal.py`, `crypto.py`).
 
-**Implementation:** `PeerRuntime` + `peer_turn_loop.py`
+### AD-3: LeagueManager as Facade, not Game Owner
+One stable external URL for all six sub-games; workers remain autonomous P2P agents.
+Boundary: LM = transport/routing; worker = game protocol semantics (DESIGN Decisions 2–5).
 
-### AD-2: SHA-256 Commitment Scheme
-**Rationale:** Prevents move-order advantage. Neither agent can choose their move after seeing the opponent's.
+### AD-4: Signed Bilateral Step-0 + Mutual Audit
+Each side publishes a signed declaration (hardware, model SHA, git SHA, config SHA) and
+the match ends only on signed result consensus (`step0/`, `audit/result_consensus.py`).
 
-**Commitment payload:**
-```json
-{
-  "game_id": "...",
-  "gamelet": "g01",
-  "step": 1,
-  "role": "cop",
-  "state_hash": "SHA-256(board_state)",
-  "move": "N",
-  "hint": "pursuing",
-  "intent": "close distance",
-  "nonce": "random-uuid"
-}
-```
+### AD-5: Scent Field for Cop Observation
+`scent = 0.9 × 0.10^(chebyshev(cop, thief_last))` — directional signal without exact
+position (`cop_worker/scent.py`, `observation.py`).
 
-The `gamelet` field prevents replaying a valid commitment from a different gamelet.
-
-### AD-3: Scent Field for Cop Observation
-**Rationale:** Pure distance information would trivially solve the game. Scent field gives directional signal without exact position.
-
-**Formula:** `scent[x][y] = 0.9 × 0.10^(chebyshev(cop, thief_last))`
-
-**Trade-off:** Cop can infer approximate thief location from scent peak, but cannot know exact position after thief moves.
-
-### AD-4: Multi-Level Strategy Fallback
-**Rationale:** RL models may not be present on first run. Greedy strategy ensures the cop can always make a legal move. LLM crew provides creative play for cold start.
-
-**Order:** DQN → Q-table → Greedy → LLM
-
-### AD-5: HMAC-SHA256 Message Authentication
-**Rationale:** Prevents man-in-the-middle attacks between cop and thief processes.
-
-**Implementation:** `agent/mcp/crypto.py` — every MCP message carries `hmac_sha256(shared_secret, canonical_json(payload))`.
+### AD-6: RL Movement, No Framework
+Movement is a recurrent RL policy (local observation + Bayesian belief); the only LLM
+use is free-text hints and belief updates.
 
 ---
 
 ## 5. Technology Stack
 
-| Component | Library | Version | Purpose |
-|-----------|---------|---------|---------|
-| MCP transport | `fastmcp` | ≥0.9 | Server and client MCP endpoints |
-| LLM strategy | `crewai` | ≥0.86 | GameManager + StrategyAgent crew |
-| Claude API | `anthropic` | ≥0.43 | LLM backend for strategy crew |
-| RL training | `torch` | ≥2.3 | DQN/PPO policy networks |
-| RL env | custom `gymnasium`-style | — | 7×7 grid environment |
-| Gmail reporting | `google-api-python-client` | ≥2.0 | OAuth 2.0 gmail.send |
-| Package mgmt | `uv` | ≥0.4 | Fast dependency resolution |
-| Testing | `pytest` | ≥8.0 | 121 tests |
-| Linting | `ruff` | ≥0.4 | Zero violations enforced |
+| Component | Library | Purpose |
+|-----------|---------|---------|
+| MCP transport | MCP over HTTP | worker servers + LM facade / peer calls |
+| LLM (hints/belief only) | `anthropic` | free-language hints, belief-map updates |
+| RL | `torch` | RecurrentA2C-GRU policy networks |
+| Gmail reporting | `google-api-python-client` | OAuth 2.0 `gmail.send` |
+| Package mgmt | `uv` | dependency resolution (`uv sync --frozen`) |
+| Testing | `pytest` | fast suite, no LLM / no network |
+| Linting | `ruff` | zero violations enforced |
 
 ---
 
-## 6. File Structure
+## 6. File Structure (vibecode-cop)
 
 ```
-cop/
-├── __init__.py          ← package init; exports CopAgent
-└── __main__.py          ← entry point; builds PeerRuntime and calls run()
-
-agent/
-├── board.py             ← 7×7 grid, legal moves, barrier checking
-├── rules_engine.py      ← apply_moves, check_game_status, GameOutcome
-├── peer_runtime.py      ← top-level coordinator; owns game_id and role
-├── peer_turn_loop.py    ← full turn: commit → reveal → verify → apply
-├── peer_audit.py        ← post-game SHA-256 log audit
-├── game_runner.py       ← dev self-play runner (not used in production P2P)
-├── game_series.py       ← 6-gamelet series coordinator
-├── orchestrator.py      ← base orchestrator
-├── orchestrator_crew.py ← CrewAI crew definition
-├── orchestrator_phase.py ← phase management
-├── orchestrator_game.py ← game-level orchestration
-├── config/
-│   ├── __init__.py
-│   └── shared_config.py ← load, validate, SHA-256 of config/game.json
-├── mcp/
-│   ├── server.py        ← FastMCP server; handles action/commit/reveal/start_game
-│   ├── client.py        ← FastMCP client; sends to peer
-│   ├── crypto.py        ← SHA-256 commit, HMAC auth, nonce generation
-│   ├── messages.py      ← message schemas
-│   ├── messages_game.py ← game-specific message types
-│   ├── protocol.py      ← protocol state machine
-│   ├── log.py           ← structured game log writer
-│   └── log_replay.py    ← offline log audit
-├── rl/
-│   ├── policy.py        ← RLPolicy: DQN/Q-table inference
-│   ├── strategies.py    ← GreedyCopStrategy, ComboCopStrategy
-│   ├── environment.py   ← RL gymnasium-style env
-│   ├── train.py         ← training entry point
-│   └── ...
-└── reports/
-    ├── manager.py       ← ReportManager: orchestrates plugins
-    ├── gmail_report.py  ← Gmail OAuth 2.0 send
-    ├── gatekeeper.py    ← quota + idempotency guard
-    └── ...
+cop/__main__.py            ← thin entry; delegates to cop_worker
+cop_worker/                ← cop role (internal MCP server)
+├── __main__.py            ← worker CLI (serve on --port)
+├── mcp_server.py, mcp/    ← MCP server + handlers, coordinator, protocol, client
+├── gamelet.py             ← one sub-game's semantics
+├── state_machine.py       ← gamelet lifecycle state machine
+├── commit_reveal.py       ← commit-reveal protocol state machine
+├── rules_engine.py, board.py, rules_outcomes.py
+├── scent.py, observation*.py, belief_engine.py, synthetic_belief.py
+├── parameter_registry.py  ← binding/fixed/negotiated term enforcement
+├── crypto.py              ← canonical JSON, commitments, signing
+├── rl/                    ← recurrent policy, networks, heuristics, env
+├── language/, llm/        ← free-text hints + Claude client (non-movement)
+├── audit/                 ← result_consensus, audit_summary, step_journal
+├── step0/                 ← signed gamelet declaration + signing
+├── gmail/                 ← gatekeeper, sender, quota/DOS/circuit-breaker
+├── config/, reliability/, protocol/, replay/, gui/
+league_manager/            ← match orchestrator / external MCP facade
+├── __main__.py            ← `python -m league_manager --counted --port 61222`
+├── admin_api.py           ← localhost control HTTP (:8080)
+├── router.py              ← routes ref-v3 calls to the correct worker (identity only)
+├── worker_lifecycle.py    ← spawns/monitors cop & thief worker subprocesses
+├── series_lifecycle.py, series_jsonl.py  ← six-gamelet series + JSONL events
+├── peer_topology.py       ← single-address / role-split topology handling
+├── protocol/              ← ref-v3 adapter, detection, transport probe, pipeline
+├── reports/, gmail/       ← league result composition + gated Gmail send
+├── step0/                 ← series-level signed declaration
+├── league_ledger.py       ← cross-series ledger
+└── config/, reliability/
 ```
