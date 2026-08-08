@@ -159,6 +159,30 @@ async def _poll_turn(inbox, step: int, *, timeout: float) -> dict:
     raise TimeoutError(f"timeout waiting for opponent turn step {step}")
 
 
+async def _await_endpoint(mcp_url: str, client_cls, *, window_s: float = 900.0) -> bool:
+    """Poll ONE peer MCP URL until it answers list_tools (its window opens), or timeout.
+
+    The peer binds its cop/thief endpoint only during that role's sub-game window, so we
+    wait for the specific endpoint we must dial and tolerate transient 502/530/refused
+    (its origin is down between windows) rather than treating them as fatal.
+    """
+    deadline = time.monotonic() + window_s
+    announced = False
+    while time.monotonic() < deadline:
+        try:
+            async with client_cls(mcp_url) as c:
+                await c.list_tools()
+            print(f"[match] peer endpoint UP: {mcp_url}")
+            return True
+        except Exception as exc:
+            if not announced:
+                print(f"[match] waiting for peer endpoint {mcp_url} "
+                      f"({type(exc).__name__}: {str(exc)[:80]})")
+                announced = True
+            await asyncio.sleep(8)
+    return False
+
+
 # ---------------------------------------------------------------------------
 # One sub-game over the reference-v3 wire, driven by the RL policy.
 # ---------------------------------------------------------------------------
@@ -385,16 +409,33 @@ async def _play_match(*, opp_cop_url: str, opp_thief_url: str, our_cop_port: int
         for sg in range(1, sub_games + 1):
             our_role = "thief" if sg % 2 == 1 else "police"
             peer_url = opp_cop_url if our_role == "thief" else opp_thief_url
+            mcp_url = peer_url if peer_url.endswith("/mcp") else peer_url.rstrip("/") + "/mcp"
             in_session = sessions[our_role]
-            transport = StreamableHttpTransport(peer_url.rstrip("/") + "/mcp"
-                                                if not peer_url.endswith("/mcp") else peer_url)
-            async with Client(transport) as client:
-                _profile, out_session = await discover_reference_v3(
-                    peer_url, tool_caller=_caller(client))
-                results.append(await _play_subgame(
-                    out_session, in_session, role=our_role, sub_game=sg,
-                    group_id="vibecode", group_name="vibecode", terms=terms,
-                    opponent_group_hint=opponent_group))
+            # Wait ONLY for the endpoint this sub-game must dial (peer binds per-window).
+            print(f"[match] sg{sg} ({our_role}) — awaiting peer endpoint {mcp_url}")
+            if not await _await_endpoint(mcp_url, Client, window_s=900.0):
+                print(f"[match] sg{sg} peer window never opened — recording skip, continuing")
+                results.append({"sub_game": sg, "role": our_role, "audit_ok": False,
+                                "error": "peer_window_never_opened"})
+                continue
+            # Play once its window is open. A transient failure records the sub-game and
+            # moves on — it never crashes the whole series (their windows re-run).
+            try:
+                transport = StreamableHttpTransport(mcp_url)
+                async with Client(transport) as client:
+                    _profile, out_session = await discover_reference_v3(
+                        peer_url, tool_caller=_caller(client))
+                    results.append(await _play_subgame(
+                        out_session, in_session, role=our_role, sub_game=sg,
+                        group_id="vibecode", group_name="vibecode", terms=terms,
+                        opponent_group_hint=opponent_group))
+                print(f"[match] sg{sg} complete")
+            except Exception as exc:
+                print(f"[match] sg{sg} failed "
+                      f"({type(exc).__name__}: {str(exc)[:110]}) — continuing")
+                results.append({"sub_game": sg, "role": our_role, "audit_ok": False,
+                                "error": f"{type(exc).__name__}: {str(exc)[:200]}"})
+                continue
     finally:
         for t in tasks:
             t.cancel()
