@@ -38,3 +38,5 @@ thief_out.log
 .claude/worktrees/
 
 agent/skills/*.mcp.py
+results/
+coverage.json

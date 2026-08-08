@@ -120,4 +120,3 @@ File: `results/test-results.xml`
 - [x] `results/test-results.xml` generated
 - [x] `coverage.xml` generated
 - [x] `docs/KNOWN_DEVIATIONS.md` created
-- [x] `docs/PHASE_0_5_REPORT.md` created

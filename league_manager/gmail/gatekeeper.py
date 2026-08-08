@@ -69,17 +69,21 @@ class Gatekeeper:
     Both counted=True AND cli_counted_flag=True required to send.
     """
 
-    def __init__(self, counted: bool, cli_counted_flag: bool, sender: object) -> None:
+    def __init__(
+        self, counted: bool, cli_counted_flag: bool, sender: object, recipient: str = ""
+    ) -> None:
         """Initialise gatekeeper.
 
         Args:
             counted: Whether config has match.counted = True.
             cli_counted_flag: Whether --counted CLI flag was passed.
             sender: Gmail sender object with a send() method.
+            recipient: Email address to send results to (comes from config).
         """
         self.counted = counted
         self.cli_counted_flag = cli_counted_flag
         self.sender = sender
+        self.recipient = recipient
         self._quota = DailyQuotaManager()
         self.circuit_breaker = CircuitBreaker()
 
@@ -103,9 +107,8 @@ class Gatekeeper:
             logger.warning("Daily quota exceeded — Gmail send blocked")
             return {"sent": False, "reason": "quota_exceeded"}
         try:
-            target = "rmisegal+uoh26finalgame@gmail.com"
             result = self.sender.send(
-                to=target,
+                to=self.recipient,
                 subject=f"Game Result — {game_id}",
                 body=str(result_data),
             )
