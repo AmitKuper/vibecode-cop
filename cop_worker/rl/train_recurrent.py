@@ -980,8 +980,6 @@ def main() -> None:
     if args.historical_checkpoint is None:
         historical_policy = None
     else:
-        from cop_worker.rl.policy_loader import load_checkpoint
-
         _raw_ckpt = torch.load(args.historical_checkpoint, map_location="cpu", weights_only=True)
         if "state_dict" in _raw_ckpt and "input_size" in _raw_ckpt:
             _hist_net = RecurrentActorCritic(
@@ -992,6 +990,8 @@ def main() -> None:
             _hist_net.load_state_dict(_raw_ckpt["state_dict"])
             historical_policy = _hist_net.eval()
         else:
+            from cop_worker.rl.policy_loader import load_checkpoint
+
             _old_policy = load_checkpoint(args.historical_checkpoint, opponent_role, max_steps=35)
             expected_input = obs_tensor_shape(args.grid_size)
             try:
