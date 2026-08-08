@@ -580,8 +580,9 @@ def _collect_demonstrations(
     labels: list[int] = []
     actions = COP_ACTIONS if role == "cop" else THIEF_ACTIONS
     opponent_role = "thief" if role == "cop" else "cop"
+    demo_families = [f for f in FAMILIES if f != "historical_checkpoint" or historical_policy is not None]
     for episode in range(episodes):
-        family = FAMILIES[episode % len(FAMILIES)]
+        family = demo_families[episode % len(demo_families)]
         state = _initial_state(rng, random_start=True, grid_size=grid_size)
         scent = ScentFields.zeros(grid_size)
         belief = BeliefEngine(grid_size, role)
@@ -962,7 +963,7 @@ def main() -> None:
     parser.add_argument("--hidden-size", type=int, default=128)
     parser.add_argument("--models-dir", type=Path, default=Path("models"))
     parser.add_argument("--evidence-dir", type=Path, default=Path("results"))
-    parser.add_argument("--historical-checkpoint", type=Path, required=True)
+    parser.add_argument("--historical-checkpoint", type=Path, required=False, default=None)
     parser.add_argument("--inference-temperature", type=float, default=0.0)
     parser.add_argument("--evaluate-only-artifact", type=Path)
     parser.add_argument("--resume-artifact", type=Path)
@@ -977,17 +978,26 @@ def main() -> None:
     from cop_worker.rl.policy_loader import load_checkpoint
 
     opponent_role = "thief" if args.role == "cop" else "cop"
-    _raw_ckpt = torch.load(args.historical_checkpoint, map_location="cpu", weights_only=True)
-    if "state_dict" in _raw_ckpt and "input_size" in _raw_ckpt:
-        _hist_net = RecurrentActorCritic(
-            int(_raw_ckpt["input_size"]),
-            int(_raw_ckpt["n_actions"]),
-            int(_raw_ckpt["hidden_size"]),
-        )
-        _hist_net.load_state_dict(_raw_ckpt["state_dict"])
-        historical_policy = _hist_net.eval()
+    if args.historical_checkpoint is None:
+        historical_policy = None
     else:
-        historical_policy = load_checkpoint(args.historical_checkpoint, opponent_role, max_steps=35)
+        _raw_ckpt = torch.load(args.historical_checkpoint, map_location="cpu", weights_only=True)
+        if "state_dict" in _raw_ckpt and "input_size" in _raw_ckpt:
+            _hist_net = RecurrentActorCritic(
+                int(_raw_ckpt["input_size"]),
+                int(_raw_ckpt["n_actions"]),
+                int(_raw_ckpt["hidden_size"]),
+            )
+            _hist_net.load_state_dict(_raw_ckpt["state_dict"])
+            historical_policy = _hist_net.eval()
+        else:
+            _old_policy = load_checkpoint(args.historical_checkpoint, opponent_role, max_steps=35)
+            expected_input = obs_tensor_shape(args.grid_size)
+            try:
+                _old_input = _old_policy.net.backbone.net[0].weight.shape[1]
+            except Exception:
+                _old_input = expected_input
+            historical_policy = _old_policy if _old_input == expected_input else None
     if args.evaluate_only_artifact:
         artifact = args.evaluate_only_artifact
         checkpoint = torch.load(artifact, map_location="cpu", weights_only=True)
@@ -1071,8 +1081,8 @@ def main() -> None:
         args.training_families
         or (THIEF_TRAINING_SCHEDULE if args.role == "thief" else COP_TRAINING_SCHEDULE)
     )
-    evaluation["historical_checkpoint"] = str(args.historical_checkpoint)
-    evaluation["historical_checkpoint_sha256"] = file_sha256(args.historical_checkpoint)
+    evaluation["historical_checkpoint"] = str(args.historical_checkpoint) if args.historical_checkpoint else None
+    evaluation["historical_checkpoint_sha256"] = file_sha256(args.historical_checkpoint) if args.historical_checkpoint else None
     evaluation["demonstration_episodes"] = 240
     evaluation["imitation_updates"] = 600
     evaluation["training_method"] = "local-belief BC warm start + recurrent A2C"
