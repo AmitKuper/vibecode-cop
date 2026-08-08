@@ -1,0 +1,3 @@
+# The shared constitution must stay byte-identical across clones (rule 11):
+# never apply EOL conversion, or sha256(file bytes)=9d6ec544… would break on checkout.
+config/game.json -text
