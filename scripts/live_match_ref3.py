@@ -173,6 +173,13 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     )
 
     max_steps = terms["max_steps"]
+    # Fresh per-sub-game state: sealed records and the inbox must never leak across
+    # sub-games (else step 1 of the next sub-game equivocates against the last one).
+    out_session.local_records = []
+    out_session._local_records_by_step = {}
+    in_session.turns = ReferenceV3Inbox(window=4)
+    in_session.turn_messages.clear()
+    in_session.expected_turn_sender = None
     nonce = secrets.token_hex(16)
     greeting = build_negotiation(
         terms=terms, nonce=nonce, group_id=group_id, group_name=group_name,
@@ -299,9 +306,12 @@ async def _self_test(role: str, sub_games: int, our_port: int, sparring_port: in
                 return _call
 
             _profile, out_session = await discover_reference_v3(sparring_url, tool_caller=_caller(client))
+            other = {"police": "thief", "thief": "police"}
             for sg in range(1, sub_games + 1):
+                # Roles alternate every sub-game; our sub-game-1 role is `role`.
+                sg_role = role if sg % 2 == 1 else other[role]
                 results.append(await _play_subgame(
-                    out_session, in_session, role=role, sub_game=sg,
+                    out_session, in_session, role=sg_role, sub_game=sg,
                     group_id="vibecode", group_name="vibecode",
                     terms=terms, opponent_group_hint="sparring-match",
                 ))
