@@ -667,7 +667,8 @@ def main() -> int:
     # Result is emailed to OUR OWN inbox only (never the league address on friendlies).
     p.add_argument("--report-to", default="agentsorch@gmail.com")
     p.add_argument("--no-email", action="store_true", help="Skip emailing the result")
-    p.add_argument("--members", default="", help="Comma-separated 'Name:id' for declaration")
+    p.add_argument("--members", default="Amit Kuperminz,Ron Marom",
+                   help="Comma-separated member names for the declaration")
     # Counted-game accounting (rules 37-38): friendly = counted=False (no increment).
     p.add_argument("--counted", action="store_true", help="Mark this as a COUNTED series")
     p.add_argument("--counted-played", type=int, default=0,
