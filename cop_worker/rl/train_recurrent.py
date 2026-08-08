@@ -78,23 +78,25 @@ COP_TRAINING_SCHEDULE = (
 WORST_FAMILY_PROMOTION_FLOOR = {"cop": 0.55, "thief": 0.35}
 
 
-def _initial_state(rng: random.Random, random_start: bool = True) -> DomainState:
+def _initial_state(
+    rng: random.Random, random_start: bool = True, grid_size: int = 7
+) -> DomainState:
     if random_start:
-        cop = (rng.randrange(7), rng.randrange(7))
-        thief = (rng.randrange(7), rng.randrange(7))
+        cop = (rng.randrange(grid_size), rng.randrange(grid_size))
+        thief = (rng.randrange(grid_size), rng.randrange(grid_size))
         while thief == cop:
-            thief = (rng.randrange(7), rng.randrange(7))
+            thief = (rng.randrange(grid_size), rng.randrange(grid_size))
     else:
         cop, thief = (0, 0), (3, 3)
     return DomainState(
         turn=0,
-        grid_size=7,
+        grid_size=grid_size,
         cop_position=cop,
         thief_position=thief,
         barriers=[],
         cop_barriers_remaining=14,
         move_history=[],
-        scent_grid=[[0.0] * 7 for _ in range(7)],
+        scent_grid=[[0.0] * grid_size for _ in range(grid_size)],
     )
 
 
@@ -182,6 +184,36 @@ def _opponent_action(
     if family == "historical_checkpoint":
         if historical_policy is None:
             raise RuntimeError("historical-checkpoint opponent was not loaded")
+        if isinstance(historical_policy, RecurrentActorCritic):
+            own_pos = state.cop_position if role == "cop" else state.thief_position
+            scent_for_obs = opponent_scent or [
+                [0.0] * state.grid_size for _ in range(state.grid_size)
+            ]
+            obs = LocalObservation(
+                own_position=own_pos,
+                own_barriers_remaining=state.cop_barriers_remaining if role == "cop" else 0,
+                known_barriers=[tuple(item) for item in state.barriers],
+                opponent_scent=scent_for_obs,
+                last_hint="",
+                step=state.turn + 1,
+                gamelet=(state.turn % 6) + 1,
+                grid_size=state.grid_size,
+            )
+            belief_state = (
+                opponent_belief.belief
+                if opponent_belief is not None
+                else BeliefEngine(state.grid_size, role).belief
+            )
+            features = torch.tensor(
+                local_obs_to_tensor(obs, belief_state), dtype=torch.float32
+            )
+            actions = COP_ACTIONS if role == "cop" else THIEF_ACTIONS
+            action_mask = torch.tensor([a in legal for a in actions], dtype=torch.bool)
+            with torch.no_grad():
+                logits, _, _ = historical_policy(features.unsqueeze(0), None)
+            masked_logits = logits.squeeze(0).masked_fill(~action_mask, -1e9)
+            action = actions[int(masked_logits.argmax())]
+            return action if action in legal else legal[0]
         from cop_worker.board import Board
         from cop_worker.rules_engine import RulesEngine
 
@@ -218,7 +250,8 @@ def _opponent_action(
             pos = (
                 result.new_state.cop_position if role == "cop" else result.new_state.thief_position
             )
-            wall_score = min(pos[0], pos[1], 6 - pos[0], 6 - pos[1])
+            gs1 = state.grid_size - 1
+            wall_score = min(pos[0], pos[1], gs1 - pos[0], gs1 - pos[1])
             scored.append((wall_score, action))
         return min(scored)[1]
     own_position = state.cop_position if role == "cop" else state.thief_position
@@ -255,7 +288,8 @@ def _opponent_action(
             pos = (
                 result.new_state.cop_position if role == "cop" else result.new_state.thief_position
             )
-            wall_distance = min(pos[0], pos[1], 6 - pos[0], 6 - pos[1])
+            gs1 = state.grid_size - 1
+            wall_distance = min(pos[0], pos[1], gs1 - pos[0], gs1 - pos[1])
             wall_scored.append((-wall_distance, rng.random(), action))
         return max(wall_scored)[2]
     if family == "corridor_cutting":
@@ -397,12 +431,13 @@ def _run_episode(
     legal_mask_enabled: bool = True,
     risk_mask_enabled: bool = False,
     barrier_actions_enabled: bool = True,
+    grid_size: int = 7,
 ) -> tuple[list, str, int]:
-    state = _initial_state(rng, random_start)
-    scent = ScentFields.zeros(7)
-    belief = BeliefEngine(7, role)
+    state = _initial_state(rng, random_start, grid_size)
+    scent = ScentFields.zeros(grid_size)
+    belief = BeliefEngine(grid_size, role)
     opponent_role = "thief" if role == "cop" else "cop"
-    opponent_belief = BeliefEngine(7, opponent_role)
+    opponent_belief = BeliefEngine(grid_size, opponent_role)
     hidden = None
     trajectory = []
     winner = "thief"
@@ -538,7 +573,7 @@ def _run_episode(
 
 
 def _collect_demonstrations(
-    role: str, rng: random.Random, episodes: int, historical_policy
+    role: str, rng: random.Random, episodes: int, historical_policy, grid_size: int = 7
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """Collect strictly local-observation labels from the belief expert."""
     features: list[torch.Tensor] = []
@@ -547,10 +582,10 @@ def _collect_demonstrations(
     opponent_role = "thief" if role == "cop" else "cop"
     for episode in range(episodes):
         family = FAMILIES[episode % len(FAMILIES)]
-        state = _initial_state(rng, random_start=True)
-        scent = ScentFields.zeros(7)
-        belief = BeliefEngine(7, role)
-        opponent_belief = BeliefEngine(7, opponent_role)
+        state = _initial_state(rng, random_start=True, grid_size=grid_size)
+        scent = ScentFields.zeros(grid_size)
+        belief = BeliefEngine(grid_size, role)
+        opponent_belief = BeliefEngine(grid_size, opponent_role)
         while state.turn < 35:
             legal = _legal(state, role)
             observation, _mask = _observation(
@@ -603,9 +638,12 @@ def _pretrain_imitation(
     historical_policy,
     demonstration_episodes: int = 240,
     updates: int = 600,
+    grid_size: int = 7,
 ) -> None:
     """Warm-start the recurrent network on local-only expert demonstrations."""
-    features, labels = _collect_demonstrations(role, rng, demonstration_episodes, historical_policy)
+    features, labels = _collect_demonstrations(
+        role, rng, demonstration_episodes, historical_policy, grid_size
+    )
     optimizer = torch.optim.Adam(network.parameters(), lr=1e-3)
     network.train()
     batch_size = min(128, len(labels))
@@ -630,17 +668,18 @@ def train(
     resume_expert_probability: float = 0.0,
     resume_imitation_weight: float = 0.0,
     training_schedule: tuple[str, ...] | None = None,
+    grid_size: int = 7,
 ) -> RecurrentActorCritic:
     torch.manual_seed(seed)
     np.random.seed(seed)
     rng = random.Random(seed)
     if resume_checkpoint is None:
         network = RecurrentActorCritic(
-            obs_tensor_shape(7),
+            obs_tensor_shape(grid_size),
             len(COP_ACTIONS if role == "cop" else THIEF_ACTIONS),
             hidden_size,
         )
-        _pretrain_imitation(network, role, rng, historical_policy)
+        _pretrain_imitation(network, role, rng, historical_policy, grid_size=grid_size)
     else:
         if resume_checkpoint.get("role") != role:
             raise RuntimeError("resume checkpoint role does not match training role")
@@ -676,6 +715,7 @@ def train(
             random_start=True,
             expert_probability=expert_probability,
             historical_policy=historical_policy,
+            grid_size=grid_size,
         )
         returns = []
         total = 0.0
@@ -736,6 +776,7 @@ def evaluate(
     legal_mask_enabled: bool = True,
     risk_mask_enabled: bool = False,
     barrier_actions_enabled: bool = True,
+    grid_size: int = 7,
 ) -> dict:
     """Run held-out tournaments composed only of exact six-gamelet series."""
     families = {}
@@ -770,6 +811,7 @@ def evaluate(
                     legal_mask_enabled=legal_mask_enabled,
                     risk_mask_enabled=risk_mask_enabled,
                     barrier_actions_enabled=barrier_actions_enabled,
+                    grid_size=grid_size,
                 )
                 won = winner == role
                 wins += int(won)
@@ -928,13 +970,24 @@ def main() -> None:
     parser.add_argument("--resume-expert-probability", type=float, default=0.0)
     parser.add_argument("--resume-imitation-weight", type=float, default=0.0)
     parser.add_argument("--training-families", nargs="+", choices=FAMILIES)
+    parser.add_argument("--grid-size", type=int, default=7)
     args = parser.parse_args()
     args.models_dir.mkdir(parents=True, exist_ok=True)
     args.evidence_dir.mkdir(parents=True, exist_ok=True)
     from cop_worker.rl.policy_loader import load_checkpoint
 
     opponent_role = "thief" if args.role == "cop" else "cop"
-    historical_policy = load_checkpoint(args.historical_checkpoint, opponent_role, max_steps=35)
+    _raw_ckpt = torch.load(args.historical_checkpoint, map_location="cpu", weights_only=True)
+    if "state_dict" in _raw_ckpt and "input_size" in _raw_ckpt:
+        _hist_net = RecurrentActorCritic(
+            int(_raw_ckpt["input_size"]),
+            int(_raw_ckpt["n_actions"]),
+            int(_raw_ckpt["hidden_size"]),
+        )
+        _hist_net.load_state_dict(_raw_ckpt["state_dict"])
+        historical_policy = _hist_net.eval()
+    else:
+        historical_policy = load_checkpoint(args.historical_checkpoint, opponent_role, max_steps=35)
     if args.evaluate_only_artifact:
         artifact = args.evaluate_only_artifact
         checkpoint = torch.load(artifact, map_location="cpu", weights_only=True)
@@ -969,6 +1022,7 @@ def main() -> None:
             args.resume_expert_probability,
             args.resume_imitation_weight,
             tuple(args.training_families) if args.training_families else None,
+            grid_size=args.grid_size,
         )
         artifact_name = f"{args.role}_recurrent_champion.pt"
         artifact = args.models_dir / artifact_name
@@ -976,7 +1030,7 @@ def main() -> None:
             {
                 "role": args.role,
                 "algorithm": "RecurrentA2C-GRU",
-                "input_size": obs_tensor_shape(7),
+                "input_size": obs_tensor_shape(args.grid_size),
                 "n_actions": len(COP_ACTIONS if args.role == "cop" else THIEF_ACTIONS),
                 "hidden_size": args.hidden_size,
                 "training_steps": previous_training_steps + args.episodes * 35,
@@ -995,6 +1049,7 @@ def main() -> None:
         args.seed,
         historical_policy,
         inference_temperature,
+        grid_size=args.grid_size,
     )
     heuristic_baseline = evaluate(
         network,
@@ -1003,6 +1058,7 @@ def main() -> None:
         args.seed,
         historical_policy,
         force_expert_actor=True,
+        grid_size=args.grid_size,
     )
     promotion = _promotion_comparison(evaluation, heuristic_baseline, args.seed)
     evaluation["artifact_sha256"] = file_sha256(artifact)

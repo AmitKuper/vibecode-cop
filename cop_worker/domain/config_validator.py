@@ -49,9 +49,9 @@ class GameConfig(BaseModel):
     def _enforce_appendix_f(self) -> GameConfig:
         errors: list[str] = []
 
-        # Fixed values (Appendix-F — must match exactly)
-        if self.grid_size != 7:
-            errors.append(f"grid_size must be 7 (got {self.grid_size})")
+        # Fixed values (Appendix-F — minimum 7, not a fixed value)
+        if self.grid_size < 7:
+            errors.append(f"grid_size must be >= 7 (got {self.grid_size})")
         if self.max_barriers != 14:
             errors.append(f"max_barriers must be 14 (got {self.max_barriers})")
         if self.max_moves < 35:
