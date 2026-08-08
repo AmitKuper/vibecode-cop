@@ -975,12 +975,12 @@ def main() -> None:
     args = parser.parse_args()
     args.models_dir.mkdir(parents=True, exist_ok=True)
     args.evidence_dir.mkdir(parents=True, exist_ok=True)
-    from cop_worker.rl.policy_loader import load_checkpoint
-
     opponent_role = "thief" if args.role == "cop" else "cop"
     if args.historical_checkpoint is None:
         historical_policy = None
     else:
+        from cop_worker.rl.policy_loader import load_checkpoint
+
         _raw_ckpt = torch.load(args.historical_checkpoint, map_location="cpu", weights_only=True)
         if "state_dict" in _raw_ckpt and "input_size" in _raw_ckpt:
             _hist_net = RecurrentActorCritic(
