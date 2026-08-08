@@ -534,6 +534,71 @@ def _write_result(result: dict) -> Path:
     return path
 
 
+# Appendix-F scoring: capture -> cop 20 / thief 5; survival -> thief 10 / cop 5.
+def _score_series(sub_games: list, group_id: str, opponent: str) -> dict:
+    rows, ours, theirs, win_us, win_them = [], 0, 0, 0, 0
+    for sg in sub_games:
+        role = sg["role"]  # our role: "police" or "thief"
+        cop_s, thief_s = (20, 5) if sg.get("outcome") == "capture" else (5, 10)
+        us, them = (cop_s, thief_s) if role == "police" else (thief_s, cop_s)
+        ours += us
+        theirs += them
+        win_us += us > them
+        win_them += them > us
+        rows.append({
+            "sub_game_number": sg["sub_game"],
+            "roles": {group_id: role, opponent: "thief" if role == "police" else "police"},
+            "outcome": sg.get("outcome"), "audit": sg.get("audit_ok"),
+            "score": {group_id: us, opponent: them},
+            "winner_group": group_id if us > them else opponent,
+        })
+    winner = group_id if ours > theirs else opponent if theirs > ours else None
+    return {"rows": rows, "points": {group_id: ours, opponent: theirs},
+            "sub_game_wins": {group_id: win_us, opponent: win_them}, "winner_group": winner}
+
+
+def _build_report(result: dict, *, group_id: str, opponent: str, setting: str,
+                  counted: bool = False) -> dict:
+    from cop_worker.protocol.reference_v3 import (
+        default_terms,
+        derive_game_id,
+        derive_game_uid,
+    )
+    terms = default_terms({"setting": setting})
+    scored = _score_series(result["sub_games"], group_id, opponent)
+    return {
+        "report_type": "final_game_result",
+        "schema_version": "1.0",
+        "counted": counted,
+        "game_id": derive_game_id(group_id, opponent),
+        "game_uid": derive_game_uid(terms, group_id, opponent),
+        "groups": sorted([group_id, opponent]),
+        "num_sub_games": len(result["sub_games"]),
+        "timezone": "Asia/Jerusalem",
+        "sub_games": scored["rows"],
+        "final_result": {
+            "points": scored["points"],
+            "sub_game_wins": scored["sub_game_wins"],
+            "winner_group": scored["winner_group"],
+        },
+        "links": {"github": {
+            "vibecode_cop": "https://github.com/AmitKuper/vibecode-cop",
+            "vibecode_thief": "https://github.com/AmitKuper/vibecode-thief",
+        }},
+    }
+
+
+def _send_report(report: dict, recipient: str) -> str:
+    """Email the report to our own inbox (friendly = self only, never the league)."""
+    from cop_worker.gmail.sender import GmailApiSender
+    token = REPO_ROOT / "secrets" / "gmail" / "token.json"
+    body = _json.dumps(report, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    pts = report["final_result"]["points"]
+    subject = (f"[vibecode] {'COUNTED' if report['counted'] else 'friendly'} "
+               f"{report['game_id']} {pts}")
+    return GmailApiSender(token)(recipient, subject, body, [])
+
+
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--self-test", action="store_true", help="Play vs the local sparring peer")
@@ -550,6 +615,9 @@ def main() -> int:
     p.add_argument("--our-cop-port", type=int, default=61224)
     p.add_argument("--our-thief-port", type=int, default=61223)
     p.add_argument("--setting", default="New York")
+    # Friendly report is emailed to OUR OWN inbox only (never the league address).
+    p.add_argument("--report-to", default="agentsorch@gmail.com")
+    p.add_argument("--no-email", action="store_true", help="Skip emailing the report")
     args = p.parse_args()
 
     if args.match:
@@ -565,6 +633,17 @@ def main() -> int:
         oks = [sg for sg in result["sub_games"] if sg.get("audit_ok")]
         print(f"\n[match] wrote {path}")
         print(f"[match] STATUS: audits {len(oks)}/{len(result['sub_games'])} ok")
+        report = _build_report(result, group_id="vibecode", opponent=args.opponent_group,
+                               setting=args.setting, counted=False)
+        (REPO_ROOT / "reports" / "ref3_matches" / "last_report.json").write_text(
+            _json.dumps(report, indent=2), encoding="utf-8")
+        print(f"[match] result: {report['final_result']}")
+        if not args.no_email:
+            try:
+                mid = _send_report(report, args.report_to)
+                print(f"[match] emailed friendly report to {args.report_to} (id={mid})")
+            except Exception as exc:
+                print(f"[match] email FAILED ({type(exc).__name__}: {str(exc)[:120]})")
         return 0 if oks and len(oks) == len(result["sub_games"]) else 1
 
     if not args.self_test:
