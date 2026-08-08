@@ -82,7 +82,7 @@ async def _game_loop(
     n_sub_games: int,
 ) -> list[dict]:
     """Run n_sub_games of cop-vs-thief reference-v3 sub-games."""
-    from agent.adaptive.reference_v3 import (
+    from cop_worker.protocol.reference_v3 import (
         build_negotiation,
         build_turn,
         default_terms,
@@ -90,7 +90,9 @@ async def _game_loop(
         verify_negotiation,
     )
 
-    terms = default_terms()
+    # The sparring kit's default setting is "Haifa"; override to match it for the
+    # self-test. (Our production default is "New York" to match our anrbj666 pairing.)
+    terms = default_terms({"setting": "Haifa"})
     group_id = "vibecode-demo-cop"
     group_name = "Vibecode Demo Cop"
     board_size = terms["board_size"]
@@ -181,7 +183,7 @@ async def _game_loop(
             await _poll_deque(in_session.controls, label="receive_control", timeout=8.0)
 
         # Reset inbox for next sub-game
-        from agent.adaptive.reference_v3 import ReferenceV3Inbox
+        from cop_worker.protocol.reference_v3 import ReferenceV3Inbox
 
         in_session.turns = ReferenceV3Inbox(window=4)
 
@@ -198,8 +200,8 @@ async def _run_all(our_port: int, sparring_port: int, kit: Path, n_sub_games: in
     from fastmcp import Client, FastMCP
     from fastmcp.client.transports import StreamableHttpTransport
 
-    from agent.adaptive.pipeline import discover_reference_v3
-    from agent.adaptive.reference_v3 import ReferenceV3Session, register_reference_v3_tools
+    from cop_worker.protocol.pipeline import discover_reference_v3
+    from cop_worker.protocol.reference_v3 import ReferenceV3Session, register_reference_v3_tools
 
     host = "127.0.0.1"
     our_mcp_url = f"http://{host}:{our_port}/mcp"
@@ -233,6 +235,8 @@ async def _run_all(our_port: int, sparring_port: int, kit: Path, n_sub_games: in
                 "serve",
                 "--role",
                 "thief",
+                "--scent-model",
+                "multiplicative_book_v1",
                 "--port",
                 str(sparring_port),
                 "--host",

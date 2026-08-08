@@ -61,10 +61,12 @@ class RulesEngine:
         return check_game_status(self.board, self.max_turns)
 
     def update_scent(self) -> None:
-        """Decay existing scent and additively emit new scent at thief's position.
+        """Decay, deposit, then clamp — the book's multiplicative_book_v1 law.
 
-        Implements the specification: new_scent = 0.9 × old_scent + emission,
-        where emission is drawn from the mandatory 5×5 radial kernel.
+        new_scent = clamp(0.9 * old_scent + emission, 0.0, 0.9), emission from the
+        mandatory 5x5 radial kernel. No rounding on the accumulated value: the kit's
+        reference-v3 receiver validates every transmitted frame against this exact law
+        with zero tolerance, so a rounded/unclamped field is refused wholesale.
         """
         n = self.board.grid_size
         tx, ty = self.board.thief_position
@@ -72,9 +74,8 @@ class RulesEngine:
             for x in range(n):
                 dist_sq = (x - tx) ** 2 + (y - ty) ** 2
                 emission = self._SCENT_KERNEL.get(dist_sq, 0.0)
-                self._scent_grid[y][x] = round(
-                    self.SCENT_DECAY * self._scent_grid[y][x] + emission, 4
-                )
+                value = self.SCENT_DECAY * self._scent_grid[y][x] + emission
+                self._scent_grid[y][x] = min(0.9, max(0.0, value))
 
     def get_scent_field(self) -> list[list[float]]:
         """Return a copy of the accumulated scent field for use in game protocol."""

@@ -29,7 +29,7 @@ REFERENCE_V3_TOOLS = {
     "receive_control": "message",
 }
 REFERENCE_V3_WIRE_LOCK = "229ae6487a418c3fcb6da9be404de2f2533c288ebc228811bff6dedc4164d6f7"
-REFERENCE_V3_SCENT_LOCK = "81ebee59640e80eae8ca9ee5f86abd26e7edf5cdbb27d15925cb6ee45ca6ddf4"
+REFERENCE_V3_SCENT_LOCK = "934c220d5bf62acaa3297c6c9d723ea954c220260b02292ca17f6d5daef9f4d9"
 
 TERMS_KEYS = (
     "board_size",
@@ -98,7 +98,7 @@ def default_terms(config: dict | None = None) -> dict:
         "min_center_intensity": 0.5,
         "max_steps": 35,
         "barriers_max": 14,
-        "setting": "Haifa",
+        "setting": "New York",
         "hint_max_words": 15,
         "axis_origin_corner": "top-left",
         "axis_start_index": 0,
