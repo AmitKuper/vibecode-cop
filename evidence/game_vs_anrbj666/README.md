@@ -22,6 +22,7 @@ police) plus the series-level report shared by both repos. The vibecode THIEF ga
 | `counted_series.json` | counted-series ledger (`counted_games_played: 1`) |
 | `config_..._g02/g04/g06.json` | config for vibecode's cop gamelets |
 | `log_..._g02/g04/g06.json` | sealed step-0 + move records + mutual audit for vibecode's cop gamelets |
+| `report_email_anrbj666-vs-vibecode.eml` | the actual report email filed to the league (From agentsorch@gmail.com → rmisegal+uoh26finalgame@gmail.com, msg-id 19fe2cdea7a51125); its result JSON matches this evidence field-for-field |
 
 Cop gamelets outcomes: g02 survival, g04 survival, g06 survival (thief survived each; cop stops
 at the survival terminal, 34 moves). Tagged `game_vs_anrbj666`.
