@@ -10,6 +10,8 @@ loudly -- the policy simply played sub-games 2..6 mid-thought.
 from __future__ import annotations
 
 import inspect
+import json
+import os
 from pathlib import Path
 
 from cop_worker.observation import BeliefState, LocalObservation
@@ -32,9 +34,20 @@ def _observation(step: int) -> LocalObservation:
     )
 
 
+def _align_scent_env(manifest: Path, role: str) -> None:
+    """The obs-mode guard refuses a stray env; tests must load like production does —
+    with COPTHIEF_SCENT_MODEL matching the promoted artifact's recorded model."""
+    entries = json.loads(manifest.read_text(encoding="utf-8"))["models"]
+    entry = next(e for e in entries if e.get("role") == role)
+    model = (entry.get("obs_mode") or {}).get("scent_model", "multiplicative_book_v1")
+    os.environ["COPTHIEF_SCENT_MODEL"] = model
+
+
 def test_reset_clears_recurrent_and_decoder_state() -> None:
     """The contract _play_subgame depends on: reset() really returns the policy to step 0."""
-    policy = load_counted_policy(Path(__file__).parents[1] / "models" / "MANIFEST.json", "cop")
+    manifest = Path(__file__).parents[1] / "models" / "MANIFEST.json"
+    _align_scent_env(manifest, "cop")
+    policy = load_counted_policy(manifest, "cop")
 
     assert policy._hidden is None
     for step in range(5):
@@ -49,6 +62,7 @@ def test_reset_clears_recurrent_and_decoder_state() -> None:
 def test_first_action_of_a_sub_game_is_independent_of_the_previous_one() -> None:
     """The observable symptom: without reset, an identical opening sees a different action."""
     manifest = Path(__file__).parents[1] / "models" / "MANIFEST.json"
+    _align_scent_env(manifest, "cop")
     policy = load_counted_policy(manifest, "cop")
 
     fresh = policy.select_action(_observation(0), BeliefState.uniform(GRID, step=0), LEGAL)

@@ -88,10 +88,15 @@ def test_argmax_localises_the_emitter() -> None:
 
 def test_play_accepts_the_chebyshev_mode() -> None:
     """The mode must actually reach the policies, not silently fall through to 'train'."""
+    import os
+
     from cop_worker.rl.research_evaluation import ScriptedResearchPolicy
 
     from scripts.eval_policy_quality import DeployedPolicy, play
 
+    # The promoted manifest records its scent model; the obs-mode guard refuses a
+    # mismatched env, so load the way production does — env aligned to the artifact.
+    os.environ["COPTHIEF_SCENT_MODEL"] = "subtractive_chebyshev_v1"
     cop = DeployedPolicy("cop", "prod")
     thief = ScriptedResearchPolicy("thief", "random")
     winner, turns = play(cop, thief, 1234, 1, scent_mode="chebyshev")

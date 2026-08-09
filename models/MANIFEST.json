@@ -4,35 +4,30 @@
     {
       "role": "cop",
       "algorithm": "RecurrentA2C-GRU",
-      "artifact": "cop_prodobs_candidate_v2.pt",
+      "artifact": "cop_chebyshev_champion.pt",
       "architecture": "linear-tanh-grucell-policy-value",
-      "sha256": "a568c5fbdda2a76c10da649789fd530c83abb27020bf5ef0f3b7846408730a5d",
-      "training_code_sha": "bb6a5eba28db778e3132b3100da0d25f0e28a537",
-      "config_sha256": "9d6ec544143d1e5768e70b64a3d28f101d9060ad46ad2de703947654ec5eb639",
+      "sha256": "ac48833be9082f2ae3d481cc86b9b4c583707908b3fd1d6d644717185588e7d3",
+      "training_code_sha": "cdb736b",
+      "config_sha256": "da1c9108c5989ac5634bae374dc6b90de4389135a699000bfe52f76ec43743ff",
       "observation_schema_version": "1.0",
       "action_schema_version": "1.0",
       "belief_schema_version": "1.0",
       "inference_mode": "argmax",
       "grid_size": 7,
-      "random_seed": 20260809,
-      "training_steps": 40654,
+      "random_seed": 20260811,
+      "training_steps": 21000,
       "obs_mode": {
         "uniform_belief": true,
-        "wire_scent": true,
-        "decoded_scent": false
+        "wire_scent": false,
+        "decoded_scent": false,
+        "scent_model": "subtractive_chebyshev_v1"
       },
       "hyperparams": {
         "hidden_size": 128,
-        "gamma": 0.99,
-        "distillation_learning_rate": 0.0003,
-        "teacher_games": 1800,
-        "distillation_updates": 500,
-        "teacher": "population_oracle",
-        "base_sha256": "9c5aee7f5b80f29a539c6124fd73f129cb6bef8f4a63f27ae4b12c4a8b09c73e",
-        "distillation_accuracy": 0.7655
+        "gamma": 0.99
       },
-      "evaluation_win_rate": 0.6667,
-      "description": "Population-oracle sequence-distilled recurrent cop, retrained under the PRODUCTION observation (COPTHIEF_UNIFORM_BELIEF=1 COPTHIEF_WIRE_SCENT=1). 180/270 wins at scent=wire/belief=prod over the nine scripted families (scripts/eval_candidate.py, seed 20260809). Supersedes cop_population_oracle_champion.pt, whose 0.9608 was measured against the UNCLAMPED trainer scent field and scored only 0.3185 (86/270) on this wire-faithful harness. Behaviourally a trapper: places barriers on ~7% of actions and waits, rather than tracking. CAVEAT: evaluation_win_rate is wire-faithful and NOT comparable to pre-2026-08-09 manifest figures; fixed starts plus argmax mean 30 games per family is 6 distinct games."
+      "evaluation_win_rate": 0.8704,
+      "description": "From-scratch chebyshev recurrent cop (gen01, 2026-08-10 overnight run, 600 episodes, COPTHIEF_UNIFORM_BELIEF=1 COPTHIEF_SCENT_MODEL=chebyshev). 0.8704 at scent=chebyshev/belief=prod (eval_candidate seed 20260810) vs the superseded book champion's 0.2148 under the same field. Serves as the hybrid_search BLIND-FRAME FALLBACK only \u2014 the minimax engine (cop_worker/rl/pursuit_search.py) plays sighted frames. Later resumed generations REGRESS (gen09 0.32): promote fresh short runs."
     }
   ]
 }
