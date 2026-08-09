@@ -292,7 +292,11 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     our_commit = _git_head(our_repo)
     our_identity = {
         "group_id": group_id, "group_name": group_name,
-        "llm_model": "role-specific-recurrent-policy",
+        # Honest declaration: movement is the trained role-specific RL policy; the verbal layer
+        # is template-generated (no language model is called during play, so no LLM tokens are
+        # consumed). The book forbids letting a model decide movement, and hints provably cannot
+        # affect ours — local_obs_to_tensor never reads last_hint.
+        "llm_model": "none (template hints; role-specific-recurrent-policy movement)",
         "mcp_servers": OUR_MCP, "repos": OUR_REPOS, "members": members or [],
         "github_commit": our_commit, "counted_games_played": our_counted,
     }
@@ -340,6 +344,15 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     out_session._local_records_by_step[0] = step_zero_record
 
     mover = RLMover(role, terms)
+    # Free-language hint policy. Template-only (llm_hint_generator=None): the LLM is provably
+    # irrelevant to play — local_obs_to_tensor never reads last_hint, so no hint (ours or the
+    # opponent's) can shift a single move — and templates cost zero latency and add no
+    # external-service dependency mid-match. What this DOES buy is deception: the driver used
+    # to send hint=f"moving {action}" with intent hardcoded "truth", i.e. it broadcast our exact
+    # move truthfully every step for any hint-reading opponent to exploit.
+    from cop_worker.language.deception_policy import NaturalLanguagePolicy
+
+    nlp = NaturalLanguagePolicy(role="cop" if role == "police" else "thief")
     we_move_first = (role == "thief")  # reference-v3: THIEF moves first every sub-game
     rl_moves: list[str] = []
     pending_answer: dict | None = None  # thief's answer to a cop capture_claim (rides next turn)
@@ -365,12 +378,29 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
         else:
             opp = _latest_turn(in_session, step)
 
-        action = mover.decide(step, sub_game, opp.get("smell_grid", {}), opp.get("hint", ""))
+        opp_hint = opp.get("hint", "")
+        action = mover.decide(step, sub_game, opp.get("smell_grid", {}), opp_hint)
         rl_moves.append(action)
         mover.apply(action)
+        # Profile the opponent's language. No trustworthy= verdict is passed: during play their
+        # move stays sealed until the final audit, so we have no ground truth to judge the hint
+        # against and must not fabricate one (the trust model then holds at its 0.5 default).
+        if opp_hint:
+            nlp.record_opponent_hint(opp_hint)
+        # Language is chosen independently of movement (the book's requirement) and may lie.
+        intent = nlp.choose_intent(
+            step=step, gamelet=sub_game, physical_action=action,
+            token_budget=int(terms.get("hint_max_words", 15)),
+        )
+        hint_text = nlp.generate(action, intent)
+        # Hard clamp to the negotiated word cap: validate_turn rejects a longer hint outright,
+        # and a counted series is one-shot — never risk it on template wording.
+        _cap = int(terms.get("hint_max_words", 15))
+        if len(hint_text.split()) > _cap:
+            hint_text = " ".join(hint_text.split()[:_cap])
         record_payload = {
             "step": step, "role": role, "sub_game": sub_game,
-            "position": list(mover.pos), "move": action, "intent": "truth",
+            "position": list(mover.pos), "move": action, "intent": intent.value,
         }
         if mover.last_barrier is not None:
             record_payload["barrier_placed"] = mover.last_barrier
@@ -384,7 +414,7 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
                      if (role == "thief" and step == max_steps and not caught) else None)
         turn, record = build_turn(
             record_payload=record_payload, nonce=step_nonce, sender=role,
-            hint=f"moving {action.lower()}", smell_grid=mover.our_smell_grid(),
+            hint=hint_text, smell_grid=mover.our_smell_grid(),
             barrier_placed=mover.last_barrier, claim_response=answer, win_claim=win_claim,
         )
         await out_session.send_turn(turn, record)
