@@ -6,7 +6,7 @@
       "algorithm": "RecurrentA2C-GRU",
       "artifact": "cop_chebyshev_champion.pt",
       "architecture": "linear-tanh-grucell-policy-value",
-      "sha256": "ac48833be9082f2ae3d481cc86b9b4c583707908b3fd1d6d644717185588e7d3",
+      "sha256": "a59e0a6cafffcf2351798a8b78c3c3518b44d80a4871c4a345367421238657ba",
       "training_code_sha": "cdb736b",
       "config_sha256": "da1c9108c5989ac5634bae374dc6b90de4389135a699000bfe52f76ec43743ff",
       "observation_schema_version": "1.0",
@@ -14,7 +14,7 @@
       "belief_schema_version": "1.0",
       "inference_mode": "argmax",
       "grid_size": 7,
-      "random_seed": 20260811,
+      "random_seed": 20260820,
       "training_steps": 21000,
       "obs_mode": {
         "uniform_belief": true,
@@ -24,10 +24,11 @@
       },
       "hyperparams": {
         "hidden_size": 128,
-        "gamma": 0.99
+        "gamma": 0.99,
+        "fixed_start_fraction": 0.8
       },
-      "evaluation_win_rate": 0.8704,
-      "description": "From-scratch chebyshev recurrent cop (gen01, 2026-08-10 overnight run, 600 episodes, COPTHIEF_UNIFORM_BELIEF=1 COPTHIEF_SCENT_MODEL=chebyshev). 0.8704 at scent=chebyshev/belief=prod (eval_candidate seed 20260810) vs the superseded book champion's 0.2148 under the same field. Serves as the hybrid_search BLIND-FRAME FALLBACK only \u2014 the minimax engine (cop_worker/rl/pursuit_search.py) plays sighted frames. Later resumed generations REGRESS (gen09 0.32): promote fresh short runs."
+      "evaluation_win_rate": 0.9926,
+      "description": "From-scratch chebyshev recurrent cop, 80% fixed-start episodes (cop_start/thief_start are SIGNED terms \u2014 the match always opens there). 0.9926 at scent=chebyshev/belief=prod on the FIXED-START harness (eval_candidate seed 20260810) vs 0.8704 for the random-start recipe and 0.2148 for the superseded book champion. Thief kept the random-start recipe (0.9741 beats fixed-start 0.9444). Serves as the hybrid_search BLIND-FRAME FALLBACK only \u2014 the minimax engine plays sighted frames."
     }
   ]
 }

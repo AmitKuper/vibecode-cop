@@ -692,6 +692,7 @@ def train(
     resume_imitation_weight: float = 0.0,
     training_schedule: tuple[str, ...] | None = None,
     grid_size: int = 7,
+    fixed_start_fraction: float = 0.0,
 ) -> RecurrentActorCritic:
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -729,13 +730,17 @@ def train(
         else:
             expert_probability = max(0.10, 0.80 * (1.0 - progress))
             imitation_weight = 1.0
+        # Match starts are CONTRACTUAL (cop_start/thief_start are signed terms), so a
+        # fraction of episodes may pin the opening distribution the match actually
+        # visits; the rest stay random for mid-game state coverage. Default 0.0
+        # preserves the historical fully-random recipe.
         trajectory, _winner, _turns = _run_episode(
             network,
             role,
             family,
             rng,
             training=True,
-            random_start=True,
+            random_start=rng.random() >= fixed_start_fraction,
             expert_probability=expert_probability,
             historical_policy=historical_policy,
             grid_size=grid_size,
@@ -999,6 +1004,9 @@ def main() -> None:
     parser.add_argument("--resume-imitation-weight", type=float, default=0.0)
     parser.add_argument("--training-families", nargs="+", choices=FAMILIES)
     parser.add_argument("--grid-size", type=int, default=7)
+    parser.add_argument("--fixed-start-fraction", type=float, default=0.0,
+                        help="Fraction of training episodes started from the SIGNED match "
+                             "start (cop_start/thief_start) instead of random cells")
     args = parser.parse_args()
     args.models_dir.mkdir(parents=True, exist_ok=True)
     args.evidence_dir.mkdir(parents=True, exist_ok=True)
@@ -1068,6 +1076,7 @@ def main() -> None:
             args.resume_imitation_weight,
             tuple(args.training_families) if args.training_families else None,
             grid_size=args.grid_size,
+            fixed_start_fraction=args.fixed_start_fraction,
         )
         artifact_name = f"{args.role}_recurrent_champion.pt"
         artifact = args.models_dir / artifact_name
