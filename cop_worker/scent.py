@@ -89,9 +89,18 @@ class ScentFields:
         )
 
     def update(self, cop_pos: tuple[int, int], thief_pos: tuple[int, int]) -> ScentFields:
-        """Decay then add kernel around each agent. Returns new ScentFields."""
+        """Decay then add kernel around each agent. Returns new ScentFields.
+
+        Under ``COPTHIEF_WIRE_SCENT=1`` accumulation switches to the wire law
+        ``clamp(0.9*old + kernel, 0, 0.9)`` (``RulesEngine.update_scent``), with no rounding,
+        so training sees the same saturated field the reference-v3 wire carries. Default keeps
+        the historical unclamped law, which grows to ~6.5 and retains a peak at the emitter.
+        """
+        from cop_worker.rl.obs_mode import wire_scent_enabled
+
         kernel = _radial_kernel(KERNEL_RADIUS)
         radius = KERNEL_RADIUS
+        clamped = wire_scent_enabled()
 
         new_cop = self.cop_scent * DECAY
         new_thief = self.thief_scent * DECAY
@@ -109,7 +118,10 @@ class ScentFields:
                         and 0 <= kr < len(kernel)
                         and 0 <= kc < len(kernel[0])
                     ):
-                        field[r][c] = round(field[r][c] + kernel[kr][kc], 4)
+                        if clamped:
+                            field[r][c] = min(0.9, max(0.0, field[r][c] + kernel[kr][kc]))
+                        else:
+                            field[r][c] = round(field[r][c] + kernel[kr][kc], 4)
 
         return ScentFields(cop_scent=new_cop, thief_scent=new_thief, grid_size=self.grid_size)
 
@@ -120,3 +132,20 @@ class ScentFields:
     def thief_observation_scent(self) -> list[list[float]]:
         """Thief sees COP scent only."""
         return self.cop_scent.tolist()
+
+
+def make_scent_fields(grid_size: int):
+    """Field factory dispatching on the configured scent law (``COPTHIEF_SCENT_MODEL``).
+
+    Training and evaluation construct their fields through this seam so that switching the
+    Step-0 scent model switches the physics the nets are trained on in ONE place. Both
+    returned types share the ``update`` / ``cop_observation_scent`` /
+    ``thief_observation_scent`` interface.
+    """
+    from cop_worker.rl.obs_mode import chebyshev_scent_enabled
+
+    if chebyshev_scent_enabled():
+        from cop_worker.scent_chebyshev import ChebyshevFields
+
+        return ChebyshevFields.zeros(grid_size)
+    return ScentFields.zeros(grid_size)

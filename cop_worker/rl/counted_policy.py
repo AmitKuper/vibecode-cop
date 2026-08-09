@@ -49,9 +49,24 @@ class DuelingDoubleQRolePolicy:
         self.action_names = COP_ACTIONS if role == "cop" else THIEF_ACTIONS
         self.inference_mode = "argmax"
         self.temperature = None
+        # Inverse of the clamped wire scent law; inert unless COPTHIEF_DECODED_SCENT=1. The
+        # network is feed-forward but the DECODER is stateful, so reset() is now meaningful.
+        self._decoder = None
 
     def reset(self) -> None:
-        """Match the stateful policy interface; this feed-forward policy has no state."""
+        """Clear the per-episode scent decoder; the feed-forward network itself has no state."""
+        if self._decoder is not None:
+            self._decoder.reset()
+
+    def _scent_decoder(self, grid_size: int):
+        from cop_worker.rl.obs_mode import decoded_scent_enabled
+        from cop_worker.scent_decoder import EmitterDecoder
+
+        if not decoded_scent_enabled():
+            return None
+        if self._decoder is None or self._decoder.n != grid_size:
+            self._decoder = EmitterDecoder(grid_size)
+        return self._decoder
 
     def select_action(
         self,
@@ -62,7 +77,9 @@ class DuelingDoubleQRolePolicy:
         if not legal_actions:
             raise RuntimeError("canonical domain returned no legal actions")
         features = torch.tensor(
-            local_obs_to_tensor(observation, belief),
+            local_obs_to_tensor(
+                observation, belief, self._scent_decoder(observation.grid_size)
+            ),
             dtype=torch.float32,
             device=self.device,
         ).unsqueeze(0)
@@ -110,6 +127,37 @@ def _load_dueling_policy(manifest_path: Path, entry, role: str) -> DuelingDouble
     return DuelingDoubleQRolePolicy(network, role, torch.device("cpu"))
 
 
+def _guard_serving_obs_mode(entry, role: str) -> None:
+    """Refuse to serve a policy whose SERVING observation a stray env flag would alter.
+
+    Two switches change what the net reads at inference time (not merely in training):
+    ``COPTHIEF_DECODED_SCENT`` (the decoder inverts the scent channels inside
+    ``local_obs_to_tensor``) and ``COPTHIEF_SCENT_MODEL`` (which physics our emission
+    and the training fields ran). A live value that contradicts what the manifest
+    records for the artifact means the net reads inputs it never trained on — the
+    exact silent-regression shape this project has shipped before. Manifests written
+    before the switches existed read as book-model / decoder-off.
+    """
+    from cop_worker.rl.obs_mode import decoded_scent_enabled, scent_model
+
+    recorded = dict(getattr(entry, "obs_mode", None) or {})
+    want_decoded = bool(recorded.get("decoded_scent", False))
+    if decoded_scent_enabled() != want_decoded:
+        raise CountedPolicyLoadError(
+            f"COPTHIEF_DECODED_SCENT={'1' if decoded_scent_enabled() else 'off'} but the "
+            f"{role} manifest entry records decoded_scent={want_decoded} — a stray env "
+            f"flag would silently change the serving observation; unset it or promote a "
+            f"matching artifact"
+        )
+    want_model = recorded.get("scent_model", "multiplicative_book_v1")
+    if scent_model() != want_model:
+        raise CountedPolicyLoadError(
+            f"COPTHIEF_SCENT_MODEL resolves to {scent_model()!r} but the {role} manifest "
+            f"entry records scent_model={want_model!r} — the net would read a field it "
+            f"never trained on; align the locked model and the promoted artifact"
+        )
+
+
 def load_counted_policy(manifest_path: str | Path, role: str):
     """Load the manifest-selected recurrent or dueling-DDQN counted policy."""
     from cop_worker.rl.model_schema import load_manifest
@@ -122,6 +170,7 @@ def load_counted_policy(manifest_path: str | Path, role: str):
     compatible, reason = entry.is_compatible(role, SUPPORTED_GRID_SIZE)
     if not compatible:
         raise CountedPolicyLoadError(reason)
+    _guard_serving_obs_mode(entry, role)
     if entry.algorithm == "RecurrentA2C-GRU":
         from cop_worker.rl.recurrent_policy import load_recurrent_policy
 

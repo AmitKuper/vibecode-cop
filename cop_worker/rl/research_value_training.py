@@ -34,7 +34,7 @@ from cop_worker.rl.research_evaluation import (
     load_recurrent_network,
 )
 from cop_worker.rl.train_recurrent import _initial_state, _legal, _observation
-from cop_worker.scent import ScentFields
+from cop_worker.scent import make_scent_fields
 
 
 def _actions(role: str) -> list[str]:
@@ -295,7 +295,7 @@ def train_ddqn(
         random_start = rng.random() > fixed_start_probability
         gamelet = (episode % 6) + 1
         state = _initial_state(rng, random_start=random_start, grid_size=7)
-        scent = ScentFields.zeros(7)
+        scent = make_scent_fields(7)
         cop_belief = BeliefEngine(7, "cop")
         thief_belief = BeliefEngine(7, "thief")
         opponent.reset(seed + episode * 97)
@@ -475,7 +475,7 @@ def train_q_table(
         opponent = population[family]
         gamelet = (episode % 6) + 1
         state = _initial_state(rng, random_start=False, grid_size=7)
-        scent = ScentFields.zeros(7)
+        scent = make_scent_fields(7)
         cop_belief = BeliefEngine(7, "cop")
         thief_belief = BeliefEngine(7, "thief")
         opponent.reset(seed + episode * 97)

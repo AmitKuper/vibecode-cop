@@ -18,6 +18,11 @@ models/*
 !models/cop_recurrent_champion.pt
 !models/cop_population_oracle_champion.pt
 !models/thief_ppo_best.pt
+# The manifest-selected champion MUST travel with the repo — a fresh clone that
+# cannot load the manifest's artifact plays random (the exact bug class the
+# obs-mode guard exists for).
+!models/cop_prodobs_candidate_v2.pt
+!models/cop_chebyshev_champion.pt
 agent/skills/game_*.py
 cop/games/
 thief/games/
@@ -47,3 +52,8 @@ results/rl/*
 !results/rl/research_20260809/
 !results/rl/research_20260809/*.json
 coverage.json
+
+# Run scratch (never evidence): debug snapshots and rehearsal outputs
+tmp/
+artifacts/
+reports/

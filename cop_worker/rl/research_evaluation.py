@@ -32,7 +32,7 @@ from cop_worker.rl.action_space import (
 )
 from cop_worker.rl.recurrent_policy import RecurrentActorCritic, file_sha256
 from cop_worker.rl.train_recurrent import FAMILIES, _initial_state, _legal, _observation
-from cop_worker.scent import ScentFields
+from cop_worker.scent import make_scent_fields
 
 
 class ResearchPolicy(Protocol):
@@ -88,10 +88,25 @@ class RecurrentResearchPolicy:
         self.search_particles = int(search_particles)
         self.hidden: torch.Tensor | None = None
         self.generator = torch.Generator(device="cpu")
+        # Per-episode inverse of the clamped wire scent law; inert unless
+        # COPTHIEF_DECODED_SCENT=1. Rebuilt on reset() so no state leaks between games.
+        self._decoder = None
 
     def reset(self, seed: int) -> None:
         self.hidden = None
         self.generator.manual_seed(seed)
+        if self._decoder is not None:
+            self._decoder.reset()
+
+    def _scent_decoder(self, grid_size: int):
+        from cop_worker.rl.obs_mode import decoded_scent_enabled
+        from cop_worker.scent_decoder import EmitterDecoder
+
+        if not decoded_scent_enabled():
+            return None
+        if self._decoder is None or self._decoder.n != grid_size:
+            self._decoder = EmitterDecoder(grid_size)
+        return self._decoder
 
     def act(
         self,
@@ -102,7 +117,15 @@ class RecurrentResearchPolicy:
         gamelet: int,
     ) -> str:
         legal = _legal(state, self.role)
-        features, mask = _observation(state, self.role, scent, belief, legal, gamelet)
+        features, mask = _observation(
+            state,
+            self.role,
+            scent,
+            belief,
+            legal,
+            gamelet,
+            decoder=self._scent_decoder(state.grid_size),
+        )
         with torch.no_grad():
             logits, _value, self.hidden = self.network(features.unsqueeze(0), self.hidden)
         masked = logits.squeeze(0).masked_fill(~mask, -1e9)
@@ -431,7 +454,7 @@ def play_game(
     """Play one game using canonical physics and symmetric local beliefs."""
     rng = random.Random(seed)
     state = _initial_state(rng, random_start=random_start, grid_size=7)
-    scent = ScentFields.zeros(7)
+    scent = make_scent_fields(7)
     cop_belief = BeliefEngine(7, "cop")
     thief_belief = BeliefEngine(7, "thief")
     cop_policy.reset(seed + 1_000_003)

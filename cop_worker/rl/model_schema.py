@@ -35,6 +35,13 @@ class ModelManifestEntry:
     hyperparams: dict = field(default_factory=dict)
     evaluation_win_rate: float = 0.0
     description: str = ""
+    # Which observation the artifact was TRAINED on -- see cop_worker.rl.obs_mode.describe().
+    # Keys: uniform_belief, wire_scent, decoded_scent. Recording this is what makes a
+    # train/serve mismatch auditable instead of invisible: the manifest's 0.9608 cop was
+    # trained on the unclamped trainer scent and scored 0.3185 on the real wire field, and
+    # nothing in the manifest said so. Defaults to all-false = the legacy research
+    # observation, which is what every pre-2026-08-09 checkpoint used.
+    obs_mode: dict = field(default_factory=dict)
 
     def is_compatible(self, role: str, grid_size: int) -> tuple[bool, str]:
         """Returns (ok, reason)."""

@@ -20,7 +20,7 @@ from cop_worker.observation import LocalObservation
 from cop_worker.rl.action_space import COP_ACTIONS, THIEF_ACTIONS
 from cop_worker.rl.local_obs_adapter import local_obs_to_tensor, obs_tensor_shape
 from cop_worker.rl.recurrent_policy import RecurrentActorCritic, file_sha256
-from cop_worker.scent import ScentFields
+from cop_worker.scent import make_scent_fields
 
 FAMILIES = (
     "random",
@@ -353,6 +353,7 @@ def _observation(
     legal: list[str],
     gamelet: int,
     risk_mask_enabled: bool = False,
+    decoder=None,
 ) -> tuple[torch.Tensor, object]:
     own = state.cop_position if role == "cop" else state.thief_position
     scent_grid = scent.cop_observation_scent() if role == "cop" else scent.thief_observation_scent()
@@ -366,7 +367,23 @@ def _observation(
         gamelet=gamelet,
         grid_size=state.grid_size,
     )
-    features = torch.tensor(local_obs_to_tensor(obs, belief.belief), dtype=torch.float32)
+    # Under COPTHIEF_UNIFORM_BELIEF=1 the student sees the frozen prior production feeds
+    # instead of the live filter. Expert actions / risk masks below intentionally keep the
+    # real belief: a privileged teacher with a blind student is the intended setup.
+    from cop_worker.observation import BeliefState
+    from cop_worker.rl.obs_mode import uniform_belief_enabled
+
+    belief_input = (
+        BeliefState.uniform(state.grid_size, step=state.turn + 1)
+        if uniform_belief_enabled()
+        else belief.belief
+    )
+    # ``decoder`` (per-episode, from the caller) applies the inverse of the clamped wire scent
+    # law under COPTHIEF_DECODED_SCENT=1, so the student trains on the same decoded channels
+    # production serves. Inert when None or when the switch is off.
+    features = torch.tensor(
+        local_obs_to_tensor(obs, belief_input, decoder), dtype=torch.float32
+    )
     actions = COP_ACTIONS if role == "cop" else THIEF_ACTIONS
     deployable = legal
     if role == "thief" and risk_mask_enabled:
@@ -435,7 +452,7 @@ def _run_episode(
     grid_size: int = 7,
 ) -> tuple[list, str, int]:
     state = _initial_state(rng, random_start, grid_size)
-    scent = ScentFields.zeros(grid_size)
+    scent = make_scent_fields(grid_size)
     belief = BeliefEngine(grid_size, role)
     opponent_role = "thief" if role == "cop" else "cop"
     opponent_belief = BeliefEngine(grid_size, opponent_role)
@@ -589,7 +606,7 @@ def _collect_demonstrations(
     for episode in range(episodes):
         family = demo_families[episode % len(demo_families)]
         state = _initial_state(rng, random_start=True, grid_size=grid_size)
-        scent = ScentFields.zeros(grid_size)
+        scent = make_scent_fields(grid_size)
         belief = BeliefEngine(grid_size, role)
         opponent_belief = BeliefEngine(grid_size, opponent_role)
         while state.turn < 35:

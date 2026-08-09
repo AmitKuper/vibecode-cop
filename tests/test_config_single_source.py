@@ -30,8 +30,11 @@ def test_default_terms_match_game_json():
 def test_config_sha256_is_whole_file_and_pinned():
     canon = json.dumps(GAME, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
     sha = hashlib.sha256(canon.encode("utf-8")).hexdigest()
-    # whole-file canonical hash, and the pinned value we exchange with anrbj666
-    assert sha == "9ed3b2e9601d3378b838740edadf03ad12ff17adefead7d18397de68cf860c23"
+    # Whole-file canonical hash of the IMREEYAL-pairing constitution (2026-08-10):
+    # their proposed game.json + pheromones.min_center_intensity (the kit's flat terms
+    # require the key; SPEC §5 default 0.5), schema_version matched to theirs. The flat
+    # 14-key terms are UNCHANGED by this reconciliation — see the uid pins below.
+    assert sha == "da1c9108c5989ac5634bae374dc6b90de4389135a699000bfe52f76ec43743ff"
     # ref3_artifacts computes the same
     import sys
 
@@ -42,8 +45,14 @@ def test_config_sha256_is_whole_file_and_pinned():
 
 
 def test_game_uid_pinned_vs_anrbj666():
+    # Unchanged by the imreeyal reconciliation: proves the flat terms did not move.
     uid = derive_game_uid(default_terms(), "vibecode", "anrbj666")
     assert uid == "b2a16946-2cad-909f-60aa-b0cc8a8b7c4f"
+
+
+def test_game_uid_pinned_vs_imreeyal():
+    uid = derive_game_uid(default_terms(), "vibecode", "imreeyal")
+    assert uid == "2e167349-f579-0201-e3f1-5ea0d75710c0"
 
 
 def test_physics_constants_match_game_json():

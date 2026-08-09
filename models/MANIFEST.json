@@ -4,10 +4,10 @@
     {
       "role": "cop",
       "algorithm": "RecurrentA2C-GRU",
-      "artifact": "cop_population_oracle_champion.pt",
+      "artifact": "cop_prodobs_candidate_v2.pt",
       "architecture": "linear-tanh-grucell-policy-value",
-      "sha256": "9c5aee7f5b80f29a539c6124fd73f129cb6bef8f4a63f27ae4b12c4a8b09c73e",
-      "training_code_sha": "13090edb2245b5280e8affa758df5b4bf51360c3",
+      "sha256": "a568c5fbdda2a76c10da649789fd530c83abb27020bf5ef0f3b7846408730a5d",
+      "training_code_sha": "bb6a5eba28db778e3132b3100da0d25f0e28a537",
       "config_sha256": "9d6ec544143d1e5768e70b64a3d28f101d9060ad46ad2de703947654ec5eb639",
       "observation_schema_version": "1.0",
       "action_schema_version": "1.0",
@@ -15,16 +15,24 @@
       "inference_mode": "argmax",
       "grid_size": 7,
       "random_seed": 20260809,
-      "training_steps": 492264,
+      "training_steps": 40654,
+      "obs_mode": {
+        "uniform_belief": true,
+        "wire_scent": true,
+        "decoded_scent": false
+      },
       "hyperparams": {
         "hidden_size": 128,
         "gamma": 0.99,
         "distillation_learning_rate": 0.0003,
-        "teacher_games": 600,
-        "distillation_updates": 200
+        "teacher_games": 1800,
+        "distillation_updates": 500,
+        "teacher": "population_oracle",
+        "base_sha256": "9c5aee7f5b80f29a539c6124fd73f129cb6bef8f4a63f27ae4b12c4a8b09c73e",
+        "distillation_accuracy": 0.7655
       },
-      "evaluation_win_rate": 0.9608,
-      "description": "Population-oracle sequence-distilled recurrent cop; 1,153/1,200 wins on the paired ten-family fixed-start tournament."
+      "evaluation_win_rate": 0.6667,
+      "description": "Population-oracle sequence-distilled recurrent cop, retrained under the PRODUCTION observation (COPTHIEF_UNIFORM_BELIEF=1 COPTHIEF_WIRE_SCENT=1). 180/270 wins at scent=wire/belief=prod over the nine scripted families (scripts/eval_candidate.py, seed 20260809). Supersedes cop_population_oracle_champion.pt, whose 0.9608 was measured against the UNCLAMPED trainer scent field and scored only 0.3185 (86/270) on this wire-faithful harness. Behaviourally a trapper: places barriers on ~7% of actions and waits, rather than tracking. CAVEAT: evaluation_win_rate is wire-faithful and NOT comparable to pre-2026-08-09 manifest figures; fixed starts plus argmax mean 30 games per family is 6 distinct games."
     }
   ]
 }

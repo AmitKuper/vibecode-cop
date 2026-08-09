@@ -79,6 +79,18 @@ def score_series(sub_games: list, opponent: str, game_id: str, *,
             "audit": {"log_verified": bool(sg.get("audit_ok")), "tampered": False},
         })
     inc = 1 if counted else 0
+    # Tie rule: SERIES-LEVEL ADDITIVE (`series_add`) — on a level accumulated score each
+    # team's total gains the App-F tie score (2). The book puts the award at the series
+    # level (ch.9, App. F table 17 row 5); the reference sums per sub-game instead; course
+    # staff ruled it a documented-choice contradiction. Every checked league team
+    # (imreeyal, anrbj666, best2934) and the kit play series_add, and we DECLARE the rule
+    # to the opponent before the first window (WARNINGS §6a) — a tie surfacing it
+    # mid-series is the rule-35 two-reports shape.
+    series_tie = tot_us == tot_them
+    tie_score_each = int(load_constitution().get("scoring", {}).get("tie_score", 2))
+    if series_tie:
+        tot_us += tie_score_each
+        tot_them += tie_score_each
     winner = ("vibecode" if tot_us > tot_them
               else opponent if tot_them > tot_us else None)
     # Diversity incentive (Appendix F, rule: "a win against a new opponent receives the full
@@ -95,7 +107,9 @@ def score_series(sub_games: list, opponent: str, game_id: str, *,
         "sub_games_won": {"vibecode": won_us, opponent: won_them},
         "ties": 0,
         "winner_group": winner,
-        "series_tie": tot_us == tot_them,
+        # tie_rule series_add is DECLARED in the written pairing agreement, never as an
+        # extra result field — the grader's template is the authority (imreeyal §3.17).
+        "series_tie": series_tie,
         "tokens_total_series": {"vibecode": 0, opponent: 0},
         "games_played_including_this": {"vibecode": our_played + inc, opponent: opp_played + inc},
         "first_meeting_between_groups": True,

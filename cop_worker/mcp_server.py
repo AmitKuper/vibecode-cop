@@ -93,6 +93,14 @@ def start_playing(game_uid: str, sub_game_number: int) -> dict:
     """
     g = _get(game_uid, sub_game_number)
     g.start_playing()
+    # One sub-game == one episode. Every gamelet shares the module-level _POLICY, so without
+    # this the GRU hidden state (and the scent decoder's previous-frame memory) carried from
+    # the previous sub-game into a board that had just been reset. Training always resets
+    # between episodes; serving never did. Resetting here rather than in start_gamelet ties it
+    # to the moment play actually begins. NOTE: this assumes reference-v3's sequential
+    # sub-games -- a shared recurrent policy cannot serve two gamelets concurrently.
+    if _POLICY is not None and hasattr(_POLICY, "reset"):
+        _POLICY.reset()
     logger.info("start_playing %s sg%d", game_uid[:8], sub_game_number)
     return {"ok": True, "state": g.state}
 

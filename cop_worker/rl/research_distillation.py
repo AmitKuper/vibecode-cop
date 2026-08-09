@@ -25,7 +25,15 @@ from cop_worker.rl.research_evaluation import (
 )
 from cop_worker.rl.research_value_training import load_dqn_policy
 from cop_worker.rl.train_recurrent import _initial_state, _legal, _observation
-from cop_worker.scent import ScentFields
+from cop_worker.scent import make_scent_fields
+
+
+def _new_scent_decoder(grid_size: int):
+    """Fresh wire-scent inverse for one episode, or None when the switch is off."""
+    from cop_worker.rl.obs_mode import decoded_scent_enabled
+    from cop_worker.scent_decoder import EmitterDecoder
+
+    return EmitterDecoder(grid_size) if decoded_scent_enabled() else None
 
 
 def _actions(role: str) -> list[str]:
@@ -74,7 +82,12 @@ def collect_teacher_sequences(
     random_start_fraction: float,
     random_start_teacher: ResearchPolicy | None = None,
 ) -> list[tuple[torch.Tensor, torch.Tensor]]:
-    """Collect legal local observations and teacher actions as full episodes."""
+    """Collect legal local observations and teacher actions as full episodes.
+
+    The student's observation goes through the same decoded-scent transform production uses,
+    so behaviour cloning is learned on the channels it will actually be served. The TEACHER
+    keeps its privileged view -- that asymmetry is the point of distillation.
+    """
     rng = random.Random(seed)
     actions = _actions(role)
     opponents = _population(role, incumbent_opponent)
@@ -89,18 +102,21 @@ def collect_teacher_sequences(
             teacher = random_start_teacher
         gamelet = (episode % 6) + 1
         state = _initial_state(rng, random_start=random_start, grid_size=7)
-        scent = ScentFields.zeros(7)
+        scent = make_scent_fields(7)
         cop_belief = BeliefEngine(7, "cop")
         thief_belief = BeliefEngine(7, "thief")
         teacher.reset(seed + episode * 101 + 1)
         opponent.reset(seed + episode * 101 + 2)
+        # One decoder per episode: it differences consecutive scent frames, so leaking state
+        # across episodes would corrupt the first steps of the next game.
+        decoder = _new_scent_decoder(7)
         episode_features: list[torch.Tensor] = []
         episode_labels: list[int] = []
         while state.turn < 35:
             belief = cop_belief if role == "cop" else thief_belief
             legal = _legal(state, role)
             features, _mask = _observation(
-                state, role, scent, belief, legal, gamelet
+                state, role, scent, belief, legal, gamelet, decoder=decoder
             )
             teacher_action = teacher.act(
                 state, scent, belief, rng, gamelet

@@ -58,9 +58,24 @@ class RecurrentRolePolicy:
         self._generator = torch.Generator(device="cpu")
         self._generator.manual_seed(secrets.randbits(63))
         self._hidden: torch.Tensor | None = None
+        # Inverse of the clamped wire scent law. Stateful (needs the previous frame), so it
+        # is reset per episode. Inert unless COPTHIEF_DECODED_SCENT=1.
+        self._decoder = None
 
     def reset(self) -> None:
         self._hidden = None
+        if self._decoder is not None:
+            self._decoder.reset()
+
+    def _scent_decoder(self, grid_size: int):
+        from cop_worker.rl.obs_mode import decoded_scent_enabled
+        from cop_worker.scent_decoder import EmitterDecoder
+
+        if not decoded_scent_enabled():
+            return None
+        if self._decoder is None or self._decoder.n != grid_size:
+            self._decoder = EmitterDecoder(grid_size)
+        return self._decoder
 
     def select_action(
         self,
@@ -71,7 +86,9 @@ class RecurrentRolePolicy:
         if not legal_actions:
             raise RuntimeError("canonical domain returned no legal actions")
         features = torch.tensor(
-            local_obs_to_tensor(observation, belief),
+            local_obs_to_tensor(
+                observation, belief, self._scent_decoder(observation.grid_size)
+            ),
             dtype=torch.float32,
             device=self.device,
         ).unsqueeze(0)

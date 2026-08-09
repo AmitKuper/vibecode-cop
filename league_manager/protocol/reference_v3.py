@@ -16,6 +16,7 @@ import hashlib
 import json
 import uuid
 from collections import deque
+from datetime import datetime, timezone
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
@@ -30,6 +31,14 @@ REFERENCE_V3_TOOLS = {
 }
 REFERENCE_V3_WIRE_LOCK = "229ae6487a418c3fcb6da9be404de2f2533c288ebc228811bff6dedc4164d6f7"
 REFERENCE_V3_SCENT_LOCK = "81ebee59640e80eae8ca9ee5f86abd26e7edf5cdbb27d15925cb6ee45ca6ddf4"
+# Both registered scent-model doc hashes, recomputed from the kit's own generator at every
+# commit from first registration (9f34b04) through origin/main (be96e57) — declaring any
+# other value for the same model is itself a Step-0 refusal under the kit's truth table.
+SCENT_LOCKS = {
+    "multiplicative_book_v1": "934c220d5bf62acaa3297c6c9d723ea954c220260b02292ca17f6d5daef9f4d9",
+    "subtractive_chebyshev_v1":
+        "81ebee59640e80eae8ca9ee5f86abd26e7edf5cdbb27d15925cb6ee45ca6ddf4",
+}
 
 TERMS_KEYS = (
     "board_size",
@@ -189,9 +198,14 @@ def build_negotiation(
     role: str,
     sub_game_number: int,
     opponent_group: str | None = None,
+    scent_model: str = "multiplicative_book_v1",
 ) -> dict:
     if role not in {"police", "thief"} or sub_game_number not in range(1, 7):
         raise ReferenceV3Error("reference-v3 requires police/thief and sub-game 1..6")
+    if scent_model not in SCENT_LOCKS:
+        raise ReferenceV3Error(
+            f"unknown scent model {scent_model!r}; registered: {sorted(SCENT_LOCKS)}"
+        )
     wire = {
         "terms": terms,
         "nonce": nonce,
@@ -207,7 +221,7 @@ def build_negotiation(
             "repos": {},
             "members": [],
         },
-        "scent_model_sha256": REFERENCE_V3_SCENT_LOCK,
+        "scent_model_sha256": SCENT_LOCKS[scent_model],
         "wire_shape_sha256": REFERENCE_V3_WIRE_LOCK,
     }
     if opponent_group:
@@ -322,13 +336,22 @@ def build_turn(
     sender: str,
     hint: str,
     smell_grid: dict[str, float],
-    timestamp: str = "",
+    timestamp: str | None = None,
     barrier_placed: list[int] | None = None,
     capture_claim: list[int] | None = None,
     claim_response: dict | None = None,
     win_claim: dict | None = None,
 ) -> tuple[dict, dict]:
-    """Return (wire turn, private audit record); the nonce never enters the wire turn."""
+    """Return (wire turn, private audit record); the nonce never enters the wire turn.
+
+    ``timestamp`` defaults to *now* in ISO-8601 UTC rather than to ``""``: at least one live
+    peer (imreeyal) refuses a turn carrying an empty stamp at validation, before any state
+    change, which would turn every turn we send into a refusal and every sub-game into a
+    technical loss. The stamp is deliberately NOT part of ``record_payload``, so it never
+    enters the commit preimage and cannot affect an audit.
+    """
+    if not timestamp:
+        timestamp = datetime.now(timezone.utc).isoformat()
     record = {
         "payload": dict(record_payload),
         "nonce": nonce,
