@@ -53,7 +53,10 @@ class TestClaimEmissionCallSites:
 
     def test_cop_claims_its_own_cell_every_turn(self) -> None:
         src = inspect.getsource(_play_subgame)
-        assert 'capture_claim = list(mover.pos) if role == "police" else None' in src
+        # The claim travels in the kit's wire convention [row, col] — our internal
+        # [x, y] transposed. Sending [x, y] raw registered our cells TRANSPOSED in
+        # the peer's physics (live finding, 2026-08-10 rehearsal).
+        assert 'capture_claim = _to_wire_cell(mover.pos) if role == "police" else None' in src
         assert "capture_claim=capture_claim" in src
 
     def test_settlement_corroborates_before_recording(self) -> None:

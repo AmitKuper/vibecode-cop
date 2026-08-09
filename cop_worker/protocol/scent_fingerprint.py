@@ -28,8 +28,14 @@ from __future__ import annotations
 _BOOK_VALUES = frozenset({0.04, 0.14, 0.2, 0.42, 0.62, 0.9})
 _CHEBYSHEV_VALUES = frozenset({0.3, 0.6, 0.9})
 
-# Values that only one model can ever produce on a FRESH field -- the decisive evidence.
-_BOOK_ONLY = _BOOK_VALUES - _CHEBYSHEV_VALUES
+# Values only the book kernel can produce -- 0.2 and 0.9 are NOT evidence: 0.2 is both the
+# book's d2=4 ring and a decayed chebyshev ring (0.3-0.1), 0.9 is both centres. The kit's
+# reference peer transmits chebyshev AFTER one decay ({0.8, 0.5, 0.2}), so the fresh ring
+# set alone misclassified real kit frames as book (found live, 2026-08-10 rehearsal).
+_BOOK_ONLY = frozenset({0.04, 0.14, 0.42, 0.62})
+# A chebyshev trail is closed under its own arithmetic: every cell is a ring value minus
+# k decays, i.e. a clean multiple of 0.1. Book fields (multiplicative accumulation) leave
+# that lattice immediately.
 _CHEBYSHEV_ONLY = _CHEBYSHEV_VALUES - _BOOK_VALUES
 
 BOOK_SHA256 = "934c220d5bf62acaa3297c6c9d723ea954c220260b02292ca17f6d5daef9f4d9"
@@ -65,10 +71,13 @@ def fingerprint(smell_grid: dict[str, float]) -> dict:
 
     book_only = sum(1 for v in values if _matches(v, _BOOK_ONLY))
     cheb_only = sum(1 for v in values if _matches(v, _CHEBYSHEV_ONLY))
+    # Decayed chebyshev evidence: EVERY positive cell on the 0.1 lattice (>= 3 cells so a
+    # single accidental 0.2/0.9 never decides), with no book-exclusive value present.
+    on_lattice = all(abs(v * 10 - round(v * 10)) <= _TOLERANCE * 10 for v in values)
 
     if book_only and not cheb_only:
         model = "multiplicative_book_v1"
-    elif cheb_only and not book_only:
+    elif (cheb_only or (on_lattice and len(values) >= 3)) and not book_only:
         model = "subtractive_chebyshev_v1"
     else:
         model = "inconclusive"

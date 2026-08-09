@@ -96,8 +96,8 @@ def play(cop_policy, thief_policy, seed: int, jitter: bool) -> tuple[str, int]:
         # --- thief half-move (sees the cop's last frame) ---
         mask = compute_legal_mask_thief(tuple(thief), [tuple(b) for b in barriers], N)
         legal = [a for a, m in zip(THIEF_ACTIONS, mask) if m]
-        if not legal:
-            return "capture", step  # rule 47
+        if not any(a != "STAY" for a in legal):
+            return "capture", step  # rule 47 — STAY does not rescue
         act = thief_policy.select_action(
             _obs(thief, 0, barriers, cop_frame, step),
             BeliefState.uniform(N, step=step), legal)

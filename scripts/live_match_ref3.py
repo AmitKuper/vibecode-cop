@@ -248,6 +248,27 @@ class RLMover:
         return {f"{r},{c}": field[r][c] for r in range(n) for c in range(n) if field[r][c] > 0.0}
 
 
+def _to_wire_cell(cell) -> list[int] | None:
+    """Our internal [x, y] -> the kit's wire [row, col].
+
+    The kit's convention is authoritative: its turnloop feeds ``engine.position``
+    straight into ``ref_smell_emit``, whose keys are ``"row,col"`` — so every
+    cell-valued wire field (position, barrier_placed, capture_claim,
+    claim_response.claim) is [row, col]. We found this live (2026-08-10 rehearsal):
+    our [x, y] barrier registered TRANSPOSED in the peer's physics, its thief
+    legally dodged "through" our wall, and off-diagonal captures could never
+    settle. Internal state stays [x, y]; conversion happens only at the boundary.
+    """
+    if not isinstance(cell, (list, tuple)) or len(cell) != 2:
+        return None
+    return [int(cell[1]), int(cell[0])]
+
+
+def _from_wire_cell(cell) -> list[int] | None:
+    """The kit's wire [row, col] -> our internal [x, y]."""
+    return _to_wire_cell(cell)  # transposition is its own inverse
+
+
 def _corroborate_caught(cell, our_claim, our_barriers, our_pos, grid) -> tuple[str, bool]:
     """Classify and live-corroborate a thief ``caught=true`` (SPEC §3.1).
 
@@ -508,11 +529,12 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
             # corroboration still ends the game but is recorded as disputed, not clean.
             _cr = opp.get("claim_response") or {}
             if _cr.get("caught") is True:
-                _cell = _cr.get("claim")
+                _cell = _cr.get("claim")  # wire [row, col]
                 if isinstance(_cell, (list, tuple)) and len(_cell) == 2:
-                    settled_caught_cell = [int(_cell[0]), int(_cell[1])]
+                    settled_caught_cell = [int(_cell[0]), int(_cell[1])]  # keep wire form
                 _kind, _clean = _corroborate_caught(
-                    _cell, our_last_claim, mover.barriers, mover.pos, mover.grid)
+                    _from_wire_cell(_cell) or _cell, our_last_claim,
+                    mover.barriers, mover.pos, mover.grid)
                 if not _clean:
                     disputed_capture = {"cell": _cell, "kind": _kind,
                                         "our_claim": our_last_claim,
@@ -532,7 +554,12 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
                 print(f"[match] sg{sub_game} thief declared survival terminal at step {step}; cop stops (no post-terminal move)")
                 break
         else:
-            opp = _latest_turn(in_session, step)
+            # Thief moves FIRST: at round r the cop's newest turn is numbered r-1
+            # (per-sender numbering), so an exact step-r lookup matched NOTHING and
+            # the thief played every round blind — tracker dry, RL fallback only
+            # (found live 2026-08-10: identical thief rollouts across different
+            # search evals gave it away). Absorb the cop's r-1 turn instead.
+            opp = _latest_turn(in_session, step - 1) if step > 1 else {}
 
         opp_hint = opp.get("hint", "")
         opp_smell = opp.get("smell_grid", {})
@@ -563,10 +590,10 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
             hint_text = " ".join(hint_text.split()[:_cap])
         record_payload = {
             "step": step, "role": role, "sub_game": sub_game,
-            "position": list(mover.pos), "move": action, "intent": intent.value,
+            "position": _to_wire_cell(mover.pos), "move": action, "intent": intent.value,
         }
         if mover.last_barrier is not None:
-            record_payload["barrier_placed"] = mover.last_barrier
+            record_payload["barrier_placed"] = _to_wire_cell(mover.last_barrier)
         # A pending capture-claim answer (thief only) rides this turn; caught => terminal.
         answer, pending_answer = pending_answer, None
         caught = bool(answer and answer.get("caught"))
@@ -579,13 +606,14 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
         # (kit turnloop.py:169): the claim just asks "am I standing on you?", the
         # thief's honest answer settles co-location, and there is no claim penalty.
         # Without this our cop could never initiate a capture settlement at all.
-        capture_claim = list(mover.pos) if role == "police" else None
+        capture_claim = _to_wire_cell(mover.pos) if role == "police" else None
         if capture_claim is not None:
-            our_last_claim = capture_claim
+            our_last_claim = list(mover.pos)  # internal [x, y] for corroboration
         turn, record = build_turn(
             record_payload=record_payload, nonce=step_nonce, sender=role,
             hint=hint_text, smell_grid=mover.our_smell_grid(),
-            barrier_placed=mover.last_barrier, capture_claim=capture_claim,
+            barrier_placed=_to_wire_cell(mover.last_barrier),
+            capture_claim=capture_claim,
             claim_response=answer, win_claim=win_claim,
         )
         await out_session.send_turn(turn, record)
@@ -598,22 +626,24 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
             # it carries (rides our next turn — kit turnloop.py:271-273).
             await _poll_turn(in_session.turns, step, timeout=_t("turn_poll_sec", 120.0))
             cop_turn = _latest_turn(in_session, step)
-            claim = cop_turn.get("capture_claim")
+            claim = cop_turn.get("capture_claim")  # wire [row, col]
             if claim is not None:
-                pending_answer = {"claim": list(mover.pos),
-                                  "caught": list(claim) == list(mover.pos)}
+                # Echo the asked cell verbatim (kit convention); compare in wire form.
+                pending_answer = {"claim": list(claim),
+                                  "caught": list(claim) == _to_wire_cell(mover.pos)}
             # Track the cop's barrier and run the rule-46/47 self-check on the board it
             # just changed. An ending only we can see must be SAID: the concession is a
             # real STAY turn whose field advances (an empty grid reads as vanished scent
             # to a strict physics checker), and it supersedes any pending answer.
-            mover.observe_peer_barrier(cop_turn.get("barrier_placed"))
+            mover.observe_peer_barrier(_from_wire_cell(cop_turn.get("barrier_placed")))
             rule = mover.self_capture_check()
             if rule is not None:
                 final_step = step + 1
-                concession = {"claim": list(mover.pos), "caught": True}
+                concession = {"claim": _to_wire_cell(mover.pos), "caught": True}
                 final_payload = {
                     "step": final_step, "role": role, "sub_game": sub_game,
-                    "position": list(mover.pos), "move": "STAY", "intent": "truth",
+                    "position": _to_wire_cell(mover.pos), "move": "STAY",
+                    "intent": "truth",
                 }
                 final_nonce = secrets.token_hex(16)
                 final_turn, final_record = build_turn(
