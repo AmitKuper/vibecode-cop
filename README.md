@@ -140,7 +140,8 @@ are never presented as real Gmail or public-network evidence.
 
 - `config/game.json`: byte-identical canonical game and scoring values.
 - `cop/config.toml`: role-local runtime, model, reporting, and timeout settings.
-- `models/MANIFEST.json`: selected recurrent champion, checksum, schemas, and inference mode.
+- `models/MANIFEST.json`: selected population-distilled recurrent champion, checksum,
+  schemas, and inference mode.
 - Environment: `GROUP_ID` and runtime secrets are supplied outside Git. Gmail OAuth
   credentials remain local and must request only `gmail.send`.
 - `--peer-url`: the thief MCP endpoint. Counted mode locks the negotiated profile

@@ -16,6 +16,7 @@ secrets/
 models/*
 !models/MANIFEST.json
 !models/cop_recurrent_champion.pt
+!models/cop_population_oracle_champion.pt
 !models/thief_ppo_best.pt
 agent/skills/game_*.py
 cop/games/
@@ -39,4 +40,10 @@ thief_out.log
 
 agent/skills/*.mcp.py
 results/
+!results/
+results/*
+!results/rl/
+results/rl/*
+!results/rl/research_20260809/
+!results/rl/research_20260809/*.json
 coverage.json

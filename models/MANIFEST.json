@@ -4,25 +4,27 @@
     {
       "role": "cop",
       "algorithm": "RecurrentA2C-GRU",
-      "artifact": "cop_recurrent_champion.pt",
+      "artifact": "cop_population_oracle_champion.pt",
       "architecture": "linear-tanh-grucell-policy-value",
-      "sha256": "e57f068e88fea557be1130d0c15c8783b1eecfc2c693ddad4582a1c250516d7c",
-      "training_code_sha": "0000000000000000000000000000000000000000",
-      "config_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sha256": "9c5aee7f5b80f29a539c6124fd73f129cb6bef8f4a63f27ae4b12c4a8b09c73e",
+      "training_code_sha": "13090edb2245b5280e8affa758df5b4bf51360c3",
+      "config_sha256": "9d6ec544143d1e5768e70b64a3d28f101d9060ad46ad2de703947654ec5eb639",
       "observation_schema_version": "1.0",
       "action_schema_version": "1.0",
       "belief_schema_version": "1.0",
-      "inference_mode": "low_temp",
+      "inference_mode": "argmax",
       "grid_size": 7,
-      "random_seed": 20260808,
-      "training_steps": 483000,
+      "random_seed": 20260809,
+      "training_steps": 492264,
       "hyperparams": {
         "hidden_size": 128,
         "gamma": 0.99,
-        "inference_temperature": 0.5
+        "distillation_learning_rate": 0.0003,
+        "teacher_games": 600,
+        "distillation_updates": 200
       },
-      "evaluation_win_rate": 0.833,
-      "description": "Cop recurrent champion: RecurrentA2C-GRU, 483000 training steps, grid_size=7, hidden_size=128."
+      "evaluation_win_rate": 0.9608,
+      "description": "Population-oracle sequence-distilled recurrent cop; 1,153/1,200 wins on the paired ten-family fixed-start tournament."
     }
   ]
 }

@@ -1,0 +1,205 @@
+{
+  "games": 1200,
+  "wins": 902,
+  "win_rate": 0.7516666666666667,
+  "confidence_95": [
+    0.7264440812741464,
+    0.7752830562495943
+  ],
+  "official_role_score": 19530,
+  "official_opponent_score": 7490,
+  "average_turns": 18.38,
+  "inference_latency_ms": {
+    "p50": 2.314600002137013,
+    "p95": 2.5278250031988136,
+    "p99": 4.0217499965365295
+  },
+  "technical_failures": 0,
+  "role": "cop",
+  "start_mode": "game_json_fixed",
+  "series_per_family": 20,
+  "held_out_series": 200,
+  "worst_family_win_rate": 0.0,
+  "families": {
+    "random": {
+      "games": 120,
+      "wins": 90,
+      "win_rate": 0.75,
+      "confidence_95": [
+        0.6655869783172575,
+        0.8189028861547777
+      ],
+      "official_role_score": 1950,
+      "official_opponent_score": 750,
+      "average_turns": 18.85,
+      "inference_latency_ms": {
+        "p50": 1.761900002748007,
+        "p95": 1.941660001102718,
+        "p99": 3.1762240034004106
+      },
+      "technical_failures": 0
+    },
+    "belief_pursuit_evasion": {
+      "games": 120,
+      "wins": 120,
+      "win_rate": 1.0,
+      "confidence_95": [
+        0.9689797289440706,
+        1.0
+      ],
+      "official_role_score": 2400,
+      "official_opponent_score": 600,
+      "average_turns": 12.0,
+      "inference_latency_ms": {
+        "p50": 2.340749997529201,
+        "p95": 2.556239998011733,
+        "p99": 4.4018179985141614
+      },
+      "technical_failures": 0
+    },
+    "wall": {
+      "games": 120,
+      "wins": 120,
+      "win_rate": 1.0,
+      "confidence_95": [
+        0.9689797289440706,
+        1.0
+      ],
+      "official_role_score": 2400,
+      "official_opponent_score": 600,
+      "average_turns": 13.0,
+      "inference_latency_ms": {
+        "p50": 2.3641000007046387,
+        "p95": 2.6144350002141437,
+        "p99": 4.857517999407721
+      },
+      "technical_failures": 0
+    },
+    "local_adversarial_ensemble": {
+      "games": 120,
+      "wins": 120,
+      "win_rate": 1.0,
+      "confidence_95": [
+        0.9689797289440706,
+        1.0
+      ],
+      "official_role_score": 2400,
+      "official_opponent_score": 600,
+      "average_turns": 13.908333333333333,
+      "inference_latency_ms": {
+        "p50": 2.3379999984172173,
+        "p95": 2.5478800016571768,
+        "p99": 4.267316003388255
+      },
+      "technical_failures": 0
+    },
+    "historical_checkpoint": {
+      "games": 120,
+      "wins": 2,
+      "win_rate": 0.016666666666666666,
+      "confidence_95": [
+        0.004582468541151394,
+        0.058737126812913806
+      ],
+      "official_role_score": 630,
+      "official_opponent_score": 1190,
+      "average_turns": 34.86666666666667,
+      "inference_latency_ms": {
+        "p50": 2.404549999482697,
+        "p95": 2.6476400020328583,
+        "p99": 4.561112000737929
+      },
+      "technical_failures": 0
+    },
+    "scent_following": {
+      "games": 120,
+      "wins": 107,
+      "win_rate": 0.8916666666666667,
+      "confidence_95": [
+        0.8234449199472613,
+        0.9355892010589275
+      ],
+      "official_role_score": 2205,
+      "official_opponent_score": 665,
+      "average_turns": 16.083333333333332,
+      "inference_latency_ms": {
+        "p50": 2.359400001296308,
+        "p95": 2.5918699946487322,
+        "p99": 4.234360997943446
+      },
+      "technical_failures": 0
+    },
+    "corridor_cutting": {
+      "games": 120,
+      "wins": 120,
+      "win_rate": 1.0,
+      "confidence_95": [
+        0.9689797289440706,
+        1.0
+      ],
+      "official_role_score": 2400,
+      "official_opponent_score": 600,
+      "average_turns": 12.0,
+      "inference_latency_ms": {
+        "p50": 2.3325000001932494,
+        "p95": 2.5691400012874506,
+        "p99": 4.135219003655939
+      },
+      "technical_failures": 0
+    },
+    "anti_loop": {
+      "games": 120,
+      "wins": 120,
+      "win_rate": 1.0,
+      "confidence_95": [
+        0.9689797289440706,
+        1.0
+      ],
+      "official_role_score": 2400,
+      "official_opponent_score": 600,
+      "average_turns": 12.0,
+      "inference_latency_ms": {
+        "p50": 2.3238499998115003,
+        "p95": 2.6941100000840374,
+        "p99": 5.2516280000417925
+      },
+      "technical_failures": 0
+    },
+    "targeted_exploit": {
+      "games": 120,
+      "wins": 0,
+      "win_rate": 0.0,
+      "confidence_95": [
+        0.0,
+        0.031020271055929513
+      ],
+      "official_role_score": 600,
+      "official_opponent_score": 1200,
+      "average_turns": 35.0,
+      "inference_latency_ms": {
+        "p50": 2.2133499987830874,
+        "p95": 2.437504999397788,
+        "p99": 2.682648995760247
+      },
+      "technical_failures": 0
+    },
+    "deceptive_language": {
+      "games": 120,
+      "wins": 103,
+      "win_rate": 0.8583333333333333,
+      "confidence_95": [
+        0.7848035127258367,
+        0.9096319596840804
+      ],
+      "official_role_score": 2145,
+      "official_opponent_score": 685,
+      "average_turns": 16.091666666666665,
+      "inference_latency_ms": {
+        "p50": 2.133299996785354,
+        "p95": 2.3270000019692816,
+        "p99": 2.4101799965137616
+      },
+      "technical_failures": 0
+    }
+  }
+}

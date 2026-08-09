@@ -1,36 +1,36 @@
-# Recurrent policy reproduction — cop
+# Counted RL policy reproduction — cop
 
-The counted policy is `RecurrentA2C-GRU`. It consumes `LocalObservation`, Bayesian
-`BeliefState`, and recurrent history, then applies the legal mask and canonical
-domain validation. The heuristic is a training opponent and development fallback,
-not a counted fallback.
+The selected counted policy is a population-oracle distilled
+`RecurrentA2C-GRU`. It consumes `LocalObservation`, Bayesian `BeliefState`, and
+recurrent history, then applies deterministic argmax through the canonical
+legal-action mask.
 
 ## Frozen champion
 
-- Artifact: `models/cop_recurrent_champion.pt`
-- SHA-256: `b9e74b7a13ca461484f2b47046eeecf8d393cb8d64b7cdd51d2915b714c21268`
-- Training-code SHA: `e052b799e1f732cd140fe3b51af6165566c239c9`
-- 11,800 cumulative episodes / 413,000 maximum environment steps
-- Seed 20260805; hidden size 128; gamma 0.99; final learning rate 1e-5
-- Method: local-belief BC warm start, recurrent A2C, adversarial curriculum, and
-  belief-supported trap shaping
-- Historical thief SHA-256:
-  `b1769c9e67ce571efa971a345e08a10d9c33a5710e6eb7ce0c8896a1b2feab5c`
+- Artifact: `models/cop_population_oracle_champion.pt`
+- SHA-256: `9c5aee7f5b80f29a539c6124fd73f129cb6bef8f4a63f27ae4b12c4a8b09c73e`
+- Training-code Git blob SHA: `13090edb2245b5280e8affa758df5b4bf51360c3`
+- 492,264 cumulative steps; hidden size 128; seed 20260809
+- 600 teacher games, 9,264 examples, and 200 sequence-distillation updates
+- Method: frozen population oracle followed by recurrent sequence distillation
 
-## Exact held-out rerun
+## Loading and smoke test
 
 After `uv sync --frozen`:
 
 ```powershell
-uv run python -m cop_worker.rl.train_recurrent `
-  --role cop --episodes 0 --eval-series-per-family 30 `
-  --seed 20260805 --hidden-size 128 `
-  --historical-checkpoint models/thief_ppo_best.pt `
-  --evaluate-only-artifact models/cop_recurrent_champion.pt `
-  --evidence-dir reproduced-results
+uv run python -c "from cop_worker.rl.recurrent_policy import load_recurrent_policy; p=load_recurrent_policy('models/MANIFEST.json','cop'); print(type(p).__name__, p.inference_mode)"
 ```
 
-Artifact SHA, counts, wins, official scores, per-family outcomes, and promotion fields
-must match `results/cop_held_out_tournament.json`. Timing fields are measured afresh.
-Any newly trained artifact remains undeployable until the checksum, manifest,
-held-out report, and paired promotion gate are updated atomically.
+The command must print `RecurrentRolePolicy argmax`. The loader recomputes the
+artifact SHA-256 before reconstructing the network.
+
+## Evidence
+
+The paired 1,200-game incumbent and candidate tournament JSON files are in
+`results/rl/research_20260809/`. Training commands, population composition,
+limitations, and experiment results are recorded in
+`docs/RL_RESEARCH_REPORT_20260809.md`.
+
+Any future candidate remains undeployable until its artifact, checksum,
+manifest metadata, held-out evidence, and model card are updated together.

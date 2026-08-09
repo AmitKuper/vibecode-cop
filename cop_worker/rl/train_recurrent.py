@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import pickle
 import random
 import time
 from pathlib import Path
@@ -580,7 +581,11 @@ def _collect_demonstrations(
     labels: list[int] = []
     actions = COP_ACTIONS if role == "cop" else THIEF_ACTIONS
     opponent_role = "thief" if role == "cop" else "cop"
-    demo_families = [f for f in FAMILIES if f != "historical_checkpoint" or historical_policy is not None]
+    demo_families = [
+        family
+        for family in FAMILIES
+        if family != "historical_checkpoint" or historical_policy is not None
+    ]
     for episode in range(episodes):
         family = demo_families[episode % len(demo_families)]
         state = _initial_state(rng, random_start=True, grid_size=grid_size)
@@ -785,7 +790,11 @@ def evaluate(
     total_role_score = total_opponent_score = 0
     total_decisions = total_illegal_selected = 0
     latency_samples: list[float] = []
-    eval_families = [f for f in FAMILIES if f != "historical_checkpoint" or historical_policy is not None]
+    eval_families = [
+        family
+        for family in FAMILIES
+        if family != "historical_checkpoint" or historical_policy is not None
+    ]
     torch.manual_seed(seed + 50_000)
     start = time.perf_counter()
     for family_index, family in enumerate(eval_families):
@@ -980,8 +989,16 @@ def main() -> None:
     if args.historical_checkpoint is None:
         historical_policy = None
     else:
-        _raw_ckpt = torch.load(args.historical_checkpoint, map_location="cpu", weights_only=True)
-        if "state_dict" in _raw_ckpt and "input_size" in _raw_ckpt:
+        try:
+            _raw_ckpt = torch.load(
+                args.historical_checkpoint, map_location="cpu", weights_only=True
+            )
+        except (EOFError, KeyError, RuntimeError, pickle.UnpicklingError):
+            _raw_ckpt = None
+        if isinstance(_raw_ckpt, dict) and {
+            "state_dict",
+            "input_size",
+        }.issubset(_raw_ckpt):
             _hist_net = RecurrentActorCritic(
                 int(_raw_ckpt["input_size"]),
                 int(_raw_ckpt["n_actions"]),
@@ -1082,8 +1099,12 @@ def main() -> None:
         args.training_families
         or (THIEF_TRAINING_SCHEDULE if args.role == "thief" else COP_TRAINING_SCHEDULE)
     )
-    evaluation["historical_checkpoint"] = str(args.historical_checkpoint) if args.historical_checkpoint else None
-    evaluation["historical_checkpoint_sha256"] = file_sha256(args.historical_checkpoint) if args.historical_checkpoint else None
+    evaluation["historical_checkpoint"] = (
+        str(args.historical_checkpoint) if args.historical_checkpoint else None
+    )
+    evaluation["historical_checkpoint_sha256"] = (
+        file_sha256(args.historical_checkpoint) if args.historical_checkpoint else None
+    )
     evaluation["demonstration_episodes"] = 240
     evaluation["imitation_updates"] = 600
     evaluation["training_method"] = "local-belief BC warm start + recurrent A2C"

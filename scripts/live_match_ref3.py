@@ -65,7 +65,9 @@ class RLMover:
     def __init__(self, role: str, terms: dict) -> None:
         from cop_worker.board import Board
         from cop_worker.rl.action_space import COP_ACTIONS, THIEF_ACTIONS
-        from cop_worker.rl.recurrent_policy import load_recurrent_policy
+        # Architecture-dispatching loader: the cop is RecurrentA2C-GRU and the thief may be a
+        # DuelingDoubleDQN — load_counted_policy handles both (delegates recurrent internally).
+        from cop_worker.rl.counted_policy import load_counted_policy
 
         self.role = role  # "police" (cop) or "thief"
         self.terms = terms
@@ -79,7 +81,7 @@ class RLMover:
         else:
             manifest = REPO_ROOT.parent / "vibecode-thief" / "models" / "MANIFEST.json"
             manifest_role = "thief"
-        self.policy = load_recurrent_policy(manifest, manifest_role)
+        self.policy = load_counted_policy(manifest, manifest_role)
         start = terms["cop_start"] if role == "police" else terms["thief_start"]
         self.pos = [int(start[0]), int(start[1])]  # [x, y]
         # Cop barrier state (thief never places): quota, placed cells, last placement.
