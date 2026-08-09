@@ -39,6 +39,22 @@ if str(Path(__file__).resolve().parent) not in sys.path:
 # Cop barrier placement: target cell = own_position + delta (mirrors domain/transition.py).
 _PLACE_DELTAS = {"PLACE_N": (0, -1), "PLACE_S": (0, 1), "PLACE_E": (1, 0), "PLACE_W": (-1, 0)}
 
+# Runtime params (timeouts, reorder window, ...) sourced from config/runtime.toml at match
+# start via apply_runtime_config(). Empty by default so the self-test / unit tests keep the
+# original hardcoded fallbacks passed to _t().
+_RT: dict = {}
+
+
+def _t(key: str, default):
+    """Read a [timeouts] value from the applied runtime config, else the hardcoded fallback."""
+    return _RT.get("timeouts", {}).get(key, default)
+
+
+def apply_runtime_config(runtime: dict) -> None:
+    """Install a loaded runtime.toml (from config_loader) for the helpers below to read."""
+    global _RT
+    _RT = dict(runtime or {})
+
 
 # ---------------------------------------------------------------------------
 # RL move engine — the whole point: real policy, not random.
@@ -267,7 +283,7 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     # sub-games (else step 1 of the next sub-game equivocates against the last one).
     out_session.local_records = []
     out_session._local_records_by_step = {}
-    in_session.turns = ReferenceV3Inbox(window=4)
+    in_session.turns = ReferenceV3Inbox(window=_t("reorder_window", 4))
     in_session.turn_messages.clear()
     in_session.expected_turn_sender = None
     in_session.audits.clear()      # drain stale end-of-game payloads from prior sub-games
@@ -281,7 +297,7 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     )
     await out_session.send_negotiation(greeting)
     # Match the greeting by sub_game_number (not FIFO) — the peer's re-dials pile up.
-    theirs = await _poll_agreement(in_session.agreements, sub_game, timeout=300.0)
+    theirs = await _poll_agreement(in_session.agreements, sub_game, timeout=_t("agreement_poll_sec", 300.0))
     opp_identity = theirs.get("identity") or {}  # their declared repos/commit/counted (rules 49/53)
     print(f"[match] sg{sub_game} peer greeting sub_game={theirs.get('sub_game_number')} "
           f"role={theirs.get('role')}")
@@ -313,7 +329,7 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     for step in range(1, max_steps + 1):
         if not we_move_first:
             # cop: wait for the thief's sealed turn first, absorb its scent/hint.
-            await _poll_turn(in_session.turns, step, timeout=120.0)
+            await _poll_turn(in_session.turns, step, timeout=_t("turn_poll_sec", 120.0))
             opp = _latest_turn(in_session, step)
             # Thief concedes our capture (barrier on its cell / claim) via caught=true.
             if (opp.get("claim_response") or {}).get("caught") is True:
@@ -360,7 +376,7 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
         if we_move_first and win_claim is None:
             # Thief waits for the cop's turn, then prepares an answer to any capture claim
             # it carries (rides our next turn — kit turnloop.py:271-273).
-            await _poll_turn(in_session.turns, step, timeout=120.0)
+            await _poll_turn(in_session.turns, step, timeout=_t("turn_poll_sec", 120.0))
             claim = _latest_turn(in_session, step).get("capture_claim")
             if claim is not None:
                 pending_answer = {"claim": list(mover.pos),
@@ -373,9 +389,9 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
             "kind": "done", "sender": role, "sub_game_number": sub_game,
             "status": "complete", "step_budget": float(max_steps), "payload": {},
         })
-    their_audit = await _poll_deque(in_session.audits, timeout=300.0, label="audit")
+    their_audit = await _poll_deque(in_session.audits, timeout=_t("audit_poll_sec", 300.0), label="audit")
     ok, errors = verify_audit(their_audit, dict(in_session.turns.played))
-    in_session.turns = ReferenceV3Inbox(window=4)  # reset for next sub-game
+    in_session.turns = ReferenceV3Inbox(window=_t("reorder_window", 4))  # reset for next sub-game
     distinct = len(set(rl_moves))
     outcome = "capture" if captured else "survival"
     ended_at = datetime.now(UTC).isoformat()
@@ -564,7 +580,7 @@ async def _play_match(*, opp_cop_url: str, opp_thief_url: str, our_cop_port: int
             in_session = sessions[our_role]
             # Wait ONLY for the endpoint this sub-game must dial (peer binds per-window).
             print(f"[match] sg{sg} ({our_role}) — awaiting peer endpoint {mcp_url}")
-            if not await _await_endpoint(mcp_url, Client, window_s=900.0):
+            if not await _await_endpoint(mcp_url, Client, window_s=_t("endpoint_await_sec", 900.0)):
                 print(f"[match] sg{sg} peer window never opened — recording skip, continuing")
                 results.append({"sub_game": sg, "role": our_role, "audit_ok": False,
                                 "error": "peer_window_never_opened"})
@@ -578,7 +594,7 @@ async def _play_match(*, opp_cop_url: str, opp_thief_url: str, our_cop_port: int
                     # than the 5s default, which otherwise fails discovery spuriously.
                     _profile, out_session = await discover_reference_v3(
                         base_url, tool_caller=_caller(client),
-                        probe_timeout_s=30.0, introspect_timeout_s=30.0)
+                        probe_timeout_s=_t("probe_sec", 30.0), introspect_timeout_s=_t("introspect_sec", 30.0))
                     results.append(await _play_subgame(
                         out_session, in_session, role=our_role, sub_game=sg,
                         group_id="vibecode", group_name="vibecode", terms=terms,
@@ -638,6 +654,19 @@ def _emit_artifacts(result: dict, args) -> None:
         derive_game_uid,
     )
     opp = args.opponent_group
+    # Save the exact config used to play this opponent: config/opponents/<opp>/{game.json,
+    # runtime.toml}. An auditable record + a reusable profile selectable next time via --config.
+    try:
+        import shutil
+        prof = REPO_ROOT / "config" / "opponents" / opp
+        prof.mkdir(parents=True, exist_ok=True)
+        for f in ("game.json", "runtime.toml"):
+            src = REPO_ROOT / "config" / f
+            if src.is_file():
+                shutil.copyfile(src, prof / f)
+        print(f"[match] saved config profile used vs {opp} -> config/opponents/{opp}/")
+    except Exception as exc:
+        print(f"[match] WARN could not save opponent config ({type(exc).__name__}: {exc})")
     game_id = derive_game_id("vibecode", opp)
     game_uid = derive_game_uid(default_terms({"setting": args.setting}), "vibecode", opp)
     cop_commit = _git_head(REPO_ROOT)
@@ -711,28 +740,60 @@ def main() -> int:
     p.add_argument("--our-port", type=int, default=5011)
     p.add_argument("--sparring-port", type=int, default=8941)
     p.add_argument("--kit-root", type=Path, default=KIT_ROOT)
+    # Config profile selection: --config <name|dir> picks config/opponents/<name>/ (else base
+    # config/). CLI flags below always override the profile's values (defaults are None so we
+    # can tell "unset" from an explicit value).
+    p.add_argument("--config", default=None,
+                   help="Config profile: a name under config/opponents/, or a directory")
     # Real-match args:
     p.add_argument("--match", action="store_true", help="Play a live peer over reference-v3")
     p.add_argument("--opp-cop-url", help="Opponent cop MCP URL (dialed when we are thief)")
     p.add_argument("--opp-thief-url", help="Opponent thief MCP URL (dialed when we are cop)")
-    p.add_argument("--opponent-group", default="anrbj666")
-    p.add_argument("--our-cop-port", type=int, default=61224)
-    p.add_argument("--our-thief-port", type=int, default=61223)
-    p.add_argument("--setting", default="New York")
-    # Result is emailed to OUR OWN inbox only (never the league address on friendlies).
-    p.add_argument("--report-to", default="agentsorch@gmail.com")
+    p.add_argument("--opponent-group", default=None)
+    p.add_argument("--our-cop-port", type=int, default=None)
+    p.add_argument("--our-thief-port", type=int, default=None)
+    p.add_argument("--setting", default=None)
+    # Result recipient. Default = OUR OWN inbox (never the league address). The counted/league
+    # address is passed explicitly at run time for a counted game only.
+    p.add_argument("--report-to", default=None)
     p.add_argument("--no-email", action="store_true", help="Skip emailing the result")
-    p.add_argument("--members", default="Ron Marom,Amit Kuperminz",
+    p.add_argument("--members", default=None,
                    help="Comma-separated member names for the declaration")
     # Counted-game accounting (rules 37-38): friendly = counted=False (no increment).
     p.add_argument("--counted", action="store_true", help="Mark this as a COUNTED series")
-    p.add_argument("--counted-played", type=int, default=0,
+    p.add_argument("--counted-played", type=int, default=None,
                    help="Our prior counted-games count (for games_played_including_this)")
     args = p.parse_args()
 
+    # Resolve config profile and fill any unset args from runtime.toml (CLI wins).
+    from cop_worker.config_loader import load_config
+    cfg = load_config(args.config)
+    rt = cfg["runtime"]
+    apply_runtime_config(rt)
+    net, ident, rep = rt.get("network", {}), rt.get("identity", {}), rt.get("report", {})
+    if args.opp_cop_url is None:
+        args.opp_cop_url = net.get("opp_cop_url")
+    if args.opp_thief_url is None:
+        args.opp_thief_url = net.get("opp_thief_url")
+    if args.opponent_group is None:
+        args.opponent_group = net.get("opponent_group", "anrbj666")
+    if args.our_cop_port is None:
+        args.our_cop_port = int(net.get("our_cop_port", 61224))
+    if args.our_thief_port is None:
+        args.our_thief_port = int(net.get("our_thief_port", 61223))
+    if args.setting is None:
+        args.setting = cfg["game"].get("world", {}).get("map_area", "New York")
+    if args.report_to is None:
+        args.report_to = rep.get("recipient", "agentsorch@gmail.com")
+    if args.members is None:
+        args.members = ",".join(ident.get("members", ["Ron Marom", "Amit Kuperminz"]))
+    if args.counted_played is None:
+        args.counted_played = int(rt.get("counted", {}).get("counted_played", 0))
+    print(f"[match] config profile: {cfg['source']} ({cfg['profile_dir']})")
+
     if args.match:
         if not (args.opp_cop_url and args.opp_thief_url):
-            print("ERROR: --match requires --opp-cop-url and --opp-thief-url")
+            print("ERROR: --match requires --opp-cop-url and --opp-thief-url (CLI or runtime.toml)")
             return 2
         members = [m.strip() for m in args.members.split(",") if m.strip()]
         result = asyncio.run(_play_match(

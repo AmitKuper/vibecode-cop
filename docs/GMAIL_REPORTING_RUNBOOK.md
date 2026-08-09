@@ -16,12 +16,12 @@ Authority for the reporting requirements is `docs/mail_specification.md`.
 | Context | Recipient | Where set |
 |---------|-----------|-----------|
 | Local / self-play / development | `agentsorch@gmail.com` | Hardcoded in `cop_worker/gmail/gatekeeper.py:RECIPIENT` — the owner's own inbox |
-| Counted match vs another group | `rmisegal+uoh26finalgame@gmail.com` | LeagueManager config (`league_manager/gmail/gatekeeper.py`, recipient comes from config) |
+| Counted match vs another group | `<LEAGUE_REPORT_ADDRESS>` | LeagueManager config (`league_manager/gmail/gatekeeper.py`, recipient comes from config) |
 
 During development every send goes to `agentsorch@gmail.com` (the owner's mailbox,
 used for all test runs). For a counted match against another group, the
 LeagueManager sends the structured result to the course address
-`rmisegal+uoh26finalgame@gmail.com`. Both are Gmail-API sends using the `gmail.send`
+`<LEAGUE_REPORT_ADDRESS>`. Both are Gmail-API sends using the `gmail.send`
 scope; only the recipient differs.
 
 ---

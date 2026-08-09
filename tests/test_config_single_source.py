@@ -1,0 +1,69 @@
+"""Drift guard: config/game.json is the single source of truth.
+
+Enforces that the wire terms, the physics constants, and the exchanged hashes all agree with
+config/game.json — so a change in one place cannot silently diverge from the others.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+from pathlib import Path
+
+from cop_worker.config_loader import CONFIG_DIR, load_config, load_game, resolve_profile_dir
+from cop_worker.protocol.reference_v3 import (
+    canonical_json,
+    default_terms,
+    derive_game_uid,
+    terms_from_game,
+)
+from cop_worker.rules_engine import RulesEngine
+
+GAME = load_game()
+
+
+def test_default_terms_match_game_json():
+    # terms used on the wire == terms derived from the constitution (no drift)
+    assert default_terms() == terms_from_game(GAME)
+
+
+def test_config_sha256_is_whole_file_and_pinned():
+    canon = json.dumps(GAME, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+    sha = hashlib.sha256(canon.encode("utf-8")).hexdigest()
+    # whole-file canonical hash, and the pinned value we exchange with anrbj666
+    assert sha == "9ed3b2e9601d3378b838740edadf03ad12ff17adefead7d18397de68cf860c23"
+    # ref3_artifacts computes the same
+    import sys
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+    import ref3_artifacts
+
+    assert ref3_artifacts.config_sha256() == sha
+
+
+def test_game_uid_pinned_vs_anrbj666():
+    uid = derive_game_uid(default_terms(), "vibecode", "anrbj666")
+    assert uid == "b2a16946-2cad-909f-60aa-b0cc8a8b7c4f"
+
+
+def test_physics_constants_match_game_json():
+    # The locked scent model constants must equal the constitution's pheromone values.
+    pher = GAME["pheromones"]
+    assert RulesEngine.SCENT_CENTER == pher["pheromone_center_intensity"]
+    # SCENT_DECAY is the multiplicative retention = 1 - decay_per_step
+    assert abs(RulesEngine.SCENT_DECAY - (1.0 - pher["pheromone_decay"])) < 1e-9
+
+
+def test_config_loader_profile_resolution():
+    assert resolve_profile_dir(None) == CONFIG_DIR
+    cfg = load_config()
+    assert set(cfg["runtime"]) >= {"network", "timeouts", "llm", "identity", "report"}
+    # unknown profile name falls back to base config dir (never crashes)
+    assert resolve_profile_dir("no-such-opponent") == CONFIG_DIR
+
+
+def test_runtime_toml_has_no_league_address():
+    # Safety: the league/counted address must never be stored in runtime config.
+    txt = (CONFIG_DIR / "runtime.toml").read_text(encoding="utf-8")
+    assert "rmisegal" not in txt
+    assert "@gmail.com" in txt  # our own inbox is fine

@@ -1,0 +1,75 @@
+# ================================================================
+# vibecode-cop — RUNTIME configuration (NOT part of any SHA)
+# ================================================================
+# This file holds every runtime/operational parameter for a match:
+# network endpoints, timeouts, LLM settings, identity, and reporting.
+#
+# It is deliberately SEPARATE from config/game.json:
+#   - game.json  = the shared constitution. Its whole-file canonical
+#                  SHA (config_sha256) is exchanged and must match the
+#                  opponent. See config/README.md.
+#   - runtime.toml = private to us. Never hashed, never shared. Edit
+#                    freely; it changes HOW we run, not the game rules.
+#
+# On the next game, ALL main operational params live here. Select a
+# profile with `--config <name>` (loads config/opponents/<name>/ if it
+# exists, else this base). CLI flags always override these values.
+# ================================================================
+
+[network]
+# Our two MCP servers (static public IP, router-forwarded — no tunnel).
+our_cop_port      = 61224
+our_thief_port    = 61223
+our_cop_mcp_url   = "http://62.56.220.143:61224/mcp"
+our_thief_mcp_url = "http://62.56.220.143:61223/mcp"
+
+# Default opponent (override per game with --opponent-group / --opp-*-url
+# or a saved config/opponents/<group>/runtime.toml).
+opponent_group = "anrbj666"
+opp_cop_url    = "https://cop-mcp.alon.website/mcp"
+opp_thief_url  = "https://thief-mcp.alon.website/mcp"
+
+[timeouts]
+# All seconds unless noted. Previously hardcoded in scripts/live_match_ref3.py.
+agreement_poll_sec = 300.0   # wait for the peer's negotiation greeting
+turn_poll_sec      = 120.0   # wait for the peer's sealed turn
+audit_poll_sec     = 300.0   # wait for the peer's end-of-game audit
+endpoint_await_sec = 900.0   # wait for a per-window opponent endpoint to come up
+probe_sec          = 30.0    # transport probe deadline (tunnelled peers are slow)
+introspect_sec     = 30.0    # MCP introspect deadline
+port_wait_sec      = 15.0    # wait for our own local server ports to open
+git_rev_parse_sec  = 10.0    # subprocess timeout for git rev-parse
+retry_backoff_sec  = 8.0     # endpoint re-dial backoff on 502/530/refused
+poll_interval_sec  = 0.05    # inner poll sleep granularity
+reorder_window     = 4       # ReferenceV3Inbox bounded-reorder window
+
+[llm]
+# Movement is always the RL policy; the LLM only writes free-text hints.
+provider       = "ollama"
+model          = "llama3.1:8b"
+base_url       = "http://localhost:11434"
+temperature    = 0.7
+num_predict    = 30          # max tokens per hint
+hint_timeout_sec = 6.0       # warm calls ~2.5s; cold load needs headroom
+keep_alive     = "30m"       # keep the model resident (avoids GPU cycling)
+
+[identity]
+# What the peer records about us (rules 49/53) and what the declaration carries.
+group_id   = "vibecode"
+group_name = "vibecode"
+members    = ["Ron Marom", "Amit Kuperminz"]
+cop_repo   = "https://github.com/AmitKuper/vibecode-cop"
+thief_repo = "https://github.com/AmitKuper/vibecode-thief"
+
+[report]
+# SAFETY: the default recipient is OUR OWN inbox. The league/counted address
+# is NEVER stored here or defaulted anywhere — it is passed explicitly at run
+# time (--report-to) for a counted game only. See config/README.md.
+recipient  = "agentsorch@gmail.com"
+mode       = "send"                       # "send" | "dry_run" | "none"
+token_path = "secrets/gmail/token.json"
+
+[counted]
+# Our prior counted-games count (rules 37-38), sourced from the ledger
+# results/counted_series.json. games_played_including_this = this + (counted?1:0).
+counted_played = 1

@@ -30,7 +30,7 @@ reasons rooted in the project's architecture docs:
   body **and** the same bytes as the single attachment — nothing else.
 - All four artifact kinds (config, log, declaration, result) are written to the repo; only the
   result is emailed.
-- Counted runs email the result to `rmisegal+uoh26finalgame@gmail.com` (rule 51); the settlement
+- Counted runs email the result to `<LEAGUE_REPORT_ADDRESS>` (rule 51); the settlement
   guard emits the report only on a clean 6/6.
 
 > Primary source: the NotebookLM screenshot **`Email_Report_Agent_conversation.jpeg`** (in this

@@ -123,7 +123,7 @@ cop, survival rewards the thief, ties split, and a TECHNICAL_LOSS scores 0.
 - FR-8.2: Gmail reporting uses OAuth 2.0 with `gmail.send` scope only. During
   development, reports go to the owner's test inbox (`agentsorch@gmail.com`); a counted
   match reports the structured result to the course address
-  (`rmisegal+uoh26finalgame@gmail.com` via LeagueManager config). See
+  (`<LEAGUE_REPORT_ADDRESS>` via LeagueManager config). See
   `docs/GMAIL_REPORTING_RUNBOOK.md`.
 
 ### FR-9: Replay & Audit

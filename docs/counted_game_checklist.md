@@ -13,7 +13,7 @@ before-steps green, then let it run — the settlement guard prevents a broken s
 
 | Who | Address | Role |
 |---|---|---|
-| League / lecturer | `rmisegal+uoh26finalgame@gmail.com` | THE report address (rule 51) — counted only |
+| League / lecturer | `<LEAGUE_REPORT_ADDRESS>` | THE report address (rule 51) — counted only |
 | vibecode operators | `agentsorch@gmail.com` (Ron Marom, Amit Kuperminz) | our Gmail sender + coordination |
 
 ## Our endpoints (static public IP, router-forwarded — no tunnel)
@@ -62,7 +62,7 @@ python scripts/live_match_ref3.py --match \
   --opp-cop-url   <opponent cop /mcp URL> \
   --opp-thief-url <opponent thief /mcp URL> \
   --opponent-group <opponent group_id> \
-  --report-to "rmisegal+uoh26finalgame@gmail.com" \
+  --report-to "<LEAGUE_REPORT_ADDRESS>" \
   --counted --counted-played <N> \
   --members "Ron Marom,Amit Kuperminz"
 ```
@@ -85,7 +85,7 @@ python scripts/live_match_ref3.py --match \
 
 1. **Verify the series settled:** log shows `STATUS: audits 6/6 ok`; the result reads 6/6
    `audit.log_verified`, `mutual_agreement.confirmed: true` with a hash equal to the opponent's.
-2. **Verify the report email left:** `emailed result ONLY to rmisegal+uoh26finalgame@gmail.com
+2. **Verify the report email left:** `emailed result ONLY to <LEAGUE_REPORT_ADDRESS>
    (id=<msg-id>)`. Record the message-id. Rule 35: both teams' reports must exist and agree — get
    the opponent's message-id too.
 3. **Commit + push ALL artifacts, both repos** — configs (`config/games/`) + logs + declaration +
