@@ -7,17 +7,23 @@ import random
 import secrets
 from typing import Any
 
+from cop_worker.board import Board
 from cop_worker.commit_reveal import CommitRevealStateMachine, ProtocolViolationError
 from cop_worker.crypto import build_commitment
 from cop_worker.observation import BeliefState, LocalObservation
 from cop_worker.observation_processor import ObservationProcessor
 from cop_worker.parameter_registry import validate_terms
+from cop_worker.rules_engine import RulesEngine
 from cop_worker.state_machine import GameletState, GameletStateMachine
 
 logger = logging.getLogger(__name__)
 
 # Cop can move in cardinal directions or place a barrier, or stay
 _COP_ACTIONS = ["N", "S", "E", "W", "stay", "barrier_N", "barrier_S", "barrier_E", "barrier_W"]
+
+# Board coordinate deltas keyed by gamelet direction string (matches Board.DIRECTIONS
+# and RLMover.apply: N = y-1, S = y+1, E = x+1, W = x-1).
+_MOVE_DELTAS = {"N": (0, -1), "S": (0, 1), "E": (1, 0), "W": (-1, 0), "stay": (0, 0)}
 
 # Mapping from policy uppercase names to gamelet action dict format
 _POLICY_TO_GAMELET_COP = {
@@ -80,10 +86,32 @@ class Gamelet:
         self.role = role
         self.belief_provider = belief_provider
         self._policy = policy
-        # Tracked position for RL observation (placeholder: centre of board)
-        self._own_position: tuple[int, int] = (_GRID_SIZE // 2, _GRID_SIZE // 2)
-        self._known_barriers: list[tuple[int, int]] = []
-        self._own_barriers_remaining: int = terms.get("barriers_per_cop", 3)
+        self._grid_size = int(terms.get("board_size", _GRID_SIZE))
+        # Tracked own position, seeded from agreed terms (NOT a placeholder). Advanced each
+        # step by applying our own committed action via the canonical board transition, so the
+        # RL policy observes where it actually is instead of a fixed centre-of-board stub.
+        _start = terms.get("cop_start", [0, 0])
+        self._own_position: tuple[int, int] = (int(_start[0]), int(_start[1]))
+        self._known_barriers: list[list[int]] = []
+        self._own_barriers_remaining: int = int(terms.get("barriers_max", 0))
+        self._last_hint: str = ""
+        # Highest step whose own-action we have already applied, so a retried/reordered
+        # commit for the same step cannot advance us twice.
+        self._advanced_through_step: int = 0
+        # Latest opponent scent field as transmitted on the wire ({'r,c': v}); empty until the
+        # first peer turn arrives. Fed into LocalObservation.opponent_scent so the cop can smell
+        # the thief. Mirrors how RLMover consumes the peer's smell_grid on the reference-v3 wire.
+        self._opponent_smell: dict[str, float] = {}
+        # Board + RulesEngine used only to emit OUR own byte-exact book scent field (emitter cell
+        # = our position). Sent on the wire so the opponent can smell us — symmetric with RLMover.
+        self._smell_board = Board(
+            cop_position=[0, 0],
+            thief_position=[self._own_position[0], self._own_position[1]],
+            grid_size=self._grid_size,
+        )
+        self._smell_rules = RulesEngine(
+            self._smell_board, max_turns=int(terms.get("max_steps", 35))
+        )
         self._sm = GameletStateMachine()
         # Terms already agreed — fast-path to LOCKED
         self._sm.transition(GameletState.NEGOTIATING)
@@ -128,20 +156,85 @@ class Gamelet:
             return self._handle_control(payload)
         raise GameletError(f"Unknown event_type: {event_type!r}")
 
+    def _opponent_scent_grid(self) -> list[list[float]]:
+        """Convert the peer's transmitted smell {'r,c': v} into our NxN grid.
+
+        Mirrors RLMover._opponent_scent_grid so the worker path observes the exact
+        same opponent scent field the reference-v3 driver does.
+        """
+        n = self._grid_size
+        g = [[0.0] * n for _ in range(n)]
+        for cell, val in (self._opponent_smell or {}).items():
+            try:
+                r, c = (int(t) for t in cell.split(","))
+            except (ValueError, AttributeError):
+                continue
+            if 0 <= r < n and 0 <= c < n:
+                g[r][c] = float(val)
+        return g
+
+    def _own_smell_grid(self) -> dict[str, float]:
+        """Emit OUR byte-exact book scent field around our current position as {'r,c': v}.
+
+        Accumulates via RulesEngine.update_scent (the multiplicative_book_v1 law); call
+        exactly once per step, after advancing our position. Sent on the wire so the
+        opponent can smell us.
+        """
+        self._smell_board.thief_position = [self._own_position[0], self._own_position[1]]
+        self._smell_rules.update_scent()
+        field = self._smell_rules.get_scent_field()
+        n = self._grid_size
+        return {
+            f"{r},{c}": field[r][c]
+            for r in range(n)
+            for c in range(n)
+            if field[r][c] > 0.0
+        }
+
+    def _advance_own(self, action: dict, step: int) -> None:
+        """Advance our tracked position by applying our own committed action.
+
+        Movement clamps to board bounds (matching the domain / RLMover.apply). A barrier
+        placement forfeits the move and, if quota remains and the target is in-bounds and
+        free, records the barrier cell and decrements the remaining quota.
+
+        Idempotent per step: a peer that re-sends a commit for an already-advanced step
+        (retry / reorder) must not move us twice or double-spend barrier quota.
+        """
+        if step <= self._advanced_through_step:
+            return
+        self._advanced_through_step = step
+        direction = str(action.get("direction", "stay"))
+        x, y = self._own_position
+        n = self._grid_size
+        if direction.startswith("barrier_"):
+            if self._own_barriers_remaining > 0:
+                dx, dy = _MOVE_DELTAS.get(direction.split("_", 1)[1], (0, 0))
+                bx, by = x + dx, y + dy
+                if 0 <= bx < n and 0 <= by < n and [bx, by] not in self._known_barriers:
+                    self._known_barriers.append([bx, by])
+                    self._own_barriers_remaining -= 1
+            return  # placement (legal or not) forfeits the move
+        dx, dy = _MOVE_DELTAS.get(direction, (0, 0))
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < n and 0 <= ny < n:
+            self._own_position = (nx, ny)
+
     def _build_obs(self) -> tuple[LocalObservation, BeliefState]:
         """Build a LocalObservation and BeliefState for policy inference.
 
         Returns:
-            Tuple of (LocalObservation, BeliefState) using current tracked state.
+            Tuple of (LocalObservation, BeliefState) using current tracked state:
+            our real position, the opponent scent received on the wire, and any
+            known barriers.
         """
-        n = _GRID_SIZE
-        scent = [[0.0] * n for _ in range(n)]
+        n = self._grid_size
         obs = LocalObservation(
             own_position=self._own_position,
             own_barriers_remaining=self._own_barriers_remaining,
-            known_barriers=list(self._known_barriers),
-            opponent_scent=scent,
-            last_hint="",
+            known_barriers=[tuple(b) for b in self._known_barriers],
+            opponent_scent=self._opponent_scent_grid(),
+            last_hint=self._last_hint,
             step=self._step,
             gamelet=self.sub_game_number,
             grid_size=n,
@@ -171,10 +264,19 @@ class Gamelet:
         """
         if self._policy is not None:
             try:
-                from cop_worker.rl.action_space import COP_ACTIONS
+                from cop_worker.rl.action_space import COP_ACTIONS, compute_legal_mask_cop
 
                 obs, belief = self._build_obs()
-                action_name = self._policy.select_action(obs, belief, list(COP_ACTIONS))
+                # Pass the TRUE legal action set (board edges + barriers + quota), matching how
+                # the policy was trained. Passing the full list let the policy propose off-board
+                # moves (e.g. N from the top row) that the domain clamps to STAY — freezing the
+                # cop at its start cell. See compute_legal_mask_cop.
+                mask = compute_legal_mask_cop(
+                    tuple(obs.own_position), list(obs.known_barriers),
+                    obs.own_barriers_remaining, obs.grid_size,
+                )
+                legal = [a for a, m in zip(COP_ACTIONS, mask) if m] or list(COP_ACTIONS)
+                action_name = self._policy.select_action(obs, belief, legal)
                 return self._action_to_dict(action_name)
             except Exception as exc:
                 logger.warning("RL policy inference failed, falling back to random: %s", exc)
@@ -218,14 +320,24 @@ class Gamelet:
                 self._opponent_commits: dict[int, str] = {}
             self._opponent_commits[turn.step] = turn.commitment_hash
             self._step = turn.step
+            # Absorb the opponent's transmitted scent + hint so the move we generate below
+            # observes where the opponent actually is (was previously an all-zero field).
+            if turn.smell_grid is not None:
+                self._opponent_smell = turn.smell_grid
+            if turn.hint:
+                self._last_hint = turn.hint
             # Also advance the primary CR if it's for the expected step
             if self._cr is not None and self._cr._expected_step == turn.step:
                 import contextlib
 
                 with contextlib.suppress(Exception):
                     self._cr.receive_commit(turn.step, turn.commitment_hash)
-            # Generate our own commitment for this step
+            # Generate our own commitment for this step (obs built from current position +
+            # the opponent scent just absorbed), then advance our own tracked position and
+            # emit our book scent field so the opponent can smell us next turn.
             our_action = self._generate_move()
+            self._advance_own(our_action, turn.step)
+            own_smell = self._own_smell_grid()
             our_nonce, our_commitment = self._generate_commitment(our_action)
             self._pending_reveals[turn.step] = (our_nonce, our_action)
             return {
@@ -234,6 +346,7 @@ class Gamelet:
                     "kind": "commit",
                     "step": turn.step,
                     "commitment_hash": our_commitment,
+                    "smell_grid": own_smell,
                 },
                 "state": self._sm.state,
             }

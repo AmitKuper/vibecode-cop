@@ -125,7 +125,24 @@ class RLMover:
             grid_size=self.grid,
         )
         belief = BeliefState.uniform(self.grid, step=step)
-        action = self.policy.select_action(obs, belief, list(self.actions))
+        # Pass the TRUE legal action set (board edges + barriers + quota), matching training.
+        # The full list let the policy propose off-board moves the domain clamps to STAY, which
+        # froze the cop at its start cell (never pursuing). Mask per role.
+        from cop_worker.rl.action_space import (
+            compute_legal_mask_cop,
+            compute_legal_mask_thief,
+        )
+        if self.role == "police":
+            mask = compute_legal_mask_cop(
+                tuple(self.pos), [tuple(b) for b in self.barriers],
+                self.barriers_remaining, self.grid,
+            )
+        else:
+            mask = compute_legal_mask_thief(
+                tuple(self.pos), [tuple(b) for b in self.barriers], self.grid,
+            )
+        legal = [a for a, m in zip(self.actions, mask) if m] or list(self.actions)
+        action = self.policy.select_action(obs, belief, legal)
         return action
 
     def apply(self, action: str) -> None:

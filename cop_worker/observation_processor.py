@@ -15,6 +15,11 @@ class OpponentTurn:
     commitment_hash: str | None = None
     nonce: str | None = None
     action: dict | None = None
+    # Opponent's transmitted scent field ({'r,c': intensity}) and free-language hint.
+    # Preserved so the worker can feed opponent_scent + last_hint into the RL observation
+    # (mirrors the reference-v3 wire, which carries smell_grid/hint on every turn).
+    smell_grid: dict | None = None
+    hint: str | None = None
 
 
 @dataclass
@@ -73,6 +78,8 @@ class ObservationProcessor:
             commitment_hash=payload.get("commitment_hash"),
             nonce=payload.get("nonce"),
             action=payload.get("action"),
+            smell_grid=payload.get("smell_grid"),
+            hint=payload.get("hint"),
         )
 
     def normalise_audit(self, payload: dict[str, Any]) -> AuditSubmission:
