@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 
 from cop_worker.gamelet_constants import GameletError
+from cop_worker.language.llm_hint import token_totals as llm_token_totals
 from cop_worker.state_machine import GameletState
 
 logger = logging.getLogger(__name__)
@@ -82,7 +83,7 @@ class GameletResultMixin:
             },
             "log_hash": "0" * 64,
             "artifact_path": f"logs/{self.game_uid}_g{self.sub_game_number:02d}.json",
-            "llm_tokens": {"prompt": 0, "completion": 0, "total": 0},
+            "llm_tokens": llm_token_totals(),
             "final_step": self._step,
         }
 

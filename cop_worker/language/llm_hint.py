@@ -54,6 +54,27 @@ def _build_user_prompt(move: str, intent: str) -> str:
     )
 
 
+#: Cumulative real token usage of every successful local-LLM hint call in this
+#: process. Surfaced in result artifacts via :func:`token_totals`.
+_TOKEN_METER = {"prompt": 0, "completion": 0, "total": 0}
+
+
+def token_totals() -> dict:
+    """Real cumulative LLM token usage for this process (prompt/completion/total)."""
+    return dict(_TOKEN_METER)
+
+
+def reset_token_totals() -> None:
+    for key in _TOKEN_METER:
+        _TOKEN_METER[key] = 0
+
+
+def _record_tokens(prompt: int, completion: int) -> None:
+    _TOKEN_METER["prompt"] += int(prompt)
+    _TOKEN_METER["completion"] += int(completion)
+    _TOKEN_METER["total"] += int(prompt) + int(completion)
+
+
 def _call_ollama(
     base_url: str,
     model: str,
@@ -88,6 +109,7 @@ def _call_ollama(
         data = resp.json()
         text = data.get("message", {}).get("content", "").strip()
         if text:
+            _record_tokens(data.get("prompt_eval_count", 0), data.get("eval_count", 0))
             # Enforce word cap — model may ignore instructions
             words = text.split()
             if len(words) > 15:
