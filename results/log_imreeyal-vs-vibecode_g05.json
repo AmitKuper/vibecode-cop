@@ -10,9 +10,9 @@
   },
   "opponent_records": [
     {
-      "commit": "17f3142c4e32b659c4325617e7d6ebe95742e543d7f9848d227323934c4089b5",
+      "commit": "0d752ef539dfadc209d1be349076a27fabcd5389b1421a4e89d2da3d4dc38f80",
       "declared": {},
-      "nonce": "3e599ba847c17c22135a9e34cc77c06e",
+      "nonce": "816cd3776683c4616271a750e63ccfbb",
       "payload": {
         "step": 0,
         "type": "system_spec",
@@ -36,13 +36,13 @@
       }
     },
     {
-      "commit": "59def9dcd0642a805817372bd5324088e71ff221464326cec116d8fcbb586483",
+      "commit": "0ee492cac57b9ffb08f05b25b6987c834d52d5764fa7ea6736c9f95582696dd3",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "They say the crowds near Hell's Kitchen hide anyone."
       },
-      "nonce": "a4b59b779286f8ebb0326931cbb28416",
+      "nonce": "f0118d12b905ab425283ede293759edc",
       "payload": {
         "step": 1,
         "state": "grid=7x7;self=[1, 0];barriers=[]",
@@ -56,17 +56,17 @@
         "model": "none",
         "tokens_step": 0,
         "tokens_total": 0,
-        "response_seconds": 0.043
+        "response_seconds": 0.046
       }
     },
     {
-      "commit": "01e52c871c86bd231c870404f830237fdccd68a959325785db91e29cff610b7a",
+      "commit": "fd59d2ecd47a76317742b7e5faf00094fdf249b19b25fa91b69a78f1793ec68f",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "I heard sirens somewhere around Hell's Kitchen."
       },
-      "nonce": "dc26fa2ba8d2b952ff89485c47c47ace",
+      "nonce": "8a86f0d04c4f96b32baab53dbc43b1af",
       "payload": {
         "step": 2,
         "state": "grid=7x7;self=[2, 0];barriers=[]",
@@ -80,17 +80,17 @@
         "model": "none",
         "tokens_step": 0,
         "tokens_total": 0,
-        "response_seconds": 0.084
+        "response_seconds": 0.087
       }
     },
     {
-      "commit": "37f2c910f2accde9e231002e9afa37791366ac21bcc224d667056d3858519d34",
+      "commit": "1ccfa03431cb338079b4a0f81a0db3bd67dab0c7dfc519aadd51c8332de78886",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "The shadows by Hell's Kitchen feel busy tonight."
       },
-      "nonce": "fef7aac26b3c5815a03cc9b03b6ddd71",
+      "nonce": "78e0476bbe1a0ae3802e0b17de7c7254",
       "payload": {
         "step": 3,
         "state": "grid=7x7;self=[3, 0];barriers=[]",
@@ -108,13 +108,13 @@
       }
     },
     {
-      "commit": "9ab7fc78e8cd906e6cd101d52e609fa91ff4b941c2788b9849594845f56fa5b1",
+      "commit": "de42b8c177cf3af5234871bbe2c481385a9ec3d50ba473c94ef8ea1f9d6f787c",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "Word is, keep an eye on Greenwich Village."
       },
-      "nonce": "26125675a27b25fcbd4f684137821256",
+      "nonce": "1c691874b35f655881a1fb4beb59b593",
       "payload": {
         "step": 4,
         "state": "grid=7x7;self=[3, 1];barriers=[]",
@@ -128,17 +128,17 @@
         "model": "none",
         "tokens_step": 0,
         "tokens_total": 0,
-        "response_seconds": 0.11
+        "response_seconds": 0.109
       }
     },
     {
-      "commit": "72e824cdb7c05a504da8fffea9caba924f09b2b5b63eaee59d6926ac6aec4151",
+      "commit": "3ffe14d42b979dc4eea6937dbbd4bd59b90c9c651447b96265138ea3124a0d5e",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "Someone was asking about Greenwich Village just now."
       },
-      "nonce": "fbd1cb0c64f2e73e69dc2f2a1360c0aa",
+      "nonce": "42485f3c17fbaf6ecb89ba2e45fb1dac",
       "payload": {
         "step": 5,
         "state": "grid=7x7;self=[3, 2];barriers=[]",
@@ -152,17 +152,17 @@
         "model": "none",
         "tokens_step": 0,
         "tokens_total": 0,
-        "response_seconds": 0.195
+        "response_seconds": 0.208
       }
     },
     {
-      "commit": "5d9f3738a4670ba7f205528dbeb36d09590574c35b4c72b0f85cf3afb64a7aa6",
+      "commit": "990c4d236688bfdcd6919433d6cd8939d4f5de8696dff28f8fb8ad72ed82a31f",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "All roads seem to lead to Grand Central."
       },
-      "nonce": "57636c279bd0aa825d6684605ab174a4",
+      "nonce": "44dfd9f714f0df63fdf451829e949423",
       "payload": {
         "step": 6,
         "state": "grid=7x7;self=[3, 3];barriers=[]",
@@ -176,17 +176,17 @@
         "model": "none",
         "tokens_step": 0,
         "tokens_total": 0,
-        "response_seconds": 0.265
+        "response_seconds": 0.276
       }
     },
     {
-      "commit": "a27ef135dfea11558bc4ccc5d0bebaeb16a9daee3af48ca11ec7d2927b110250",
+      "commit": "8c3aa80a8da2eec5cfad7a8260a8e7d68dbd37f82328d92db532d97813602736",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "They say the crowds near Grand Central hide anyone."
       },
-      "nonce": "34b9ecf3d6035bffb53139ea139b944c",
+      "nonce": "06b90d19618bd7e4ee572ee4e1c66e3e",
       "payload": {
         "step": 7,
         "state": "grid=7x7;self=[4, 3];barriers=[]",
@@ -200,17 +200,17 @@
         "model": "none",
         "tokens_step": 0,
         "tokens_total": 0,
-        "response_seconds": 0.355
+        "response_seconds": 0.376
       }
     },
     {
-      "commit": "6e4b91addd116ddd186fc870f5179c99a8394d897ba29e5c84d2e669a03feb0e",
+      "commit": "db0b6c330b7d2ddffb09bec41e4e223da9252d406bf8694ef4fbc75b6d992cd3",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "I heard sirens somewhere around Brooklyn Bridge."
       },
-      "nonce": "c8ea56574322f7eef42516e13d8fe7fb",
+      "nonce": "82f72ca150fa9464660d4ffe253e25f1",
       "payload": {
         "step": 8,
         "state": "grid=7x7;self=[4, 4];barriers=[]",
@@ -224,17 +224,17 @@
         "model": "none",
         "tokens_step": 0,
         "tokens_total": 0,
-        "response_seconds": 0.202
+        "response_seconds": 0.21
       }
     },
     {
-      "commit": "83269472961ad8590324b09cfd63a5bb63498486dea053da079f728ba664b256",
+      "commit": "4e32f3f46581962b4ab3302fc5f03385d84bcefa0f86b5d4fd0756979583709a",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "The shadows by Grand Central feel busy tonight."
       },
-      "nonce": "51698ba12349b2b86ca27e27ef80f0c1",
+      "nonce": "d5e9ad5cfb316f2414707f0fb75c1cda",
       "payload": {
         "step": 9,
         "state": "grid=7x7;self=[3, 4];barriers=[]",
@@ -248,17 +248,17 @@
         "model": "none",
         "tokens_step": 0,
         "tokens_total": 0,
-        "response_seconds": 0.201
+        "response_seconds": 0.206
       }
     },
     {
-      "commit": "ae7e2c2ba87b4b1c7ee3f82201d49820a756279135d194d47d2cd6604def3c7b",
+      "commit": "46a76bea80ee5b067fdaa7bf28a87257c407b3f9642fda7bc2997c770b6d51d7",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "Word is, keep an eye on Central Park."
       },
-      "nonce": "7d4d344e2a4ee3d934839f06b2269742",
+      "nonce": "227a60fc04a848a17cfbcf709124a43d",
       "payload": {
         "step": 10,
         "state": "grid=7x7;self=[2, 4];barriers=[]",
@@ -272,17 +272,17 @@
         "model": "none",
         "tokens_step": 0,
         "tokens_total": 0,
-        "response_seconds": 0.21
+        "response_seconds": 0.212
       }
     },
     {
-      "commit": "e6ed8a7b4cb71df41530bbd9d2a368bc588ba166d63bcd416ff5188dba3e6b29",
+      "commit": "0118f1d3db4cf0d50893bdefe4839c2d144b04c87e775103332e4a1f588e00ac",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "Someone was asking about Central Park just now."
       },
-      "nonce": "0647cd57d7db6654ea0a1aae7e3930b8",
+      "nonce": "28ccdb46d95ce9b59019e7006eb4479b",
       "payload": {
         "step": 11,
         "state": "grid=7x7;self=[2, 3];barriers=[]",
@@ -296,19 +296,307 @@
         "model": "none",
         "tokens_step": 0,
         "tokens_total": 0,
-        "response_seconds": 0.269
+        "response_seconds": 0.27
       }
     },
     {
-      "commit": "c58d5b5e1d0061c3a2a7909af9243c715336cd65914c6a12db5bd33d317c4c85",
+      "commit": "3a2dfe69f859a7afd6a32b7f373bfcd09b48f805d6b07f1469222006bef76982",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "All roads seem to lead to Grand Central."
       },
-      "nonce": "b1f72ba13040b1975874359630536cfc",
+      "nonce": "2dd1e7dc75d6225a2d91d963ff788883",
       "payload": {
         "step": 12,
+        "state": "grid=7x7;self=[3, 3];barriers=[]",
+        "position": [
+          3,
+          3
+        ],
+        "move": "S",
+        "intent": "truth",
+        "hint": "All roads seem to lead to Grand Central.",
+        "model": "none",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.348
+      }
+    },
+    {
+      "commit": "71118217934630f926a16db36bdabec3df95c3e410d459ae3e0bb0d132345e67",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "They say the crowds near Grand Central hide anyone."
+      },
+      "nonce": "1a9a38ca5981ee00ab02130b8b944ab7",
+      "payload": {
+        "step": 13,
+        "state": "grid=7x7;self=[4, 3];barriers=[]",
+        "position": [
+          4,
+          3
+        ],
+        "move": "S",
+        "intent": "truth",
+        "hint": "They say the crowds near Grand Central hide anyone.",
+        "model": "none",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.367
+      }
+    },
+    {
+      "commit": "35521df21980efa38e953dcdc02f45c2c3716d88307986c1a90228e17d09df28",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "I heard sirens somewhere around Brooklyn Bridge."
+      },
+      "nonce": "e59a478487b71c132c15dad83df2d2d2",
+      "payload": {
+        "step": 14,
+        "state": "grid=7x7;self=[4, 4];barriers=[]",
+        "position": [
+          4,
+          4
+        ],
+        "move": "E",
+        "intent": "truth",
+        "hint": "I heard sirens somewhere around Brooklyn Bridge.",
+        "model": "none",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.21
+      }
+    },
+    {
+      "commit": "1dfd11c86d802192efe9d9cdad11ec4eea3e100e3af8034a8a68e874b80f4415",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "The shadows by Grand Central feel busy tonight."
+      },
+      "nonce": "9329f4267324322c0f4cf205afde01c4",
+      "payload": {
+        "step": 15,
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "N",
+        "intent": "truth",
+        "hint": "The shadows by Grand Central feel busy tonight.",
+        "model": "none",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.204
+      }
+    },
+    {
+      "commit": "a981af675817f3e424a0ca2bf1f9f8da2f3070c48cfac6e8a05102bd317e504c",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Word is, keep an eye on Central Park."
+      },
+      "nonce": "2ba237c1e91786aa87ac0ffd1044add9",
+      "payload": {
+        "step": 16,
+        "state": "grid=7x7;self=[2, 4];barriers=[]",
+        "position": [
+          2,
+          4
+        ],
+        "move": "N",
+        "intent": "truth",
+        "hint": "Word is, keep an eye on Central Park.",
+        "model": "none",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.218
+      }
+    },
+    {
+      "commit": "b542970d9909866c135e285974577073c510af14e71fa3b73cd6cecd646f3704",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Someone was asking about Central Park just now."
+      },
+      "nonce": "e2e7041536cb9cf6c260c0b0627f5b86",
+      "payload": {
+        "step": 17,
+        "state": "grid=7x7;self=[2, 3];barriers=[]",
+        "position": [
+          2,
+          3
+        ],
+        "move": "W",
+        "intent": "truth",
+        "hint": "Someone was asking about Central Park just now.",
+        "model": "none",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.277
+      }
+    },
+    {
+      "commit": "0584d9a55a7644f64a1c5fcf5cc1b5f540c0d11c18e6d11551176016e0d2276a",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "All roads seem to lead to Grand Central."
+      },
+      "nonce": "12d912db06fd92de38b6c0dc1ba366bf",
+      "payload": {
+        "step": 18,
+        "state": "grid=7x7;self=[3, 3];barriers=[]",
+        "position": [
+          3,
+          3
+        ],
+        "move": "S",
+        "intent": "truth",
+        "hint": "All roads seem to lead to Grand Central.",
+        "model": "none",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.318
+      }
+    },
+    {
+      "commit": "2db6bbfa63ebf795e29a6cdb210c49f277211e50918a3a2f87d5410013d5530a",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "They say the crowds near Grand Central hide anyone."
+      },
+      "nonce": "4a0cf996d8e93ba25b8059a4ae258cfe",
+      "payload": {
+        "step": 19,
+        "state": "grid=7x7;self=[4, 3];barriers=[]",
+        "position": [
+          4,
+          3
+        ],
+        "move": "S",
+        "intent": "truth",
+        "hint": "They say the crowds near Grand Central hide anyone.",
+        "model": "none",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.371
+      }
+    },
+    {
+      "commit": "600a5d350722b46a7c9cdc7c93f8990e72dc64204ccbb32457c6ab07aae46a26",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "I heard sirens somewhere around Brooklyn Bridge."
+      },
+      "nonce": "d210963203a8bd4bcd8d412b70213d1f",
+      "payload": {
+        "step": 20,
+        "state": "grid=7x7;self=[4, 4];barriers=[]",
+        "position": [
+          4,
+          4
+        ],
+        "move": "E",
+        "intent": "truth",
+        "hint": "I heard sirens somewhere around Brooklyn Bridge.",
+        "model": "none",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.205
+      }
+    },
+    {
+      "commit": "95def02f4bf9d70d059261f5deb31c307cfb61a8f9476548ee454d2b1879d2b0",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "The shadows by Grand Central feel busy tonight."
+      },
+      "nonce": "bb654bc2c8842993c9a10580dbedb9a5",
+      "payload": {
+        "step": 21,
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "N",
+        "intent": "truth",
+        "hint": "The shadows by Grand Central feel busy tonight.",
+        "model": "none",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.199
+      }
+    },
+    {
+      "commit": "707d1e8f21c6ff82f9cf81f25e629449c34d80b34ce468154ce1ece2e7134a0a",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Word is, keep an eye on Central Park."
+      },
+      "nonce": "d8da293db8dd185b771b9aee1f1a14fb",
+      "payload": {
+        "step": 22,
+        "state": "grid=7x7;self=[2, 4];barriers=[]",
+        "position": [
+          2,
+          4
+        ],
+        "move": "N",
+        "intent": "truth",
+        "hint": "Word is, keep an eye on Central Park.",
+        "model": "none",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.209
+      }
+    },
+    {
+      "commit": "f15b6009600a431992ba740bb75589ac7a3635492977ec61cb84c2a4865835dc",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Someone was asking about Central Park just now."
+      },
+      "nonce": "0fdb3002fc6939b52ec240c65003f340",
+      "payload": {
+        "step": 23,
+        "state": "grid=7x7;self=[2, 3];barriers=[]",
+        "position": [
+          2,
+          3
+        ],
+        "move": "W",
+        "intent": "truth",
+        "hint": "Someone was asking about Central Park just now.",
+        "model": "none",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.266
+      }
+    },
+    {
+      "commit": "dbf8100eba640c644dfb681b61ad88be80bbff331021c7b17122afc172dcf53f",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "All roads seem to lead to Grand Central."
+      },
+      "nonce": "5bcf196fac3fbdfadb510a94d9e2c524",
+      "payload": {
+        "step": 24,
         "state": "grid=7x7;self=[3, 3];barriers=[]",
         "position": [
           3,
@@ -324,301 +612,13 @@
       }
     },
     {
-      "commit": "d0b64e68b19b2d641519bc5c3d7b858ba6123baf0b16e07386f7c138e6f26e01",
+      "commit": "cfc9fcbe4f65f4b4cf6aff00a23ff0b8b513093ee1f6bdeeca6ed30cc588c59b",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "They say the crowds near Grand Central hide anyone."
       },
-      "nonce": "694dd6ab0af6ce1fca150fda26fc5e5d",
-      "payload": {
-        "step": 13,
-        "state": "grid=7x7;self=[4, 3];barriers=[]",
-        "position": [
-          4,
-          3
-        ],
-        "move": "S",
-        "intent": "truth",
-        "hint": "They say the crowds near Grand Central hide anyone.",
-        "model": "none",
-        "tokens_step": 0,
-        "tokens_total": 0,
-        "response_seconds": 0.402
-      }
-    },
-    {
-      "commit": "36acf6a7f137a52567fe528e7cb9a7427939d2d205386917f3f8881858940bbd",
-      "declared": {
-        "barrier_placed": null,
-        "capture_claim": null,
-        "hint": "I heard sirens somewhere around Brooklyn Bridge."
-      },
-      "nonce": "2055f8738a890f0d81575355948d8fbb",
-      "payload": {
-        "step": 14,
-        "state": "grid=7x7;self=[4, 4];barriers=[]",
-        "position": [
-          4,
-          4
-        ],
-        "move": "E",
-        "intent": "truth",
-        "hint": "I heard sirens somewhere around Brooklyn Bridge.",
-        "model": "none",
-        "tokens_step": 0,
-        "tokens_total": 0,
-        "response_seconds": 0.206
-      }
-    },
-    {
-      "commit": "1edbf65e3729ec9d9599b11eeb06f9a9571fbd0636dc90565940424f21d9597b",
-      "declared": {
-        "barrier_placed": null,
-        "capture_claim": null,
-        "hint": "The shadows by Grand Central feel busy tonight."
-      },
-      "nonce": "2c01b2a67651ef2304660e2f1af98275",
-      "payload": {
-        "step": 15,
-        "state": "grid=7x7;self=[3, 4];barriers=[]",
-        "position": [
-          3,
-          4
-        ],
-        "move": "N",
-        "intent": "truth",
-        "hint": "The shadows by Grand Central feel busy tonight.",
-        "model": "none",
-        "tokens_step": 0,
-        "tokens_total": 0,
-        "response_seconds": 0.214
-      }
-    },
-    {
-      "commit": "c08ec240e0b965fa83565d3cefbbbdb5a31ed7d9436794cab7c78792299a054e",
-      "declared": {
-        "barrier_placed": null,
-        "capture_claim": null,
-        "hint": "Word is, keep an eye on Central Park."
-      },
-      "nonce": "053dfea640da30975026ec075da86c2a",
-      "payload": {
-        "step": 16,
-        "state": "grid=7x7;self=[2, 4];barriers=[]",
-        "position": [
-          2,
-          4
-        ],
-        "move": "N",
-        "intent": "truth",
-        "hint": "Word is, keep an eye on Central Park.",
-        "model": "none",
-        "tokens_step": 0,
-        "tokens_total": 0,
-        "response_seconds": 0.207
-      }
-    },
-    {
-      "commit": "599344d3be2a549ad86d84c172fb9f18746a972abdb478bc01ea4e8abb7e573a",
-      "declared": {
-        "barrier_placed": null,
-        "capture_claim": null,
-        "hint": "Someone was asking about Central Park just now."
-      },
-      "nonce": "b898da95ecfb06242d59cfb2869bf1bb",
-      "payload": {
-        "step": 17,
-        "state": "grid=7x7;self=[2, 3];barriers=[]",
-        "position": [
-          2,
-          3
-        ],
-        "move": "W",
-        "intent": "truth",
-        "hint": "Someone was asking about Central Park just now.",
-        "model": "none",
-        "tokens_step": 0,
-        "tokens_total": 0,
-        "response_seconds": 0.265
-      }
-    },
-    {
-      "commit": "145aa15e9f1b7547eb89db13cf84771c5578bf6308eca9fe35bbac7d7665afae",
-      "declared": {
-        "barrier_placed": null,
-        "capture_claim": null,
-        "hint": "All roads seem to lead to Grand Central."
-      },
-      "nonce": "a17eed0b35d70ef4ad3f986ff80934f8",
-      "payload": {
-        "step": 18,
-        "state": "grid=7x7;self=[3, 3];barriers=[]",
-        "position": [
-          3,
-          3
-        ],
-        "move": "S",
-        "intent": "truth",
-        "hint": "All roads seem to lead to Grand Central.",
-        "model": "none",
-        "tokens_step": 0,
-        "tokens_total": 0,
-        "response_seconds": 0.321
-      }
-    },
-    {
-      "commit": "e003b9b02ad61233064ccbb80941e000a01bead0aea8ac7629c35dce92ee3363",
-      "declared": {
-        "barrier_placed": null,
-        "capture_claim": null,
-        "hint": "They say the crowds near Grand Central hide anyone."
-      },
-      "nonce": "68945fe18ec83ae3b1b0b6d9518c82fc",
-      "payload": {
-        "step": 19,
-        "state": "grid=7x7;self=[4, 3];barriers=[]",
-        "position": [
-          4,
-          3
-        ],
-        "move": "S",
-        "intent": "truth",
-        "hint": "They say the crowds near Grand Central hide anyone.",
-        "model": "none",
-        "tokens_step": 0,
-        "tokens_total": 0,
-        "response_seconds": 0.357
-      }
-    },
-    {
-      "commit": "c6862e4d0bba71fc69a5d085582b7bf3bb4c87badc1661f6370c129627c14076",
-      "declared": {
-        "barrier_placed": null,
-        "capture_claim": null,
-        "hint": "I heard sirens somewhere around Brooklyn Bridge."
-      },
-      "nonce": "0b97203ffaf932430350b9abb5f8d844",
-      "payload": {
-        "step": 20,
-        "state": "grid=7x7;self=[4, 4];barriers=[]",
-        "position": [
-          4,
-          4
-        ],
-        "move": "E",
-        "intent": "truth",
-        "hint": "I heard sirens somewhere around Brooklyn Bridge.",
-        "model": "none",
-        "tokens_step": 0,
-        "tokens_total": 0,
-        "response_seconds": 0.203
-      }
-    },
-    {
-      "commit": "756df264febe5b1f34259069cd5b4d0e0fef058f95ab8cb934e10361c42c3bda",
-      "declared": {
-        "barrier_placed": null,
-        "capture_claim": null,
-        "hint": "The shadows by Grand Central feel busy tonight."
-      },
-      "nonce": "dd1871f25cbc9fcc5ad7c1b41d5e3c83",
-      "payload": {
-        "step": 21,
-        "state": "grid=7x7;self=[3, 4];barriers=[]",
-        "position": [
-          3,
-          4
-        ],
-        "move": "N",
-        "intent": "truth",
-        "hint": "The shadows by Grand Central feel busy tonight.",
-        "model": "none",
-        "tokens_step": 0,
-        "tokens_total": 0,
-        "response_seconds": 0.205
-      }
-    },
-    {
-      "commit": "cad1429699b344cfdc4fbe719b2b736bbfb6d569d5205124cc938d5a4461fd85",
-      "declared": {
-        "barrier_placed": null,
-        "capture_claim": null,
-        "hint": "Word is, keep an eye on Central Park."
-      },
-      "nonce": "a36041d19211c427b2dda20b89de553c",
-      "payload": {
-        "step": 22,
-        "state": "grid=7x7;self=[2, 4];barriers=[]",
-        "position": [
-          2,
-          4
-        ],
-        "move": "N",
-        "intent": "truth",
-        "hint": "Word is, keep an eye on Central Park.",
-        "model": "none",
-        "tokens_step": 0,
-        "tokens_total": 0,
-        "response_seconds": 0.211
-      }
-    },
-    {
-      "commit": "efe58c32378e8c3fc42bc81ed265f0c7a870fd68c71653868e2eed431e80c87b",
-      "declared": {
-        "barrier_placed": null,
-        "capture_claim": null,
-        "hint": "Someone was asking about Central Park just now."
-      },
-      "nonce": "9afa349988e316eb74369a37766eb9ce",
-      "payload": {
-        "step": 23,
-        "state": "grid=7x7;self=[2, 3];barriers=[]",
-        "position": [
-          2,
-          3
-        ],
-        "move": "W",
-        "intent": "truth",
-        "hint": "Someone was asking about Central Park just now.",
-        "model": "none",
-        "tokens_step": 0,
-        "tokens_total": 0,
-        "response_seconds": 0.282
-      }
-    },
-    {
-      "commit": "6035ca7ba52dc9c3f6c16338465e4bdd6a2ae516bd4eed865d73335b4607274c",
-      "declared": {
-        "barrier_placed": null,
-        "capture_claim": null,
-        "hint": "All roads seem to lead to Grand Central."
-      },
-      "nonce": "7b35948d332b9a938282490d581a295a",
-      "payload": {
-        "step": 24,
-        "state": "grid=7x7;self=[3, 3];barriers=[]",
-        "position": [
-          3,
-          3
-        ],
-        "move": "S",
-        "intent": "truth",
-        "hint": "All roads seem to lead to Grand Central.",
-        "model": "none",
-        "tokens_step": 0,
-        "tokens_total": 0,
-        "response_seconds": 0.33
-      }
-    },
-    {
-      "commit": "65dda4d9a70baddc070c78e4df43d0a082d4d030aed9833fd1abf8e354302fec",
-      "declared": {
-        "barrier_placed": null,
-        "capture_claim": null,
-        "hint": "They say the crowds near Grand Central hide anyone."
-      },
-      "nonce": "670a32c6930b4e348c63140a874e3534",
+      "nonce": "c9346666bc8e81d524f9abe8851a6da9",
       "payload": {
         "step": 25,
         "state": "grid=7x7;self=[4, 3];barriers=[]",
@@ -632,17 +632,17 @@
         "model": "none",
         "tokens_step": 0,
         "tokens_total": 0,
-        "response_seconds": 0.36
+        "response_seconds": 0.383
       }
     },
     {
-      "commit": "98c4d36a58a5ba6c0b5ea32fee4652f72378cabaaa9e80192baab567e642c047",
+      "commit": "d6189c301678b139c5ed51ede6388ba00346f6d1d63312a5910a4857d5ea0394",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "I heard sirens somewhere around Brooklyn Bridge."
       },
-      "nonce": "0e81fa0834e660bf102c67bedabff728",
+      "nonce": "c3a7eed9a5d4bea14a6a91394ed64ea1",
       "payload": {
         "step": 26,
         "state": "grid=7x7;self=[4, 4];barriers=[]",
@@ -656,17 +656,17 @@
         "model": "none",
         "tokens_step": 0,
         "tokens_total": 0,
-        "response_seconds": 0.213
+        "response_seconds": 0.212
       }
     },
     {
-      "commit": "f4fc70cf68fbadb1303896b050cd48ef12c350061414486b4730bbd1d6a53957",
+      "commit": "9408beeeb5b0be2f826ed4189d3365ac403e6c5db008e1e10976125d9ef731c4",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "The shadows by Grand Central feel busy tonight."
       },
-      "nonce": "1170ec7b3b4aeadcd8f9c9a94695b75d",
+      "nonce": "19820db33fe1b3f607a3bd8f668c2f6b",
       "payload": {
         "step": 27,
         "state": "grid=7x7;self=[3, 4];barriers=[]",
@@ -680,17 +680,17 @@
         "model": "none",
         "tokens_step": 0,
         "tokens_total": 0,
-        "response_seconds": 0.242
+        "response_seconds": 0.201
       }
     },
     {
-      "commit": "ddf23905b5b6cabb3d1697da8148abd86457ce13223d9643dacc0724aa69b78a",
+      "commit": "c2a363942473022a8117e2aa2219169e9bdea571908dde15d27ec6ec0e41377e",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "Word is, keep an eye on Central Park."
       },
-      "nonce": "5ba8c0b5e297b377d9e66f7933c2be1f",
+      "nonce": "9aaebc0592541d7fcd13ade75d8524ee",
       "payload": {
         "step": 28,
         "state": "grid=7x7;self=[2, 4];barriers=[]",
@@ -704,17 +704,17 @@
         "model": "none",
         "tokens_step": 0,
         "tokens_total": 0,
-        "response_seconds": 0.223
+        "response_seconds": 0.213
       }
     },
     {
-      "commit": "3cc82a0fdbadd19771447dd4204ef8d8693bcc9b01080527f03d3944004dae6c",
+      "commit": "8196f6a83510dfb3278a1d74c9b30136da63acc572818fc58224d61c3611939c",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "Someone was asking about Central Park just now."
       },
-      "nonce": "6eb1a961a1619889e096531e94c1172b",
+      "nonce": "44326ed3a6ba59d8e5279ed570291944",
       "payload": {
         "step": 29,
         "state": "grid=7x7;self=[2, 3];barriers=[]",
@@ -728,17 +728,17 @@
         "model": "none",
         "tokens_step": 0,
         "tokens_total": 0,
-        "response_seconds": 0.274
+        "response_seconds": 0.266
       }
     },
     {
-      "commit": "0c93a4418ca9b02b40893cbd31de2ff7502eaf7ebbfa8b957664b3f7d379d503",
+      "commit": "5aa47af4fd13f2a54871bd7eadbfcec25740568ee99e33048182a3c8a6d56f8e",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "All roads seem to lead to Grand Central."
       },
-      "nonce": "d9ebb80d75c6111e21a37ef1b05fec64",
+      "nonce": "04d9dbedfd580e1b83885ceb16d6dd12",
       "payload": {
         "step": 30,
         "state": "grid=7x7;self=[3, 3];barriers=[]",
@@ -752,17 +752,17 @@
         "model": "none",
         "tokens_step": 0,
         "tokens_total": 0,
-        "response_seconds": 0.315
+        "response_seconds": 0.31
       }
     },
     {
-      "commit": "5da2dc2b881e6fedce27361bdc70216a0491ffb61eda16040dc5d5fd1156417b",
+      "commit": "79cb8feadd451095bc549d7f4c278444c9815a44a591c98efd3804b9f08ae6d5",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "They say the crowds near Grand Central hide anyone."
       },
-      "nonce": "1b6fd73ef39eabcd08d45b15a022a469",
+      "nonce": "f3857ffe52d1a4a1987faa4147e7dd0d",
       "payload": {
         "step": 31,
         "state": "grid=7x7;self=[4, 3];barriers=[]",
@@ -780,13 +780,13 @@
       }
     },
     {
-      "commit": "dafbeecbf0bc76831f24b30a5aa978be5f4a6547f1a74e609895678e70b1de69",
+      "commit": "95fda555990b4b01c1e87ca6fa35baa4e7b0204e7e2eedb5e9092b22244ff533",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "I heard sirens somewhere around Brooklyn Bridge."
       },
-      "nonce": "704d10b4663765fd59a465d71724ab0f",
+      "nonce": "39110eb0bd794faeede3670c6d053ac8",
       "payload": {
         "step": 32,
         "state": "grid=7x7;self=[4, 4];barriers=[]",
@@ -804,13 +804,13 @@
       }
     },
     {
-      "commit": "59e0666c90b10fccb6af66424d7a2b5a7ac251380662caae10fcd046906f10d2",
+      "commit": "c17bcf7901c5b2a1bb90d9ebd8050aff87c23ba95c7b4cb5db25aefe1bbf8abd",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "The shadows by Grand Central feel busy tonight."
       },
-      "nonce": "e8b1e0e4901b24b5bda542ae2b92824e",
+      "nonce": "62edc8b307f2612c98e66db5542e4f7e",
       "payload": {
         "step": 33,
         "state": "grid=7x7;self=[3, 4];barriers=[]",
@@ -828,13 +828,13 @@
       }
     },
     {
-      "commit": "f20fbd6da8a7b351849bcb379181470f4131e82672904c2d9f8c84d3ae6259bd",
+      "commit": "a85b7b4d1e8713c3ca1eee5f8b4bc97633f1e906bd3267d43e6274878e669e43",
       "declared": {
         "barrier_placed": null,
         "capture_claim": null,
         "hint": "Word is, keep an eye on Central Park."
       },
-      "nonce": "a51129ecd4a8d1a65d0b3ed25e8f8123",
+      "nonce": "cf81246fe09ca89919db6f91cf31878e",
       "payload": {
         "step": 34,
         "state": "grid=7x7;self=[2, 4];barriers=[]",
@@ -848,17 +848,17 @@
         "model": "none",
         "tokens_step": 0,
         "tokens_total": 0,
-        "response_seconds": 0.01
+        "response_seconds": 0.008
       }
     }
   ],
   "records": [
     {
-      "commit": "af75cac81e0c8dc8d60b38a2183529dfdf60bde1ff712e1ff883d17fd087e053",
-      "nonce": "9edd53e9299c8ee601d7aad9ac80ccec",
+      "commit": "899fb758774e6ea2f061f03ab7e2cba65571661d59471cc35d4c02c1c62a67d0",
+      "nonce": "9046123ce300e76052bd4c78dd789ddb",
       "payload": {
         "declaration_ref": "declaration_imreeyal-vs-vibecode.json",
-        "github_commit": "808ef713dd504c580e427ae1031bd623f866f5a5",
+        "github_commit": "06c2cf2e014f8f7b447fe2a0e332726017db2ce4",
         "group_id": "vibecode",
         "role": "thief",
         "step": 0,
@@ -867,8 +867,8 @@
       }
     },
     {
-      "commit": "b3613d160245a0edd11d44cde986dde1d7f42929e6fbaa003d22b71f475b1e53",
-      "nonce": "e534a87ae0054941867faf78b2564030",
+      "commit": "21b9633513bdf2af4772aa890f35d1c6d7297d086316f7b766bce01326658cb9",
+      "nonce": "94af99a6ef2676ebf8a1a9f1e9e74086",
       "payload": {
         "step": 1,
         "role": "thief",
@@ -878,12 +878,12 @@
           3
         ],
         "move": "S",
-        "intent": "lie"
+        "intent": "truth"
       }
     },
     {
-      "commit": "51a75fcc06b17e65870512feeb191e3c6a7f7ec8cac1f9432cad1f39e6ca1ad4",
-      "nonce": "3230b30561ac6aceb4e1f53f93ca9fbd",
+      "commit": "ed4b8e7663529a03043ebfad2e7907624e9dd91f96c77eb8c62f7a53458162e6",
+      "nonce": "729696fbcbb87ed608ecbcf409bd6a5f",
       "payload": {
         "step": 2,
         "role": "thief",
@@ -897,8 +897,8 @@
       }
     },
     {
-      "commit": "eec3d5cd56393caefa121e20e98c6decb2a8639c9405c878fe3ab031075c7cb4",
-      "nonce": "69582841a875be9fab1bacad36b072db",
+      "commit": "ba76d3b2ed089cea0b99a94ed30e96f5fab30898a9ad09a3ae9cdca2c870f522",
+      "nonce": "255c1be494044abd6a5c03983468fe24",
       "payload": {
         "step": 3,
         "role": "thief",
@@ -908,12 +908,12 @@
           3
         ],
         "move": "N",
-        "intent": "lie"
+        "intent": "truth"
       }
     },
     {
-      "commit": "7b2df1d54db5ac3f201cf9b9740821d94f9d06b406ea4e40a3b268ccf6d90433",
-      "nonce": "fd140c350a7c1d5d9bd3dcdbd4643a6e",
+      "commit": "35080db32ae9deffdc40301683bf6ca51d799f58d5a37f0c43a3d0f713a09f4e",
+      "nonce": "09e3ede35f4d9c4fb3dcce9f6416327f",
       "payload": {
         "step": 4,
         "role": "thief",
@@ -923,12 +923,12 @@
           3
         ],
         "move": "S",
-        "intent": "bluff"
+        "intent": "truth"
       }
     },
     {
-      "commit": "45819a7ec556a9404cdd76ee85ca389e70ef012bc2291d5e38e6119068f01830",
-      "nonce": "329a3cca903a909358f7cca2b54f7be9",
+      "commit": "296c5c5220374e79c823ca1020dcc6a10a65c5ec66b24df4599224a3d2d046f4",
+      "nonce": "b334d9cbd527d0f9e03c6f61b478257f",
       "payload": {
         "step": 5,
         "role": "thief",
@@ -942,8 +942,8 @@
       }
     },
     {
-      "commit": "24c35ba60ac0960b3f595e2d959c4272a016e2defe667e023a74f3782eac064f",
-      "nonce": "e7a17d289d64939694197e3d56bdd916",
+      "commit": "d1d82f72ff719270b01e242fe0114a9be5d78f093a5ab6bdd5b0609de2c0ae6b",
+      "nonce": "a6be53cc316ad2cb2081a5b08ae40fa1",
       "payload": {
         "step": 6,
         "role": "thief",
@@ -957,8 +957,8 @@
       }
     },
     {
-      "commit": "28bfd42acabb89f808d9b5a6158191007e2d22ace530d72ce5a0b2e0a8bf18f6",
-      "nonce": "0ed395d241af845a43fdf5c9267cdd8f",
+      "commit": "e60d8033ffef5328e97a7715b69c51a180e298631bf8a6974392c00e8de0e66e",
+      "nonce": "457006bd3e96b55fd6b97e87118c2a4a",
       "payload": {
         "step": 7,
         "role": "thief",
@@ -972,8 +972,8 @@
       }
     },
     {
-      "commit": "4a0df7f0384e8e563d721152dcaf2d983b150e467b9ea63d5d5eed35c02d7e50",
-      "nonce": "784b3b6e23c931c8c94d5ad2efa90e80",
+      "commit": "845e366dca05134211f5e98ed600163cc06daf416d568d1a1da8d43a6c841b52",
+      "nonce": "58432b0e13847c44589f45ec1f9250af",
       "payload": {
         "step": 8,
         "role": "thief",
@@ -983,12 +983,12 @@
           4
         ],
         "move": "N",
-        "intent": "lie"
+        "intent": "truth"
       }
     },
     {
-      "commit": "35e7681898a204a0c69eb8624195204f748da15fb4097aaaf7238402e4c60b1e",
-      "nonce": "6172997e82ea8a92fcbde68746531c5c",
+      "commit": "fb37dd2d3d9892a4a93def0cae82fe984adc301d2992a063b3307a155ab6e79a",
+      "nonce": "cc0dd7e7898dec595a812258e25416bf",
       "payload": {
         "step": 9,
         "role": "thief",
@@ -1002,8 +1002,8 @@
       }
     },
     {
-      "commit": "cb3c00116d9cd6accd3e06c9cde01e6d6f7dcff291f24b8376d22a31758cb019",
-      "nonce": "0a2c346b858fad734bd1cb0a5645cf19",
+      "commit": "75091c8f980946bc471d8c54ba82b13e5360b319488ec014c39529d27126596b",
+      "nonce": "5b2f6cf8fa44ce65cfc0d31a111ad247",
       "payload": {
         "step": 10,
         "role": "thief",
@@ -1013,12 +1013,12 @@
           3
         ],
         "move": "W",
-        "intent": "ambiguous"
+        "intent": "lie"
       }
     },
     {
-      "commit": "0a70e0f155c36aeb71c9d6c7f757291f0fd58ae4c90b3763aa1e33535b87ef94",
-      "nonce": "e773c70e8b12b8abb61c221073a2f664",
+      "commit": "081d3da3877e91bddddc108ad4d96624f70c493b7f33278a3966cda2593e1915",
+      "nonce": "581f9dd662e0ae8de569566024826635",
       "payload": {
         "step": 11,
         "role": "thief",
@@ -1032,8 +1032,8 @@
       }
     },
     {
-      "commit": "ec079ec46b3c03fde0443b6e672ce583b67f5f306e1a4dc56649fda31a566dcd",
-      "nonce": "82128260eb110dd6a9b0ed77d9b5b686",
+      "commit": "0298e8d2b065662c7fd6d0b51640ab924d53f3dcdd0c282138782ab18c4c1cee",
+      "nonce": "0913b218f17b6631cfe4c465bfd8cfcf",
       "payload": {
         "step": 12,
         "role": "thief",
@@ -1047,8 +1047,8 @@
       }
     },
     {
-      "commit": "b821766d442541f2719340d56321625e47e0be4192c5fddba3a9afa4d5fa9a22",
-      "nonce": "5296e82a08ba415a61c207131c322a2d",
+      "commit": "d6673be8829569a5ac0f7eb6935cc8f0656b1f31d3436ac1407d7980582fab2c",
+      "nonce": "6cf87bc31a22fcabb3f03b36efed9688",
       "payload": {
         "step": 13,
         "role": "thief",
@@ -1058,12 +1058,12 @@
           4
         ],
         "move": "E",
-        "intent": "truth"
+        "intent": "ambiguous"
       }
     },
     {
-      "commit": "33f3f55da17f28109ec3b1d55d2be2a3067e01841904aa7e817ae9f63fbdcb28",
-      "nonce": "395b393c4978d59a3f8734c4c6e5a91b",
+      "commit": "753d4d15bf6b6a9078cebdebe2871a19981c0056b84540130338c3fe28de33e7",
+      "nonce": "4f649587f61cc3916cd7116316fed2b3",
       "payload": {
         "step": 14,
         "role": "thief",
@@ -1073,12 +1073,12 @@
           4
         ],
         "move": "N",
-        "intent": "truth"
+        "intent": "ambiguous"
       }
     },
     {
-      "commit": "05c8474f01441755f8de23b4e85fb220988d86e41cf8f03630263b160dc91164",
-      "nonce": "380c2b73a142817fc219734c7bd35137",
+      "commit": "fbc242f2b13cf5e163bf6e67c74c4255560c1137ad9976dd31eee70fa65fa1bd",
+      "nonce": "ad2bc3d42925b84fc908410842009d5f",
       "payload": {
         "step": 15,
         "role": "thief",
@@ -1088,12 +1088,12 @@
           4
         ],
         "move": "N",
-        "intent": "truth"
+        "intent": "lie"
       }
     },
     {
-      "commit": "80321cdcdfd3625d6176da8a058eae440f78df8acb8bf47771f8f6e79938542b",
-      "nonce": "5aa4b4745e4ee28a1b6f8f05a0baae90",
+      "commit": "cb046cf2321e5b93b8ccfa482fb4b1025b55ce76d9f9f1fe61113e96deb62ecb",
+      "nonce": "18d31049fdc7a8cfc9f8ec6bc2184713",
       "payload": {
         "step": 16,
         "role": "thief",
@@ -1103,12 +1103,12 @@
           3
         ],
         "move": "W",
-        "intent": "bluff"
+        "intent": "lie"
       }
     },
     {
-      "commit": "5593068ef9907efc33618185979d83b2eeebb439cc5d2d0cc670e35899e4e826",
-      "nonce": "41b95e1f30c50e2e114c23d2510a0706",
+      "commit": "a69d27d32e66dde9bcc76e742b04257cfb93ab896371ac62ea4c319cc648300e",
+      "nonce": "e2cb34b486ee395a6870b14c08adcf3c",
       "payload": {
         "step": 17,
         "role": "thief",
@@ -1122,8 +1122,8 @@
       }
     },
     {
-      "commit": "9e982c791e7032ef7e79335d81a1560a999ca28863e0c53c49d85cab3e2b0fe5",
-      "nonce": "a7a706a6c154d7b62045433c0cde2753",
+      "commit": "d425efe7af501a34350e2776ec45b92594040ca7d1acc92653ebed912f589c0c",
+      "nonce": "42ce810e2e517037c1cc82d7782d75a3",
       "payload": {
         "step": 18,
         "role": "thief",
@@ -1137,8 +1137,8 @@
       }
     },
     {
-      "commit": "1c7ae80e0103d41c5d2ac5eb65b20cb3b65db30f9aa3bdee5fba41cac3ae1c3b",
-      "nonce": "b03dd4e466df3a79366ee903bb33ee9f",
+      "commit": "9ee6fe54196d1672b2fef9ab109b011f88130c7ddf9fe516a48508902e5434e5",
+      "nonce": "201c53f93f9c3ed89b06acfbfd37d33a",
       "payload": {
         "step": 19,
         "role": "thief",
@@ -1152,8 +1152,8 @@
       }
     },
     {
-      "commit": "971b7866e0b853038602e9715cb2589b3eb73d982404c30d5c045fa26f54676b",
-      "nonce": "d0dc83f0e72f8e0b3c4197ee0c051d68",
+      "commit": "bb5f4206b764ab723a3e3701f8036e449947197465a101b8698a1ceb81c6a1f3",
+      "nonce": "d7066384cec27506d704ccc43c32d444",
       "payload": {
         "step": 20,
         "role": "thief",
@@ -1167,8 +1167,8 @@
       }
     },
     {
-      "commit": "f577db2a52674567e973ab92bcba377200152f0780f8b59eeff41e7022bc9179",
-      "nonce": "429fa634a4456009bd2a407e09c77d24",
+      "commit": "90a310895ab753c17dbf42045cdb797f0b660a207a987037cbf8a2dd4f7ce6fa",
+      "nonce": "246093fb2c4e8599d75e6f324bbec01c",
       "payload": {
         "step": 21,
         "role": "thief",
@@ -1182,8 +1182,8 @@
       }
     },
     {
-      "commit": "68d0c0e681c1d084d6dd6e2ff4e5ad4f0d1d102a9310e330856ff1604c2a073c",
-      "nonce": "b6959076e6953f4b1c6df59d63255011",
+      "commit": "f3233a186969e3c32d735031adeccdf685290d2a7d450bcb6e46d3e835e444b2",
+      "nonce": "8f1481290b6cbf8f5cd9931263b189e3",
       "payload": {
         "step": 22,
         "role": "thief",
@@ -1193,12 +1193,12 @@
           3
         ],
         "move": "W",
-        "intent": "truth"
+        "intent": "lie"
       }
     },
     {
-      "commit": "a8498ea49815954e1a597f7b259de3b43690f291eefbe15e84bf67bf05da508a",
-      "nonce": "14cb59e0296dd7d327f0959d30e9569f",
+      "commit": "c708ab8fd9708a04e9e6e4647a6f6b52e1f329e7a028a4c809e7a4981dcabab7",
+      "nonce": "3bf92b7aba76b7f329a221930150cdb7",
       "payload": {
         "step": 23,
         "role": "thief",
@@ -1212,8 +1212,8 @@
       }
     },
     {
-      "commit": "6007cd2ff1e42d88de4e5dd6c8be84325260a1fa6b2a11db481f737d03a0599f",
-      "nonce": "dc792cb782ba6f180322d776416a92c2",
+      "commit": "ac095690468d6d625815167d38d77ce95f28605aa772454ca0e3fb222675d5dc",
+      "nonce": "bdeeefa64732d039276cd945c83021f1",
       "payload": {
         "step": 24,
         "role": "thief",
@@ -1223,12 +1223,12 @@
           3
         ],
         "move": "S",
-        "intent": "bluff"
+        "intent": "truth"
       }
     },
     {
-      "commit": "e925a0d9b1965c0f528eedef52e041822001c5b9d854d49ead83dc7051b15192",
-      "nonce": "409eecbdfef87d2b50f9c3d739c4c2f1",
+      "commit": "2553f31b0647434820b0071e6b24e072d0e55bd138144974e8366b4aca9758ec",
+      "nonce": "1271dc98a940d6d5cfcd352f377594e5",
       "payload": {
         "step": 25,
         "role": "thief",
@@ -1238,12 +1238,12 @@
           4
         ],
         "move": "E",
-        "intent": "truth"
+        "intent": "bluff"
       }
     },
     {
-      "commit": "3ed3af415e2dc1fddd93ba6804e0f7c598915ee1a7cceb07435ac13f40cfe400",
-      "nonce": "7c4f1ae48f553096e5ec8b17ee56480e",
+      "commit": "c590fb954ca0363832b3bef9d8fb47f16ed627b21efab188c0013bdf30aeac53",
+      "nonce": "27db856d0d391faa264c107460935f9f",
       "payload": {
         "step": 26,
         "role": "thief",
@@ -1257,8 +1257,8 @@
       }
     },
     {
-      "commit": "4172e4691565ff58970e5a895647b20bfbd720498581e90d91fbd168011228e5",
-      "nonce": "08fa9199a0863abee8bb1162b4bfdda5",
+      "commit": "a2b275c7ec51b7acaa573f5fbf2e7515b2dbc0aa9507f4273cd11aa4b3bfc6f2",
+      "nonce": "ba16cb7754fbde5c7ed0ae68fe618ba0",
       "payload": {
         "step": 27,
         "role": "thief",
@@ -1268,12 +1268,12 @@
           4
         ],
         "move": "N",
-        "intent": "truth"
+        "intent": "ambiguous"
       }
     },
     {
-      "commit": "d9376d40b5d7bc2242acc8393d6cfba37c0a5e2d6567920cd959e745bf43ebd6",
-      "nonce": "1f613371b28ebae7b7073a24edf3fc6d",
+      "commit": "9af69108767f8a1380b69fea66b32ce9fb40e61be4436cd8852ce0949c682812",
+      "nonce": "22652cb5ef15b8749a6f32dcfe9127ae",
       "payload": {
         "step": 28,
         "role": "thief",
@@ -1283,12 +1283,12 @@
           3
         ],
         "move": "W",
-        "intent": "bluff"
+        "intent": "truth"
       }
     },
     {
-      "commit": "a8e96316edab2100b394a4c757e2846d237f1a90f00279d2c6e28bd238073221",
-      "nonce": "942ec2d1a8eacf8e33e04a61da8b4461",
+      "commit": "85872bd30948406123ab308ae514230b2b45f78ccb4189eb57c74f2d6933b92f",
+      "nonce": "9753d0b50dd3233e56c0949e26a2e9b8",
       "payload": {
         "step": 29,
         "role": "thief",
@@ -1298,12 +1298,12 @@
           3
         ],
         "move": "S",
-        "intent": "bluff"
+        "intent": "truth"
       }
     },
     {
-      "commit": "f9b1e0e11bc4559a9cae4cd834b2dd1f28207384eae625a7063bfca1b2b7ddca",
-      "nonce": "780cd10bc8c6a97db0c5b74c9370d822",
+      "commit": "21411929c4893eef470e40e951de38c2e3d2b6c01479e3eae10c1856b4c5f3aa",
+      "nonce": "f59f87cddf4a033e5b9b44e2d0b3c737",
       "payload": {
         "step": 30,
         "role": "thief",
@@ -1317,8 +1317,8 @@
       }
     },
     {
-      "commit": "55343c191bc946ad4e62921af50f650d424f4dc268a5093ad0c8c4b8f275cfc9",
-      "nonce": "f0eb940afb3335637d29deb1f2cbbc7c",
+      "commit": "f8a419057da7d333c49fe73b3ce4f2cf9da87dde9320eac31778aabd34a61fa6",
+      "nonce": "0a1f10793dd0a0d7ec25cccfc85e1f76",
       "payload": {
         "step": 31,
         "role": "thief",
@@ -1328,12 +1328,12 @@
           4
         ],
         "move": "E",
-        "intent": "truth"
+        "intent": "lie"
       }
     },
     {
-      "commit": "0a58b19c14358c4c9b6115532259dfca3c63b06ce255175f9c5d33b315788e55",
-      "nonce": "02d084d26adb38b2b81c74834d03a38b",
+      "commit": "13ea1979e6a4eec478dd22fe648c746f7f02e17ef19e34e9d45c7947a6767a33",
+      "nonce": "4ff81dcdaa2f82b2640c61eead5945eb",
       "payload": {
         "step": 32,
         "role": "thief",
@@ -1343,12 +1343,12 @@
           4
         ],
         "move": "N",
-        "intent": "ambiguous"
+        "intent": "lie"
       }
     },
     {
-      "commit": "5139b1b44865bf52575ec158a6ccc3ad8e9dfcc5205493c22e1edc69dbd58ad6",
-      "nonce": "4f39b1bec6aeafd2c1c032be60393707",
+      "commit": "9429dee9c1a960660c2a2e5fef3f0ccb3865abefd460248ef2ae6c63ba3dc600",
+      "nonce": "2c2f649052fc32a0ece5e4a215b38e25",
       "payload": {
         "step": 33,
         "role": "thief",
@@ -1358,12 +1358,12 @@
           4
         ],
         "move": "N",
-        "intent": "truth"
+        "intent": "ambiguous"
       }
     },
     {
-      "commit": "c26c77b6e711efc0d3bb05a868338e118a35b621a827ad93c7a9319969f7b4df",
-      "nonce": "ecf1d43c1b9da02fcedf12c04beb0c9b",
+      "commit": "1fddd2708d004a4d44531fe60c9eafebff16674059c84ddc75c69d4a292a2e52",
+      "nonce": "2117ad21bb679a54a13eacba75c65ad9",
       "payload": {
         "step": 34,
         "role": "thief",
@@ -1377,8 +1377,8 @@
       }
     },
     {
-      "commit": "5aae8e73f5b13800cc93c7d5bdf403ae1860f2718af8e6f067919fc51d32c17b",
-      "nonce": "b83fd81bfc6c49dbc192e0e6f5e80ce2",
+      "commit": "af2cc5323ebc362416c091375e26f62c7c29e9c6bb4634670054e39e5a2fc21f",
+      "nonce": "d3b1a8ccebe0cc56a6b8a9ab9d6db661",
       "payload": {
         "step": 35,
         "role": "thief",
@@ -1404,8 +1404,8 @@
     "steps_sealed": 36,
     "opponent_step_zero": null,
     "step_zero_mismatch": null,
-    "started_at": "2026-08-10T17:42:59.462982+00:00",
-    "ended_at": "2026-08-10T17:45:16.167350+00:00",
+    "started_at": "2026-08-10T18:32:05.750928+00:00",
+    "ended_at": "2026-08-10T18:34:20.447720+00:00",
     "role": "thief",
     "group_id": "vibecode",
     "opponent_group_id": "imreeyal"
