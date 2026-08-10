@@ -191,6 +191,15 @@ flowchart TD
 Design authority: [`docs/DESIGN.md`](docs/DESIGN.md) (C4 diagrams, sub-game
 sequence, numbered architecture decisions).
 
+### Match visuals
+
+Rendered from a real rule-46/47 game between the shipped `hybrid_search` policies
+(`python scripts/render_match_visuals.py` regenerates them):
+
+| Trajectory | Chebyshev scent (wire snapshot) | Search territory eval |
+|---|---|---|
+| ![trajectory](assets/screenshots/match_trajectory.png) | ![scent](assets/screenshots/scent_heatmap.png) | ![territory](assets/screenshots/search_territory.png) |
+
 ## Module reference
 
 | Path | Purpose |
