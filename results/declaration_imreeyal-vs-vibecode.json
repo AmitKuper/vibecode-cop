@@ -2,10 +2,10 @@
   "_schema": "p2p-police-artifacts",
   "consensus_signature": "ed957bb1750ab6f11a794d8e00d332a8b576380bfc03df0a5ced287b42495589",
   "declaration_type": "pre_game_declaration",
-  "declared_at": "2026-08-10T17:10:44.516253+00:00",
-  "game_ended_at": "2026-08-10T17:10:44.516253+00:00",
+  "declared_at": "2026-08-10T17:46:25.263048+00:00",
+  "game_ended_at": "2026-08-10T17:46:25.263048+00:00",
   "game_id": "imreeyal-vs-vibecode",
-  "game_started_at": "2026-08-10T17:00:19.468879+00:00",
+  "game_started_at": "2026-08-10T17:36:10.372527+00:00",
   "game_uid": "2e167349-f579-0201-e3f1-5ea0d75710c0",
   "groups": {
     "group_1": {

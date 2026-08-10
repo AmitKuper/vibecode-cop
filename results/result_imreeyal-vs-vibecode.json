@@ -33,8 +33,8 @@
         "vibecode": "thief",
         "imreeyal": "police"
       },
-      "started_at": "2026-08-10T17:00:19.468879+00:00",
-      "ended_at": "2026-08-10T17:02:34.192391+00:00",
+      "started_at": "2026-08-10T17:36:10.372527+00:00",
+      "ended_at": "2026-08-10T17:38:24.277582+00:00",
       "result": "survival",
       "winner_group": "vibecode",
       "tie": false,
@@ -65,13 +65,13 @@
         "vibecode": "police",
         "imreeyal": "thief"
       },
-      "started_at": "2026-08-10T17:02:38.848727+00:00",
-      "ended_at": "2026-08-10T17:03:44.434294+00:00",
+      "started_at": "2026-08-10T17:38:28.620256+00:00",
+      "ended_at": "2026-08-10T17:39:34.459222+00:00",
       "result": "capture",
       "winner_group": "vibecode",
       "tie": false,
       "github_commit": {
-        "vibecode": "735406c1a4cd1a0ff83a3da94eba637451b06540",
+        "vibecode": "3acff6dbd4d3131503761b1979e03f8d600f5b87",
         "imreeyal": "01248f8762b65deaa47e39a174f7dfab2dabd725"
       },
       "tokens": {
@@ -97,8 +97,8 @@
         "vibecode": "thief",
         "imreeyal": "police"
       },
-      "started_at": "2026-08-10T17:03:49.035002+00:00",
-      "ended_at": "2026-08-10T17:06:01.811558+00:00",
+      "started_at": "2026-08-10T17:39:38.947264+00:00",
+      "ended_at": "2026-08-10T17:41:52.204749+00:00",
       "result": "survival",
       "winner_group": "vibecode",
       "tie": false,
@@ -129,13 +129,13 @@
         "vibecode": "police",
         "imreeyal": "thief"
       },
-      "started_at": "2026-08-10T17:06:06.471044+00:00",
-      "ended_at": "2026-08-10T17:07:13.543672+00:00",
+      "started_at": "2026-08-10T17:41:56.604884+00:00",
+      "ended_at": "2026-08-10T17:42:55.019989+00:00",
       "result": "capture",
       "winner_group": "vibecode",
       "tie": false,
       "github_commit": {
-        "vibecode": "735406c1a4cd1a0ff83a3da94eba637451b06540",
+        "vibecode": "3acff6dbd4d3131503761b1979e03f8d600f5b87",
         "imreeyal": "01248f8762b65deaa47e39a174f7dfab2dabd725"
       },
       "tokens": {
@@ -161,8 +161,8 @@
         "vibecode": "thief",
         "imreeyal": "police"
       },
-      "started_at": "2026-08-10T17:07:17.993729+00:00",
-      "ended_at": "2026-08-10T17:09:34.471959+00:00",
+      "started_at": "2026-08-10T17:42:59.462982+00:00",
+      "ended_at": "2026-08-10T17:45:16.167350+00:00",
       "result": "survival",
       "winner_group": "vibecode",
       "tie": false,
@@ -193,13 +193,13 @@
         "vibecode": "police",
         "imreeyal": "thief"
       },
-      "started_at": "2026-08-10T17:09:38.961658+00:00",
-      "ended_at": "2026-08-10T17:10:44.516253+00:00",
+      "started_at": "2026-08-10T17:45:20.644989+00:00",
+      "ended_at": "2026-08-10T17:46:25.263048+00:00",
       "result": "capture",
       "winner_group": "vibecode",
       "tie": false,
       "github_commit": {
-        "vibecode": "735406c1a4cd1a0ff83a3da94eba637451b06540",
+        "vibecode": "3acff6dbd4d3131503761b1979e03f8d600f5b87",
         "imreeyal": "01248f8762b65deaa47e39a174f7dfab2dabd725"
       },
       "tokens": {
