@@ -124,29 +124,4 @@ def get_config_sha256(path: Path | str | None = None) -> str:
     return config_sha256(load_shared_config(path))
 
 
-def _validate(cfg: dict) -> None:
-    """Raise ValueError on any Appendix-F compliance violation."""
-    for section in _REQUIRED_SECTIONS:
-        if section not in cfg:
-            raise ValueError(f"Shared config missing required section: [{section}]")
-
-    for (section, key), expected in _FIXED_VALUES.items():
-        actual = cfg.get(section, {}).get(key)
-        if actual != expected:
-            raise ValueError(
-                f"Fixed value mismatch: [{section}].{key} must be {expected!r}, got {actual!r}"
-            )
-
-    for (section, key), minimum in _MIN_VALUES.items():
-        actual = cfg.get(section, {}).get(key)
-        if actual is None:
-            raise ValueError(f"Mandatory key missing from shared config: [{section}].{key}")
-        if actual < minimum:
-            raise ValueError(
-                f"Minimum value violated: [{section}].{key} must be >= {minimum}, got {actual}"
-            )
-
-    if "reports" in cfg:
-        raise ValueError(
-            "[reports] must be in the private section of config.toml, not inside [game.*]"
-        )
+from cop_worker.config.shared_config_validate import _validate  # noqa: E402,F401
