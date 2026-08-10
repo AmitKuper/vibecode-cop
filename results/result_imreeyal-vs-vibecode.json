@@ -1,0 +1,253 @@
+{
+  "_schema": "Summary and final result for the WHOLE series between two teams: per-sub-game scores + aggregate; identity lives in the declaration.",
+  "schema_version": "1.1",
+  "report_type": "final_game_result",
+  "game_id": "imreeyal-vs-vibecode",
+  "game_uid": "2e167349-f579-0201-e3f1-5ea0d75710c0",
+  "links": {
+    "declaration": "declaration_imreeyal-vs-vibecode.json",
+    "config": "config_imreeyal-vs-vibecode_g<NN>.json",
+    "log": "log_imreeyal-vs-vibecode_g<NN>.json",
+    "result": "result_imreeyal-vs-vibecode.json",
+    "github": {
+      "vibecode": {
+        "cop": "https://github.com/AmitKuper/vibecode-cop",
+        "thief": "https://github.com/AmitKuper/vibecode-thief"
+      },
+      "imreeyal": {
+        "cop": "https://github.com/Imreec/copthief-p2p-cop",
+        "thief": "https://github.com/Imreec/copthief-p2p-thief"
+      }
+    }
+  },
+  "timezone": "Asia/Jerusalem",
+  "groups": [
+    "imreeyal",
+    "vibecode"
+  ],
+  "num_sub_games": 6,
+  "sub_games": [
+    {
+      "sub_game_number": 1,
+      "roles": {
+        "vibecode": "thief",
+        "imreeyal": "police"
+      },
+      "started_at": "2026-08-10T17:00:19.468879+00:00",
+      "ended_at": "2026-08-10T17:02:34.192391+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "808ef713dd504c580e427ae1031bd623f866f5a5",
+        "imreeyal": "01248f8762b65deaa47e39a174f7dfab2dabd725"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "imreeyal": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "imreeyal": 5
+      },
+      "log_files": {
+        "vibecode": "log_imreeyal-vs-vibecode_g01.json",
+        "imreeyal": "log_imreeyal-vs-vibecode_g01.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 2,
+      "roles": {
+        "vibecode": "police",
+        "imreeyal": "thief"
+      },
+      "started_at": "2026-08-10T17:02:38.848727+00:00",
+      "ended_at": "2026-08-10T17:03:44.434294+00:00",
+      "result": "capture",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "735406c1a4cd1a0ff83a3da94eba637451b06540",
+        "imreeyal": "01248f8762b65deaa47e39a174f7dfab2dabd725"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "imreeyal": 0
+      },
+      "score": {
+        "vibecode": 20,
+        "imreeyal": 5
+      },
+      "log_files": {
+        "vibecode": "log_imreeyal-vs-vibecode_g02.json",
+        "imreeyal": "log_imreeyal-vs-vibecode_g02.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 3,
+      "roles": {
+        "vibecode": "thief",
+        "imreeyal": "police"
+      },
+      "started_at": "2026-08-10T17:03:49.035002+00:00",
+      "ended_at": "2026-08-10T17:06:01.811558+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "808ef713dd504c580e427ae1031bd623f866f5a5",
+        "imreeyal": "01248f8762b65deaa47e39a174f7dfab2dabd725"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "imreeyal": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "imreeyal": 5
+      },
+      "log_files": {
+        "vibecode": "log_imreeyal-vs-vibecode_g03.json",
+        "imreeyal": "log_imreeyal-vs-vibecode_g03.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 4,
+      "roles": {
+        "vibecode": "police",
+        "imreeyal": "thief"
+      },
+      "started_at": "2026-08-10T17:06:06.471044+00:00",
+      "ended_at": "2026-08-10T17:07:13.543672+00:00",
+      "result": "capture",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "735406c1a4cd1a0ff83a3da94eba637451b06540",
+        "imreeyal": "01248f8762b65deaa47e39a174f7dfab2dabd725"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "imreeyal": 0
+      },
+      "score": {
+        "vibecode": 20,
+        "imreeyal": 5
+      },
+      "log_files": {
+        "vibecode": "log_imreeyal-vs-vibecode_g04.json",
+        "imreeyal": "log_imreeyal-vs-vibecode_g04.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 5,
+      "roles": {
+        "vibecode": "thief",
+        "imreeyal": "police"
+      },
+      "started_at": "2026-08-10T17:07:17.993729+00:00",
+      "ended_at": "2026-08-10T17:09:34.471959+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "808ef713dd504c580e427ae1031bd623f866f5a5",
+        "imreeyal": "01248f8762b65deaa47e39a174f7dfab2dabd725"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "imreeyal": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "imreeyal": 5
+      },
+      "log_files": {
+        "vibecode": "log_imreeyal-vs-vibecode_g05.json",
+        "imreeyal": "log_imreeyal-vs-vibecode_g05.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 6,
+      "roles": {
+        "vibecode": "police",
+        "imreeyal": "thief"
+      },
+      "started_at": "2026-08-10T17:09:38.961658+00:00",
+      "ended_at": "2026-08-10T17:10:44.516253+00:00",
+      "result": "capture",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "735406c1a4cd1a0ff83a3da94eba637451b06540",
+        "imreeyal": "01248f8762b65deaa47e39a174f7dfab2dabd725"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "imreeyal": 0
+      },
+      "score": {
+        "vibecode": 20,
+        "imreeyal": 5
+      },
+      "log_files": {
+        "vibecode": "log_imreeyal-vs-vibecode_g06.json",
+        "imreeyal": "log_imreeyal-vs-vibecode_g06.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    }
+  ],
+  "final_result": {
+    "total_score": {
+      "vibecode": 90,
+      "imreeyal": 30
+    },
+    "sub_games_won": {
+      "vibecode": 6,
+      "imreeyal": 0
+    },
+    "ties": 0,
+    "winner_group": "vibecode",
+    "series_tie": false,
+    "tokens_total_series": {
+      "vibecode": 0,
+      "imreeyal": 0
+    },
+    "games_played_including_this": {
+      "vibecode": 1,
+      "imreeyal": 2
+    },
+    "first_meeting_between_groups": true,
+    "diversity_reward_applied": {
+      "vibecode": false,
+      "imreeyal": false
+    }
+  },
+  "mutual_agreement": {
+    "sha256": "ad403f448f157c82828f04cbc514a85b87f72764e311d8d2b18abeb50b80d01e",
+    "confirmed": true
+  }
+}
