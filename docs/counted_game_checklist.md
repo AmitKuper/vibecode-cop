@@ -28,9 +28,10 @@ The reference convention is alphabetical: the lower group_id is **cop on odd** s
 
 **Our driver hardcodes** (`live_match_ref3.py`): vibecode = **thief on odd, cop on even**. This is
 correct only when the opponent's group_id sorts BEFORE `vibecode` (as `anrbj666` does →
-anrbj666 cop odd, vibecode cop even). ⚠️ Against an opponent whose group_id sorts AFTER
-`vibecode`, the hardcoded split is inverted and MUST be fixed (derive our role from the sorted
-pair) before that counted game.
+anrbj666 cop odd, vibecode cop even — and as `imreeyal` does: imreeyal police odd, confirmed in
+their series-shape sentence in writing AND by two live friendlies 2026-08-10). ⚠️ Against an
+opponent whose group_id sorts AFTER `vibecode`, the hardcoded split is inverted and MUST be fixed
+(derive our role from the sorted pair) before that counted game.
 
 ## BEFORE (T-minus, in order)
 
@@ -41,7 +42,7 @@ pair) before that counted game.
 2. **Gmail token freshness.** `secrets/gmail/token.json` must be valid (a dead token = no report).
    It was used successfully the same day if we ran friendlies; otherwise re-mint before T.
 3. **Shared constitution present.** `config/game.json` in BOTH repos, byte-identical (rule 11);
-   `config_sha256 = 9ed3b2e9601d3378b838740edadf03ad12ff17adefead7d18397de68cf860c23`.
+   `config_sha256 = 3b5c4a9a05c923acfe50ff355f56d4f529279435d87093aba6bad94015684f27` (imreeyal pairing).
 4. **Both repos pushed, clean (rule 53).** Every sealed step-0 and result row carries our repo
    HEAD; the lecturer rev-parses it, so play a PUSHED commit. `git -C vibecode-cop rev-parse HEAD`
    and the same for vibecode-thief must be on origin.
@@ -55,17 +56,18 @@ pair) before that counted game.
 
 ## LAUNCH (at T)
 
-Single command (only `--report-to`, `--counted`, `--counted-played` differ from a friendly):
+Single command. With a saved opponent profile (`config/opponents/<group>/runtime.toml` — the
+imreeyal profile carries URLs, group, chebyshev lock, and move engine), only THREE flags differ
+from a friendly:
 
 ```bash
-python scripts/live_match_ref3.py --match \
-  --opp-cop-url   <opponent cop /mcp URL> \
-  --opp-thief-url <opponent thief /mcp URL> \
-  --opponent-group <opponent group_id> \
-  --report-to "<LEAGUE_REPORT_ADDRESS>" \
-  --counted --counted-played <N> \
-  --members "Ron Marom,Amit Kuperminz"
+python scripts/live_match_ref3.py --match --config imreeyal   --report-to "<LEAGUE_REPORT_ADDRESS>"   --counted --counted-played 1
 ```
+
+(The explicit `--opp-*-url/--opponent-group/--members` flags still work and override the
+profile.) The league address is `rmisegal+uoh26finalgame@gmail.com` per the book's listing —
+NEVER stored in config (test-enforced); verify the plus-tag against the latest course
+announcement on the day.
 
 - **Report goes to the league address ONLY** (single recipient; multi-recipient send is untested).
 - If timing the launch, use a **file-based launcher** (`bash tmp/run_counted.sh`) that sleeps then
@@ -103,15 +105,22 @@ python scripts/live_match_ref3.py --match \
    recompute, step-0s byte-identical to the wire, `config_sha256` equal, `mutual_agreement` equal,
    move commit-chain matches both directions. File the diff summary.
 
-## Locked values (must appear in artifacts)
+## Locked values (must appear in artifacts) — PER PAIRING
+
+**imreeyal pairing (current; agreed in writing 2026-08-10, two friendlies played on it):**
 
 | Field | Value |
 |---|---|
-| `config_sha256` (whole `game.json`) | `9ed3b2e9601d3378b838740edadf03ad12ff17adefead7d18397de68cf860c23` |
-| `scent_model_sha256` (`multiplicative_book_v1`) | `934c220d5bf62acaa3297c6c9d723ea954c220260b02292ca17f6d5daef9f4d9` |
+| `config_sha256` (whole `game.json`) | `3b5c4a9a05c923acfe50ff355f56d4f529279435d87093aba6bad94015684f27` (reproduced byte-exact by BOTH teams) |
+| `scent_model_sha256` (`subtractive_chebyshev_v1`) | `81ebee59640e80eae8ca9ee5f86abd26e7edf5cdbb27d15925cb6ee45ca6ddf4` |
 | `wire_shape_sha256` (reference-v3) | `229ae6487a418c3fcb6da9be404de2f2533c288ebc228811bff6dedc4164d6f7` |
-| `game_uid` (vs anrbj666) | `b2a16946-2cad-909f-60aa-b0cc8a8b7c4f` (derived per opponent from terms + pair) |
+| `game_uid` (vs imreeyal) | `2e167349-f579-0201-e3f1-5ea0d75710c0` (both sides recomputed + declared at negotiate) |
+| cell convention | every cell-valued wire field is **[row, col]** (settled in writing) |
+| `tie_rule` | `series_add` (declared both sides) |
 | diversity reward | winner-only flag on a counted first meeting: `diversity_reward_applied[winner]=true`; `total_score` unchanged (the +10 is a league standings bonus applied from the flag) |
+
+**anrbj666 pairing (historical, counted game already played 2026-08-08):** config_sha256
+`9ed3b2e9…`, scent `multiplicative_book_v1` `934c220d…`, uid `b2a16946-2cad-909f-60aa-b0cc8a8b7c4f`.
 
 ## Known pitfalls (from our runs, 2026-08-08)
 
@@ -119,7 +128,7 @@ python scripts/live_match_ref3.py --match \
 - **Artifacts gitignored:** `results/` (line 41) and `config/games` — always `git add -f` the
   counted artifacts, or the audit can't see them.
 - **502/530 pre-arm is normal** for the opponent's endpoints until they arm; the driver waits.
-- **Single recipient only** to the league (multi-recipient send never tested end-to-end).
+- **Single recipient only** to the league (auto-send is single-recipient; separate manual sends per recipient were exercised in the friendlies).
 - **Rule 52 pass:** `min_games_to_pass = 2` vs TWO DIFFERENT teams. One counted series is not
   enough for our own pass — we need a second counted game vs a different rival.
 - **One-shot:** the settlement guard is the safety net; do not disable it for a counted run.
