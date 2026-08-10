@@ -135,9 +135,7 @@ def test_tensor_layout_is_unchanged_and_channel_carries_the_posterior(
             gamelet=1,
             grid_size=GRID,
         )
-        vector = adapter.local_obs_to_tensor(
-            obs, BeliefState.uniform(GRID, step=9), decoder
-        )
+        vector = adapter.local_obs_to_tensor(obs, BeliefState.uniform(GRID, step=9), decoder)
         assert vector.shape == (adapter.obs_tensor_shape(GRID),) == (201,)
         scent_channel = vector[2 * GRID * GRID : 3 * GRID * GRID]
         assert int(scent_channel.argmax()) == 1 * GRID + 4  # (x=4, y=1)

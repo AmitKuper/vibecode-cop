@@ -32,7 +32,7 @@ from cop_worker.rl.action_space import (
 )
 from cop_worker.rl.recurrent_policy import RecurrentActorCritic, file_sha256
 from cop_worker.rl.train_recurrent import FAMILIES, _initial_state, _legal, _observation
-from cop_worker.scent import make_scent_fields
+from cop_worker.scent import ScentFields, make_scent_fields
 
 
 class ResearchPolicy(Protocol):
@@ -183,9 +183,7 @@ class ScriptedResearchPolicy:
         from cop_worker.rl.train_recurrent import _opponent_action
 
         observed_scent = (
-            scent.cop_observation_scent()
-            if self.role == "cop"
-            else scent.thief_observation_scent()
+            scent.cop_observation_scent() if self.role == "cop" else scent.thief_observation_scent()
         )
         return _opponent_action(
             state,
@@ -631,9 +629,7 @@ def main() -> None:
         "cop_sha256": file_sha256(args.cop),
         "thief_artifact": str(args.thief),
         "thief_sha256": file_sha256(args.thief),
-        "crossplay": evaluate_crossplay(
-            cop, thief, args.series, args.seed, args.random_start
-        ),
+        "crossplay": evaluate_crossplay(cop, thief, args.series, args.seed, args.random_start),
     }
     rendered = json.dumps(result, indent=2)
     if args.output:

@@ -30,8 +30,7 @@ class TestCorroborateCaught:
         assert (kind, clean) == ("concession", True)
 
     def test_concession_boxed_by_our_barriers_is_clean_rule47(self) -> None:
-        kind, clean = _corroborate_caught(
-            [0, 0], None, [[1, 0], [0, 1]], [5, 5], 7)
+        kind, clean = _corroborate_caught([0, 0], None, [[1, 0], [0, 1]], [5, 5], 7)
         assert (kind, clean) == ("concession", True)
 
     def test_concession_with_an_open_neighbour_is_disputed(self) -> None:

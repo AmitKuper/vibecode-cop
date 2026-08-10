@@ -8,9 +8,7 @@ from cop_worker.observation import BeliefState, LocalObservation
 from cop_worker.rl.obs_mode import decoded_scent_enabled
 
 
-def local_obs_to_tensor(
-    obs: LocalObservation, belief: BeliefState, decoder=None
-) -> np.ndarray:
+def local_obs_to_tensor(obs: LocalObservation, belief: BeliefState, decoder=None) -> np.ndarray:
     """
     Build flat feature vector from local-only information.
     No opponent_position field (LocalObservation doesn't have one by design).

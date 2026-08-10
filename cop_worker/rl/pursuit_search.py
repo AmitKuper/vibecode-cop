@@ -38,8 +38,7 @@ def _bfs_distance(src, dst, barriers, n) -> int:
             nxt = (x + dx, y + dy)
             if nxt == dst:
                 return d + 1
-            if (0 <= nxt[0] < n and 0 <= nxt[1] < n
-                    and nxt not in barriers and nxt not in seen):
+            if 0 <= nxt[0] < n and 0 <= nxt[1] < n and nxt not in barriers and nxt not in seen:
                 seen.add(nxt)
                 q.append((nxt, d + 1))
     return 2 * n * n  # walled off from each other
@@ -52,8 +51,7 @@ def _dist_map(src, barriers, n) -> dict:
         d = dist[cell]
         for dx, dy in _ORTHO:
             nxt = (cell[0] + dx, cell[1] + dy)
-            if (0 <= nxt[0] < n and 0 <= nxt[1] < n
-                    and nxt not in barriers and nxt not in dist):
+            if 0 <= nxt[0] < n and 0 <= nxt[1] < n and nxt not in barriers and nxt not in dist:
                 dist[nxt] = d + 1
                 q.append(nxt)
     return dist
@@ -88,8 +86,9 @@ def evaluate(cop, thief, barriers, n, steps_left) -> float:
     return -40.0 * dist - 16.0 * territory + 2.0 * (35 - steps_left)
 
 
-def _round_value(cop, thief, barriers, barriers_left, steps_left, depth,
-                 n, alpha, beta) -> tuple[float, str]:
+def _round_value(
+    cop, thief, barriers, barriers_left, steps_left, depth, n, alpha, beta
+) -> tuple[float, str]:
     """Value of a round boundary (thief to move, cop replies). Returns (value, thief action)."""
     thief_moves = _legal_moves(thief, barriers, n)
     # Rule 47: STAY does not rescue — enclosed means no NON-STAY move. (_legal_moves
@@ -105,8 +104,9 @@ def _round_value(cop, thief, barriers, barriers_left, steps_left, depth,
         if t_pos == cop:
             value = CAPTURE + steps_left  # walked onto the cop: co-location
         else:
-            value = _cop_reply(cop, t_pos, barriers, barriers_left,
-                               steps_left, depth, n, alpha, beta)
+            value = _cop_reply(
+                cop, t_pos, barriers, barriers_left, steps_left, depth, n, alpha, beta
+            )
         if value < best_value:
             best_value, best_action = value, t_action
         beta = min(beta, best_value)
@@ -115,13 +115,13 @@ def _round_value(cop, thief, barriers, barriers_left, steps_left, depth,
     return best_value, best_action
 
 
-def _cop_reply(cop, thief, barriers, barriers_left, steps_left, depth,
-               n, alpha, beta) -> float:
+def _cop_reply(cop, thief, barriers, barriers_left, steps_left, depth, n, alpha, beta) -> float:
     def _descend(c_pos, walls, b_left) -> float:
         if depth <= 1:
             return evaluate(c_pos, thief, walls, n, steps_left - 1)
-        value, _ = _round_value(c_pos, thief, walls, b_left, steps_left - 1,
-                                depth - 1, n, alpha, beta)
+        value, _ = _round_value(
+            c_pos, thief, walls, b_left, steps_left - 1, depth - 1, n, alpha, beta
+        )
         return value
 
     best = float("-inf")
@@ -153,9 +153,17 @@ def _cop_root(cop, thief, barriers, barriers_left, steps_left, depth, n) -> str:
     for action, c_pos in _legal_moves(cop, barriers, n):
         if c_pos == thief:
             return action
-        value, _ = _round_value(c_pos, thief, barriers, barriers_left,
-                                steps_left - 1, depth, n,
-                                float("-inf"), float("inf"))
+        value, _ = _round_value(
+            c_pos,
+            thief,
+            barriers,
+            barriers_left,
+            steps_left - 1,
+            depth,
+            n,
+            float("-inf"),
+            float("inf"),
+        )
         if value > best_value:
             best_value, best_action = value, action
     if barriers_left > 0:
@@ -165,16 +173,25 @@ def _cop_root(cop, thief, barriers, barriers_left, steps_left, depth, n) -> str:
                 continue
             if cell == thief:
                 return action
-            value, _ = _round_value(cop, thief, barriers | {cell}, barriers_left - 1,
-                                    steps_left - 1, depth, n,
-                                    float("-inf"), float("inf"))
+            value, _ = _round_value(
+                cop,
+                thief,
+                barriers | {cell},
+                barriers_left - 1,
+                steps_left - 1,
+                depth,
+                n,
+                float("-inf"),
+                float("inf"),
+            )
             if value > best_value:
                 best_value, best_action = value, action
     return best_action
 
 
-def best_cop_action(cop, thief, barriers, barriers_left, steps_left,
-                    depth=4, n=7, time_budget_s: float = 10.0) -> str:
+def best_cop_action(
+    cop, thief, barriers, barriers_left, steps_left, depth=4, n=7, time_budget_s: float = 10.0
+) -> str:
     """The cop's half-move, chosen AFTER the thief has moved this round.
 
     Iterative deepening under a hard wall-clock budget: raw depth-4 measured up to
@@ -201,8 +218,16 @@ def best_cop_action(cop, thief, barriers, barriers_left, steps_left,
     return action
 
 
-def best_thief_action(cop, thief, barriers, steps_left, depth=4, n=7,
-                      cop_barriers_left=14, time_budget_s: float = 10.0) -> str:
+def best_thief_action(
+    cop,
+    thief,
+    barriers,
+    steps_left,
+    depth=4,
+    n=7,
+    cop_barriers_left=14,
+    time_budget_s: float = 10.0,
+) -> str:
     """The thief's half-move at the top of a round (thief first; the cop replies).
 
     Models the cop's remaining wall budget — under-counting it hides enclosure
@@ -215,9 +240,17 @@ def best_thief_action(cop, thief, barriers, steps_left, depth=4, n=7,
     action = "STAY"
     for d in range(2, max(2, depth) + 1):
         t0 = _time.monotonic()
-        _value, action = _round_value(tuple(cop), tuple(thief), barriers,
-                                      cop_barriers_left, steps_left, d, n,
-                                      float("-inf"), float("inf"))
+        _value, action = _round_value(
+            tuple(cop),
+            tuple(thief),
+            barriers,
+            cop_barriers_left,
+            steps_left,
+            d,
+            n,
+            float("-inf"),
+            float("inf"),
+        )
         elapsed = _time.monotonic() - t0
         if _time.monotonic() + 10.0 * elapsed >= deadline:
             break

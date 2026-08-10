@@ -55,7 +55,11 @@ def _build_user_prompt(move: str, intent: str) -> str:
 
 
 def _call_ollama(
-    base_url: str, model: str, move: str, intent: str, timeout: float,
+    base_url: str,
+    model: str,
+    move: str,
+    intent: str,
+    timeout: float,
     keep_alive: str = "30m",
 ) -> str | None:
     """Blocking Ollama /api/chat call. Returns text or None on any error.
@@ -133,7 +137,11 @@ class LLMHintGenerator:
         """Return LLM-generated hint text, or None if unavailable/too slow."""
         if self.provider == "ollama":
             return _call_ollama(
-                self.base_url, self.model, move, intent, self.timeout,
+                self.base_url,
+                self.model,
+                move,
+                intent,
+                self.timeout,
                 keep_alive=self.keep_alive,
             )
         if self._llm is not None:
@@ -149,13 +157,19 @@ class LLMHintGenerator:
         if self.provider != "ollama":
             return self._llm is not None
         text = _call_ollama(
-            self.base_url, self.model, "N", "truth", timeout,
+            self.base_url,
+            self.model,
+            "N",
+            "truth",
+            timeout,
             keep_alive=self.keep_alive,
         )
         ok = text is not None
         logger.info(
             "LLM warmup %s: model=%s keep_alive=%s",
-            "OK" if ok else "FAILED", self.model, self.keep_alive,
+            "OK" if ok else "FAILED",
+            self.model,
+            self.keep_alive,
         )
         return ok
 

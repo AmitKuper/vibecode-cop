@@ -12,7 +12,6 @@ from pathlib import Path
 
 from cop_worker.config_loader import CONFIG_DIR, load_config, load_game, resolve_profile_dir
 from cop_worker.protocol.reference_v3 import (
-    canonical_json,
     default_terms,
     derive_game_uid,
     terms_from_game,
@@ -59,7 +58,7 @@ def test_game_uid_pinned_vs_imreeyal():
 def test_physics_constants_match_game_json():
     # The locked scent model constants must equal the constitution's pheromone values.
     pher = GAME["pheromones"]
-    assert RulesEngine.SCENT_CENTER == pher["pheromone_center_intensity"]
+    assert pher["pheromone_center_intensity"] == RulesEngine.SCENT_CENTER
     # SCENT_DECAY is the multiplicative retention = 1 - decay_per_step
     assert abs(RulesEngine.SCENT_DECAY - (1.0 - pher["pheromone_decay"])) < 1e-9
 

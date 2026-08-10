@@ -118,15 +118,11 @@ def collect_teacher_sequences(
             features, _mask = _observation(
                 state, role, scent, belief, legal, gamelet, decoder=decoder
             )
-            teacher_action = teacher.act(
-                state, scent, belief, rng, gamelet
-            )
+            teacher_action = teacher.act(state, scent, belief, rng, gamelet)
             episode_features.append(features)
             episode_labels.append(actions.index(teacher_action))
             opponent_belief = thief_belief if role == "cop" else cop_belief
-            opponent_action = opponent.act(
-                state, scent, opponent_belief, rng, gamelet
-            )
+            opponent_action = opponent.act(state, scent, opponent_belief, rng, gamelet)
             cop_action, thief_action = (
                 (teacher_action, opponent_action)
                 if role == "cop"
@@ -170,9 +166,7 @@ def train_sequence_distillation(
         correct = examples = 0
         for step in range(max_length):
             active = [
-                index
-                for index, (features, _labels) in enumerate(batch)
-                if step < len(features)
+                index for index, (features, _labels) in enumerate(batch) if step < len(features)
             ]
             if not active:
                 continue
@@ -252,9 +246,7 @@ def main() -> None:
     elif args.teacher == "ddqn":
         if args.teacher_artifact is None:
             raise ValueError("--teacher-artifact is required for DDQN distillation")
-        teachers = tuple(
-            load_dqn_policy(args.teacher_artifact, args.role) for _ in opponents
-        )
+        teachers = tuple(load_dqn_policy(args.teacher_artifact, args.role) for _ in opponents)
     elif args.role == "cop":
         oracle_names = (
             "anti_loop",
@@ -270,9 +262,7 @@ def main() -> None:
             "targeted_exploit",
             "anti_loop",
         )
-        teachers = tuple(
-            ScriptedResearchPolicy(args.role, name) for name in oracle_names
-        )
+        teachers = tuple(ScriptedResearchPolicy(args.role, name) for name in oracle_names)
     else:
         raise ValueError("population_oracle is currently defined only for cop")
     sequences = collect_teacher_sequences(
@@ -324,9 +314,7 @@ def main() -> None:
         temperature=0.5 if args.role == "thief" else None,
     )
     cop, thief = (
-        (candidate, incumbent_opponent)
-        if args.role == "cop"
-        else (incumbent_opponent, candidate)
+        (candidate, incumbent_opponent) if args.role == "cop" else (incumbent_opponent, candidate)
     )
     metrics.update(
         {

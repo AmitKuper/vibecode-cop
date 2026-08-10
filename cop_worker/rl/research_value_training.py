@@ -34,7 +34,7 @@ from cop_worker.rl.research_evaluation import (
     load_recurrent_network,
 )
 from cop_worker.rl.train_recurrent import _initial_state, _legal, _observation
-from cop_worker.scent import make_scent_fields
+from cop_worker.scent import ScentFields, make_scent_fields
 
 
 def _actions(role: str) -> list[str]:
@@ -128,9 +128,7 @@ class ReplayBuffer:
         return len(self.items)
 
 
-def _expected_distance(
-    own: tuple[int, int], belief: BeliefEngine, grid_size: int
-) -> float:
+def _expected_distance(own: tuple[int, int], belief: BeliefEngine, grid_size: int) -> float:
     probability = belief.belief.prob
     return sum(
         float(probability[y, x]) * (abs(own[0] - x) + abs(own[1] - y))
@@ -146,9 +144,7 @@ def _local_shaping(
     before_belief: BeliefEngine,
     after_belief: BeliefEngine,
 ) -> float:
-    before_own = (
-        before_state.cop_position if role == "cop" else before_state.thief_position
-    )
+    before_own = before_state.cop_position if role == "cop" else before_state.thief_position
     after_own = after_state.cop_position if role == "cop" else after_state.thief_position
     before_distance = _expected_distance(before_own, before_belief, before_state.grid_size)
     after_distance = _expected_distance(after_own, after_belief, after_state.grid_size)
@@ -165,9 +161,7 @@ def _update_beliefs(
 ) -> tuple[ScentFields, BeliefEngine, BeliefEngine]:
     scent = scent.update(state.cop_position, state.thief_position)
     barriers = [tuple(item) for item in state.barriers]
-    cop_belief = cop_belief.predict(barriers).observe_scent(
-        scent.cop_observation_scent(), barriers
-    )
+    cop_belief = cop_belief.predict(barriers).observe_scent(scent.cop_observation_scent(), barriers)
     thief_belief = thief_belief.predict(barriers).observe_scent(
         scent.thief_observation_scent(), barriers
     )
@@ -282,8 +276,7 @@ def train_ddqn(
     replay = ReplayBuffer(100_000)
     population_names = _default_population(role)
     population = {
-        family: _frozen_opponent(role, family, incumbent_path)
-        for family in set(population_names)
+        family: _frozen_opponent(role, family, incumbent_path) for family in set(population_names)
     }
     wins: list[int] = []
     lengths: list[int] = []
@@ -302,17 +295,13 @@ def train_ddqn(
         while state.turn < 35:
             belief = cop_belief if role == "cop" else thief_belief
             legal = _legal(state, role)
-            features, mask = _observation(
-                state, role, scent, belief, legal, gamelet
-            )
+            features, mask = _observation(state, role, scent, belief, legal, gamelet)
             progress = environment_steps / max(episodes * 24, 1)
             epsilon = max(0.05, 1.0 - 0.95 * progress)
             action_index = _masked_epsilon_action(online, features, mask, epsilon, rng)
             action = actions[action_index]
             opponent_belief = thief_belief if role == "cop" else cop_belief
-            opponent_action = opponent.act(
-                state, scent, opponent_belief, rng, gamelet
-            )
+            opponent_action = opponent.act(state, scent, opponent_belief, rng, gamelet)
             cop_action, thief_action = (
                 (action, opponent_action) if role == "cop" else (opponent_action, action)
             )
@@ -331,9 +320,7 @@ def train_ddqn(
                 next_features = features
                 next_mask = mask
             else:
-                reward = _local_shaping(
-                    role, before_state, state, before_belief, next_belief
-                )
+                reward = _local_shaping(role, before_state, state, before_belief, next_belief)
                 next_legal = _legal(state, role)
                 next_features, next_mask = _observation(
                     state,
@@ -466,8 +453,7 @@ def train_q_table(
     visits: dict[tuple[int, ...], int] = {}
     population_names = _default_population(role)
     population = {
-        family: _frozen_opponent(role, family, incumbent_path)
-        for family in set(population_names)
+        family: _frozen_opponent(role, family, incumbent_path) for family in set(population_names)
     }
     wins: list[int] = []
     for episode in range(episodes):
@@ -494,9 +480,7 @@ def train_q_table(
                 )
             action_index = actions.index(action)
             opponent_belief = thief_belief if role == "cop" else cop_belief
-            opponent_action = opponent.act(
-                state, scent, opponent_belief, rng, gamelet
-            )
+            opponent_action = opponent.act(state, scent, opponent_belief, rng, gamelet)
             cop_action, thief_action = (
                 (action, opponent_action) if role == "cop" else (opponent_action, action)
             )
@@ -514,9 +498,7 @@ def train_q_table(
                 reward = _terminal_reward(winner, role)
                 bootstrap = 0.0
             else:
-                reward = _local_shaping(
-                    role, before_state, state, before_belief, next_belief
-                )
+                reward = _local_shaping(role, before_state, state, before_belief, next_belief)
                 next_key = _q_key(state, role, next_belief)
                 next_values = q_values.setdefault(
                     next_key, np.zeros(len(actions), dtype=np.float32)
@@ -582,13 +564,9 @@ def main() -> None:
             args.output,
         )
     opponent_role = "thief" if args.role == "cop" else "cop"
-    incumbent_metadata = torch.load(
-        args.incumbent_opponent, map_location="cpu", weights_only=True
-    )
+    incumbent_metadata = torch.load(args.incumbent_opponent, map_location="cpu", weights_only=True)
     if incumbent_metadata.get("algorithm") == "DuelingDoubleDQN":
-        incumbent: ResearchPolicy = load_dqn_policy(
-            args.incumbent_opponent, opponent_role
-        )
+        incumbent: ResearchPolicy = load_dqn_policy(args.incumbent_opponent, opponent_role)
     else:
         incumbent = RecurrentResearchPolicy(
             load_recurrent_network(args.incumbent_opponent, opponent_role),

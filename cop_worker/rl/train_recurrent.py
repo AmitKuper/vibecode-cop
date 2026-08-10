@@ -20,7 +20,7 @@ from cop_worker.observation import LocalObservation
 from cop_worker.rl.action_space import COP_ACTIONS, THIEF_ACTIONS
 from cop_worker.rl.local_obs_adapter import local_obs_to_tensor, obs_tensor_shape
 from cop_worker.rl.recurrent_policy import RecurrentActorCritic, file_sha256
-from cop_worker.scent import make_scent_fields
+from cop_worker.scent import ScentFields, make_scent_fields
 
 FAMILIES = (
     "random",
@@ -205,9 +205,7 @@ def _opponent_action(
                 if opponent_belief is not None
                 else BeliefEngine(state.grid_size, role).belief
             )
-            features = torch.tensor(
-                local_obs_to_tensor(obs, belief_state), dtype=torch.float32
-            )
+            features = torch.tensor(local_obs_to_tensor(obs, belief_state), dtype=torch.float32)
             actions = COP_ACTIONS if role == "cop" else THIEF_ACTIONS
             action_mask = torch.tensor([a in legal for a in actions], dtype=torch.bool)
             with torch.no_grad():
@@ -381,9 +379,7 @@ def _observation(
     # ``decoder`` (per-episode, from the caller) applies the inverse of the clamped wire scent
     # law under COPTHIEF_DECODED_SCENT=1, so the student trains on the same decoded channels
     # production serves. Inert when None or when the switch is off.
-    features = torch.tensor(
-        local_obs_to_tensor(obs, belief_input, decoder), dtype=torch.float32
-    )
+    features = torch.tensor(local_obs_to_tensor(obs, belief_input, decoder), dtype=torch.float32)
     actions = COP_ACTIONS if role == "cop" else THIEF_ACTIONS
     deployable = legal
     if role == "thief" and risk_mask_enabled:
@@ -1004,9 +1000,13 @@ def main() -> None:
     parser.add_argument("--resume-imitation-weight", type=float, default=0.0)
     parser.add_argument("--training-families", nargs="+", choices=FAMILIES)
     parser.add_argument("--grid-size", type=int, default=7)
-    parser.add_argument("--fixed-start-fraction", type=float, default=0.0,
-                        help="Fraction of training episodes started from the SIGNED match "
-                             "start (cop_start/thief_start) instead of random cells")
+    parser.add_argument(
+        "--fixed-start-fraction",
+        type=float,
+        default=0.0,
+        help="Fraction of training episodes started from the SIGNED match "
+        "start (cop_start/thief_start) instead of random cells",
+    )
     args = parser.parse_args()
     args.models_dir.mkdir(parents=True, exist_ok=True)
     args.evidence_dir.mkdir(parents=True, exist_ok=True)

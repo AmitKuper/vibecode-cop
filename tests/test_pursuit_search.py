@@ -86,9 +86,14 @@ class TestThiefSearch:
 class TestServingAdapter:
     def _obs(self, own, scent_grid, step=5, barriers=(), remaining=14):
         return LocalObservation(
-            own_position=own, own_barriers_remaining=remaining,
-            known_barriers=[tuple(b) for b in barriers], opponent_scent=scent_grid,
-            last_hint="", step=step, gamelet=1, grid_size=7,
+            own_position=own,
+            own_barriers_remaining=remaining,
+            known_barriers=[tuple(b) for b in barriers],
+            opponent_scent=scent_grid,
+            last_hint="",
+            step=step,
+            gamelet=1,
+            grid_size=7,
         )
 
     def test_search_plays_when_the_frame_gives_a_fix(self) -> None:
@@ -96,8 +101,10 @@ class TestServingAdapter:
         grid = field_to_grid(trail.full_turn((3, 3)), 7)
         policy = SearchRolePolicy("cop")
         action = policy.select_action(
-            self._obs((0, 0), grid), BeliefState.uniform(7, step=5),
-            ["N", "S", "E", "W", "STAY", "PLACE_N", "PLACE_S", "PLACE_E", "PLACE_W"])
+            self._obs((0, 0), grid),
+            BeliefState.uniform(7, step=5),
+            ["N", "S", "E", "W", "STAY", "PLACE_N", "PLACE_S", "PLACE_E", "PLACE_W"],
+        )
         assert action in {"S", "E"}
 
     def test_fallback_policy_gets_the_blind_frames(self) -> None:
@@ -114,8 +121,8 @@ class TestServingAdapter:
         policy = SearchRolePolicy("thief", fallback=_RL())
         blank = [[0.0] * 7 for _ in range(7)]
         action = policy.select_action(
-            self._obs((3, 3), blank), BeliefState.uniform(7, step=5),
-            ["N", "S", "E", "W", "STAY"])
+            self._obs((3, 3), blank), BeliefState.uniform(7, step=5), ["N", "S", "E", "W", "STAY"]
+        )
         assert action == "W" and calls == ["select"]
         policy.reset()
         assert "reset" in calls
@@ -125,9 +132,9 @@ class TestServingAdapter:
         grid = field_to_grid(trail.full_turn((3, 3)), 7)
         policy = SearchRolePolicy("cop")
         legal = ["N", "S", "E", "W", "STAY", "PLACE_N", "PLACE_S", "PLACE_E", "PLACE_W"]
-        first = policy.select_action(
-            self._obs((0, 0), grid), BeliefState.uniform(7, step=5), legal)
+        first = policy.select_action(self._obs((0, 0), grid), BeliefState.uniform(7, step=5), legal)
         blank = [[0.0] * 7 for _ in range(7)]
         second = policy.select_action(
-            self._obs((0, 0), blank, step=6), BeliefState.uniform(7, step=6), legal)
+            self._obs((0, 0), blank, step=6), BeliefState.uniform(7, step=6), legal
+        )
         assert first in {"S", "E"} and second in {"S", "E"}  # still hunting (3,3)

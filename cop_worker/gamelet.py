@@ -184,12 +184,7 @@ class Gamelet:
         self._smell_rules.update_scent()
         field = self._smell_rules.get_scent_field()
         n = self._grid_size
-        return {
-            f"{r},{c}": field[r][c]
-            for r in range(n)
-            for c in range(n)
-            if field[r][c] > 0.0
-        }
+        return {f"{r},{c}": field[r][c] for r in range(n) for c in range(n) if field[r][c] > 0.0}
 
     def _advance_own(self, action: dict, step: int) -> None:
         """Advance our tracked position by applying our own committed action.
@@ -272,10 +267,14 @@ class Gamelet:
                 # moves (e.g. N from the top row) that the domain clamps to STAY — freezing the
                 # cop at its start cell. See compute_legal_mask_cop.
                 mask = compute_legal_mask_cop(
-                    tuple(obs.own_position), list(obs.known_barriers),
-                    obs.own_barriers_remaining, obs.grid_size,
+                    tuple(obs.own_position),
+                    list(obs.known_barriers),
+                    obs.own_barriers_remaining,
+                    obs.grid_size,
                 )
-                legal = [a for a, m in zip(COP_ACTIONS, mask) if m] or list(COP_ACTIONS)
+                legal = [a for a, m in zip(COP_ACTIONS, mask, strict=True) if m] or list(
+                    COP_ACTIONS
+                )
                 action_name = self._policy.select_action(obs, belief, legal)
                 return self._action_to_dict(action_name)
             except Exception as exc:

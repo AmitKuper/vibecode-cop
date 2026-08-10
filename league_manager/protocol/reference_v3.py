@@ -16,8 +16,8 @@ import hashlib
 import json
 import uuid
 from collections import deque
-from datetime import datetime, timezone
 from dataclasses import asdict, dataclass, field
+from datetime import UTC, datetime
 from typing import Any
 
 from league_manager.protocol.introspector import IntrospectionResult
@@ -36,8 +36,7 @@ REFERENCE_V3_SCENT_LOCK = "81ebee59640e80eae8ca9ee5f86abd26e7edf5cdbb27d15925cb6
 # other value for the same model is itself a Step-0 refusal under the kit's truth table.
 SCENT_LOCKS = {
     "multiplicative_book_v1": "934c220d5bf62acaa3297c6c9d723ea954c220260b02292ca17f6d5daef9f4d9",
-    "subtractive_chebyshev_v1":
-        "81ebee59640e80eae8ca9ee5f86abd26e7edf5cdbb27d15925cb6ee45ca6ddf4",
+    "subtractive_chebyshev_v1": "81ebee59640e80eae8ca9ee5f86abd26e7edf5cdbb27d15925cb6ee45ca6ddf4",
 }
 
 TERMS_KEYS = (
@@ -351,7 +350,7 @@ def build_turn(
     enters the commit preimage and cannot affect an audit.
     """
     if not timestamp:
-        timestamp = datetime.now(timezone.utc).isoformat()
+        timestamp = datetime.now(UTC).isoformat()
     record = {
         "payload": dict(record_payload),
         "nonce": nonce,

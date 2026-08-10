@@ -19,8 +19,15 @@ from cop_worker.rl.pursuit_search import best_cop_action, best_thief_action
 class SearchRolePolicy:
     """Minimax-first policy for one role; ``fallback`` is an optional RL policy."""
 
-    def __init__(self, role: str, *, depth: int = 3, fallback=None,
-                 max_steps: int = 35, barriers_max: int = 14) -> None:
+    def __init__(
+        self,
+        role: str,
+        *,
+        depth: int = 3,
+        fallback=None,
+        max_steps: int = 35,
+        barriers_max: int = 14,
+    ) -> None:
         if role not in {"cop", "thief"}:
             raise ValueError(f"role must be cop/thief, got {role!r}")
         self.role = role
@@ -58,15 +65,22 @@ class SearchRolePolicy:
         steps_left = max(1, self.max_steps - int(observation.step) + 1)
         if self.role == "cop":
             action = best_cop_action(
-                own, opp, barriers,
+                own,
+                opp,
+                barriers,
                 barriers_left=int(observation.own_barriers_remaining),
-                steps_left=steps_left, depth=self.depth,
+                steps_left=steps_left,
+                depth=self.depth,
                 n=observation.grid_size,
             )
         else:
             # The cop's spent walls are visible on the board; the rest can still come.
             action = best_thief_action(
-                opp, own, barriers, steps_left=steps_left, depth=self.depth,
+                opp,
+                own,
+                barriers,
+                steps_left=steps_left,
+                depth=self.depth,
                 n=observation.grid_size,
                 cop_barriers_left=max(0, self.barriers_max - len(barriers)),
             )

@@ -26,9 +26,12 @@ def test_level_series_adds_two_to_each_total() -> None:
     # Three captures as cop (20) + three captures as thief (5) = 75 vs 75? No — build a
     # genuinely level 6-game series: each side captures in all its cop games.
     sub_games = [
-        _sg(1, "thief", "capture"), _sg(2, "police", "capture"),
-        _sg(3, "thief", "capture"), _sg(4, "police", "capture"),
-        _sg(5, "thief", "capture"), _sg(6, "police", "capture"),
+        _sg(1, "thief", "capture"),
+        _sg(2, "police", "capture"),
+        _sg(3, "thief", "capture"),
+        _sg(4, "police", "capture"),
+        _sg(5, "thief", "capture"),
+        _sg(6, "police", "capture"),
     ]
     rows, final = score_series(sub_games, "peer", "peer-vs-vibecode")
     assert final["series_tie"] is True
@@ -41,9 +44,12 @@ def test_level_series_adds_two_to_each_total() -> None:
 
 def test_decided_series_gets_no_award() -> None:
     sub_games = [
-        _sg(1, "thief", "survival"), _sg(2, "police", "capture"),
-        _sg(3, "thief", "survival"), _sg(4, "police", "capture"),
-        _sg(5, "thief", "survival"), _sg(6, "police", "capture"),
+        _sg(1, "thief", "survival"),
+        _sg(2, "police", "capture"),
+        _sg(3, "thief", "survival"),
+        _sg(4, "police", "capture"),
+        _sg(5, "thief", "survival"),
+        _sg(6, "police", "capture"),
     ]
     rows, final = score_series(sub_games, "peer", "peer-vs-vibecode")
     assert final["series_tie"] is False

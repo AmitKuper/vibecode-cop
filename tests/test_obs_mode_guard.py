@@ -47,12 +47,12 @@ def test_scent_model_mismatch_refuses_both_directions(monkeypatch) -> None:
         _guard_serving_obs_mode(_Entry({"scent_model": "multiplicative_book_v1"}), "cop")
     monkeypatch.delenv("COPTHIEF_SCENT_MODEL", raising=False)
     with pytest.raises(CountedPolicyLoadError, match="scent_model"):
-        _guard_serving_obs_mode(
-            _Entry({"scent_model": "subtractive_chebyshev_v1"}), "thief")
+        _guard_serving_obs_mode(_Entry({"scent_model": "subtractive_chebyshev_v1"}), "thief")
 
 
 def test_matching_chebyshev_configuration_passes(monkeypatch) -> None:
     monkeypatch.delenv("COPTHIEF_DECODED_SCENT", raising=False)
     monkeypatch.setenv("COPTHIEF_SCENT_MODEL", "subtractive_chebyshev_v1")
     _guard_serving_obs_mode(
-        _Entry({"scent_model": "subtractive_chebyshev_v1", "decoded_scent": False}), "cop")
+        _Entry({"scent_model": "subtractive_chebyshev_v1", "decoded_scent": False}), "cop"
+    )

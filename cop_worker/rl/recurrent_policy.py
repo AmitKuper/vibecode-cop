@@ -86,9 +86,7 @@ class RecurrentRolePolicy:
         if not legal_actions:
             raise RuntimeError("canonical domain returned no legal actions")
         features = torch.tensor(
-            local_obs_to_tensor(
-                observation, belief, self._scent_decoder(observation.grid_size)
-            ),
+            local_obs_to_tensor(observation, belief, self._scent_decoder(observation.grid_size)),
             dtype=torch.float32,
             device=self.device,
         ).unsqueeze(0)

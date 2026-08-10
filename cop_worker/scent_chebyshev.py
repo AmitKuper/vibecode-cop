@@ -73,16 +73,12 @@ class ChebyshevTrail:
     def full_turn(self, center: tuple[int, int]) -> dict[str, float]:
         """Advance one full turn for an emitter at ``center=(row, col)``; return the wire field."""
         if self.emit_intensity >= self.min_center_intensity:
-            emitted = chebyshev_emit(
-                center, self.emit_intensity, self.field_size, self.board_size
-            )
+            emitted = chebyshev_emit(center, self.emit_intensity, self.field_size, self.board_size)
             for key, value in emitted.items():
                 if value > self.field.get(key, 0.0):
                     self.field[key] = value
         self.field = {
-            k: v
-            for k, v in chebyshev_decay(self.field, self.decay_per_step).items()
-            if v > 0.0
+            k: v for k, v in chebyshev_decay(self.field, self.decay_per_step).items() if v > 0.0
         }
         return self.snapshot()
 
@@ -126,12 +122,10 @@ class ChebyshevFields:
         self._thief_trail = ChebyshevTrail(grid_size)
 
     @classmethod
-    def zeros(cls, grid_size: int) -> "ChebyshevFields":
+    def zeros(cls, grid_size: int) -> ChebyshevFields:
         return cls(grid_size)
 
-    def update(
-        self, cop_pos: tuple[int, int], thief_pos: tuple[int, int]
-    ) -> "ChebyshevFields":
+    def update(self, cop_pos: tuple[int, int], thief_pos: tuple[int, int]) -> ChebyshevFields:
         """Advance both trails one full turn; mutates and returns self (snapshot cadence)."""
         self._cop_trail.full_turn((cop_pos[1], cop_pos[0]))
         self._thief_trail.full_turn((thief_pos[1], thief_pos[0]))

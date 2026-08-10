@@ -22,9 +22,7 @@ import pytest
 
 from scripts.eval_policy_quality import ChebyshevScent
 
-VECTORS = (
-    REPO_ROOT.parent / "external" / "copthief-league-protocol" / "vectors" / "pheromone.json"
-)
+VECTORS = REPO_ROOT.parent / "external" / "copthief-league-protocol" / "vectors" / "pheromone.json"
 
 
 def _fixture() -> dict:
@@ -91,7 +89,6 @@ def test_play_accepts_the_chebyshev_mode() -> None:
     import os
 
     from cop_worker.rl.research_evaluation import ScriptedResearchPolicy
-
     from scripts.eval_policy_quality import DeployedPolicy, play
 
     # The promoted manifest records its scent model; the obs-mode guard refuses a
