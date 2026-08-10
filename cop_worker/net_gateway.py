@@ -105,5 +105,27 @@ class NetGateway:
                 delay = min(delay * 2, max_backoff_s)
 
 
+def load_rates(path: str | None = None) -> dict[str, tuple[int, float]]:
+    """Read pacing from ``config/rate_limits.json`` (externalized, versioned).
+
+    Falls back to :data:`DEFAULT_RATES` when the file is absent or malformed — the
+    file ships with values identical to the defaults, so configuration is the
+    override mechanism, never a behavioral dependency.
+    """
+    import json
+    from pathlib import Path
+
+    default = Path(__file__).resolve().parents[1] / "config" / "rate_limits.json"
+    candidate = Path(path) if path else default
+    try:
+        doc = json.loads(candidate.read_text(encoding="utf-8"))
+        return {
+            kind: (int(spec["capacity"]), float(spec["refill_per_s"]))
+            for kind, spec in doc["kinds"].items()
+        }
+    except (OSError, KeyError, TypeError, ValueError):
+        return dict(DEFAULT_RATES)
+
+
 #: Process-wide instance; the match runner and hint generator share pacing state.
-GATEWAY = NetGateway()
+GATEWAY = NetGateway(load_rates())

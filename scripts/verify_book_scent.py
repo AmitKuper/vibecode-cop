@@ -48,21 +48,25 @@ def main() -> int:
     # 3. Multi-step walk vs the kit's book_full_turn oracle, byte-exact JSON.
     walk = [(3, 3), (3, 4), (4, 4), (4, 5), (2, 5), (2, 2), (1, 1), (5, 5)]
     kit_field: dict = {}
-    rules = RulesEngine(Board(cop_position=[0, 0], thief_position=[3, 3], grid_size=board_n),
-                        max_turns=35)
+    rules = RulesEngine(
+        Board(cop_position=[0, 0], thief_position=[3, 3], grid_size=board_n), max_turns=35
+    )
     walk_fails = 0
     for r, c in walk:
         kit_field = kitref.book_full_turn(kit_field, [r, c], decay, emit, board_n)
         rules.board.thief_position = [c, r]  # board is (x, y) = (col, row)
         rules.update_scent()
         g = rules.get_scent_field()
-        ours = {f"{y},{x}": g[y][x]
-                for y in range(board_n) for x in range(board_n) if g[y][x] > 0.0}
+        ours = {
+            f"{y},{x}": g[y][x] for y in range(board_n) for x in range(board_n) if g[y][x] > 0.0
+        }
         if json.dumps(ours, sort_keys=True) != json.dumps(kit_field, sort_keys=True):
             walk_fails += 1
     walk_ok = walk_fails == 0
-    print(f"[3] {len(walk)}-step walk vs kit book_full_turn oracle: "
-          f"{'OK (byte-exact)' if walk_ok else f'{walk_fails} steps differ'}")
+    print(
+        f"[3] {len(walk)}-step walk vs kit book_full_turn oracle: "
+        f"{'OK (byte-exact)' if walk_ok else f'{walk_fails} steps differ'}"
+    )
     fails += not walk_ok
 
     verdict = "ALL BYTE-EXACT (no rounding, clamp)" if fails == 0 else f"{fails} check(s) FAILED"

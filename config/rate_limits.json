@@ -1,0 +1,9 @@
+{
+  "version": "3.0.0",
+  "_doc": "Outbound-call pacing for cop_worker.net_gateway.NetGateway. capacity = token-bucket burst size; refill_per_s = sustained rate. The mcp kind mirrors the signed rate_limiter_gatekeeper terms (30/min) with burst headroom. Loaded at match start; code defaults are identical so a missing file changes nothing.",
+  "kinds": {
+    "mcp": { "capacity": 30, "refill_per_s": 2.0 },
+    "llm": { "capacity": 10, "refill_per_s": 0.5 },
+    "http": { "capacity": 30, "refill_per_s": 2.0 }
+  }
+}

@@ -37,7 +37,7 @@ from cop_worker.rl.action_space import (  # noqa: E402
 )
 from cop_worker.rl.counted_policy import load_counted_policy  # noqa: E402
 from cop_worker.rl.research_evaluation import ScriptedResearchPolicy  # noqa: E402
-from cop_worker.rl.train_recurrent import _initial_state, _legal  # noqa: E402
+from cop_worker.rl.train_recurrent import _initial_state  # noqa: E402
 from cop_worker.scent import ScentFields  # noqa: E402
 
 COP_MANIFEST = REPO_ROOT / "models" / "MANIFEST.json"
@@ -369,8 +369,10 @@ def main() -> None:
         tr: list = []
         winner, turns = play(cop, thief, args.seed, 1, trace=tr)
         print(f"\n=== deployed cop vs deployed thief (gamelet 1) -> {winner} @ {turns} ===")
-        print(f"{'st':>3} {'cop':>7} {'act':>7} -> {'to':>7} | "
-              f"{'thief':>7} {'act':>5} -> {'to':>7} | cheb")
+        print(
+            f"{'st':>3} {'cop':>7} {'act':>7} -> {'to':>7} | "
+            f"{'thief':>7} {'act':>5} -> {'to':>7} | cheb"
+        )
         for t in tr:
             print(
                 f"{t['step']:>3} {str(t['cop_from']):>7} {t['cop_action']:>7} -> "
@@ -392,7 +394,9 @@ def main() -> None:
             for belief_mode in ("prod", "live"):
                 res = suite(role, belief_mode, args.games, args.seed, scent_mode)
                 report["suites"].append(res)
-                tag = "  <-- REAL PRODUCTION" if (scent_mode, belief_mode) == ("wire", "prod") else ""
+                tag = (
+                    "  <-- REAL PRODUCTION" if (scent_mode, belief_mode) == ("wire", "prod") else ""
+                )
                 print(
                     f"\n[{role} / belief={belief_mode} / scent={scent_mode}] "
                     f"overall={res['overall_win_rate']:.3f} over {res['games']} games{tag}"

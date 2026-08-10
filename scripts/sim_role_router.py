@@ -15,7 +15,7 @@ from fastmcp import Client, FastMCP
 from fastmcp.client.transports import StreamableHttpTransport
 
 OUR_POLICE = "http://127.0.0.1:61224/mcp"  # serves OUR cop  (peer's thief dials it)
-OUR_THIEF = "http://127.0.0.1:61223/mcp"   # serves OUR thief (peer's police dials it)
+OUR_THIEF = "http://127.0.0.1:61223/mcp"  # serves OUR thief (peer's police dials it)
 
 
 def _target(sender: str | None) -> str:
@@ -62,5 +62,4 @@ async def receive_control(message: dict) -> dict:
 
 if __name__ == "__main__":
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8940
-    asyncio.run(app.run_async(transport="http", host="127.0.0.1", port=port,
-                              show_banner=False))
+    asyncio.run(app.run_async(transport="http", host="127.0.0.1", port=port, show_banner=False))

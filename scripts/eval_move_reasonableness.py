@@ -224,9 +224,7 @@ def main() -> None:
     ap.add_argument("--out", type=Path, default=None)
     args = ap.parse_args()
 
-    families = (
-        [f.strip() for f in args.opponents.split(",")] if args.opponents else [args.opponent]
-    )
+    families = [f.strip() for f in args.opponents.split(",")] if args.opponents else [args.opponent]
     scent_modes = ("train", "wire") if args.scent_mode == "both" else (args.scent_mode,)
     belief_modes = [m.strip() for m in args.belief_modes.split(",")]
 
@@ -245,9 +243,7 @@ def main() -> None:
                 for family in families:
                     opp = ScriptedResearchPolicy("thief" if role == "cop" else "cop", family)
                     rows += [
-                        audit_game(
-                            role, ours, opp, args.seed + i * 7919, (i % 6) + 1, scent_mode
-                        )
+                        audit_game(role, ours, opp, args.seed + i * 7919, (i % 6) + 1, scent_mode)
                         for i in range(args.games)
                     ]
                 s = summarise(rows)

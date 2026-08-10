@@ -20,6 +20,7 @@ for p in (REPO_ROOT, REPO_ROOT / "scripts"):
         sys.path.insert(0, str(p))
 
 import arena_search_eval as A  # noqa: E402
+
 from cop_worker.rl.action_space import MOVE_DELTAS, PLACE_DIRS  # noqa: E402
 from cop_worker.rl.chebyshev_tracker import exact_opponent_cell  # noqa: E402
 from cop_worker.rl.search_policy import SearchRolePolicy  # noqa: E402
