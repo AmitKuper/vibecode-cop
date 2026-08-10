@@ -1077,6 +1077,16 @@ async def _play_match(*, opp_cop_url: str, opp_thief_url: str, our_cop_port: int
                         confirmed_group = sg_result["opponent_group"]
                 print(f"[match] sg{sg} complete")
             except Exception as exc:
+                # A peer that exits its per-window process AFTER settlement (imreeyal's
+                # design) makes our client teardown raise — after the verified audit.
+                # Recording that as a failure row double-counted a settled window
+                # (STATUS read 6/12 and the 6/6 report guard refused a clean series —
+                # live finding, 2026-08-10 friendly). A settled sub-game absorbs its
+                # teardown noise; only a genuinely unsettled one records the error.
+                if any(r.get("sub_game") == sg and r.get("audit_ok") for r in results):
+                    print(f"[match] sg{sg} teardown noise after settlement "
+                          f"({type(exc).__name__}: {str(exc)[:80]}) — benign, continuing")
+                    continue
                 print(f"[match] sg{sg} failed "
                       f"({type(exc).__name__}: {str(exc)[:110]}) — continuing")
                 results.append({"sub_game": sg, "role": our_role, "audit_ok": False,
@@ -1137,9 +1147,14 @@ def _emit_artifacts(result: dict, args) -> None:
         prof.mkdir(parents=True, exist_ok=True)
         for f in ("game.json", "runtime.toml"):
             src = REPO_ROOT / "config" / f
-            if src.is_file():
+            # NEVER overwrite an existing profile file: the base copy lacks the
+            # profile's own keys ([protocol] scent_model/move_policy, opponent URLs) —
+            # the auto-save clobbered the imreeyal profile with anrbj666 defaults
+            # (live finding, 2026-08-10 friendly; restored from git).
+            if src.is_file() and not (prof / f).exists():
                 shutil.copyfile(src, prof / f)
-        print(f"[match] saved config profile used vs {opp} -> config/opponents/{opp}/")
+        print(f"[match] saved config profile used vs {opp} -> config/opponents/{opp}/ "
+              f"(existing profile files preserved)")
     except Exception as exc:
         print(f"[match] WARN could not save opponent config ({type(exc).__name__}: {exc})")
     game_id = derive_game_id("vibecode", opp)
