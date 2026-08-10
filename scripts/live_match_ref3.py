@@ -62,11 +62,16 @@ def apply_runtime_config(runtime: dict) -> None:
 class RLMover:
     """Wraps the trained role policy and tracks own position + emitted scent."""
 
-    def __init__(self, role: str, terms: dict,
-                 scent_model: str = "multiplicative_book_v1",
-                 move_policy: str = "rl") -> None:
+    def __init__(
+        self,
+        role: str,
+        terms: dict,
+        scent_model: str = "multiplicative_book_v1",
+        move_policy: str = "rl",
+    ) -> None:
         from cop_worker.board import Board
         from cop_worker.rl.action_space import COP_ACTIONS, THIEF_ACTIONS
+
         # Architecture-dispatching loader: the cop is RecurrentA2C-GRU and the thief may be a
         # DuelingDoubleDQN — load_counted_policy handles both (delegates recurrent internally).
         from cop_worker.rl.counted_policy import load_counted_policy
@@ -102,9 +107,7 @@ class RLMover:
         self.last_barrier: list[int] | None = None
         # A board whose "thief" cell we drive to OUR position, so update_scent emits
         # the byte-exact book field around us regardless of role.
-        self._board = Board(
-            cop_position=[0, 0], thief_position=list(self.pos), grid_size=self.grid
-        )
+        self._board = Board(cop_position=[0, 0], thief_position=list(self.pos), grid_size=self.grid)
         from cop_worker.rules_engine import RulesEngine
 
         self._rules = RulesEngine(self._board, max_turns=terms["max_steps"])
@@ -158,14 +161,19 @@ class RLMover:
             compute_legal_mask_cop,
             compute_legal_mask_thief,
         )
+
         if self.role == "police":
             mask = compute_legal_mask_cop(
-                tuple(self.pos), [tuple(b) for b in self.barriers],
-                self.barriers_remaining, self.grid,
+                tuple(self.pos),
+                [tuple(b) for b in self.barriers],
+                self.barriers_remaining,
+                self.grid,
             )
         else:
             mask = compute_legal_mask_thief(
-                tuple(self.pos), [tuple(b) for b in self.barriers], self.grid,
+                tuple(self.pos),
+                [tuple(b) for b in self.barriers],
+                self.grid,
             )
         legal = [a for a, m in zip(self.actions, mask) if m] or list(self.actions)
         action = self.policy.select_action(obs, belief, legal)
@@ -310,6 +318,7 @@ class _TimestampedTee:
     def write(self, text: str) -> int:
         n = self._stream.write(text)
         from datetime import datetime
+
         for piece in text.splitlines(keepends=True):
             if self._at_line_start and piece.strip():
                 self._sink.write(datetime.now().strftime("%H:%M:%S.%f")[:-3] + " ")
@@ -339,33 +348,41 @@ def _wire_session_class():
     class WireLoggingSession(ReferenceV3Session):
         def receive_negotiation(self, message: dict) -> None:
             m = message if isinstance(message, dict) else {}
-            print(f"[wire<-] negotiate keys={sorted(m)} group={m.get('group_id')!r} "
-                  f"role={m.get('role')!r} sub_game={m.get('sub_game_number')!r} "
-                  f"uid={str(m.get('game_uid'))[:13]!r} "
-                  f"scent={str(m.get('scent_model_sha256'))[:8]} "
-                  f"wire={str(m.get('wire_shape_sha256'))[:8]}")
+            print(
+                f"[wire<-] negotiate keys={sorted(m)} group={m.get('group_id')!r} "
+                f"role={m.get('role')!r} sub_game={m.get('sub_game_number')!r} "
+                f"uid={str(m.get('game_uid'))[:13]!r} "
+                f"scent={str(m.get('scent_model_sha256'))[:8]} "
+                f"wire={str(m.get('wire_shape_sha256'))[:8]}"
+            )
             super().receive_negotiation(message)
 
         def receive_turn(self, message: dict) -> list[dict]:
             m = message if isinstance(message, dict) else {}
-            print(f"[wire<-] turn step={m.get('step')} sender={m.get('sender')!r} "
-                  f"commit={str(m.get('commit'))[:8]} ts={str(m.get('timestamp'))[:23]!r} "
-                  f"cells={len(m.get('smell_grid') or {})} "
-                  f"barrier={m.get('barrier_placed')} claim={m.get('capture_claim')} "
-                  f"answer={(m.get('claim_response') or {}).get('caught')} "
-                  f"win={(m.get('win_claim') or {}).get('type')}")
+            print(
+                f"[wire<-] turn step={m.get('step')} sender={m.get('sender')!r} "
+                f"commit={str(m.get('commit'))[:8]} ts={str(m.get('timestamp'))[:23]!r} "
+                f"cells={len(m.get('smell_grid') or {})} "
+                f"barrier={m.get('barrier_placed')} claim={m.get('capture_claim')} "
+                f"answer={(m.get('claim_response') or {}).get('caught')} "
+                f"win={(m.get('win_claim') or {}).get('type')}"
+            )
             return super().receive_turn(message)
 
         def receive_audit(self, payload: dict) -> None:
             p = payload if isinstance(payload, dict) else {}
-            print(f"[wire<-] audit sender={p.get('sender')!r} "
-                  f"records={len(p.get('records') or [])} claim={p.get('result_claim')!r}")
+            print(
+                f"[wire<-] audit sender={p.get('sender')!r} "
+                f"records={len(p.get('records') or [])} claim={p.get('result_claim')!r}"
+            )
             super().receive_audit(payload)
 
         def receive_control(self, message: dict) -> None:
             m = message if isinstance(message, dict) else {}
-            print(f"[wire<-] control kind={m.get('kind')!r} sender={m.get('sender')!r} "
-                  f"sub_game={m.get('sub_game_number')!r} status={m.get('status')!r}")
+            print(
+                f"[wire<-] control kind={m.get('kind')!r} sender={m.get('sender')!r} "
+                f"sub_game={m.get('sub_game_number')!r} status={m.get('status')!r}"
+            )
             super().receive_control(message)
 
     return WireLoggingSession
@@ -376,6 +393,7 @@ def _install_match_log(opponent: str) -> Path:
     out_dir = REPO_ROOT / "reports" / "ref3_matches"
     out_dir.mkdir(parents=True, exist_ok=True)
     from datetime import datetime
+
     path = out_dir / f"match_{opponent}_{datetime.now().strftime('%Y%m%d-%H%M%S')}.log"
     sink = open(path, "a", encoding="utf-8")
     sys.stdout = _TimestampedTee(sys.stdout, sink)
@@ -387,8 +405,9 @@ def _install_match_log(opponent: str) -> Path:
 _PEER_SCENT_SEEN: dict[int, str] = {}
 
 
-def _log_peer_scent_model(sub_game: int, step: int, smell_grid: dict,
-                          ours: str = "multiplicative_book_v1") -> None:
+def _log_peer_scent_model(
+    sub_game: int, step: int, smell_grid: dict, ours: str = "multiplicative_book_v1"
+) -> None:
     """Print the peer's scent model the first time a frame is decisive, per sub-game.
 
     Diagnostic only. Early frames are the informative ones: both registered models decay, so
@@ -469,8 +488,7 @@ async def _poll_agreement(dq, sub_game: int, *, timeout: float) -> dict:
     raise TimeoutError(f"timeout waiting for negotiate matching sub_game {sub_game}")
 
 
-async def _poll_turn(inbox, step: int, *, timeout: float,
-                     session=None) -> dict:
+async def _poll_turn(inbox, step: int, *, timeout: float, session=None) -> dict:
     """Wait until the inbox has the opponent's turn for `step`; return it.
 
     On timeout the error carries the diagnosis a stalled peer needs: which step we
@@ -512,8 +530,10 @@ async def _await_endpoint(mcp_url: str, client_cls, *, window_s: float = 900.0) 
             return True
         except Exception as exc:
             if not announced:
-                print(f"[match] waiting for peer endpoint {mcp_url} "
-                      f"({type(exc).__name__}: {str(exc)[:80]})")
+                print(
+                    f"[match] waiting for peer endpoint {mcp_url} "
+                    f"({type(exc).__name__}: {str(exc)[:80]})"
+                )
                 announced = True
             await asyncio.sleep(8)
     return False
@@ -522,13 +542,22 @@ async def _await_endpoint(mcp_url: str, client_cls, *, window_s: float = 900.0) 
 # ---------------------------------------------------------------------------
 # One sub-game over the reference-v3 wire, driven by the RL policy.
 # ---------------------------------------------------------------------------
-async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
-                        group_id: str, group_name: str, terms: dict,
-                        opponent_group_hint: str, members: list | None = None,
-                        our_counted: int = 0,
-                        scent_model: str = "multiplicative_book_v1",
-                        move_policy: str = "rl",
-                        declared_opponent_group: str | None = None) -> dict:
+async def _play_subgame(
+    out_session,
+    in_session,
+    *,
+    role: str,
+    sub_game: int,
+    group_id: str,
+    group_name: str,
+    terms: dict,
+    opponent_group_hint: str,
+    members: list | None = None,
+    our_counted: int = 0,
+    scent_model: str = "multiplicative_book_v1",
+    move_policy: str = "rl",
+    declared_opponent_group: str | None = None,
+) -> dict:
     from ref3_artifacts import OUR_MCP, OUR_REPOS
 
     from cop_worker.protocol.reference_v3 import (
@@ -539,19 +568,24 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
         verify_audit,
         verify_negotiation,
     )
+
     # Our step-zero identity on the wire (rules 49/53): repos, per-role github_commit,
     # counted count, members — so the peer records what we actually declare.
     our_repo = REPO_ROOT if role == "police" else REPO_ROOT.parent / "vibecode-thief"
     our_commit = _git_head(our_repo)
     our_identity = {
-        "group_id": group_id, "group_name": group_name,
+        "group_id": group_id,
+        "group_name": group_name,
         # Honest declaration: movement is the trained role-specific RL policy; the verbal layer
         # is template-generated (no language model is called during play, so no LLM tokens are
         # consumed). The book forbids letting a model decide movement, and hints provably cannot
         # affect ours — local_obs_to_tensor never reads last_hint.
         "llm_model": "none (template hints; role-specific-recurrent-policy movement)",
-        "mcp_servers": OUR_MCP, "repos": OUR_REPOS, "members": members or [],
-        "github_commit": our_commit, "counted_games_played": our_counted,
+        "mcp_servers": OUR_MCP,
+        "repos": OUR_REPOS,
+        "members": members or [],
+        "github_commit": our_commit,
+        "counted_games_played": our_counted,
     }
 
     max_steps = terms["max_steps"]
@@ -562,9 +596,10 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     in_session.turns = ReferenceV3Inbox(window=_t("reorder_window", 4))
     in_session.turn_messages.clear()
     in_session.expected_turn_sender = None
-    in_session.audits.clear()      # drain stale end-of-game payloads from prior sub-games
+    in_session.audits.clear()  # drain stale end-of-game payloads from prior sub-games
     in_session.controls.clear()
     from datetime import datetime
+
     started_at = datetime.now(UTC).isoformat()
     nonce = secrets.token_hex(16)
     # Declare our derived game_uid ONLY when the opponent's group_id is actually known — a
@@ -572,16 +607,26 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     # declare and differ → refuse, so declaring from a guessed group would refuse every
     # handshake; omission never refuses. Formula parity with the kit is pinned by tests.
     greeting = build_negotiation(
-        terms=terms, nonce=nonce, group_id=group_id, group_name=group_name,
-        role=role, sub_game_number=sub_game, identity=our_identity,
-        opponent_group=declared_opponent_group, scent_model=scent_model,
+        terms=terms,
+        nonce=nonce,
+        group_id=group_id,
+        group_name=group_name,
+        role=role,
+        sub_game_number=sub_game,
+        identity=our_identity,
+        opponent_group=declared_opponent_group,
+        scent_model=scent_model,
     )
     await out_session.send_negotiation(greeting)
     # Match the greeting by sub_game_number (not FIFO) — the peer's re-dials pile up.
-    theirs = await _poll_agreement(in_session.agreements, sub_game, timeout=_t("agreement_poll_sec", 300.0))
+    theirs = await _poll_agreement(
+        in_session.agreements, sub_game, timeout=_t("agreement_poll_sec", 300.0)
+    )
     opp_identity = theirs.get("identity") or {}  # their declared repos/commit/counted (rules 49/53)
-    print(f"[match] sg{sub_game} peer greeting sub_game={theirs.get('sub_game_number')} "
-          f"role={theirs.get('role')}")
+    print(
+        f"[match] sg{sub_game} peer greeting sub_game={theirs.get('sub_game_number')} "
+        f"role={theirs.get('role')}"
+    )
     try:
         negotiated = verify_negotiation(greeting, theirs)
     except Exception as exc:
@@ -590,21 +635,30 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
         t_terms = theirs.get("terms") if isinstance(theirs.get("terms"), dict) else {}
         ours_terms = greeting["terms"]
         key_diff = sorted(set(ours_terms) ^ set(t_terms))
-        val_diff = {k: (ours_terms.get(k), t_terms.get(k))
-                    for k in ours_terms if k in t_terms and ours_terms[k] != t_terms[k]}
+        val_diff = {
+            k: (ours_terms.get(k), t_terms.get(k))
+            for k in ours_terms
+            if k in t_terms and ours_terms[k] != t_terms[k]
+        }
         print(f"[match] sg{sub_game} HANDSHAKE REFUSED: {exc}")
         print(f"[diag ] terms key diff (ours^theirs): {key_diff or 'none'}")
         print(f"[diag ] terms value diff (ours vs theirs): {val_diff or 'none'}")
-        print(f"[diag ] locks ours scent={greeting.get('scent_model_sha256', '')[:12]} "
-              f"wire={greeting.get('wire_shape_sha256', '')[:12]} | theirs "
-              f"scent={str(theirs.get('scent_model_sha256'))[:12]} "
-              f"wire={str(theirs.get('wire_shape_sha256'))[:12]}")
-        print(f"[diag ] uid ours={greeting.get('game_uid')} theirs={theirs.get('game_uid')} "
-              f"role ours={greeting.get('role')} theirs={theirs.get('role')} "
-              f"sub_game ours={sub_game} theirs={theirs.get('sub_game_number')}")
+        print(
+            f"[diag ] locks ours scent={greeting.get('scent_model_sha256', '')[:12]} "
+            f"wire={greeting.get('wire_shape_sha256', '')[:12]} | theirs "
+            f"scent={str(theirs.get('scent_model_sha256'))[:12]} "
+            f"wire={str(theirs.get('wire_shape_sha256'))[:12]}"
+        )
+        print(
+            f"[diag ] uid ours={greeting.get('game_uid')} theirs={theirs.get('game_uid')} "
+            f"role ours={greeting.get('role')} theirs={theirs.get('role')} "
+            f"sub_game ours={sub_game} theirs={theirs.get('sub_game_number')}"
+        )
         raise
-    print(f"[match] sg{sub_game} role={role} handshake OK vs {negotiated.opponent_group} "
-          f"uid={negotiated.game_uid[:12]}")
+    print(
+        f"[match] sg{sub_game} role={role} handshake OK vs {negotiated.opponent_group} "
+        f"uid={negotiated.game_uid[:12]}"
+    )
 
     # Step-0 sealed ON the wire: a fresh-nonce commitment of our identity (github_commit,
     # declaration_ref) that rides submit_audit as records[0] — matching anrbj666's g01 recipe
@@ -612,13 +666,20 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     # binding (step >= 1 only), so it is a sealed record, not just the negotiate identity.
     sz_payload = {
         "declaration_ref": f"declaration_{negotiated.game_id}.json",
-        "github_commit": our_commit, "group_id": group_id,
-        "role": role, "step": 0, "sub_game_number": sub_game, "type": "step_zero",
+        "github_commit": our_commit,
+        "group_id": group_id,
+        "role": role,
+        "step": 0,
+        "sub_game_number": sub_game,
+        "type": "step_zero",
     }
     sz_nonce = secrets.token_hex(16)
-    step_zero_record = {"payload": sz_payload, "nonce": sz_nonce,
-                        "commit": reference_commit(sz_payload, sz_nonce)}
-    out_session.local_records.append(step_zero_record)   # records[0], sent in submit_audit
+    step_zero_record = {
+        "payload": sz_payload,
+        "nonce": sz_nonce,
+        "commit": reference_commit(sz_payload, sz_nonce),
+    }
+    out_session.local_records.append(step_zero_record)  # records[0], sent in submit_audit
     out_session._local_records_by_step[0] = step_zero_record
 
     mover = RLMover(role, terms, scent_model=scent_model, move_policy=move_policy)
@@ -636,7 +697,7 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     from cop_worker.language.deception_policy import NaturalLanguagePolicy
 
     nlp = NaturalLanguagePolicy(role="cop" if role == "police" else "thief")
-    we_move_first = (role == "thief")  # reference-v3: THIEF moves first every sub-game
+    we_move_first = role == "thief"  # reference-v3: THIEF moves first every sub-game
     rl_moves: list[str] = []
     pending_answer: dict | None = None  # thief's answer to a cop capture_claim (rides next turn)
     captured = False  # True if this sub-game ended in a capture (either direction)
@@ -647,7 +708,9 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     for step in range(1, max_steps + 1):
         if not we_move_first:
             # cop: wait for the thief's sealed turn first, absorb its scent/hint.
-            await _poll_turn(in_session.turns, step, timeout=_t("turn_poll_sec", 120.0), session=in_session)
+            await _poll_turn(
+                in_session.turns, step, timeout=_t("turn_poll_sec", 120.0), session=in_session
+            )
             opp = _latest_turn(in_session, step)
             # A caught=true from the thief settles CAPTURE — but corroborate which KIND
             # (SPEC §3.1): a cell echoing our last claim is an ANSWER (co-location); any
@@ -660,17 +723,25 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
                 if isinstance(_cell, (list, tuple)) and len(_cell) == 2:
                     settled_caught_cell = [int(_cell[0]), int(_cell[1])]  # keep wire form
                 _kind, _clean = _corroborate_caught(
-                    _from_wire_cell(_cell) or _cell, our_last_claim,
-                    mover.barriers, mover.pos, mover.grid)
+                    _from_wire_cell(_cell) or _cell,
+                    our_last_claim,
+                    mover.barriers,
+                    mover.pos,
+                    mover.grid,
+                )
                 if not _clean:
-                    disputed_capture = {"cell": _cell, "kind": _kind,
-                                        "our_claim": our_last_claim,
-                                        "our_barriers": [list(b) for b in mover.barriers]}
-                    print(f"[match] sg{sub_game} step {step}: caught=true did NOT "
-                          f"corroborate ({_kind}, cell={_cell}) — recording disputed")
+                    disputed_capture = {
+                        "cell": _cell,
+                        "kind": _kind,
+                        "our_claim": our_last_claim,
+                        "our_barriers": [list(b) for b in mover.barriers],
+                    }
+                    print(
+                        f"[match] sg{sub_game} step {step}: caught=true did NOT "
+                        f"corroborate ({_kind}, cell={_cell}) — recording disputed"
+                    )
                 else:
-                    print(f"[match] sg{sub_game} thief conceded capture at step {step} "
-                          f"({_kind})")
+                    print(f"[match] sg{sub_game} thief conceded capture at step {step} ({_kind})")
                 captured = True
                 break
             # Thief declared the survival terminal on its final step: the game is settled
@@ -678,7 +749,9 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
             # post-terminal cop move could otherwise write a capture-shaped record into an
             # already-settled survival (anrbj666's flagged wart). Our count = thief count - 1.
             if (opp.get("win_claim") or {}).get("type") == "survival":
-                print(f"[match] sg{sub_game} thief declared survival terminal at step {step}; cop stops (no post-terminal move)")
+                print(
+                    f"[match] sg{sub_game} thief declared survival terminal at step {step}; cop stops (no post-terminal move)"
+                )
                 break
         else:
             # Thief moves FIRST: at round r the cop's newest turn is numbered r-1
@@ -706,7 +779,9 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
             nlp.record_opponent_hint(opp_hint)
         # Language is chosen independently of movement (the book's requirement) and may lie.
         intent = nlp.choose_intent(
-            step=step, gamelet=sub_game, physical_action=action,
+            step=step,
+            gamelet=sub_game,
+            physical_action=action,
             token_budget=int(terms.get("hint_max_words", 15)),
         )
         hint_text = nlp.generate(action, intent)
@@ -716,8 +791,12 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
         if len(hint_text.split()) > _cap:
             hint_text = " ".join(hint_text.split()[:_cap])
         record_payload = {
-            "step": step, "role": role, "sub_game": sub_game,
-            "position": _to_wire_cell(mover.pos), "move": action, "intent": intent.value,
+            "step": step,
+            "role": role,
+            "sub_game": sub_game,
+            "position": _to_wire_cell(mover.pos),
+            "move": action,
+            "intent": intent.value,
         }
         if mover.last_barrier is not None:
             record_payload["barrier_placed"] = _to_wire_cell(mover.last_barrier)
@@ -727,8 +806,9 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
         step_nonce = secrets.token_hex(16)
         # Survival terminal on the thief's final step (unless it's a caught answer);
         # the blind cop needs it or it waits out its budget (kit turnloop.py:183,303).
-        win_claim = ({"type": "survival"}
-                     if (role == "thief" and step == max_steps and not caught) else None)
+        win_claim = (
+            {"type": "survival"} if (role == "thief" and step == max_steps and not caught) else None
+        )
         # The cop claims its own cell EVERY turn — the reference peer's own policy
         # (kit turnloop.py:169): the claim just asks "am I standing on you?", the
         # thief's honest answer settles co-location, and there is no claim penalty.
@@ -737,11 +817,15 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
         if capture_claim is not None:
             our_last_claim = list(mover.pos)  # internal [x, y] for corroboration
         turn, record = build_turn(
-            record_payload=record_payload, nonce=step_nonce, sender=role,
-            hint=hint_text, smell_grid=mover.our_smell_grid(),
+            record_payload=record_payload,
+            nonce=step_nonce,
+            sender=role,
+            hint=hint_text,
+            smell_grid=mover.our_smell_grid(),
             barrier_placed=_to_wire_cell(mover.last_barrier),
             capture_claim=capture_claim,
-            claim_response=answer, win_claim=win_claim,
+            claim_response=answer,
+            win_claim=win_claim,
         )
         await out_session.send_turn(turn, record)
         if caught:
@@ -751,13 +835,17 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
         if we_move_first and win_claim is None:
             # Thief waits for the cop's turn, then prepares an answer to any capture claim
             # it carries (rides our next turn — kit turnloop.py:271-273).
-            await _poll_turn(in_session.turns, step, timeout=_t("turn_poll_sec", 120.0), session=in_session)
+            await _poll_turn(
+                in_session.turns, step, timeout=_t("turn_poll_sec", 120.0), session=in_session
+            )
             cop_turn = _latest_turn(in_session, step)
             claim = cop_turn.get("capture_claim")  # wire [row, col]
             if claim is not None:
                 # Echo the asked cell verbatim (kit convention); compare in wire form.
-                pending_answer = {"claim": list(claim),
-                                  "caught": list(claim) == _to_wire_cell(mover.pos)}
+                pending_answer = {
+                    "claim": list(claim),
+                    "caught": list(claim) == _to_wire_cell(mover.pos),
+                }
             # Track the cop's barrier and run the rule-46/47 self-check on the board it
             # just changed. An ending only we can see must be SAID: the concession is a
             # real STAY turn whose field advances (an empty grid reads as vanished scent
@@ -768,86 +856,155 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
                 final_step = step + 1
                 concession = {"claim": _to_wire_cell(mover.pos), "caught": True}
                 final_payload = {
-                    "step": final_step, "role": role, "sub_game": sub_game,
-                    "position": _to_wire_cell(mover.pos), "move": "STAY",
+                    "step": final_step,
+                    "role": role,
+                    "sub_game": sub_game,
+                    "position": _to_wire_cell(mover.pos),
+                    "move": "STAY",
                     "intent": "truth",
                 }
                 final_nonce = secrets.token_hex(16)
                 final_turn, final_record = build_turn(
-                    record_payload=final_payload, nonce=final_nonce, sender=role,
-                    hint="", smell_grid=mover.our_smell_grid(),
-                    barrier_placed=None, claim_response=concession, win_claim=None,
+                    record_payload=final_payload,
+                    nonce=final_nonce,
+                    sender=role,
+                    hint="",
+                    smell_grid=mover.our_smell_grid(),
+                    barrier_placed=None,
+                    claim_response=concession,
+                    win_claim=None,
                 )
                 await out_session.send_turn(final_turn, final_record)
-                print(f"[match] sg{sub_game} thief self-detected {rule} capture at "
-                      f"step {step} — conceding (cell {mover.pos})")
+                print(
+                    f"[match] sg{sub_game} thief self-detected {rule} capture at "
+                    f"step {step} — conceding (cell {mover.pos})"
+                )
                 captured = True
                 break
 
     await out_session.send_audit(role, "capture" if captured else "timeout")
     import contextlib
+
     with contextlib.suppress(Exception):
-        await out_session.send_control({
-            "kind": "done", "sender": role, "sub_game_number": sub_game,
-            "status": "complete", "step_budget": float(max_steps), "payload": {},
-        })
-    their_audit = await _poll_deque(in_session.audits, timeout=_t("audit_poll_sec", 300.0), label="audit")
+        await out_session.send_control(
+            {
+                "kind": "done",
+                "sender": role,
+                "sub_game_number": sub_game,
+                "status": "complete",
+                "step_budget": float(max_steps),
+                "payload": {},
+            }
+        )
+    their_audit = await _poll_deque(
+        in_session.audits, timeout=_t("audit_poll_sec", 300.0), label="audit"
+    )
     ok, errors = verify_audit(their_audit, dict(in_session.turns.played))
     in_session.turns = ReferenceV3Inbox(window=_t("reorder_window", 4))  # reset for next sub-game
     distinct = len(set(rl_moves))
     outcome = "capture" if captured else "survival"
     ended_at = datetime.now(UTC).isoformat()
-    print(f"[match] sg{sub_game} audit ok={ok} errors={errors[:2]} outcome={outcome} "
-          f"rl_moves={len(rl_moves)} distinct={distinct} sample={rl_moves[:8]}")
+    print(
+        f"[match] sg{sub_game} audit ok={ok} errors={errors[:2]} outcome={outcome} "
+        f"rl_moves={len(rl_moves)} distinct={distinct} sample={rl_moves[:8]}"
+    )
     # Collect the sealed history for the log/result artifacts.
-    our_records = [{"commit": r.get("commit"), "nonce": r.get("nonce"), "payload": r.get("payload")}
-                   for r in out_session.local_records]
-    declared = {t.get("step"): {"barrier_placed": t.get("barrier_placed"),
-                                "capture_claim": t.get("capture_claim"), "hint": t.get("hint")}
-                for t in in_session.turn_messages}
-    opp_records = [{"commit": rec.get("commit"),
-                    "declared": declared.get((rec.get("payload") or {}).get("step"), {}),
-                    "nonce": rec.get("nonce"), "payload": rec.get("payload")}
-                   for rec in (their_audit.get("records") or [])]
+    our_records = [
+        {"commit": r.get("commit"), "nonce": r.get("nonce"), "payload": r.get("payload")}
+        for r in out_session.local_records
+    ]
+    declared = {
+        t.get("step"): {
+            "barrier_placed": t.get("barrier_placed"),
+            "capture_claim": t.get("capture_claim"),
+            "hint": t.get("hint"),
+        }
+        for t in in_session.turn_messages
+    }
+    opp_records = [
+        {
+            "commit": rec.get("commit"),
+            "declared": declared.get((rec.get("payload") or {}).get("step"), {}),
+            "nonce": rec.get("nonce"),
+            "payload": rec.get("payload"),
+        }
+        for rec in (their_audit.get("records") or [])
+    ]
     # Mutual step-0 audit: their sealed step_zero must declare the same github_commit as
     # their negotiate identity (else they equivocated between handshake and audit).
     # Audit-time refinement of a settled caught=true: the conceded/answered cell must be
     # where the thief's REVEALED trail actually ends. Degradation contract (SPEC §3.1):
     # a peer whose payloads carry no parseable position is fully conforming — note, never
     # accuse; only a parseable trail that contradicts the cell marks the capture disputed.
-    if (captured and role == "police" and disputed_capture is None
-            and settled_caught_cell is not None):
-        _trail = [(int(p["step"]), list(p["position"]))
-                  for p in ((r.get("payload") or {}) for r in opp_records)
-                  if isinstance(p.get("step"), int) and p.get("step") >= 1
-                  and isinstance(p.get("position"), (list, tuple))
-                  and len(p.get("position")) == 2]
+    if (
+        captured
+        and role == "police"
+        and disputed_capture is None
+        and settled_caught_cell is not None
+    ):
+        _trail = [
+            (int(p["step"]), list(p["position"]))
+            for p in ((r.get("payload") or {}) for r in opp_records)
+            if isinstance(p.get("step"), int)
+            and p.get("step") >= 1
+            and isinstance(p.get("position"), (list, tuple))
+            and len(p.get("position")) == 2
+        ]
         if _trail and list(max(_trail)[1]) != list(settled_caught_cell):
-            disputed_capture = {"cell": list(settled_caught_cell),
-                                "kind": "trail_end_mismatch",
-                                "revealed_final": list(max(_trail)[1])}
-            print(f"[match] sg{sub_game} audit: caught cell {settled_caught_cell} does not "
-                  f"end the revealed trail (final={max(_trail)[1]}) — recording disputed")
-    opp_sz = next((r.get("payload") for r in opp_records
-                   if (r.get("payload") or {}).get("type") == "step_zero"), None)
+            disputed_capture = {
+                "cell": list(settled_caught_cell),
+                "kind": "trail_end_mismatch",
+                "revealed_final": list(max(_trail)[1]),
+            }
+            print(
+                f"[match] sg{sub_game} audit: caught cell {settled_caught_cell} does not "
+                f"end the revealed trail (final={max(_trail)[1]}) — recording disputed"
+            )
+    opp_sz = next(
+        (
+            r.get("payload")
+            for r in opp_records
+            if (r.get("payload") or {}).get("type") == "step_zero"
+        ),
+        None,
+    )
     sz_mismatch = None
     if opp_sz is not None:
         declared_commit = opp_identity.get("github_commit")
         sealed_commit = opp_sz.get("github_commit")
         if declared_commit and sealed_commit and declared_commit != sealed_commit:
             sz_mismatch = {"declared": declared_commit, "sealed": sealed_commit}
-    summary = {"audit": "Verified OK" if ok else "FAILED", "outcome": outcome,
-               "digest_match": None, "disputed_capture": disputed_capture,
-               "turns_completed": len(rl_moves), "steps_sealed": len(our_records),
-               "opponent_step_zero": opp_sz, "step_zero_mismatch": sz_mismatch,
-               "started_at": started_at, "ended_at": ended_at, "role": role,
-               "group_id": "vibecode", "opponent_group_id": opponent_group_hint}
-    return {"sub_game": sub_game, "role": role, "audit_ok": ok, "outcome": outcome,
-            "rl_move_count": len(rl_moves), "distinct_moves": distinct,
-            "our_records": our_records, "opp_records": opp_records, "summary": summary,
-            "started_at": started_at, "ended_at": ended_at,
-            "our_commit": our_commit, "opp_identity": opp_identity,
-            "opponent_group": negotiated.opponent_group}
+    summary = {
+        "audit": "Verified OK" if ok else "FAILED",
+        "outcome": outcome,
+        "digest_match": None,
+        "disputed_capture": disputed_capture,
+        "turns_completed": len(rl_moves),
+        "steps_sealed": len(our_records),
+        "opponent_step_zero": opp_sz,
+        "step_zero_mismatch": sz_mismatch,
+        "started_at": started_at,
+        "ended_at": ended_at,
+        "role": role,
+        "group_id": "vibecode",
+        "opponent_group_id": opponent_group_hint,
+    }
+    return {
+        "sub_game": sub_game,
+        "role": role,
+        "audit_ok": ok,
+        "outcome": outcome,
+        "rl_move_count": len(rl_moves),
+        "distinct_moves": distinct,
+        "our_records": our_records,
+        "opp_records": opp_records,
+        "summary": summary,
+        "started_at": started_at,
+        "ended_at": ended_at,
+        "our_commit": our_commit,
+        "opp_identity": opp_identity,
+        "opponent_group": negotiated.opponent_group,
+    }
 
 
 def _latest_turn(in_session, step: int) -> dict:
@@ -860,16 +1017,20 @@ def _latest_turn(in_session, step: int) -> dict:
 # ---------------------------------------------------------------------------
 # Self-test harness: play vs the local sparring peer.
 # ---------------------------------------------------------------------------
-async def _self_test(role: str, sub_games: int, our_port: int,
-                     sparring_port: int, kit: Path,
-                     scent_model: str = "multiplicative_book_v1",
-                     move_policy: str = "rl") -> dict:
+async def _self_test(
+    role: str,
+    sub_games: int,
+    our_port: int,
+    sparring_port: int,
+    kit: Path,
+    scent_model: str = "multiplicative_book_v1",
+    move_policy: str = "rl",
+) -> dict:
     from fastmcp import Client, FastMCP
     from fastmcp.client.transports import StreamableHttpTransport
 
     from cop_worker.protocol.pipeline import discover_reference_v3
     from cop_worker.protocol.reference_v3 import (
-        ReferenceV3Session,
         default_terms,
         register_reference_v3_tools,
     )
@@ -894,10 +1055,28 @@ async def _self_test(role: str, sub_games: int, our_port: int,
     print(f"[match] our reference-v3 server ready at {our_url} (role={role})")
 
     sparring = subprocess.Popen(
-        [sys.executable, "-m", "sparring.cli", "serve", "--role", sparring_role,
-         "--scent-model", scent_model, "--port", str(sparring_port),
-         "--host", host, "--peer", our_url, "--group-id", "sparring-match", "--await-peer"],
-        cwd=kit, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT,
+        [
+            sys.executable,
+            "-m",
+            "sparring.cli",
+            "serve",
+            "--role",
+            sparring_role,
+            "--scent-model",
+            scent_model,
+            "--port",
+            str(sparring_port),
+            "--host",
+            host,
+            "--peer",
+            our_url,
+            "--group-id",
+            "sparring-match",
+            "--await-peer",
+        ],
+        cwd=kit,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.STDOUT,
     )
     results = []
     try:
@@ -905,6 +1084,7 @@ async def _self_test(role: str, sub_games: int, our_port: int,
         await asyncio.sleep(2.0)
         transport = StreamableHttpTransport(f"{sparring_url}/mcp")
         async with Client(transport) as client:
+
             def _caller(c):
                 async def _call(tool: str, params: dict) -> dict:
                     r = await c.call_tool(tool, params)
@@ -916,23 +1096,34 @@ async def _self_test(role: str, sub_games: int, our_port: int,
                     except (ValueError, TypeError):
                         return {"ok": True, "raw": val}
                     return parsed if isinstance(parsed, dict) else {"ok": True}
+
                 return _call
 
             _profile, out_session = await discover_reference_v3(
-                sparring_url, tool_caller=_caller(client))
+                sparring_url, tool_caller=_caller(client)
+            )
             other = {"police": "thief", "thief": "police"}
             for sg in range(1, sub_games + 1):
                 # Roles alternate every sub-game; our sub-game-1 role is `role`.
                 sg_role = role if sg % 2 == 1 else other[role]
-                results.append(await _play_subgame(
-                    out_session, in_session, role=sg_role, sub_game=sg,
-                    group_id="vibecode", group_name="vibecode",
-                    terms=terms, opponent_group_hint="sparring-match",
-                    scent_model=scent_model, move_policy=move_policy,
-                ))
+                results.append(
+                    await _play_subgame(
+                        out_session,
+                        in_session,
+                        role=sg_role,
+                        sub_game=sg,
+                        group_id="vibecode",
+                        group_name="vibecode",
+                        terms=terms,
+                        opponent_group_hint="sparring-match",
+                        scent_model=scent_model,
+                        move_policy=move_policy,
+                    )
+                )
     finally:
         server_task.cancel()
         import contextlib
+
         with contextlib.suppress(asyncio.CancelledError, Exception):
             await server_task
         sparring.terminate()
@@ -941,12 +1132,20 @@ async def _self_test(role: str, sub_games: int, our_port: int,
     return {"role": role, "sub_games": results}
 
 
-async def _play_match(*, opp_cop_url: str, opp_thief_url: str, our_cop_port: int,
-                      our_thief_port: int, opponent_group: str, setting: str,
-                      sub_games: int, members: list | None = None,
-                      our_counted: int = 0,
-                      scent_model: str = "multiplicative_book_v1",
-                      move_policy: str = "rl") -> dict:
+async def _play_match(
+    *,
+    opp_cop_url: str,
+    opp_thief_url: str,
+    our_cop_port: int,
+    our_thief_port: int,
+    opponent_group: str,
+    setting: str,
+    sub_games: int,
+    members: list | None = None,
+    our_counted: int = 0,
+    scent_model: str = "multiplicative_book_v1",
+    move_policy: str = "rl",
+) -> dict:
     """Real match vs a live peer over reference-v3, role-split, RL moves.
 
     We alternate: thief on odd sub-games (peer is cop → dial its cop URL), police on
@@ -958,7 +1157,6 @@ async def _play_match(*, opp_cop_url: str, opp_thief_url: str, our_cop_port: int
 
     from cop_worker.protocol.pipeline import discover_reference_v3
     from cop_worker.protocol.reference_v3 import (
-        ReferenceV3Session,
         default_terms,
         register_reference_v3_tools,
     )
@@ -978,27 +1176,21 @@ async def _play_match(*, opp_cop_url: str, opp_thief_url: str, our_cop_port: int
 
     def _caller(client):
         async def _call(tool: str, params: dict) -> dict:
-            # At-least-once with the 10s cap: a single slow/lost ack must not burn the
-            # sub-game (the old no-timeout client absorbed slowness with a 300s read
-            # ceiling; the cap needs re-pushes instead). Retries are dedup-safe by
+            # At-least-once with the 10s cap, routed through the central outbound
+            # gateway (rate pacing + bounded retries). Retries are dedup-safe by
             # design: turns dedupe on commit, duplicate greetings are drained, and a
             # re-sent audit re-carries identical records (imreeyal §3.15 tolerates
             # duplicates; equivocation, not repetition, is the refusal).
-            attempts = int(_t("mcp_call_retries", 6))
-            backoff = 0.5
-            last_exc: Exception | None = None
-            for attempt in range(1, attempts + 1):
-                try:
-                    r = await client.call_tool(tool, params)
-                    break
-                except Exception as exc:  # timeout / transient transport failure
-                    last_exc = exc
-                    if attempt == attempts:
-                        raise
-                    print(f"[match] {tool} attempt {attempt}/{attempts} failed "
-                          f"({type(exc).__name__}); retrying in {backoff:.1f}s")
-                    await asyncio.sleep(backoff)
-                    backoff = min(backoff * 2, 5.0)
+            from cop_worker.net_gateway import GATEWAY
+
+            r = await GATEWAY.call(
+                "mcp",
+                lambda: client.call_tool(tool, params),
+                retries=int(_t("mcp_call_retries", 6)),
+                backoff_s=0.5,
+                max_backoff_s=5.0,
+                label=tool,
+            )
             if not r.content:
                 return {"ok": getattr(r, "is_error", False) is not True}
             val = getattr(r.content[0], "text", str(r.content[0]))
@@ -1007,20 +1199,22 @@ async def _play_match(*, opp_cop_url: str, opp_thief_url: str, our_cop_port: int
             except (ValueError, TypeError):
                 return {"ok": True, "raw": val}
             return parsed if isinstance(parsed, dict) else {"ok": True}
+
         return _call
 
     # Serve both our reference-v3 endpoints (cop + thief), one inbound session each.
     _Session = _wire_session_class()
     for role_name, port in (("police", our_cop_port), ("thief", our_thief_port)):
-        sess = _Session(
-            lambda t, p: (_ for _ in ()).throw(RuntimeError(f"no outbound ({t})"))
-        )
+        sess = _Session(lambda t, p: (_ for _ in ()).throw(RuntimeError(f"no outbound ({t})")))
         app = FastMCP(name=f"vibecode-{role_name}")
         register_reference_v3_tools(app, sess)
         sessions[role_name] = sess
         apps[role_name] = app
-        tasks.append(asyncio.create_task(
-            app.run_async(transport="http", host=host, port=port, show_banner=False)))
+        tasks.append(
+            asyncio.create_task(
+                app.run_async(transport="http", host=host, port=port, show_banner=False)
+            )
+        )
     await _wait_port("127.0.0.1", our_cop_port, timeout=15.0)
     await _wait_port("127.0.0.1", our_thief_port, timeout=15.0)
     print(f"[match] serving cop:{our_cop_port} thief:{our_thief_port} vs {opponent_group}")
@@ -1030,7 +1224,9 @@ async def _play_match(*, opp_cop_url: str, opp_thief_url: str, our_cop_port: int
     # pairing names its opponent in runtime.toml), confirmed/learned from the first
     # verified greeting. Self-test passes a placeholder hint, so require an exact match
     # to what negotiation later verifies before trusting a seed for sub-game 1.
-    confirmed_group: str | None = opponent_group if opponent_group and not opponent_group.startswith("sparring") else None
+    confirmed_group: str | None = (
+        opponent_group if opponent_group and not opponent_group.startswith("sparring") else None
+    )
     try:
         for sg in range(1, sub_games + 1):
             our_role = "thief" if sg % 2 == 1 else "police"
@@ -1042,8 +1238,14 @@ async def _play_match(*, opp_cop_url: str, opp_thief_url: str, our_cop_port: int
             print(f"[match] sg{sg} ({our_role}) — awaiting peer endpoint {mcp_url}")
             if not await _await_endpoint(mcp_url, Client, window_s=_t("endpoint_await_sec", 900.0)):
                 print(f"[match] sg{sg} peer window never opened — recording skip, continuing")
-                results.append({"sub_game": sg, "role": our_role, "audit_ok": False,
-                                "error": "peer_window_never_opened"})
+                results.append(
+                    {
+                        "sub_game": sg,
+                        "role": our_role,
+                        "audit_ok": False,
+                        "error": "peer_window_never_opened",
+                    }
+                )
                 continue
             # Play once its window is open. A transient failure records the sub-game and
             # moves on — it never crashes the whole series (their windows re-run).
@@ -1057,20 +1259,32 @@ async def _play_match(*, opp_cop_url: str, opp_thief_url: str, our_cop_port: int
                 if call_cap >= float(terms.get("response_timeout_sec", 30) or 30):
                     raise RuntimeError(
                         f"mcp_call_sec={call_cap} must be strictly below the signed "
-                        f"response timeout; refusing to start")
+                        f"response timeout; refusing to start"
+                    )
                 async with Client(transport, timeout=call_cap) as client:
                     # Generous probe/introspect deadlines: a tunnelled peer is slower
                     # than the 5s default, which otherwise fails discovery spuriously.
                     _profile, out_session = await discover_reference_v3(
-                        base_url, tool_caller=_caller(client),
-                        probe_timeout_s=_t("probe_sec", 30.0), introspect_timeout_s=_t("introspect_sec", 30.0))
+                        base_url,
+                        tool_caller=_caller(client),
+                        probe_timeout_s=_t("probe_sec", 30.0),
+                        introspect_timeout_s=_t("introspect_sec", 30.0),
+                    )
                     sg_result = await _play_subgame(
-                        out_session, in_session, role=our_role, sub_game=sg,
-                        group_id="vibecode", group_name="vibecode", terms=terms,
-                        opponent_group_hint=opponent_group, members=members,
-                        our_counted=our_counted, scent_model=scent_model,
+                        out_session,
+                        in_session,
+                        role=our_role,
+                        sub_game=sg,
+                        group_id="vibecode",
+                        group_name="vibecode",
+                        terms=terms,
+                        opponent_group_hint=opponent_group,
+                        members=members,
+                        our_counted=our_counted,
+                        scent_model=scent_model,
                         move_policy=move_policy,
-                        declared_opponent_group=confirmed_group)
+                        declared_opponent_group=confirmed_group,
+                    )
                     results.append(sg_result)
                     # Learned from a VERIFIED handshake: declare the uid from sg2 onward.
                     if sg_result.get("opponent_group"):
@@ -1084,18 +1298,28 @@ async def _play_match(*, opp_cop_url: str, opp_thief_url: str, our_cop_port: int
                 # live finding, 2026-08-10 friendly). A settled sub-game absorbs its
                 # teardown noise; only a genuinely unsettled one records the error.
                 if any(r.get("sub_game") == sg and r.get("audit_ok") for r in results):
-                    print(f"[match] sg{sg} teardown noise after settlement "
-                          f"({type(exc).__name__}: {str(exc)[:80]}) — benign, continuing")
+                    print(
+                        f"[match] sg{sg} teardown noise after settlement "
+                        f"({type(exc).__name__}: {str(exc)[:80]}) — benign, continuing"
+                    )
                     continue
-                print(f"[match] sg{sg} failed "
-                      f"({type(exc).__name__}: {str(exc)[:110]}) — continuing")
-                results.append({"sub_game": sg, "role": our_role, "audit_ok": False,
-                                "error": f"{type(exc).__name__}: {str(exc)[:200]}"})
+                print(
+                    f"[match] sg{sg} failed ({type(exc).__name__}: {str(exc)[:110]}) — continuing"
+                )
+                results.append(
+                    {
+                        "sub_game": sg,
+                        "role": our_role,
+                        "audit_ok": False,
+                        "error": f"{type(exc).__name__}: {str(exc)[:200]}",
+                    }
+                )
                 continue
     finally:
         for t in tasks:
             t.cancel()
         import contextlib
+
         for t in tasks:
             with contextlib.suppress(asyncio.CancelledError, Exception):
                 await t
@@ -1112,9 +1336,14 @@ def _write_result(result: dict) -> Path:
 
 def _git_head(repo: Path) -> str:
     import subprocess
+
     try:
-        out = subprocess.run(["git", "-C", str(repo), "rev-parse", "HEAD"],
-                             capture_output=True, text=True, timeout=10).stdout.strip()
+        out = subprocess.run(
+            ["git", "-C", str(repo), "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        ).stdout.strip()
         return out or "unknown"
     except Exception:
         return "unknown"
@@ -1138,11 +1367,13 @@ def _emit_artifacts(result: dict, args) -> None:
         derive_game_id,
         derive_game_uid,
     )
+
     opp = args.opponent_group
     # Save the exact config used to play this opponent: config/opponents/<opp>/{game.json,
     # runtime.toml}. An auditable record + a reusable profile selectable next time via --config.
     try:
         import shutil
+
         prof = REPO_ROOT / "config" / "opponents" / opp
         prof.mkdir(parents=True, exist_ok=True)
         for f in ("game.json", "runtime.toml"):
@@ -1153,8 +1384,10 @@ def _emit_artifacts(result: dict, args) -> None:
             # (live finding, 2026-08-10 friendly; restored from git).
             if src.is_file() and not (prof / f).exists():
                 shutil.copyfile(src, prof / f)
-        print(f"[match] saved config profile used vs {opp} -> config/opponents/{opp}/ "
-              f"(existing profile files preserved)")
+        print(
+            f"[match] saved config profile used vs {opp} -> config/opponents/{opp}/ "
+            f"(existing profile files preserved)"
+        )
     except Exception as exc:
         print(f"[match] WARN could not save opponent config ({type(exc).__name__}: {exc})")
     game_id = derive_game_id("vibecode", opp)
@@ -1165,33 +1398,64 @@ def _emit_artifacts(result: dict, args) -> None:
     played = [sg for sg in result["sub_games"] if sg.get("our_records") is not None]
     for sg in played:
         n = sg["sub_game"]
-        write_artifact(build_config(game_id, game_uid, n, args.setting, opp),
-                       config_dir / f"config_{game_id}_g{n:02d}.json")
-        write_artifact(build_log(game_id, game_uid, n, sg["role"], opp, sg["our_records"],
-                                 sg["opp_records"], sg["summary"]),
-                       results_dir / f"log_{game_id}_g{n:02d}.json")
+        write_artifact(
+            build_config(game_id, game_uid, n, args.setting, opp),
+            config_dir / f"config_{game_id}_g{n:02d}.json",
+        )
+        write_artifact(
+            build_log(
+                game_id,
+                game_uid,
+                n,
+                sg["role"],
+                opp,
+                sg["our_records"],
+                sg["opp_records"],
+                sg["summary"],
+            ),
+            results_dir / f"log_{game_id}_g{n:02d}.json",
+        )
     # The opponent's declared identity (rules 49/53) — repos, counted count — from their greeting.
     opp_ids = [sg.get("opp_identity") or {} for sg in played if sg.get("opp_identity")]
     opp_repos = next((i.get("repos") for i in opp_ids if i.get("repos")), {})
-    opp_counted = next((i.get("counted_games_played") for i in opp_ids
-                        if i.get("counted_games_played") is not None), 0)
+    opp_counted = next(
+        (
+            i.get("counted_games_played")
+            for i in opp_ids
+            if i.get("counted_games_played") is not None
+        ),
+        0,
+    )
     our_counted = getattr(args, "counted_played", 0)
     counted = getattr(args, "counted", False)
-    rows, final_result = score_series(played, opp, game_id, our_played=our_counted,
-                                      opp_played=opp_counted, counted=counted)
+    rows, final_result = score_series(
+        played, opp, game_id, our_played=our_counted, opp_played=opp_counted, counted=counted
+    )
     members = [m.strip() for m in args.members.split(",") if m.strip()]
     starts = [sg.get("started_at", "") for sg in played]
     ends = [sg.get("ended_at", "") for sg in played]
     thief_commit = _git_head(REPO_ROOT.parent / "vibecode-thief")
-    write_artifact(build_declaration(game_id, game_uid, opp, members, cop_commit,
-                                     starts[0] if starts else "", ends[-1] if ends else "",
-                                     opp_identity=(opp_ids[0] if opp_ids else None),
-                                     our_counted=our_counted, thief_commit=thief_commit),
-                   results_dir / f"declaration_{game_id}.json")
+    write_artifact(
+        build_declaration(
+            game_id,
+            game_uid,
+            opp,
+            members,
+            cop_commit,
+            starts[0] if starts else "",
+            ends[-1] if ends else "",
+            opp_identity=(opp_ids[0] if opp_ids else None),
+            our_counted=our_counted,
+            thief_commit=thief_commit,
+        ),
+        results_dir / f"declaration_{game_id}.json",
+    )
     result_obj = build_result(game_id, game_uid, opp, rows, final_result, opp_repos=opp_repos)
     write_artifact(result_obj, results_dir / f"result_{game_id}.json")
-    print(f"[match] artifacts: {len(played)}x(config+log) + declaration + result "
-          f"under results/ and config/games/")
+    print(
+        f"[match] artifacts: {len(played)}x(config+log) + declaration + result "
+        f"under results/ and config/games/"
+    )
     print(f"[match] result: {final_result['total_score']} winner={final_result['winner_group']}")
     # Settlement guard: a report is filed ONLY when the WHOLE series settled — all six windows
     # played AND each audit "Verified OK". A partial/failed series never auto-files a broken or
@@ -1202,10 +1466,12 @@ def _emit_artifacts(result: dict, args) -> None:
     series_complete = len(played) == EXPECTED_SUB_GAMES and n_settled == EXPECTED_SUB_GAMES
     mid = None
     if not series_complete:
-        print(f"[match] REPORT WITHHELD (settlement guard): series not fully settled — "
-              f"{n_settled}/{EXPECTED_SUB_GAMES} Verified OK, {len(played)}/{EXPECTED_SUB_GAMES} "
-              f"windows played. No email, no ledger entry. Artifacts kept locally; re-run the "
-              f"missing/failed windows before reporting.")
+        print(
+            f"[match] REPORT WITHHELD (settlement guard): series not fully settled — "
+            f"{n_settled}/{EXPECTED_SUB_GAMES} Verified OK, {len(played)}/{EXPECTED_SUB_GAMES} "
+            f"windows played. No email, no ledger entry. Artifacts kept locally; re-run the "
+            f"missing/failed windows before reporting."
+        )
     elif not args.no_email:
         try:
             token = REPO_ROOT / "secrets" / "gmail" / "token.json"
@@ -1216,10 +1482,18 @@ def _emit_artifacts(result: dict, args) -> None:
     # League ledger: record ONLY a fully-settled counted series (rules 37-38, the counted tracker).
     if counted and series_complete:
         ledger = update_counted_ledger(
-            results_dir / "counted_series.json", game_id=game_id, game_uid=game_uid,
-            opponent=opp, result_obj=result_obj, message_id=mid, our_counted_before=our_counted)
-        print(f"[match] counted ledger updated: counted_games_played={ledger['counted_games_played']} "
-              f"(results/counted_series.json)")
+            results_dir / "counted_series.json",
+            game_id=game_id,
+            game_uid=game_uid,
+            opponent=opp,
+            result_obj=result_obj,
+            message_id=mid,
+            our_counted_before=our_counted,
+        )
+        print(
+            f"[match] counted ledger updated: counted_games_played={ledger['counted_games_played']} "
+            f"(results/counted_series.json)"
+        )
 
 
 def main() -> int:
@@ -1233,8 +1507,11 @@ def main() -> int:
     # Config profile selection: --config <name|dir> picks config/opponents/<name>/ (else base
     # config/). CLI flags below always override the profile's values (defaults are None so we
     # can tell "unset" from an explicit value).
-    p.add_argument("--config", default=None,
-                   help="Config profile: a name under config/opponents/, or a directory")
+    p.add_argument(
+        "--config",
+        default=None,
+        help="Config profile: a name under config/opponents/, or a directory",
+    )
     # Real-match args:
     p.add_argument("--match", action="store_true", help="Play a live peer over reference-v3")
     p.add_argument("--opp-cop-url", help="Opponent cop MCP URL (dialed when we are thief)")
@@ -1247,21 +1524,34 @@ def main() -> int:
     # address is passed explicitly at run time for a counted game only.
     p.add_argument("--report-to", default=None)
     p.add_argument("--no-email", action="store_true", help="Skip emailing the result")
-    p.add_argument("--members", default=None,
-                   help="Comma-separated member names for the declaration")
+    p.add_argument(
+        "--members", default=None, help="Comma-separated member names for the declaration"
+    )
     # Counted-game accounting (rules 37-38): friendly = counted=False (no increment).
     p.add_argument("--counted", action="store_true", help="Mark this as a COUNTED series")
-    p.add_argument("--counted-played", type=int, default=None,
-                   help="Our prior counted-games count (for games_played_including_this)")
-    p.add_argument("--scent-model", default=None,
-                   choices=("multiplicative_book_v1", "subtractive_chebyshev_v1"),
-                   help="Locked scent model for this pairing (default: [protocol] in runtime.toml)")
-    p.add_argument("--move-policy", default=None, choices=("rl", "hybrid_search"),
-                   help="Move engine: plain RL, or minimax-over-exact-tracking with RL fallback")
+    p.add_argument(
+        "--counted-played",
+        type=int,
+        default=None,
+        help="Our prior counted-games count (for games_played_including_this)",
+    )
+    p.add_argument(
+        "--scent-model",
+        default=None,
+        choices=("multiplicative_book_v1", "subtractive_chebyshev_v1"),
+        help="Locked scent model for this pairing (default: [protocol] in runtime.toml)",
+    )
+    p.add_argument(
+        "--move-policy",
+        default=None,
+        choices=("rl", "hybrid_search"),
+        help="Move engine: plain RL, or minimax-over-exact-tracking with RL fallback",
+    )
     args = p.parse_args()
 
     # Resolve config profile and fill any unset args from runtime.toml (CLI wins).
     from cop_worker.config_loader import load_config
+
     cfg = load_config(args.config)
     rt = cfg["runtime"]
     apply_runtime_config(rt)
@@ -1292,9 +1582,12 @@ def main() -> int:
     # Step-0 declaration (build_negotiation), the peer-frame diagnostic, AND any policy/
     # obs-mode code that reads COPTHIEF_SCENT_MODEL — set the env before policies load.
     import os as _os
+
     _os.environ["COPTHIEF_SCENT_MODEL"] = args.scent_model
-    print(f"[match] config profile: {cfg['source']} ({cfg['profile_dir']}) "
-          f"scent_model={args.scent_model}")
+    print(
+        f"[match] config profile: {cfg['source']} ({cfg['profile_dir']}) "
+        f"scent_model={args.scent_model}"
+    )
 
     if args.match:
         if not (args.opp_cop_url and args.opp_thief_url):
@@ -1302,13 +1595,21 @@ def main() -> int:
             return 2
         _install_match_log(args.opponent_group or "unknown")
         members = [m.strip() for m in args.members.split(",") if m.strip()]
-        result = asyncio.run(_play_match(
-            opp_cop_url=args.opp_cop_url, opp_thief_url=args.opp_thief_url,
-            our_cop_port=args.our_cop_port, our_thief_port=args.our_thief_port,
-            opponent_group=args.opponent_group, setting=args.setting,
-            sub_games=args.sub_games if args.sub_games > 1 else 6,
-            members=members, our_counted=args.counted_played,
-            scent_model=args.scent_model, move_policy=args.move_policy))
+        result = asyncio.run(
+            _play_match(
+                opp_cop_url=args.opp_cop_url,
+                opp_thief_url=args.opp_thief_url,
+                our_cop_port=args.our_cop_port,
+                our_thief_port=args.our_thief_port,
+                opponent_group=args.opponent_group,
+                setting=args.setting,
+                sub_games=args.sub_games if args.sub_games > 1 else 6,
+                members=members,
+                our_counted=args.counted_played,
+                scent_model=args.scent_model,
+                move_policy=args.move_policy,
+            )
+        )
         _write_result(result)  # raw internal snapshot (debug)
         oks = [sg for sg in result["sub_games"] if sg.get("audit_ok")]
         print(f"\n[match] STATUS: audits {len(oks)}/{len(result['sub_games'])} ok")
@@ -1324,14 +1625,23 @@ def main() -> int:
         return 1
     _install_match_log("selftest")
     result = asyncio.run(
-        _self_test(args.role, args.sub_games, args.our_port, args.sparring_port, kit,
-                   scent_model=args.scent_model, move_policy=args.move_policy))
+        _self_test(
+            args.role,
+            args.sub_games,
+            args.our_port,
+            args.sparring_port,
+            kit,
+            scent_model=args.scent_model,
+            move_policy=args.move_policy,
+        )
+    )
     print("\n[match] RESULT:", _json.dumps(result, indent=2))
     oks = [sg for sg in result["sub_games"] if sg.get("audit_ok")]
     sgs = result["sub_games"]
     rl_ok = all(sg["distinct_moves"] > 1 for sg in sgs) if sgs else False
-    print(f"[match] STATUS: audits {len(oks)}/{len(result['sub_games'])} ok; "
-          f"RL-varied-moves={rl_ok}")
+    print(
+        f"[match] STATUS: audits {len(oks)}/{len(result['sub_games'])} ok; RL-varied-moves={rl_ok}"
+    )
     return 0 if oks and rl_ok else 1
 
 

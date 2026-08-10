@@ -42,3 +42,28 @@ been superseded by `agent/mcp/config_hash.py` for production use.
 - DEV-002: Empty Audit Vacuously Valid — CORRECTED in Phase 0
 - DEV-003: Trapped Thief Never Triggering COP_WIN — CORRECTED in Phase 0
 - DEV-005: FastAPI Tests Skipped — CORRECTED in Phase 0
+
+## Professionalization pass — 2026-08-10 (intentional deviations, with evidence)
+
+1. **Email report format.** The result email sends the canonical result JSON as body +
+   the same bytes as a single named attachment (not the book Appendix-A prose listing).
+   APPROVED by the lecturer's reference agent — evidence:
+   `evidence/Email_Report_Agent_conversation.jpeg`. The remaining artifact kinds are
+   published in the repos and reached via the result's `links.github` (rule 49).
+2. **Hardcoded own-inbox default recipient** (`agentsorch@gmail.com` in the Gmail
+   gatekeeper + match runner). Deliberate safety rail: the league/lecturer address is
+   NEVER stored in code or config (test-enforced by
+   `tests/test_config_single_source.py::test_runtime_toml_has_no_league_address`) and
+   enters only by hand via `--report-to` on counted day. An address the run cannot
+   reach cannot be mailed by accident.
+3. **Static-IP topology** (no tunnel): production runs on a router port-forwarded
+   static IP (cop 61224 / thief 61223). The tunnel runbook is retained for the
+   alternative topology only.
+4. **150-line file limit — partially deviated.** The reference-v3 wire module, the
+   match runner, the trainer, and the kit-conformance fixtures exceed the limit; they
+   are cohesive protocol/lifecycle units whose split was deliberately deferred while
+   live league windows were possible (a mid-refactor wire layer is a rule-35 risk).
+   Status and the split plan are tracked in docs/TODO.md.
+5. **Two-repo module duplication** (cop_worker ↔ league_manager protocol copies and
+   the cop/thief sibling repos): the course mandates two independent repositories;
+   within this repo the league_manager copies are being converted to import shims.

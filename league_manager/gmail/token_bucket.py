@@ -1,35 +1,13 @@
-"""Token bucket for rate limiting."""
+"""Alias of the canonical cop_worker implementation.
 
-import threading
-import time
+This module was a byte-identical copy; it is now a module alias so there is a
+single source of truth and the two packages cannot drift. Import via either
+package path — both resolve to the same module object (monkeypatches included).
+"""
 
+import sys
 
-class TokenBucket:
-    """Thread-safe continuous token bucket with monotonic refill."""
+from cop_worker.gmail.token_bucket import *  # noqa: F401,F403
+from cop_worker.gmail.token_bucket import __name__ as _canonical_name  # noqa: F401
 
-    def __init__(self, capacity: float, refill_rate: float):
-        self._capacity = capacity  # max tokens
-        self._rate = refill_rate  # tokens per second
-        self._tokens = capacity  # start full
-        self._last_refill = time.monotonic()
-        self._lock = threading.Lock()
-
-    def _refill(self) -> None:
-        now = time.monotonic()
-        elapsed = now - self._last_refill
-        self._tokens = min(self._capacity, self._tokens + self._rate * elapsed)
-        self._last_refill = now
-
-    def consume(self, cost: float = 1.0) -> bool:
-        """Returns True if allowed, False if insufficient tokens."""
-        with self._lock:
-            self._refill()
-            if self._tokens >= cost:
-                self._tokens -= cost
-                return True
-            return False
-
-    def tokens(self) -> float:
-        with self._lock:
-            self._refill()
-            return self._tokens
+sys.modules[__name__] = sys.modules["cop_worker.gmail.token_bucket"]
