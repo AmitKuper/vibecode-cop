@@ -293,6 +293,97 @@ def _corroborate_caught(cell, our_claim, our_barriers, our_pos, grid) -> tuple[s
     return "concession", True
 
 
+class _TimestampedTee:
+    """Mirror a stream to a log file, stamping wall-clock time at each line start.
+
+    Installed over stdout+stderr for a real match so every line — ours, uvicorn's,
+    tracebacks — lands in one timestamped file. Deadline disputes (the signed 30s
+    response budget, their 180s turn budget) are evidence questions; an unstamped
+    console scrollback answers none of them.
+    """
+
+    def __init__(self, stream, sink) -> None:
+        self._stream = stream
+        self._sink = sink
+        self._at_line_start = True
+
+    def write(self, text: str) -> int:
+        n = self._stream.write(text)
+        from datetime import datetime
+        for piece in text.splitlines(keepends=True):
+            if self._at_line_start and piece.strip():
+                self._sink.write(datetime.now().strftime("%H:%M:%S.%f")[:-3] + " ")
+            self._sink.write(piece)
+            self._at_line_start = piece.endswith("\n")
+        self._sink.flush()
+        return n
+
+    def flush(self) -> None:
+        self._stream.flush()
+        self._sink.flush()
+
+    def __getattr__(self, name):
+        return getattr(self._stream, name)
+
+
+def _wire_session_class():
+    """A ReferenceV3Session that logs INBOUND wire metadata — names/fields, never bodies.
+
+    WARNINGS §2c: a team that logs only its own view cannot log an ABSENCE, and the one
+    fact that matters in a stall ("what did you actually receive from us?") becomes
+    structurally invisible. Metadata only: keys, step numbers, senders, commit prefixes,
+    lock hashes. No smell grids, no hint text, and never a nonce of ours.
+    """
+    from cop_worker.protocol.reference_v3 import ReferenceV3Session
+
+    class WireLoggingSession(ReferenceV3Session):
+        def receive_negotiation(self, message: dict) -> None:
+            m = message if isinstance(message, dict) else {}
+            print(f"[wire<-] negotiate keys={sorted(m)} group={m.get('group_id')!r} "
+                  f"role={m.get('role')!r} sub_game={m.get('sub_game_number')!r} "
+                  f"uid={str(m.get('game_uid'))[:13]!r} "
+                  f"scent={str(m.get('scent_model_sha256'))[:8]} "
+                  f"wire={str(m.get('wire_shape_sha256'))[:8]}")
+            super().receive_negotiation(message)
+
+        def receive_turn(self, message: dict) -> list[dict]:
+            m = message if isinstance(message, dict) else {}
+            print(f"[wire<-] turn step={m.get('step')} sender={m.get('sender')!r} "
+                  f"commit={str(m.get('commit'))[:8]} ts={str(m.get('timestamp'))[:23]!r} "
+                  f"cells={len(m.get('smell_grid') or {})} "
+                  f"barrier={m.get('barrier_placed')} claim={m.get('capture_claim')} "
+                  f"answer={(m.get('claim_response') or {}).get('caught')} "
+                  f"win={(m.get('win_claim') or {}).get('type')}")
+            return super().receive_turn(message)
+
+        def receive_audit(self, payload: dict) -> None:
+            p = payload if isinstance(payload, dict) else {}
+            print(f"[wire<-] audit sender={p.get('sender')!r} "
+                  f"records={len(p.get('records') or [])} claim={p.get('result_claim')!r}")
+            super().receive_audit(payload)
+
+        def receive_control(self, message: dict) -> None:
+            m = message if isinstance(message, dict) else {}
+            print(f"[wire<-] control kind={m.get('kind')!r} sender={m.get('sender')!r} "
+                  f"sub_game={m.get('sub_game_number')!r} status={m.get('status')!r}")
+            super().receive_control(message)
+
+    return WireLoggingSession
+
+
+def _install_match_log(opponent: str) -> Path:
+    """Tee stdout+stderr into a timestamped per-match log file."""
+    out_dir = REPO_ROOT / "reports" / "ref3_matches"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    from datetime import datetime
+    path = out_dir / f"match_{opponent}_{datetime.now().strftime('%Y%m%d-%H%M%S')}.log"
+    sink = open(path, "a", encoding="utf-8")
+    sys.stdout = _TimestampedTee(sys.stdout, sink)
+    sys.stderr = _TimestampedTee(sys.stderr, sink)
+    print(f"[match] logging to {path}")
+    return path
+
+
 _PEER_SCENT_SEEN: dict[int, str] = {}
 
 
@@ -378,14 +469,30 @@ async def _poll_agreement(dq, sub_game: int, *, timeout: float) -> dict:
     raise TimeoutError(f"timeout waiting for negotiate matching sub_game {sub_game}")
 
 
-async def _poll_turn(inbox, step: int, *, timeout: float) -> dict:
-    """Wait until the inbox has the opponent's turn for `step`; return it."""
+async def _poll_turn(inbox, step: int, *, timeout: float,
+                     session=None) -> dict:
+    """Wait until the inbox has the opponent's turn for `step`; return it.
+
+    On timeout the error carries the diagnosis a stalled peer needs: which step we
+    were owed, which steps actually played, and the peer's last inbound turn — the
+    "your step k never arrived; your last was k-1 at HH:MM:SS" line that separates
+    OUR stall from THEIRS in one read.
+    """
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         if step in inbox.played or inbox.next_step > step:
             return inbox.turn_for(step) if hasattr(inbox, "turn_for") else {}
         await asyncio.sleep(0.05)
-    raise TimeoutError(f"timeout waiting for opponent turn step {step}")
+    played = sorted(inbox.played)
+    last = None
+    if session is not None and getattr(session, "turn_messages", None):
+        m = session.turn_messages[-1]
+        last = (m.get("step"), m.get("sender"), str(m.get("timestamp"))[:23])
+    raise TimeoutError(
+        f"timeout after {timeout:.0f}s waiting for opponent turn step {step}; "
+        f"steps played={played or 'none'}, buffered={sorted(inbox.buffered) or 'none'}, "
+        f"their last inbound turn={last or 'NONE EVER'}"
+    )
 
 
 async def _await_endpoint(mcp_url: str, client_cls, *, window_s: float = 900.0) -> bool:
@@ -475,7 +582,27 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     opp_identity = theirs.get("identity") or {}  # their declared repos/commit/counted (rules 49/53)
     print(f"[match] sg{sub_game} peer greeting sub_game={theirs.get('sub_game_number')} "
           f"role={theirs.get('role')}")
-    negotiated = verify_negotiation(greeting, theirs)
+    try:
+        negotiated = verify_negotiation(greeting, theirs)
+    except Exception as exc:
+        # A refusal is only actionable if it names the DIFF, not just the rule. This
+        # block is what turns "handshake failed" into an instruction for the peer.
+        t_terms = theirs.get("terms") if isinstance(theirs.get("terms"), dict) else {}
+        ours_terms = greeting["terms"]
+        key_diff = sorted(set(ours_terms) ^ set(t_terms))
+        val_diff = {k: (ours_terms.get(k), t_terms.get(k))
+                    for k in ours_terms if k in t_terms and ours_terms[k] != t_terms[k]}
+        print(f"[match] sg{sub_game} HANDSHAKE REFUSED: {exc}")
+        print(f"[diag ] terms key diff (ours^theirs): {key_diff or 'none'}")
+        print(f"[diag ] terms value diff (ours vs theirs): {val_diff or 'none'}")
+        print(f"[diag ] locks ours scent={greeting.get('scent_model_sha256', '')[:12]} "
+              f"wire={greeting.get('wire_shape_sha256', '')[:12]} | theirs "
+              f"scent={str(theirs.get('scent_model_sha256'))[:12]} "
+              f"wire={str(theirs.get('wire_shape_sha256'))[:12]}")
+        print(f"[diag ] uid ours={greeting.get('game_uid')} theirs={theirs.get('game_uid')} "
+              f"role ours={greeting.get('role')} theirs={theirs.get('role')} "
+              f"sub_game ours={sub_game} theirs={theirs.get('sub_game_number')}")
+        raise
     print(f"[match] sg{sub_game} role={role} handshake OK vs {negotiated.opponent_group} "
           f"uid={negotiated.game_uid[:12]}")
 
@@ -520,7 +647,7 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
     for step in range(1, max_steps + 1):
         if not we_move_first:
             # cop: wait for the thief's sealed turn first, absorb its scent/hint.
-            await _poll_turn(in_session.turns, step, timeout=_t("turn_poll_sec", 120.0))
+            await _poll_turn(in_session.turns, step, timeout=_t("turn_poll_sec", 120.0), session=in_session)
             opp = _latest_turn(in_session, step)
             # A caught=true from the thief settles CAPTURE — but corroborate which KIND
             # (SPEC §3.1): a cell echoing our last claim is an ANSWER (co-location); any
@@ -624,7 +751,7 @@ async def _play_subgame(out_session, in_session, *, role: str, sub_game: int,
         if we_move_first and win_claim is None:
             # Thief waits for the cop's turn, then prepares an answer to any capture claim
             # it carries (rides our next turn — kit turnloop.py:271-273).
-            await _poll_turn(in_session.turns, step, timeout=_t("turn_poll_sec", 120.0))
+            await _poll_turn(in_session.turns, step, timeout=_t("turn_poll_sec", 120.0), session=in_session)
             cop_turn = _latest_turn(in_session, step)
             claim = cop_turn.get("capture_claim")  # wire [row, col]
             if claim is not None:
@@ -755,7 +882,7 @@ async def _self_test(role: str, sub_games: int, our_port: int,
     # Sparring takes the OPPOSITE role in sub-game 1.
     sparring_role = "police" if role == "thief" else "thief"
 
-    in_session = ReferenceV3Session(
+    in_session = _wire_session_class()(
         lambda t, p: (_ for _ in ()).throw(RuntimeError(f"no outbound on server ({t})"))
     )
     app = FastMCP(name="vibecode-match")
@@ -883,8 +1010,9 @@ async def _play_match(*, opp_cop_url: str, opp_thief_url: str, our_cop_port: int
         return _call
 
     # Serve both our reference-v3 endpoints (cop + thief), one inbound session each.
+    _Session = _wire_session_class()
     for role_name, port in (("police", our_cop_port), ("thief", our_thief_port)):
-        sess = ReferenceV3Session(
+        sess = _Session(
             lambda t, p: (_ for _ in ()).throw(RuntimeError(f"no outbound ({t})"))
         )
         app = FastMCP(name=f"vibecode-{role_name}")
@@ -1157,6 +1285,7 @@ def main() -> int:
         if not (args.opp_cop_url and args.opp_thief_url):
             print("ERROR: --match requires --opp-cop-url and --opp-thief-url (CLI or runtime.toml)")
             return 2
+        _install_match_log(args.opponent_group or "unknown")
         members = [m.strip() for m in args.members.split(",") if m.strip()]
         result = asyncio.run(_play_match(
             opp_cop_url=args.opp_cop_url, opp_thief_url=args.opp_thief_url,
@@ -1178,6 +1307,7 @@ def main() -> int:
     if not (kit / "verify_vectors.py").is_file():
         print(f"ERROR: not a league-protocol clone: {kit}")
         return 1
+    _install_match_log("selftest")
     result = asyncio.run(
         _self_test(args.role, args.sub_games, args.our_port, args.sparring_port, kit,
                    scent_model=args.scent_model, move_policy=args.move_policy))
