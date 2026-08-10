@@ -1,36 +1,27 @@
 """StaticSemanticVerifier: validate a ProtocolMappingPlan before any counted commitment.
 
-Field-name compatibility is insufficient. This verifier checks semantic compatibility:
+Field-name compatibility is insufficient — semantic checks:
 - every canonical phase has a remote operation;
 - every mandatory field can be encoded;
 - canonicalization and commitment semantics are compatible;
-- nonce remains hidden until final_audit;
-- phase ordering is compatible;
-- no protected field is dropped or synthesized.
+- nonce hidden until final_audit; phase ordering compatible; no protected field
+  dropped or synthesized.
 """
 
 from __future__ import annotations
 
 import logging
 from collections import Counter
-from dataclasses import dataclass, field
 
 from cop_worker.protocol.mapping_plan import CompatibilityVerdict, ProtocolMappingPlan
+from cop_worker.protocol.verifier_types import (  # noqa: F401  (public re-exports)
+    _COMMITMENT_FIELDS,
+    _NONCE_FIELDS,
+    _REQUIRED_BY_PHASE,
+    VerificationResult,
+)
 
 logger = logging.getLogger(__name__)
-
-_NONCE_FIELDS = frozenset(["nonce", "nonces"])
-_COMMITMENT_FIELDS = frozenset(["commitment", "commit", "h_commit"])
-
-
-@dataclass
-class VerificationResult:
-    passed: bool
-    errors: list[str] = field(default_factory=list)
-    warnings: list[str] = field(default_factory=list)
-
-    def reject_reason(self) -> str:
-        return "; ".join(self.errors) if self.errors else ""
 
 
 class StaticSemanticVerifier:
@@ -75,26 +66,16 @@ class StaticSemanticVerifier:
 
         # 3B. Each security-critical phase must carry its semantic payload or a
         # complete signed canonical envelope.
-        required_by_phase = {
-            "start_game": {"game_id", "gamelet", "role", "signature"},
-            "commit": {"game_id", "step", "role", "commitment", "signature"},
-            "reveal": {"game_id", "step", "role", "move", "signature"},
-            "final_audit": {"game_id", "role", "nonces", "signature"},
-            "audit_summary": {"game_id", "role", "signed_audit_summary", "signature"},
-            "game_end": {"game_id", "role", "reason", "signature"},
-            "result_agreement": {"game_id", "role", "signed_agreement", "signature"},
-            "abort": {"game_id", "role", "reason", "signature"},
-        }
         for pm in plan.phase_mappings:
             fields = {fm.canonical_field for fm in pm.field_mappings}
             signed_envelope = fields.issuperset({"message_json", "signature"})
-            missing = required_by_phase.get(pm.phase, set()) - fields
+            missing = _REQUIRED_BY_PHASE.get(pm.phase, set()) - fields
             if missing and not signed_envelope:
                 errors.append(f"{pm.phase} cannot transport required fields: {sorted(missing)}")
             required_mappings = {
                 item.canonical_field for item in pm.field_mappings if item.required
             }
-            mandatory = required_by_phase.get(pm.phase, set())
+            mandatory = _REQUIRED_BY_PHASE.get(pm.phase, set())
             optionalized = (mandatory - {"signature"}) - required_mappings
             if optionalized and not signed_envelope:
                 errors.append(f"{pm.phase} optionalizes protected fields: {sorted(optionalized)}")
