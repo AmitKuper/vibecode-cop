@@ -90,7 +90,9 @@ def test_play_subgame_resets_the_mover_before_the_first_turn() -> None:
     reset = source.index("policy.reset()")
     assert reset > construct, "reset() must follow the RLMover construction"
     # And it must happen before any turn is played, not after the loop.
-    assert reset < source.index("for "), "reset() must precede the turn loop"
+    # Anchor on the actual turn loop, not the first bare "for " — comprehensions in
+    # earlier diagnostics code match that substring too.
+    assert reset < source.index("for step in range("), "reset() must precede the turn loop"
 
 
 def test_worker_start_playing_resets_the_shared_policy() -> None:
