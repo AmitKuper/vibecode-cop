@@ -59,11 +59,17 @@ been superseded by `agent/mcp/config_hash.py` for production use.
 3. **Static-IP topology** (no tunnel): production runs on a router port-forwarded
    static IP (cop 61224 / thief 61223). The tunnel runbook is retained for the
    alternative topology only.
-4. **150-line file limit — partially deviated.** The reference-v3 wire module, the
-   match runner, the trainer, and the kit-conformance fixtures exceed the limit; they
-   are cohesive protocol/lifecycle units whose split was deliberately deferred while
-   live league windows were possible (a mid-refactor wire layer is a rule-35 risk).
-   Status and the split plan are tracked in docs/TODO.md.
+4. **150-line file limit — largely met; remainder tracked.** Every module over 390
+   lines was split into <=150-line packages/mixins (reference-v3 wire, kit fixtures,
+   the trainer, coordinator, gamelet, replay, the adaptive-protocol stack) with
+   suites green and a full 6/6 kit-sparring rehearsal after the change. Remaining
+   over-limit files (~26, all 150-260 lines, plus scripts/live_match_ref3.py) are
+   cohesive single-responsibility units; the production match runner is deliberately
+   kept whole while live league windows are possible (a mid-refactor wire layer is a
+   rule-35 risk). One deliberate exception class: domain/transition.py holds the
+   single wire-law transition function, byte-pinned by kit vectors — splitting it
+   adds risk without cohesion benefit.
 5. **Two-repo module duplication** (cop_worker ↔ league_manager protocol copies and
    the cop/thief sibling repos): the course mandates two independent repositories;
-   within this repo the league_manager copies are being converted to import shims.
+   within this repo every duplicated league_manager module is now an import alias of
+   the cop_worker canonical (single source of truth, cannot drift).
