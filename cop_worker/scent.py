@@ -92,9 +92,8 @@ class ScentFields:
         """Decay then add kernel around each agent. Returns new ScentFields.
 
         Under ``COPTHIEF_WIRE_SCENT=1`` accumulation switches to the wire law
-        ``clamp(0.9*old + kernel, 0, 0.9)`` (``RulesEngine.update_scent``), with no rounding,
-        so training sees the same saturated field the reference-v3 wire carries. Default keeps
-        the historical unclamped law, which grows to ~6.5 and retains a peak at the emitter.
+        ``clamp(0.9*old + kernel, 0, 0.9)`` (``RulesEngine.update_scent``, no rounding) so
+        training matches the wire; default keeps the historical unclamped law (~6.5 peak).
         """
         from cop_worker.rl.obs_mode import wire_scent_enabled
 
