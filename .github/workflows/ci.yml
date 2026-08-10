@@ -26,7 +26,7 @@ jobs:
           uv run pytest tests/ cop_worker/tests/ league_manager/tests/ \
             --cov=cop_worker --cov=league_manager --cov-branch \
             --cov-report=xml \
-            --cov-fail-under=80
+            --cov-fail-under=85
       - name: Ruff lint
         run: uv run ruff check .
       - name: Ruff format

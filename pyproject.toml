@@ -75,7 +75,7 @@ omit = [
 
 [tool.coverage.report]
 # CI floor; local runs enforce the same gate (guideline target: 85 — tracked in docs/TODO.md).
-fail_under = 80
+fail_under = 85
 exclude_lines = [
     "pragma: no cover",
     "if TYPE_CHECKING:",
