@@ -152,7 +152,7 @@ async def test_locked_schema_recheck_rejects_mid_series_change(monkeypatch) -> N
     async def changed(_self, _probe):
         return IntrospectionResult("peer", "1", "p", [], [], [], {}, "changed")
 
-    monkeypatch.setattr("agent.adaptive.pipeline.MCPIntrospector.introspect", changed)
+    monkeypatch.setattr("cop_worker.protocol.pipeline.MCPIntrospector.introspect", changed)
     with pytest.raises(Exception, match="schema changed"):
         await verify_locked_schema(profile)
 

@@ -1,7 +1,8 @@
 [project]
 name = "cop-thief-game"
 version = "3.0.0"
-description = "Cop vs Thief game with crewAI agent orchestration with multiple LLM backends"
+description = "Cop/Thief league agent: reference-v3 MCP wire, minimax-over-oracle move engine, RL fallback"
+license = { file = "LICENSE" }
 requires-python = ">=3.12"
 dependencies = [
     "pydantic>=2.0",
@@ -10,7 +11,6 @@ dependencies = [
     "fastmcp>=3.4.4",
     "httpx>=0.27",
     "python-jose[cryptography]>=3.3",
-    "crewai>=0.1.0",
     "google-auth>=2.0",
     "google-auth-oauthlib>=1.0",
     "google-api-python-client>=2.0",
@@ -19,17 +19,6 @@ dependencies = [
     "sympy>=1.14.0",
     "torch>=2.2",
     "pyyaml>=6.0.3",
-]
-
-[project.optional-dependencies]
-ollama = ["langchain-community>=0.0.15"]
-openai = ["langchain-openai>=0.1.0"]
-anthropic = ["langchain-anthropic>=0.1.0"]
-azure = ["langchain-openai>=0.1.0"]
-all-llms = [
-    "langchain-community>=0.0.15",
-    "langchain-openai>=0.1.0",
-    "langchain-anthropic>=0.1.0",
 ]
 
 [dependency-groups]
@@ -81,6 +70,8 @@ omit = [
 ]
 
 [tool.coverage.report]
+# CI floor; local runs enforce the same gate (guideline target: 85 — tracked in docs/TODO.md).
+fail_under = 80
 exclude_lines = [
     "pragma: no cover",
     "if TYPE_CHECKING:",

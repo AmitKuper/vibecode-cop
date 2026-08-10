@@ -16,6 +16,9 @@
 # exists, else this base). CLI flags always override these values.
 # ================================================================
 
+# Semantic version of this runtime-config schema.
+config_version = "1.0.0"
+
 [network]
 # Our two MCP servers (static public IP, router-forwarded — no tunnel).
 our_cop_port      = 61224
