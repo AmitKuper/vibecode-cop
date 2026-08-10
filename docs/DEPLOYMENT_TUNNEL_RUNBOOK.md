@@ -1,4 +1,10 @@
-# Deployment Tunnel Runbook
+# Deployment Tunnel Runbook — ALTERNATIVE topology
+
+> **Role of this document:** the *alternative* deployment (LeagueManager facade
+> and/or tunnel in front of the endpoints), kept for environments without router
+> control or a public IP. The **production** deployment — static public IP with
+> router port-forwarding and the single match-runner process, as used for both
+> counted games — is `docs/DEPLOYMENT.md`.
 
 **Architecture:** 3-process design (see `docs/DESIGN.md` Decisions 1–5, 19).
 `vibecode-cop` is the deployable unit for a match — it provides the **LeagueManager**

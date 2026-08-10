@@ -1,122 +1,86 @@
 # Test Evidence — vibecode-cop
 
-## Phase 0 baseline (2026-08-02)
+Current as of **2026-08-10**, working tree at HEAD `3ab6e1f`. This file records what
+was actually measured and where the artifacts live; the strategy behind the suite is
+`docs/TESTING.md`. (Earlier phase-0/0.5 baselines from the pre-restructure `agent/`
+era were removed as stale; they remain in git history.)
 
-### Environment
-
-| Item | Value |
-|------|-------|
-| Python | 3.13.14 |
-| Platform | Windows 11 Pro 10.0.26200 |
-| pytest | 9.1.1 |
-| Baseline SHA | 0fd1c208d0955a0eb915153ec6336734a674684a |
-| Phase-0 SHA | e77d23a (fix: circular import + startup tests) |
-
-### Startup smoke tests (Phase 0)
-
-Command: `uv run pytest tests/test_startup.py -v`
-
-Result: **5 passed in 22.55s**
-
-All subprocess-level entry-point imports verified clean:
-- `import agent.peer_agent_runtime` — PASS
-- `import cop.__main__` — PASS
-- combined import — PASS
-- `scripts/run_series.py --help` — PASS
-- `agent.language.hints.generate_hint` — PASS
-
-### Full test suite baseline
-
-Command: `uv run pytest tests/ agent/tests/ --tb=no -q`
-
-Result: **549 passed, 58 failed, 33 warnings** in 78.80s
-
-#### Failure classification (Phase 0 baseline)
-
-| Category | Count | Example |
-|----------|-------|---------|
-| Stale scent-decay expectation (additive accumulates > 0.9) | 1 | `test_compliance.py` |
-| RL model channel mismatch (5-channel obs vs 4-channel checkpoint) | ~5 | `RuntimeError: mat1 and mat2 shapes cannot be multiplied` |
-| `fastapi` not installed (webserver/live-view tests) | ~5 | `ModuleNotFoundError: No module named 'fastapi'` |
-| Stale game-rule test (barrier-on-thief now triggers COP_WIN earlier) | ~2 | `assert <GameOutcome.COP_WIN> == <GameOutcome.ONGOING>` |
-| Stale crewAI/LLM behavior expectation | ~8 | Various |
-| Missing `opponent_commitments.json` in empty-audit test | 1 | `assert False is True` |
-| `test_rl_tools_reports.py` CrewAI factory tests | 18 | Missing CrewAI factory implementations |
-| Other pre-existing environment/external | ~18 | Various |
-
-None of the 58 failures were introduced by the Phase 0 circular-import fix.
-
-### Phase 0 acceptance checklist
-
-- [x] Cop entry point imports in clean subprocess
-- [x] `scripts/run_series.py --help` exits 0
-- [x] Startup smoke tests: 5/5 pass
-- [x] Baseline failure count documented and classified
-
----
-
-## Phase 0.5 — Reproducible Green Quality Baseline (2026-08-03)
-
-### Environment
+## Environment
 
 | Item | Value |
-|------|-------|
-| Python | 3.13.14 |
-| Platform | Windows 11 Pro 10.0.26200 |
-| uv | 0.11.33 |
-| pytest | 9.1.1 |
-| pytest-cov | 5.x |
-| coverage | 7.x |
-| ruff | 0.9.x |
-| Baseline SHA | a38c930a209e129ee2873e5eed4b686a033a6620 |
-| Tested SHA | (this commit) |
-| Timestamp | 2026-08-03 |
+|---|---|
+| Python | 3.13 (CPython) |
+| Platform | Windows 11 Pro 10.0.26200 (CI: ubuntu-latest) |
+| Toolchain | uv (locked via `uv.lock`), pytest 9.x, coverage 7.x, ruff |
 
-### Full test suite result
+## Suite result
 
-Command: `uv run python -m pytest tests/ agent/tests/ -q --tb=short`
+Command:
 
-Result: **607 passed, 1 skipped, 0 failed, 33 warnings** in ~87s
+```bash
+uv run pytest tests/ cop_worker/tests/ league_manager/tests/ -q --tb=short
+```
 
-The 1 skipped test is the RL policy load test — skipped because no trained model files
-are present in this checkout. The skip uses `pytest.importorskip` or file-existence guard
-so it does not pollute CI. Documented in `docs/KNOWN_DEVIATIONS.md` (DEV-001).
+Result: **1,484 passed, 1 skipped** at the measured coverage run (~3 min locally);
+a same-day re-run after the in-progress coverage push collected **1,540 tests
+(1,539 passed, 1 skipped)** — the suite is actively growing toward the 85% target.
+The single skip is `tests/reference_v3/test_survival_terminal.py`
+(`thief_worker not on path` — cross-repo test, runs when the sibling
+`vibecode-thief` checkout is importable); nothing is ignored via `addopts`.
 
-### Coverage result
+## Coverage
 
-Command: `uv run python -m pytest tests/ agent/tests/ --cov=agent --cov-branch --cov-report=term-missing --cov-report=xml --cov-fail-under=85 -q`
+Command (identical to the CI gate in `.github/workflows/ci.yml`):
 
-Result: **87.71% total branch coverage** (target: ≥85%) ✓
+```bash
+uv run pytest tests/ cop_worker/tests/ league_manager/tests/ \
+  --cov=cop_worker --cov=league_manager --cov-branch \
+  --cov-report=xml --cov-fail-under=80
+```
 
-Key module coverage:
-- `agent/board.py`: 96%
-- `agent/rules_engine.py`: 93%
-- `agent/rules_outcomes.py`: 90%
-- `agent/peer_audit.py`: 94%
-- `agent/peer_turn_helpers.py`: 94%
-- `agent/rl/environment.py`: 93%
-- `agent/rl/observation.py`: 95%
-- `agent/rl/policy.py`: 95%
-- `agent/rl/policy_loader.py`: 91%
+Result: **80.85% branch coverage** (11,131 statements / 2,754 branches measured) —
+gate ≥ 80% passed. Branch coverage is stricter than line coverage (line is ~85%);
+the enforced floor is 80 in both CI and `pyproject.toml` (`fail_under = 80`), with
+85 as the tracked target (see `docs/TESTING.md`).
 
-Coverage XML: `coverage.xml`
+CI also enforces: `uv lock --check`, `ruff check`, `ruff format --check`, and a
+secret scan — all green on `master`.
 
-### Ruff result
+## Protocol conformance evidence
 
-Commands:
-- `uv run ruff check .` → **All checks passed!**
-- `uv run ruff format --check .` → **167 files already formatted**
+- **Kit vectors, full run:** `python verify_vectors.py` from the unmodified
+  `copthief-league-protocol` checkout at commit **`be96e57`** —
+  **125 checks / 15 fixtures (7 CORE, 4 PROMOTED, 2 PROPOSED, 2 ENH): ALL PASS**.
+  Driven by `scripts/verify_reference_v3_interop.py`, which refuses to run against a
+  dirty kit tree.
+- **Ported vectors, every pytest run:** `tests/test_scent_chebyshev.py` carries the
+  kit's `vectors/pheromone.json` (CORE) fixture bytes verbatim (pinned at `be96e57`),
+  so scent-arithmetic drift fails CI without importing the kit;
+  `tests/reference_v3/test_game_uid_vectors.py` and
+  `tests/test_scent_model_negotiation.py` pin uid derivation and the `SCENT_LOCKS`
+  hashes on the wire.
 
-### JUnit XML
+## Live evidence chain (the tests that were played, not run)
 
-File: `results/test-results.xml`
+The counted ledger (`evidence/game_vs_imreeyal/counted_series.json`) records
+`counted_games_played: 2`, two distinct opponents — the league's
+`min_games_to_pass = 2` satisfied. Each counted series was preceded by friendly
+rehearsal series with the same opponent over the same wire path (friendlies default
+to the own-inbox report and increment no counter).
 
-### Phase 0.5 acceptance checklist
+| Series | Date | Result | Audits | Artifacts |
+|---|---|---|---|---|
+| Friendly rehearsals vs anrbj666, then vs imreeyal | 2026-08-05 .. 2026-08-10 | rehearsal outcomes; surfaced the bugs now pinned in `tests/` (episode reset, empty timestamp, capture-claim initiation, enclosure duty) | 6/6 `Verified OK` per completed series | `reports/ref3_matches/` logs; per-opponent profile saved to `config/opponents/<opp>/` |
+| **Counted vs anrbj666** | 2026-08-08 | loss 35–75 (sub-games 1–5) | **6/6 `Verified OK`**, mutual agreement `b4db10c2…` confirmed | `evidence/game_vs_anrbj666/` (declaration, per-gamelet config+log, result, ledger, filed report `.eml`, msg-id `19fe2cdea7a51125`) |
+| **Counted vs imreeyal** | 2026-08-10 | **win 90–30 (sub-games 6–0)** | **6/6 `Verified OK` both directions**, mutual agreement `ad403f44…` confirmed | `evidence/game_vs_imreeyal/` (declaration, configs, logs, result, `runtime_match.log` full wire log, authorization, report `.eml`, msg-id `19fecf55c1b5eea0`) |
 
-- [x] `uv run python -m pytest tests/ agent/tests/ -q` — 607 passed, 0 failed
-- [x] `uv run python -m pytest tests/ agent/tests/ --cov=agent --cov-fail-under=85` — 87.71%
-- [x] `uv run ruff check .` — All checks passed
-- [x] `uv run ruff format --check .` — All files formatted
-- [x] `results/test-results.xml` generated
-- [x] `coverage.xml` generated
-- [x] `docs/KNOWN_DEVIATIONS.md` created
+Series facts for the counted win: `game_uid 2e167349-f579-0201-e3f1-5ea0d75710c0`,
+scent lock `subtractive_chebyshev_v1` (`81ebee59…`), `[row, col]` wire cells, commit
+SHAs exchanged in writing pre-T (ours: cop `14a7ddf…`, thief `06c2cf2…`). Outcomes:
+our thief SURVIVAL g01/g03/g05 (35 rounds each); our cop CAPTURE g02/g04/g06.
+Reports were emailed independently by both teams to the league address at
+settlement.
+
+The point of this table: every claim in the conformance and unit sections above was
+also exercised against two real, independently implemented opponents, with
+commit-reveal audits verifying every sealed record in both directions.
