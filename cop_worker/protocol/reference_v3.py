@@ -133,7 +133,9 @@ def terms_from_game(game: dict) -> dict:
         "smell_grid_size": pher.get("pheromone_grid_size", 5),
         "decay_per_step": pher.get("pheromone_decay", 0.1),
         "emit_intensity": pher.get("pheromone_center_intensity", 0.9),
-        "min_center_intensity": pher.get("min_center_intensity", 0.5),
+        "min_center_intensity": pher.get(
+            "pheromone_min_center_intensity", pher.get("min_center_intensity", 0.5)
+        ),
         "max_steps": movement.get("max_moves", 35),
         "barriers_max": movement.get("max_barriers", 14),
         "setting": world.get("map_area", "New York"),

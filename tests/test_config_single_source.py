@@ -31,10 +31,11 @@ def test_config_sha256_is_whole_file_and_pinned():
     canon = json.dumps(GAME, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
     sha = hashlib.sha256(canon.encode("utf-8")).hexdigest()
     # Whole-file canonical hash of the IMREEYAL-pairing constitution (2026-08-10):
-    # their proposed game.json + pheromones.min_center_intensity (the kit's flat terms
-    # require the key; SPEC §5 default 0.5), schema_version matched to theirs. The flat
-    # 14-key terms are UNCHANGED by this reconciliation — see the uid pins below.
-    assert sha == "da1c9108c5989ac5634bae374dc6b90de4389135a699000bfe52f76ec43743ff"
+    # their game.json + pheromones.pheromone_min_center_intensity (the reference
+    # schema-1.3 key spelling their loader reads — their 3.1 answer; the kit's FLAT
+    # terms still carry bare `min_center_intensity: 0.5`, unchanged). This exact value
+    # was independently computed by imreeyal — byte-agreement in writing pre-window.
+    assert sha == "3b5c4a9a05c923acfe50ff355f56d4f529279435d87093aba6bad94015684f27"
     # ref3_artifacts computes the same
     import sys
 
