@@ -1,0 +1,396 @@
+Delivered-To: agentsorch@gmail.com
+Received: by 2002:a0c:ef02:0:b0:8ef:cfdb:29a3 with SMTP id t2csp1221376qvr;
+        Tue, 11 Aug 2026 16:15:22 -0700 (PDT)
+X-Received: by 2002:a05:6a21:6f14:b0:3bf:6011:53b with SMTP id adf61e73a8af0-3cc3f874b6fmr403436637.38.1786490121820;
+        Tue, 11 Aug 2026 16:15:21 -0700 (PDT)
+ARC-Seal: i=2; a=rsa-sha256; t=1786490121; cv=pass;
+        d=google.com; s=arc-20260327;
+        b=cvGIPlQAaDZNNskUtuV7jJdcG7DyRXGasLh/jL+L99y+1lkKWhgy7D6LHHSnl8wX2L
+         VTSbgv0VMaais1MSj7EX271/SAhmWcPv64StHyGYY+e/nC7R0wjcA/B4Dh171ODI7MQ/
+         RPI1g63yMuwM6Fyj28GIlQ4733IwOXqrOJgnvixdvsQ7Rxh/cm7Mi3jSCMcvVdHgvdY7
+         ACDEhwyG3vUdmyRocgU6MzyT7gJFxcDrUrbcEX9XYvUBOHYv4y0OzEWdr35Iidit9mqX
+         oAGQAmAsBoMX6uFgdiWFsXcaAREpMt9NyxaXlc1guuUe9JfyWkOMTgLKTW7PEeAUYOol
+         EIag==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :dkim-signature;
+        bh=L4oof64r19TK/0B2vE5cPd52ocJ4tU6kseui2qIiXSQ=;
+        fh=ZBENhEVGQSFS05X5kEbRDqMIDmFyAa5PBLYf7d2ny1E=;
+        b=JD2a/OarHLQTyE4GOwRhEysvAdaHyrC8aOvCYfrZY5Tatwb9ku7KoqrYKMHCAOLeu7
+         NA98quZEdSq1rBOH/rIzvjfszdvqup7KsnGZUZ3AuSPcmbpfeBQQN59dm1KSqFcIMaM2
+         RiDCm3pbAelhsp1qVpRYE8aGLQ4OCl/Nn3qBEKu+1cl6Vu0x3j+/iCq1J7yyovKFRzdc
+         uaAcrqfg1CHAuYxquccytbEvoTHECEPSno0mNbFLxxbcEQqx7AYiOJw9afcbxnv58Fnp
+         7lPTqKO33beVyGB6TDj7uBug5fgi4LdjX89I1/tzRzyrItXkaIYeh0IW7eRdT+IrS4Zq
+         BHEQ==;
+        dara=google.com
+ARC-Authentication-Results: i=2; mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20251104 header.b=OI3VNOfa;
+       arc=pass (i=1);
+       spf=pass (google.com: domain of skadah324@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=skadah324@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;
+       dara=pass header.i=@gmail.com
+Return-Path: <skadah324@gmail.com>
+Received: from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])
+        by mx.google.com with SMTPS id 41be03b00d2f7-cbee5cdc151sor218442a12.9.2026.08.11.16.15.21
+        for <agentsorch@gmail.com>
+        (Google Transport Security);
+        Tue, 11 Aug 2026 16:15:21 -0700 (PDT)
+Received-SPF: pass (google.com: domain of skadah324@gmail.com designates 209.85.220.41 as permitted sender) client-ip=209.85.220.41;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20251104 header.b=OI3VNOfa;
+       arc=pass (i=1);
+       spf=pass (google.com: domain of skadah324@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=skadah324@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;
+       dara=pass header.i=@gmail.com
+ARC-Seal: i=1; a=rsa-sha256; t=1786490121; cv=none;
+        d=google.com; s=arc-20260327;
+        b=ctFy/A5YVJNEeZpOlqOSyTOyu9lwe4UgWQR9vmuNtmizdeKRwECTGB4ayZXNv44SQ2
+         kOb6gaWblterkHd40y6+xvt0mhosB0zQj+OZDVut+CTiFzRQpiysgTw8T+AkyyGNiFp4
+         WC7nGi0tp7kKdozZDKYvCgNwbo2oRDP5RxiXPzkh9GjbUMbVxzEMtfZq+abgPgH+9+yC
+         iBrdsr5WhxqsevNiCe9VtjrcFL1iWoUDL55fscbuIvQCvPB70Jw0FxQ5QPqreOtqzu7m
+         Ha8VBAbesp2t3js9FV2CgxZeg7ZrNFaagnncH/RNtDVoaVK6npIhVpR4x6DM52BbItFo
+         Y83Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :dkim-signature;
+        bh=L4oof64r19TK/0B2vE5cPd52ocJ4tU6kseui2qIiXSQ=;
+        fh=ZBENhEVGQSFS05X5kEbRDqMIDmFyAa5PBLYf7d2ny1E=;
+        b=b1kVbkZRiQC2S30EYA6Paa2HSwYveKDiiW0zIxCNEdyML9bRQJXYb0UDvlMJ/iH+6G
+         PLFaI9CwBHJWWfE2jS9ye3ClWOd224pn2JICNfWYjHzRdUB6i/z0MeQJII1/Ya2R1FaI
+         G91ygCZj7/H2ASC75eZujNM8JAt3ZMKIC3a1zebGOtQXwYlXAgXtSh4G84SyQr6bl6xz
+         I/DeY27fQYR3Vgkbmuyl+tQYTuWd1JA8h88xqUU6qzibBSj9sbvU/nyDBOVBC3AAcCiw
+         7zwZWA1XbvKT96r2IDZOHGrN0936XgU7z5UMzeL5Tj92D/pqOQTZ90hnrNbZ5sPDW9x6
+         wJ4A==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786490121; x=1787094921; dara=google.com;
+        h=content-type:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=L4oof64r19TK/0B2vE5cPd52ocJ4tU6kseui2qIiXSQ=;
+        b=OI3VNOfaTQ4Dgrn0asL2qfacNwEbK2CKeJuhDw/sAjPNnOyw+EF1jgpelD3gFtkSPO
+         fzaurR70VI/6G4B6HATdpz4PTNw5wO0DogTEdfOF8+07VSAR893TL5lgSz2KPE7CdorI
+         LzcJEhTKOK5DHHOkVch5wzVa6UQIRcSk0niYus6B3xBJUiWsTiZKjyOJ2KJHzk2UJDpx
+         hnCILCeHkjUIDfI+ooiFZln7CMo8bE8bv6TI0O6zwLvQIp9adKbKOTyNXeUgs9lbrAEm
+         FKy+JoVb44nQiKZbGlL3/ArtwknsPS+GIyWUkyUHwhWMCZ5x5sEp2SfjX59pzJM/9lFf
+         QEfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786490121; x=1787094921;
+        h=content-type:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=L4oof64r19TK/0B2vE5cPd52ocJ4tU6kseui2qIiXSQ=;
+        b=mSj2+Unpk6Hojqr/P5ZYBy8kEffzaPiCbBfm+CS9yfOz7DA2J3TsqSKPmBWHl4F4El
+         mbm/ovhTIh+nftkdUW83xHPvm8rUxI3sIIwqMx1wtHeEj4xA3NxJ6COHHKjG1nj2+ABt
+         13BHudjeSUwA6/Nk5qZSSH5GlEmZMDLwMwuuivXIDlNhjF1mKpWLmqH7UMBVd2C/lQlU
+         IktMwXTd4Zy2T0ML4PENQsGVX4pr39wfk8g8TZVXYM37fm9O2QRMVczj2vXj70SJ/nYc
+         rFQnpG6a1yikygTMCGkcd3K/KU5cQqbG9L6F70AcH9OyG110+2U2KutSafIOx4Pq3p4l
+         5QQA==
+X-Gm-Message-State: AOJu0Yw+K5zhvQ4D520zxLE3eMYx/ujoWyeMkXq/RLiC/JfmGuh4J0BB
+	uh4m9Difz/2bPh9loSq93hv17a0x2LiFHXDab6mzP6t8fNsenIyvCd0GP/XcIK2J+MpB9PVjlh9
+	9EIVJ3F7im2gllwObVulzNt8mEBDzmLJg0g==
+X-Gm-Gg: AR+sD12dFPX8qhe4r5I8eicX9XgOxQeQD6mdZiwFAyNGZieFAT8eWn996CaR5kWxBE/
+	QIZQ8jpc3pAlV3z3+8fgrMBCySh8nFch/4Qbt5l/PvFeAgj9pqe8ivZNU9wPmhiYCfU1QVj4WBn
+	yuAscEYnwWNIu0vFxxPv/1cnDw3TLMDeFdc3fjOmtmi9cEYDbZLy9nxAX3tv9v7U5JNtX80lzlB
+	QAORms3OzK4N3mJ7Kq1LORtsN2FYieeMSBbn3XQAndlSkj7BduuHSfjdZhxKTOqvXzhlOR673ro
+	FXqc+0PRo3xmh3y8j70xb7ezqXaTl7cDYHUc+iBEeBwsmSj4ay13naIEZy3HfyqXa63SyCacbDc
+	+nnOzBT1jlYAzBYg50gKj6hfDleQQZwkX6g==
+X-Received: by 2002:a17:902:f549:b0:2ca:9d5a:8b6c with SMTP id
+ d9443c01a7336-2d34535a45cmr10373345ad.5.1786490120840; Tue, 11 Aug 2026
+ 16:15:20 -0700 (PDT)
+MIME-Version: 1.0
+References: <CACHfdHpuy6LvX2Mqq_7-oQdRe2bEtMk=hLHO+yC+Vgsd_YG6wQ@mail.gmail.com>
+In-Reply-To: <CACHfdHpuy6LvX2Mqq_7-oQdRe2bEtMk=hLHO+yC+Vgsd_YG6wQ@mail.gmail.com>
+From: Salah Qadah <skadah324@gmail.com>
+Date: Wed, 12 Aug 2026 02:15:09 +0300
+X-Gm-Features: AUfX_myxKqNhs9vUkuta1iLoucInLXuD7k2KWGI2qrEelccckPnwZnQUK6H0jbA
+Message-ID: <CACHfdHrauzEUWXi_1ndqZE8NdMwRTb+_HW947GtFrNgUfqgH2g@mail.gmail.com>
+Subject: Fwd: CipherChase report uoh-sqak-vs-vibecode
+To: agentsorch@gmail.com
+Content-Type: multipart/mixed; boundary="0000000000000c46740658cda573"
+
+--0000000000000c46740658cda573
+Content-Type: multipart/alternative; boundary="0000000000000c46730658cda571"
+
+--0000000000000c46730658cda571
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+---------- Forwarded message ---------
+From: <skadah324@gmail.com>
+Date: Wed, 12 Aug 2026 at 2:06
+Subject: CipherChase report uoh-sqak-vs-vibecode
+To: <rmisegal+uoh26finalgame@gmail.com>
+
+
+{"_schema":"result","final_result":{"diversity_reward_applied":{"uoh-sqak":=
+false,"vibecode":true},"first_meeting_between_groups":true,"games_played_in=
+cluding_this":{"uoh-sqak":2,"vibecode":3},"series_tie":false,"sub_games_won=
+":{"uoh-sqak":0,"vibecode":6},"ties":0,"tokens_total_series":{"uoh-sqak":0,=
+"vibecode":0},"total_score":{"uoh-sqak":30,"vibecode":90},"winner_group":"v=
+ibecode"},"game_id":"uoh-sqak-vs-vibecode","game_uid":"e294ea6e-31c6-e5bf-0=
+a27-1bc8e6dad89f","generated_at":"2026-08-11T23:06:43.401474+00:00","groups=
+":["uoh-sqak","vibecode"],"links":{"config":"config_uoh-sqak-vs-vibecode_g<=
+NN>.json","declaration":"declaration_uoh-sqak-vs-vibecode.json","github":{"=
+uoh-sqak":{"cop":"
+https://github.com/salah-dev-stu/uoh-sqak-cop","thief":"
+https://github.com/salah-dev-stu/uoh-sqak-thief"},"vibecode":{"cop":"
+https://github.com/AmitKuper/vibecode-cop","thief":"
+https://github.com/AmitKuper/vibecode-thief
+"}},"log":"log_uoh-sqak-vs-vibecode_g<NN>.json","result":"result_uoh-sqak-v=
+s-vibecode.json"},"mutual_agreement":{"confirmed":true,"sha256":"dfb41c7da5=
+efc0b66d668f4a935ea04a403359ea697e21a9d2e5cad934645834"},"num_sub_games":6,=
+"report_type":"final_game_result","schema_version":"1.1","sub_games":[{"aud=
+it":{"log_verified":true,"tampered":false},"ended_at":"2026-08-11T23:00:06.=
+591364+00:00","github_commit":{"uoh-sqak":"0ce69577cc9681526be590b891bc3bb7=
+48ddf641","vibecode":"unknown"},"log_files":{"uoh-sqak":"uoh-sqak/log_uoh-s=
+qak-vs-vibecode_g01.json","vibecode":"vibecode/log_uoh-sqak-vs-vibecode_g01=
+.json"},"result":"survival","roles":{"uoh-sqak":"police","vibecode":"thief"=
+},"score":{"uoh-sqak":5,"vibecode":10},"started_at":"2026-08-11T22:57:33.57=
+7805+00:00","sub_game_number":1,"tie":false,"tokens":{"uoh-sqak":0,"vibecod=
+e":0},"winner_group":"vibecode"},{"audit":{"log_verified":true,"tampered":f=
+alse},"ended_at":"2026-08-11T23:00:55.496660+00:00","github_commit":{"uoh-s=
+qak":"0ce69577cc9681526be590b891bc3bb748ddf641","vibecode":"unknown"},"log_=
+files":{"uoh-sqak":"uoh-sqak/log_uoh-sqak-vs-vibecode_g02.json","vibecode":=
+"vibecode/log_uoh-sqak-vs-vibecode_g02.json"},"result":"capture","roles":{"=
+uoh-sqak":"thief","vibecode":"police"},"score":{"uoh-sqak":5,"vibecode":20}=
+,"started_at":"2026-08-11T23:00:06.593920+00:00","sub_game_number":2,"tie":=
+false,"tokens":{"uoh-sqak":0,"vibecode":0},"winner_group":"vibecode"},{"aud=
+it":{"log_verified":true,"tampered":false},"ended_at":"2026-08-11T23:02:55.=
+971120+00:00","github_commit":{"uoh-sqak":"0ce69577cc9681526be590b891bc3bb7=
+48ddf641","vibecode":"unknown"},"log_files":{"uoh-sqak":"uoh-sqak/log_uoh-s=
+qak-vs-vibecode_g03.json","vibecode":"vibecode/log_uoh-sqak-vs-vibecode_g03=
+.json"},"result":"survival","roles":{"uoh-sqak":"police","vibecode":"thief"=
+},"score":{"uoh-sqak":5,"vibecode":10},"started_at":"2026-08-11T23:00:55.49=
+6895+00:00","sub_game_number":3,"tie":false,"tokens":{"uoh-sqak":0,"vibecod=
+e":0},"winner_group":"vibecode"},{"audit":{"log_verified":true,"tampered":f=
+alse},"ended_at":"2026-08-11T23:03:45.131167+00:00","github_commit":{"uoh-s=
+qak":"0ce69577cc9681526be590b891bc3bb748ddf641","vibecode":"unknown"},"log_=
+files":{"uoh-sqak":"uoh-sqak/log_uoh-sqak-vs-vibecode_g04.json","vibecode":=
+"vibecode/log_uoh-sqak-vs-vibecode_g04.json"},"result":"capture","roles":{"=
+uoh-sqak":"thief","vibecode":"police"},"score":{"uoh-sqak":5,"vibecode":20}=
+,"started_at":"2026-08-11T23:02:55.971608+00:00","sub_game_number":4,"tie":=
+false,"tokens":{"uoh-sqak":0,"vibecode":0},"winner_group":"vibecode"},{"aud=
+it":{"log_verified":true,"tampered":false},"ended_at":"2026-08-11T23:05:48.=
+315179+00:00","github_commit":{"uoh-sqak":"0ce69577cc9681526be590b891bc3bb7=
+48ddf641","vibecode":"unknown"},"log_files":{"uoh-sqak":"uoh-sqak/log_uoh-s=
+qak-vs-vibecode_g05.json","vibecode":"vibecode/log_uoh-sqak-vs-vibecode_g05=
+.json"},"result":"survival","roles":{"uoh-sqak":"police","vibecode":"thief"=
+},"score":{"uoh-sqak":5,"vibecode":10},"started_at":"2026-08-11T23:03:45.13=
+1976+00:00","sub_game_number":5,"tie":false,"tokens":{"uoh-sqak":0,"vibecod=
+e":0},"winner_group":"vibecode"},{"audit":{"log_verified":true,"tampered":f=
+alse},"ended_at":"2026-08-11T23:06:43.400881+00:00","github_commit":{"uoh-s=
+qak":"0ce69577cc9681526be590b891bc3bb748ddf641","vibecode":"unknown"},"log_=
+files":{"uoh-sqak":"uoh-sqak/log_uoh-sqak-vs-vibecode_g06.json","vibecode":=
+"vibecode/log_uoh-sqak-vs-vibecode_g06.json"},"result":"capture","roles":{"=
+uoh-sqak":"thief","vibecode":"police"},"score":{"uoh-sqak":5,"vibecode":20}=
+,"started_at":"2026-08-11T23:05:48.315834+00:00","sub_game_number":6,"tie":=
+false,"tokens":{"uoh-sqak":0,"vibecode":0},"winner_group":"vibecode"}],"tim=
+ezone":"Asia/Jerusalem"}
+
+--0000000000000c46730658cda571
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div><br></div><div><br><div class=3D"gmail_quote gmail_quote_container"><d=
+iv dir=3D"ltr" class=3D"gmail_attr">---------- Forwarded message ---------<=
+br>From: <span dir=3D"auto">&lt;<a href=3D"mailto:skadah324@gmail.com">skad=
+ah324@gmail.com</a>&gt;</span><br>Date: Wed, 12 Aug 2026 at 2:06<br>Subject=
+: CipherChase report uoh-sqak-vs-vibecode<br>To:  &lt;<a href=3D"mailto:rmi=
+segal%2Buoh26finalgame@gmail.com">rmisegal+uoh26finalgame@gmail.com</a>&gt;=
+<br></div><br><br>{&quot;_schema&quot;:&quot;result&quot;,&quot;final_resul=
+t&quot;:{&quot;diversity_reward_applied&quot;:{&quot;uoh-sqak&quot;:false,&=
+quot;vibecode&quot;:true},&quot;first_meeting_between_groups&quot;:true,&qu=
+ot;games_played_including_this&quot;:{&quot;uoh-sqak&quot;:2,&quot;vibecode=
+&quot;:3},&quot;series_tie&quot;:false,&quot;sub_games_won&quot;:{&quot;uoh=
+-sqak&quot;:0,&quot;vibecode&quot;:6},&quot;ties&quot;:0,&quot;tokens_total=
+_series&quot;:{&quot;uoh-sqak&quot;:0,&quot;vibecode&quot;:0},&quot;total_s=
+core&quot;:{&quot;uoh-sqak&quot;:30,&quot;vibecode&quot;:90},&quot;winner_g=
+roup&quot;:&quot;vibecode&quot;},&quot;game_id&quot;:&quot;uoh-sqak-vs-vibe=
+code&quot;,&quot;game_uid&quot;:&quot;e294ea6e-31c6-e5bf-0a27-1bc8e6dad89f&=
+quot;,&quot;generated_at&quot;:&quot;2026-08-11T23:06:43.401474+00:00&quot;=
+,&quot;groups&quot;:[&quot;uoh-sqak&quot;,&quot;vibecode&quot;],&quot;links=
+&quot;:{&quot;config&quot;:&quot;config_uoh-sqak-vs-vibecode_g&lt;NN&gt;.js=
+on&quot;,&quot;declaration&quot;:&quot;declaration_uoh-sqak-vs-vibecode.jso=
+n&quot;,&quot;github&quot;:{&quot;uoh-sqak&quot;:{&quot;cop&quot;:&quot;<a =
+href=3D"https://github.com/salah-dev-stu/uoh-sqak-cop" rel=3D"noreferrer" t=
+arget=3D"_blank">https://github.com/salah-dev-stu/uoh-sqak-cop</a>&quot;,&q=
+uot;thief&quot;:&quot;<a href=3D"https://github.com/salah-dev-stu/uoh-sqak-=
+thief" rel=3D"noreferrer" target=3D"_blank">https://github.com/salah-dev-st=
+u/uoh-sqak-thief</a>&quot;},&quot;vibecode&quot;:{&quot;cop&quot;:&quot;<a =
+href=3D"https://github.com/AmitKuper/vibecode-cop" rel=3D"noreferrer" targe=
+t=3D"_blank">https://github.com/AmitKuper/vibecode-cop</a>&quot;,&quot;thie=
+f&quot;:&quot;<a href=3D"https://github.com/AmitKuper/vibecode-thief" rel=
+=3D"noreferrer" target=3D"_blank">https://github.com/AmitKuper/vibecode-thi=
+ef</a>&quot;}},&quot;log&quot;:&quot;log_uoh-sqak-vs-vibecode_g&lt;NN&gt;.j=
+son&quot;,&quot;result&quot;:&quot;result_uoh-sqak-vs-vibecode.json&quot;},=
+&quot;mutual_agreement&quot;:{&quot;confirmed&quot;:true,&quot;sha256&quot;=
+:&quot;dfb41c7da5efc0b66d668f4a935ea04a403359ea697e21a9d2e5cad934645834&quo=
+t;},&quot;num_sub_games&quot;:6,&quot;report_type&quot;:&quot;final_game_re=
+sult&quot;,&quot;schema_version&quot;:&quot;1.1&quot;,&quot;sub_games&quot;=
+:[{&quot;audit&quot;:{&quot;log_verified&quot;:true,&quot;tampered&quot;:fa=
+lse},&quot;ended_at&quot;:&quot;2026-08-11T23:00:06.591364+00:00&quot;,&quo=
+t;github_commit&quot;:{&quot;uoh-sqak&quot;:&quot;0ce69577cc9681526be590b89=
+1bc3bb748ddf641&quot;,&quot;vibecode&quot;:&quot;unknown&quot;},&quot;log_f=
+iles&quot;:{&quot;uoh-sqak&quot;:&quot;uoh-sqak/log_uoh-sqak-vs-vibecode_g0=
+1.json&quot;,&quot;vibecode&quot;:&quot;vibecode/log_uoh-sqak-vs-vibecode_g=
+01.json&quot;},&quot;result&quot;:&quot;survival&quot;,&quot;roles&quot;:{&=
+quot;uoh-sqak&quot;:&quot;police&quot;,&quot;vibecode&quot;:&quot;thief&quo=
+t;},&quot;score&quot;:{&quot;uoh-sqak&quot;:5,&quot;vibecode&quot;:10},&quo=
+t;started_at&quot;:&quot;2026-08-11T22:57:33.577805+00:00&quot;,&quot;sub_g=
+ame_number&quot;:1,&quot;tie&quot;:false,&quot;tokens&quot;:{&quot;uoh-sqak=
+&quot;:0,&quot;vibecode&quot;:0},&quot;winner_group&quot;:&quot;vibecode&qu=
+ot;},{&quot;audit&quot;:{&quot;log_verified&quot;:true,&quot;tampered&quot;=
+:false},&quot;ended_at&quot;:&quot;2026-08-11T23:00:55.496660+00:00&quot;,&=
+quot;github_commit&quot;:{&quot;uoh-sqak&quot;:&quot;0ce69577cc9681526be590=
+b891bc3bb748ddf641&quot;,&quot;vibecode&quot;:&quot;unknown&quot;},&quot;lo=
+g_files&quot;:{&quot;uoh-sqak&quot;:&quot;uoh-sqak/log_uoh-sqak-vs-vibecode=
+_g02.json&quot;,&quot;vibecode&quot;:&quot;vibecode/log_uoh-sqak-vs-vibecod=
+e_g02.json&quot;},&quot;result&quot;:&quot;capture&quot;,&quot;roles&quot;:=
+{&quot;uoh-sqak&quot;:&quot;thief&quot;,&quot;vibecode&quot;:&quot;police&q=
+uot;},&quot;score&quot;:{&quot;uoh-sqak&quot;:5,&quot;vibecode&quot;:20},&q=
+uot;started_at&quot;:&quot;2026-08-11T23:00:06.593920+00:00&quot;,&quot;sub=
+_game_number&quot;:2,&quot;tie&quot;:false,&quot;tokens&quot;:{&quot;uoh-sq=
+ak&quot;:0,&quot;vibecode&quot;:0},&quot;winner_group&quot;:&quot;vibecode&=
+quot;},{&quot;audit&quot;:{&quot;log_verified&quot;:true,&quot;tampered&quo=
+t;:false},&quot;ended_at&quot;:&quot;2026-08-11T23:02:55.971120+00:00&quot;=
+,&quot;github_commit&quot;:{&quot;uoh-sqak&quot;:&quot;0ce69577cc9681526be5=
+90b891bc3bb748ddf641&quot;,&quot;vibecode&quot;:&quot;unknown&quot;},&quot;=
+log_files&quot;:{&quot;uoh-sqak&quot;:&quot;uoh-sqak/log_uoh-sqak-vs-vibeco=
+de_g03.json&quot;,&quot;vibecode&quot;:&quot;vibecode/log_uoh-sqak-vs-vibec=
+ode_g03.json&quot;},&quot;result&quot;:&quot;survival&quot;,&quot;roles&quo=
+t;:{&quot;uoh-sqak&quot;:&quot;police&quot;,&quot;vibecode&quot;:&quot;thie=
+f&quot;},&quot;score&quot;:{&quot;uoh-sqak&quot;:5,&quot;vibecode&quot;:10}=
+,&quot;started_at&quot;:&quot;2026-08-11T23:00:55.496895+00:00&quot;,&quot;=
+sub_game_number&quot;:3,&quot;tie&quot;:false,&quot;tokens&quot;:{&quot;uoh=
+-sqak&quot;:0,&quot;vibecode&quot;:0},&quot;winner_group&quot;:&quot;vibeco=
+de&quot;},{&quot;audit&quot;:{&quot;log_verified&quot;:true,&quot;tampered&=
+quot;:false},&quot;ended_at&quot;:&quot;2026-08-11T23:03:45.131167+00:00&qu=
+ot;,&quot;github_commit&quot;:{&quot;uoh-sqak&quot;:&quot;0ce69577cc9681526=
+be590b891bc3bb748ddf641&quot;,&quot;vibecode&quot;:&quot;unknown&quot;},&qu=
+ot;log_files&quot;:{&quot;uoh-sqak&quot;:&quot;uoh-sqak/log_uoh-sqak-vs-vib=
+ecode_g04.json&quot;,&quot;vibecode&quot;:&quot;vibecode/log_uoh-sqak-vs-vi=
+becode_g04.json&quot;},&quot;result&quot;:&quot;capture&quot;,&quot;roles&q=
+uot;:{&quot;uoh-sqak&quot;:&quot;thief&quot;,&quot;vibecode&quot;:&quot;pol=
+ice&quot;},&quot;score&quot;:{&quot;uoh-sqak&quot;:5,&quot;vibecode&quot;:2=
+0},&quot;started_at&quot;:&quot;2026-08-11T23:02:55.971608+00:00&quot;,&quo=
+t;sub_game_number&quot;:4,&quot;tie&quot;:false,&quot;tokens&quot;:{&quot;u=
+oh-sqak&quot;:0,&quot;vibecode&quot;:0},&quot;winner_group&quot;:&quot;vibe=
+code&quot;},{&quot;audit&quot;:{&quot;log_verified&quot;:true,&quot;tampere=
+d&quot;:false},&quot;ended_at&quot;:&quot;2026-08-11T23:05:48.315179+00:00&=
+quot;,&quot;github_commit&quot;:{&quot;uoh-sqak&quot;:&quot;0ce69577cc96815=
+26be590b891bc3bb748ddf641&quot;,&quot;vibecode&quot;:&quot;unknown&quot;},&=
+quot;log_files&quot;:{&quot;uoh-sqak&quot;:&quot;uoh-sqak/log_uoh-sqak-vs-v=
+ibecode_g05.json&quot;,&quot;vibecode&quot;:&quot;vibecode/log_uoh-sqak-vs-=
+vibecode_g05.json&quot;},&quot;result&quot;:&quot;survival&quot;,&quot;role=
+s&quot;:{&quot;uoh-sqak&quot;:&quot;police&quot;,&quot;vibecode&quot;:&quot=
+;thief&quot;},&quot;score&quot;:{&quot;uoh-sqak&quot;:5,&quot;vibecode&quot=
+;:10},&quot;started_at&quot;:&quot;2026-08-11T23:03:45.131976+00:00&quot;,&=
+quot;sub_game_number&quot;:5,&quot;tie&quot;:false,&quot;tokens&quot;:{&quo=
+t;uoh-sqak&quot;:0,&quot;vibecode&quot;:0},&quot;winner_group&quot;:&quot;v=
+ibecode&quot;},{&quot;audit&quot;:{&quot;log_verified&quot;:true,&quot;tamp=
+ered&quot;:false},&quot;ended_at&quot;:&quot;2026-08-11T23:06:43.400881+00:=
+00&quot;,&quot;github_commit&quot;:{&quot;uoh-sqak&quot;:&quot;0ce69577cc96=
+81526be590b891bc3bb748ddf641&quot;,&quot;vibecode&quot;:&quot;unknown&quot;=
+},&quot;log_files&quot;:{&quot;uoh-sqak&quot;:&quot;uoh-sqak/log_uoh-sqak-v=
+s-vibecode_g06.json&quot;,&quot;vibecode&quot;:&quot;vibecode/log_uoh-sqak-=
+vs-vibecode_g06.json&quot;},&quot;result&quot;:&quot;capture&quot;,&quot;ro=
+les&quot;:{&quot;uoh-sqak&quot;:&quot;thief&quot;,&quot;vibecode&quot;:&quo=
+t;police&quot;},&quot;score&quot;:{&quot;uoh-sqak&quot;:5,&quot;vibecode&qu=
+ot;:20},&quot;started_at&quot;:&quot;2026-08-11T23:05:48.315834+00:00&quot;=
+,&quot;sub_game_number&quot;:6,&quot;tie&quot;:false,&quot;tokens&quot;:{&q=
+uot;uoh-sqak&quot;:0,&quot;vibecode&quot;:0},&quot;winner_group&quot;:&quot=
+;vibecode&quot;}],&quot;timezone&quot;:&quot;Asia/Jerusalem&quot;}</div></d=
+iv>
+
+--0000000000000c46730658cda571--
+--0000000000000c46740658cda573
+Content-Type: application/json; name="result_uoh-sqak-vs-vibecode.json"
+Content-Disposition: attachment; filename="result_uoh-sqak-vs-vibecode.json"
+Content-Transfer-Encoding: base64
+Content-ID: <19ff31ba1a2b11495661>
+X-Attachment-Id: 19ff31ba1a2b11495661
+
+eyJfc2NoZW1hIjoicmVzdWx0IiwiZmluYWxfcmVzdWx0Ijp7ImRpdmVyc2l0eV9yZXdhcmRfYXBw
+bGllZCI6eyJ1b2gtc3FhayI6ZmFsc2UsInZpYmVjb2RlIjp0cnVlfSwiZmlyc3RfbWVldGluZ19i
+ZXR3ZWVuX2dyb3VwcyI6dHJ1ZSwiZ2FtZXNfcGxheWVkX2luY2x1ZGluZ190aGlzIjp7InVvaC1z
+cWFrIjoyLCJ2aWJlY29kZSI6M30sInNlcmllc190aWUiOmZhbHNlLCJzdWJfZ2FtZXNfd29uIjp7
+InVvaC1zcWFrIjowLCJ2aWJlY29kZSI6Nn0sInRpZXMiOjAsInRva2Vuc190b3RhbF9zZXJpZXMi
+OnsidW9oLXNxYWsiOjAsInZpYmVjb2RlIjowfSwidG90YWxfc2NvcmUiOnsidW9oLXNxYWsiOjMw
+LCJ2aWJlY29kZSI6OTB9LCJ3aW5uZXJfZ3JvdXAiOiJ2aWJlY29kZSJ9LCJnYW1lX2lkIjoidW9o
+LXNxYWstdnMtdmliZWNvZGUiLCJnYW1lX3VpZCI6ImUyOTRlYTZlLTMxYzYtZTViZi0wYTI3LTFi
+YzhlNmRhZDg5ZiIsImdlbmVyYXRlZF9hdCI6IjIwMjYtMDgtMTFUMjM6MDY6NDMuNDAxNDc0KzAw
+OjAwIiwiZ3JvdXBzIjpbInVvaC1zcWFrIiwidmliZWNvZGUiXSwibGlua3MiOnsiY29uZmlnIjoi
+Y29uZmlnX3VvaC1zcWFrLXZzLXZpYmVjb2RlX2c8Tk4+Lmpzb24iLCJkZWNsYXJhdGlvbiI6ImRl
+Y2xhcmF0aW9uX3VvaC1zcWFrLXZzLXZpYmVjb2RlLmpzb24iLCJnaXRodWIiOnsidW9oLXNxYWsi
+OnsiY29wIjoiaHR0cHM6Ly9naXRodWIuY29tL3NhbGFoLWRldi1zdHUvdW9oLXNxYWstY29wIiwi
+dGhpZWYiOiJodHRwczovL2dpdGh1Yi5jb20vc2FsYWgtZGV2LXN0dS91b2gtc3Fhay10aGllZiJ9
+LCJ2aWJlY29kZSI6eyJjb3AiOiJodHRwczovL2dpdGh1Yi5jb20vQW1pdEt1cGVyL3ZpYmVjb2Rl
+LWNvcCIsInRoaWVmIjoiaHR0cHM6Ly9naXRodWIuY29tL0FtaXRLdXBlci92aWJlY29kZS10aGll
+ZiJ9fSwibG9nIjoibG9nX3VvaC1zcWFrLXZzLXZpYmVjb2RlX2c8Tk4+Lmpzb24iLCJyZXN1bHQi
+OiJyZXN1bHRfdW9oLXNxYWstdnMtdmliZWNvZGUuanNvbiJ9LCJtdXR1YWxfYWdyZWVtZW50Ijp7
+ImNvbmZpcm1lZCI6dHJ1ZSwic2hhMjU2IjoiZGZiNDFjN2RhNWVmYzBiNjZkNjY4ZjRhOTM1ZWEw
+NGE0MDMzNTllYTY5N2UyMWE5ZDJlNWNhZDkzNDY0NTgzNCJ9LCJudW1fc3ViX2dhbWVzIjo2LCJy
+ZXBvcnRfdHlwZSI6ImZpbmFsX2dhbWVfcmVzdWx0Iiwic2NoZW1hX3ZlcnNpb24iOiIxLjEiLCJz
+dWJfZ2FtZXMiOlt7ImF1ZGl0Ijp7ImxvZ192ZXJpZmllZCI6dHJ1ZSwidGFtcGVyZWQiOmZhbHNl
+fSwiZW5kZWRfYXQiOiIyMDI2LTA4LTExVDIzOjAwOjA2LjU5MTM2NCswMDowMCIsImdpdGh1Yl9j
+b21taXQiOnsidW9oLXNxYWsiOiIwY2U2OTU3N2NjOTY4MTUyNmJlNTkwYjg5MWJjM2JiNzQ4ZGRm
+NjQxIiwidmliZWNvZGUiOiJ1bmtub3duIn0sImxvZ19maWxlcyI6eyJ1b2gtc3FhayI6InVvaC1z
+cWFrL2xvZ191b2gtc3Fhay12cy12aWJlY29kZV9nMDEuanNvbiIsInZpYmVjb2RlIjoidmliZWNv
+ZGUvbG9nX3VvaC1zcWFrLXZzLXZpYmVjb2RlX2cwMS5qc29uIn0sInJlc3VsdCI6InN1cnZpdmFs
+Iiwicm9sZXMiOnsidW9oLXNxYWsiOiJwb2xpY2UiLCJ2aWJlY29kZSI6InRoaWVmIn0sInNjb3Jl
+Ijp7InVvaC1zcWFrIjo1LCJ2aWJlY29kZSI6MTB9LCJzdGFydGVkX2F0IjoiMjAyNi0wOC0xMVQy
+Mjo1NzozMy41Nzc4MDUrMDA6MDAiLCJzdWJfZ2FtZV9udW1iZXIiOjEsInRpZSI6ZmFsc2UsInRv
+a2VucyI6eyJ1b2gtc3FhayI6MCwidmliZWNvZGUiOjB9LCJ3aW5uZXJfZ3JvdXAiOiJ2aWJlY29k
+ZSJ9LHsiYXVkaXQiOnsibG9nX3ZlcmlmaWVkIjp0cnVlLCJ0YW1wZXJlZCI6ZmFsc2V9LCJlbmRl
+ZF9hdCI6IjIwMjYtMDgtMTFUMjM6MDA6NTUuNDk2NjYwKzAwOjAwIiwiZ2l0aHViX2NvbW1pdCI6
+eyJ1b2gtc3FhayI6IjBjZTY5NTc3Y2M5NjgxNTI2YmU1OTBiODkxYmMzYmI3NDhkZGY2NDEiLCJ2
+aWJlY29kZSI6InVua25vd24ifSwibG9nX2ZpbGVzIjp7InVvaC1zcWFrIjoidW9oLXNxYWsvbG9n
+X3VvaC1zcWFrLXZzLXZpYmVjb2RlX2cwMi5qc29uIiwidmliZWNvZGUiOiJ2aWJlY29kZS9sb2df
+dW9oLXNxYWstdnMtdmliZWNvZGVfZzAyLmpzb24ifSwicmVzdWx0IjoiY2FwdHVyZSIsInJvbGVz
+Ijp7InVvaC1zcWFrIjoidGhpZWYiLCJ2aWJlY29kZSI6InBvbGljZSJ9LCJzY29yZSI6eyJ1b2gt
+c3FhayI6NSwidmliZWNvZGUiOjIwfSwic3RhcnRlZF9hdCI6IjIwMjYtMDgtMTFUMjM6MDA6MDYu
+NTkzOTIwKzAwOjAwIiwic3ViX2dhbWVfbnVtYmVyIjoyLCJ0aWUiOmZhbHNlLCJ0b2tlbnMiOnsi
+dW9oLXNxYWsiOjAsInZpYmVjb2RlIjowfSwid2lubmVyX2dyb3VwIjoidmliZWNvZGUifSx7ImF1
+ZGl0Ijp7ImxvZ192ZXJpZmllZCI6dHJ1ZSwidGFtcGVyZWQiOmZhbHNlfSwiZW5kZWRfYXQiOiIy
+MDI2LTA4LTExVDIzOjAyOjU1Ljk3MTEyMCswMDowMCIsImdpdGh1Yl9jb21taXQiOnsidW9oLXNx
+YWsiOiIwY2U2OTU3N2NjOTY4MTUyNmJlNTkwYjg5MWJjM2JiNzQ4ZGRmNjQxIiwidmliZWNvZGUi
+OiJ1bmtub3duIn0sImxvZ19maWxlcyI6eyJ1b2gtc3FhayI6InVvaC1zcWFrL2xvZ191b2gtc3Fh
+ay12cy12aWJlY29kZV9nMDMuanNvbiIsInZpYmVjb2RlIjoidmliZWNvZGUvbG9nX3VvaC1zcWFr
+LXZzLXZpYmVjb2RlX2cwMy5qc29uIn0sInJlc3VsdCI6InN1cnZpdmFsIiwicm9sZXMiOnsidW9o
+LXNxYWsiOiJwb2xpY2UiLCJ2aWJlY29kZSI6InRoaWVmIn0sInNjb3JlIjp7InVvaC1zcWFrIjo1
+LCJ2aWJlY29kZSI6MTB9LCJzdGFydGVkX2F0IjoiMjAyNi0wOC0xMVQyMzowMDo1NS40OTY4OTUr
+MDA6MDAiLCJzdWJfZ2FtZV9udW1iZXIiOjMsInRpZSI6ZmFsc2UsInRva2VucyI6eyJ1b2gtc3Fh
+ayI6MCwidmliZWNvZGUiOjB9LCJ3aW5uZXJfZ3JvdXAiOiJ2aWJlY29kZSJ9LHsiYXVkaXQiOnsi
+bG9nX3ZlcmlmaWVkIjp0cnVlLCJ0YW1wZXJlZCI6ZmFsc2V9LCJlbmRlZF9hdCI6IjIwMjYtMDgt
+MTFUMjM6MDM6NDUuMTMxMTY3KzAwOjAwIiwiZ2l0aHViX2NvbW1pdCI6eyJ1b2gtc3FhayI6IjBj
+ZTY5NTc3Y2M5NjgxNTI2YmU1OTBiODkxYmMzYmI3NDhkZGY2NDEiLCJ2aWJlY29kZSI6InVua25v
+d24ifSwibG9nX2ZpbGVzIjp7InVvaC1zcWFrIjoidW9oLXNxYWsvbG9nX3VvaC1zcWFrLXZzLXZp
+YmVjb2RlX2cwNC5qc29uIiwidmliZWNvZGUiOiJ2aWJlY29kZS9sb2dfdW9oLXNxYWstdnMtdmli
+ZWNvZGVfZzA0Lmpzb24ifSwicmVzdWx0IjoiY2FwdHVyZSIsInJvbGVzIjp7InVvaC1zcWFrIjoi
+dGhpZWYiLCJ2aWJlY29kZSI6InBvbGljZSJ9LCJzY29yZSI6eyJ1b2gtc3FhayI6NSwidmliZWNv
+ZGUiOjIwfSwic3RhcnRlZF9hdCI6IjIwMjYtMDgtMTFUMjM6MDI6NTUuOTcxNjA4KzAwOjAwIiwi
+c3ViX2dhbWVfbnVtYmVyIjo0LCJ0aWUiOmZhbHNlLCJ0b2tlbnMiOnsidW9oLXNxYWsiOjAsInZp
+YmVjb2RlIjowfSwid2lubmVyX2dyb3VwIjoidmliZWNvZGUifSx7ImF1ZGl0Ijp7ImxvZ192ZXJp
+ZmllZCI6dHJ1ZSwidGFtcGVyZWQiOmZhbHNlfSwiZW5kZWRfYXQiOiIyMDI2LTA4LTExVDIzOjA1
+OjQ4LjMxNTE3OSswMDowMCIsImdpdGh1Yl9jb21taXQiOnsidW9oLXNxYWsiOiIwY2U2OTU3N2Nj
+OTY4MTUyNmJlNTkwYjg5MWJjM2JiNzQ4ZGRmNjQxIiwidmliZWNvZGUiOiJ1bmtub3duIn0sImxv
+Z19maWxlcyI6eyJ1b2gtc3FhayI6InVvaC1zcWFrL2xvZ191b2gtc3Fhay12cy12aWJlY29kZV9n
+MDUuanNvbiIsInZpYmVjb2RlIjoidmliZWNvZGUvbG9nX3VvaC1zcWFrLXZzLXZpYmVjb2RlX2cw
+NS5qc29uIn0sInJlc3VsdCI6InN1cnZpdmFsIiwicm9sZXMiOnsidW9oLXNxYWsiOiJwb2xpY2Ui
+LCJ2aWJlY29kZSI6InRoaWVmIn0sInNjb3JlIjp7InVvaC1zcWFrIjo1LCJ2aWJlY29kZSI6MTB9
+LCJzdGFydGVkX2F0IjoiMjAyNi0wOC0xMVQyMzowMzo0NS4xMzE5NzYrMDA6MDAiLCJzdWJfZ2Ft
+ZV9udW1iZXIiOjUsInRpZSI6ZmFsc2UsInRva2VucyI6eyJ1b2gtc3FhayI6MCwidmliZWNvZGUi
+OjB9LCJ3aW5uZXJfZ3JvdXAiOiJ2aWJlY29kZSJ9LHsiYXVkaXQiOnsibG9nX3ZlcmlmaWVkIjp0
+cnVlLCJ0YW1wZXJlZCI6ZmFsc2V9LCJlbmRlZF9hdCI6IjIwMjYtMDgtMTFUMjM6MDY6NDMuNDAw
+ODgxKzAwOjAwIiwiZ2l0aHViX2NvbW1pdCI6eyJ1b2gtc3FhayI6IjBjZTY5NTc3Y2M5NjgxNTI2
+YmU1OTBiODkxYmMzYmI3NDhkZGY2NDEiLCJ2aWJlY29kZSI6InVua25vd24ifSwibG9nX2ZpbGVz
+Ijp7InVvaC1zcWFrIjoidW9oLXNxYWsvbG9nX3VvaC1zcWFrLXZzLXZpYmVjb2RlX2cwNi5qc29u
+IiwidmliZWNvZGUiOiJ2aWJlY29kZS9sb2dfdW9oLXNxYWstdnMtdmliZWNvZGVfZzA2Lmpzb24i
+fSwicmVzdWx0IjoiY2FwdHVyZSIsInJvbGVzIjp7InVvaC1zcWFrIjoidGhpZWYiLCJ2aWJlY29k
+ZSI6InBvbGljZSJ9LCJzY29yZSI6eyJ1b2gtc3FhayI6NSwidmliZWNvZGUiOjIwfSwic3RhcnRl
+ZF9hdCI6IjIwMjYtMDgtMTFUMjM6MDU6NDguMzE1ODM0KzAwOjAwIiwic3ViX2dhbWVfbnVtYmVy
+Ijo2LCJ0aWUiOmZhbHNlLCJ0b2tlbnMiOnsidW9oLXNxYWsiOjAsInZpYmVjb2RlIjowfSwid2lu
+bmVyX2dyb3VwIjoidmliZWNvZGUifV0sInRpbWV6b25lIjoiQXNpYS9KZXJ1c2FsZW0ifQ==
+--0000000000000c46740658cda573--

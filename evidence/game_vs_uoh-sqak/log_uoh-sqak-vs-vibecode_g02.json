@@ -1,0 +1,568 @@
+{
+  "_schema": "p2p-police-artifacts",
+  "game_id": "uoh-sqak-vs-vibecode",
+  "game_uid": "e294ea6e-31c6-e5bf-0a27-1bc8e6dad89f",
+  "links": {
+    "config": "config_uoh-sqak-vs-vibecode_g02.json",
+    "declaration": "declaration_uoh-sqak-vs-vibecode.json",
+    "log": "log_uoh-sqak-vs-vibecode_g02.json",
+    "result": "result_uoh-sqak-vs-vibecode.json"
+  },
+  "opponent_records": [
+    {
+      "commit": "efc01eec0c44a33e20b5712302b89b2f79175cf5a5a0c4ec55bf98a9be4769f3",
+      "declared": {},
+      "nonce": "a351bbdfcaf950d02916592304a4c6ea",
+      "payload": {
+        "step": 0,
+        "type": "system_spec",
+        "github_commit": "0ce69577cc9681526be590b891bc3bb748ddf641",
+        "spec": {
+          "os": "Darwin 25.2.0",
+          "cpu": "arm",
+          "cpu_count": 8,
+          "ram_gb": 8.6,
+          "gpu": "Apple Silicon",
+          "python": "3.13.12"
+        },
+        "model": "template",
+        "code_version": "1.00",
+        "group_name": "uoh-sqak",
+        "sub_game_number": 2
+      }
+    },
+    {
+      "commit": "3f0ee827106dc0984549be3108a42686ac91ee3bdce887b9f4915578e31292c4",
+      "declared": {},
+      "nonce": "68440812e3c588a71b9e3e05e7c0705b",
+      "payload": {
+        "step": -1,
+        "type": "control",
+        "direction": "sent",
+        "kind": "enable",
+        "sender": "thief",
+        "status": "",
+        "sub_game_number": 1
+      }
+    },
+    {
+      "commit": "04cfbf85ed2f7e2603abb3589db1b1b77241259402a303657337ac49fa43cca9",
+      "declared": {},
+      "nonce": "48b91e04baec8be4fc7e6675b3ea79fe",
+      "payload": {
+        "step": -2,
+        "type": "control",
+        "direction": "sent",
+        "kind": "status",
+        "sender": "thief",
+        "status": "PLAYING",
+        "sub_game_number": 2
+      }
+    },
+    {
+      "commit": "ef2097b5e454eb21ffdcdf155f9969f025095b5b84b36d4240b648ec569e7e5e",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": ""
+      },
+      "nonce": "7bfafc1b0f431ea120ee28c93cc0af77",
+      "payload": {
+        "step": 1,
+        "state": {
+          "pos": [
+            3,
+            3
+          ],
+          "barriers": []
+        },
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "197b614027c35bbfb2f14e4d447c4f471b06d6dd25f46919a7acb8cba7910cd4",
+      "declared": {},
+      "nonce": "75bb5c3de71ace90d76c4be38e682827",
+      "payload": {
+        "step": -3,
+        "type": "control",
+        "direction": "received",
+        "kind": "done",
+        "sender": "thief",
+        "status": "complete",
+        "sub_game_number": 1
+      }
+    },
+    {
+      "commit": "b558b6cb6f105f8a5e7b7b72c014d4b372787e1531e1b9e419738589804d2f86",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": ""
+      },
+      "nonce": "a2435141451cec883e9a805739c58b73",
+      "payload": {
+        "step": 2,
+        "state": {
+          "pos": [
+            4,
+            3
+          ],
+          "barriers": []
+        },
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "68a0d8ccbe183651768dff5f6307d78c222600d5d3c68f208b20aa4b81cca977",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Heading north past Brooklyn Bridge, promise."
+      },
+      "nonce": "c8f8c77720b6eeefbcb1483c273872a8",
+      "payload": {
+        "step": 3,
+        "state": {
+          "pos": [
+            4,
+            4
+          ],
+          "barriers": []
+        },
+        "move": "S",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "99ba27eddfd7175a14602abbe09e5d87af6370bee753239397a4eb812f4112f6",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": ""
+      },
+      "nonce": "d211d39b9d0986b5b89516e9f049ef33",
+      "payload": {
+        "step": 4,
+        "state": {
+          "pos": [
+            5,
+            4
+          ],
+          "barriers": []
+        },
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "2289751fbacb048aa7148e66f313d054d116b579b47ecc592460ac5a67e4946f",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": ""
+      },
+      "nonce": "b8c5616c5942111d34123b76a42be0da",
+      "payload": {
+        "step": 5,
+        "state": {
+          "pos": [
+            5,
+            5
+          ],
+          "barriers": []
+        },
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "a5787750371fc16f44a956c016e165c1949ceaa05733f836f1a831ace07b44a6",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Resting at Harlem. Not moving tonight."
+      },
+      "nonce": "6232c9b5352fb5da9996c6a52fa23658",
+      "payload": {
+        "step": 6,
+        "state": {
+          "pos": [
+            5,
+            6
+          ],
+          "barriers": []
+        },
+        "move": "S",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "fd23f9ae242eda97f9d64da632227a2b3f020bec2796d9e77e22788be6152e16",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": ""
+      },
+      "nonce": "48495b74c69c192a41ba0c9cc13809f8",
+      "payload": {
+        "step": 7,
+        "state": {
+          "pos": [
+            6,
+            6
+          ],
+          "barriers": []
+        },
+        "move": "W",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "4149b53882a3510d9719b20f307764ae8827b95f8ad5f87acddefb83764b6681",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": ""
+      },
+      "nonce": "2f6e6adb45277cbaee07076854397388",
+      "payload": {
+        "step": 8,
+        "state": {
+          "pos": [
+            6,
+            5
+          ],
+          "barriers": []
+        },
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "ad93fdfc4c4cd74fec282026c2ae719a97b1ecb2879d88150d10176a952a5d74",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "I am cornered by Brooklyn Bridge. Come and get me."
+      },
+      "nonce": "7ff6299ae387d8e3a14c9e791a4025fb",
+      "payload": {
+        "step": 9,
+        "state": {
+          "pos": [
+            5,
+            5
+          ],
+          "barriers": []
+        },
+        "move": "E",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "2b7f548279bd88f76fde5f053af1d43149ca1282bdd3acd495fc962f3057fb31",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": ""
+      },
+      "nonce": "aa2f3c204b3c9bae6ca5d063e7226f2b",
+      "payload": {
+        "step": 10,
+        "state": {
+          "pos": [
+            5,
+            6
+          ],
+          "barriers": []
+        },
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "b7fa5ad6984e7d6dac0f45e562c97f14897c8bbc95cfd301f052cf2e606d020f",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": ""
+      },
+      "nonce": "253c680cbf562309439914d9f7025f4b",
+      "payload": {
+        "step": 11,
+        "state": {
+          "pos": [
+            6,
+            6
+          ],
+          "barriers": []
+        },
+        "move": "STAY",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "1202ab12f1fd376bee0baba48e0e503ca1192c27337a00c3862254370c1e4467",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Doubling back south past Harlem."
+      },
+      "nonce": "e76e6526e8a2c1ece9c19da85baacc04",
+      "payload": {
+        "step": 12,
+        "state": {
+          "pos": [
+            6,
+            6
+          ],
+          "barriers": []
+        },
+        "move": "N",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "36d1b566a324d3748fad895b8b18ec879300ab4bfce08e84ec55b62a2eae2448",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "You got me."
+      },
+      "nonce": "63e0d9484023104c93a98d7660bd9980",
+      "payload": {
+        "step": 13,
+        "state": {
+          "pos": [
+            5,
+            6
+          ],
+          "barriers": []
+        },
+        "move": "STAY",
+        "intent": "truth"
+      }
+    }
+  ],
+  "records": [
+    {
+      "commit": "6e79ccc8608886d1bef751b2e2f1d999e49bd157b2cf678ecff31f4c4ea06e5e",
+      "nonce": "e2e74d4b5f7bbc6fb00cae5ada76e5e7",
+      "payload": {
+        "declaration_ref": "declaration_uoh-sqak-vs-vibecode.json",
+        "github_commit": "5e36d072f5f10ac88e095d85c7a382c01d57e64e",
+        "group_id": "vibecode",
+        "role": "police",
+        "step": 0,
+        "sub_game_number": 2,
+        "type": "step_zero"
+      }
+    },
+    {
+      "commit": "ea00612a7a24a58d0118a0e7232b2e7314d82c05fd99a6cc7989770ef282e7d7",
+      "nonce": "11d6775bf0fd96a70fe0c91c4d73b4cf",
+      "payload": {
+        "step": 1,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          1,
+          0
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "ca586d6a5c5bc4ff6382a9873ed5997eb76b44573a6f410223e940d8d5f55af8",
+      "nonce": "8dcf9d9fc5eede768073840193c17857",
+      "payload": {
+        "step": 2,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          2,
+          0
+        ],
+        "move": "S",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "0e9b5bfbc2420c41e036b2a947fe6b63a1475f5d1728c7cef544f29a7b66f1a6",
+      "nonce": "4b79a7b1836ff488042570c27e4c6b57",
+      "payload": {
+        "step": 3,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          3,
+          0
+        ],
+        "move": "S",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "5a64e11f7c74e794f3d1850073fd49089371c652ee7cea10d95b02d861545a1f",
+      "nonce": "e4f4d30b587322e0c82bc4f4127e4042",
+      "payload": {
+        "step": 4,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          3,
+          1
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "98c86a00e7a692b0d1fc0196501f2151d8d8fff5968221c710a551a2411c0c09",
+      "nonce": "0b4688efc7df2b85232cf08bacc90acb",
+      "payload": {
+        "step": 5,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          3,
+          2
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "edb38b980f495031869f548a3f301c9a2286df60d05820f4829321e6d2acdf22",
+      "nonce": "5ca7844cb6afa3b15956db1e0cb58e10",
+      "payload": {
+        "step": 6,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          4,
+          2
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "af62b70dab693c157e2d7fd26a719e5ced3258d32f10830689708944642564a3",
+      "nonce": "aad7f4fb2c838182a4797b7969e2fca4",
+      "payload": {
+        "step": 7,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          4,
+          3
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "687bdf7fed4e224fd6dea4d015ec63e18e489a82022ceda5dca5d7c873821ec9",
+      "nonce": "affdfade86e880f768ae3d2e93ba6c08",
+      "payload": {
+        "step": 8,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          4,
+          4
+        ],
+        "move": "E",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "e1a64aff100aa7598023c2ac9c98f8669cdbb415fd0f764261098718c2c501c8",
+      "nonce": "1857d5ffa5ba29b14fcbc9a9cedf881d",
+      "payload": {
+        "step": 9,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          4,
+          5
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "f78f01a05b543820f06efc9af8821d3935b0101e174619a9cbbd6bcc796b8f98",
+      "nonce": "29838283f36e9fea6a162010fdca59cb",
+      "payload": {
+        "step": 10,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          5,
+          5
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "350fe1ebd9cd86b272601552b0871bec9abf2c7fd448ef6424deb32c802337c4",
+      "nonce": "459dcea351bd34fd8685062b68851e56",
+      "payload": {
+        "step": 11,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          5,
+          5
+        ],
+        "move": "PLACE_S",
+        "intent": "ambiguous",
+        "barrier_placed": [
+          6,
+          5
+        ]
+      }
+    },
+    {
+      "commit": "5a33876662b080efb1267bfc97fc0ded1e585c5b1c3574810b20dab387daff48",
+      "nonce": "f8a66f156ac50f20761504076789394e",
+      "payload": {
+        "step": 12,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          5,
+          6
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    }
+  ],
+  "report_type": "log",
+  "schema_version": "1.3",
+  "sub_game_number": 2,
+  "summary": {
+    "audit": "Verified OK",
+    "outcome": "capture",
+    "digest_match": null,
+    "disputed_capture": null,
+    "turns_completed": 12,
+    "steps_sealed": 13,
+    "opponent_step_zero": null,
+    "step_zero_mismatch": null,
+    "started_at": "2026-08-11T23:00:11.548062+00:00",
+    "ended_at": "2026-08-11T23:00:56.183122+00:00",
+    "role": "police",
+    "group_id": "vibecode",
+    "opponent_group_id": "uoh-sqak"
+  },
+  "wire_shape": "reference"
+}
