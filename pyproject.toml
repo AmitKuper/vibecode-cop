@@ -19,6 +19,7 @@ dependencies = [
     "sympy>=1.14.0",
     "torch>=2.2",
     "pyyaml>=6.0.3",
+    "pypdf>=6.15.0",
 ]
 
 [dependency-groups]
