@@ -1,0 +1,34 @@
+{
+ "manifest_version": "1.0",
+ "models": [
+  {
+   "role": "cop",
+   "algorithm": "RecurrentA2C-GRU",
+   "artifact": "cop_belief_book_champion.pt",
+   "architecture": "linear-tanh-grucell-policy-value",
+   "sha256": "20e0404541c6c9da8711cc96ce0fea5a909d09aeabcd8de9c1529e2e9373a4e1",
+   "training_code_sha": "cdb736b",
+   "config_sha256": "da1c9108c5989ac5634bae374dc6b90de4389135a699000bfe52f76ec43743ff",
+   "observation_schema_version": "1.0",
+   "action_schema_version": "1.0",
+   "belief_schema_version": "1.0",
+   "inference_mode": "argmax",
+   "grid_size": 7,
+   "random_seed": 20260820,
+   "training_steps": 21000,
+   "obs_mode": {
+    "uniform_belief": false,
+    "wire_scent": true,
+    "decoded_scent": true,
+    "scent_model": "multiplicative_book_v1"
+   },
+   "hyperparams": {
+    "hidden_size": 128,
+    "gamma": 0.99,
+    "fixed_start_fraction": 0.8
+   },
+   "evaluation_win_rate": 0.5942,
+   "description": "From-scratch chebyshev recurrent cop, 80% fixed-start episodes (cop_start/thief_start are SIGNED terms \u2014 the match always opens there). 0.9926 at scent=chebyshev/belief=prod on the FIXED-START harness (eval_candidate seed 20260810) vs 0.8704 for the random-start recipe and 0.2148 for the superseded book champion. Thief kept the random-start recipe (0.9741 beats fixed-start 0.9444). Serves as the hybrid_search BLIND-FRAME FALLBACK only \u2014 the minimax engine plays sighted frames."
+  }
+ ]
+}

@@ -59,8 +59,10 @@ class RecurrentRolePolicy:
         self._generator.manual_seed(secrets.randbits(63))
         self._hidden: torch.Tensor | None = None
         # Inverse of the clamped wire scent law. Stateful (needs the previous frame), so it
-        # is reset per episode. Inert unless COPTHIEF_DECODED_SCENT=1.
+        # is reset per episode. Enabled per-policy when the manifest records
+        # decoded_scent=true (the env flag remains a training-side override).
         self._decoder = None
+        self.use_decoded_scent = False
 
     def reset(self) -> None:
         self._hidden = None
@@ -71,7 +73,7 @@ class RecurrentRolePolicy:
         from cop_worker.rl.obs_mode import decoded_scent_enabled
         from cop_worker.scent_decoder import EmitterDecoder
 
-        if not decoded_scent_enabled():
+        if not (self.use_decoded_scent or decoded_scent_enabled()):
             return None
         if self._decoder is None or self._decoder.n != grid_size:
             self._decoder = EmitterDecoder(grid_size)
@@ -160,13 +162,16 @@ def load_recurrent_policy(manifest_path: str | Path, role: str) -> RecurrentRole
         if not 0 < temperature <= 1:
             raise RecurrentPolicyLoadError("low_temp inference temperature must be in (0, 1]")
     network.eval()
-    return RecurrentRolePolicy(
+    policy = RecurrentRolePolicy(
         network,
         role,
         device,
         inference_mode=entry.inference_mode,
         temperature=temperature,
     )
+    recorded = dict(getattr(entry, "obs_mode", None) or {})
+    policy.use_decoded_scent = bool(recorded.get("decoded_scent"))
+    return policy
 
 
 def file_sha256(path: str | Path) -> str:

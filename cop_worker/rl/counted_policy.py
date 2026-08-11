@@ -140,12 +140,15 @@ def _guard_serving_obs_mode(entry, role: str) -> None:
 
     recorded = dict(getattr(entry, "obs_mode", None) or {})
     want_decoded = bool(recorded.get("decoded_scent", False))
-    if decoded_scent_enabled() != want_decoded:
+    # decoded_scent is manifest-driven per policy (the wrapper self-enables when the
+    # entry records decoded_scent=true), so a process-wide env flag is never needed to
+    # serve — and the only DANGEROUS combination is the env forcing the decoder onto
+    # an artifact that never trained on it.
+    if decoded_scent_enabled() and not want_decoded:
         raise CountedPolicyLoadError(
-            f"COPTHIEF_DECODED_SCENT={'1' if decoded_scent_enabled() else 'off'} but the "
-            f"{role} manifest entry records decoded_scent={want_decoded} — a stray env "
-            f"flag would silently change the serving observation; unset it or promote a "
-            f"matching artifact"
+            f"COPTHIEF_DECODED_SCENT=1 but the {role} manifest entry records "
+            f"decoded_scent=False — a stray env flag would silently change the serving "
+            f"observation; unset it (decoded artifacts self-enable from the manifest)"
         )
     want_model = recorded.get("scent_model", "multiplicative_book_v1")
     if scent_model() != want_model:

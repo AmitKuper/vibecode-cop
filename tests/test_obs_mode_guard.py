@@ -33,11 +33,13 @@ def test_stray_decoded_scent_refuses(monkeypatch) -> None:
         _guard_serving_obs_mode(_Entry({"decoded_scent": False}), "thief")
 
 
-def test_decoder_trained_artifact_requires_the_flag(monkeypatch) -> None:
+def test_decoder_trained_artifact_self_enables_without_the_flag(monkeypatch) -> None:
+    # decoded_scent is manifest-driven per policy: entry True with the env unset is
+    # SAFE (the serving wrapper enables its own decoder), so the guard passes. Only
+    # the env forcing the decoder onto a non-decoded artifact is refused.
     monkeypatch.delenv("COPTHIEF_DECODED_SCENT", raising=False)
     monkeypatch.delenv("COPTHIEF_SCENT_MODEL", raising=False)
-    with pytest.raises(CountedPolicyLoadError, match="DECODED_SCENT"):
-        _guard_serving_obs_mode(_Entry({"decoded_scent": True}), "cop")
+    _guard_serving_obs_mode(_Entry({"decoded_scent": True}), "cop")
 
 
 def test_scent_model_mismatch_refuses_both_directions(monkeypatch) -> None:
