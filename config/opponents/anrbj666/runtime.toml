@@ -73,3 +73,16 @@ token_path = "secrets/gmail/token.json"
 # Our prior counted-games count (rules 37-38), sourced from the ledger
 # results/counted_series.json. games_played_including_this = this + (counted?1:0).
 counted_played = 1
+
+[protocol]
+# anrbj666 runs the BOOK scent law (their engine, verified vs their wire in the
+# 2026-08-08 friendly — regardless of what their Step-0 pasted). Pin it so a
+# rematch never accidentally declares chebyshev.
+scent_model = "multiplicative_book_v1"
+# hybrid_search stays: under book saturation the tracker yields no fix and play
+# falls back to the RL net — which MUST be a book-mode artifact.
+move_policy = "hybrid_search"
+# PRE-GAME MANUAL STEP (obs-mode guard will otherwise refuse): repoint
+# models/MANIFEST.json at the book-mode pair before an anrbj666 window —
+# cop_prodobs_candidate_v2.pt / thief_recurrent_champion.pt (or their T1/T4
+# successors; see ../docs/ANRBJ666_BOOK_SCENT_PREP.md).
