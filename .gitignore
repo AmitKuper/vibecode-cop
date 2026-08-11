@@ -24,6 +24,7 @@ models/*
 !models/cop_prodobs_candidate_v2.pt
 !models/cop_chebyshev_champion.pt
 !models/cop_decoded_book_champion.pt
+!models/cop_belief_book_champion.pt
 agent/skills/game_*.py
 cop/games/
 thief/games/

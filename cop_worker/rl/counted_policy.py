@@ -172,7 +172,16 @@ def load_counted_policy(manifest_path: str | Path, role: str):
     if entry.algorithm == "RecurrentA2C-GRU":
         from cop_worker.rl.recurrent_policy import load_recurrent_policy
 
-        return load_recurrent_policy(manifest_path, role)
-    if entry.algorithm == "DuelingDoubleDQN":
-        return _load_dueling_policy(manifest_path, entry, role)
+        policy = load_recurrent_policy(manifest_path, role)
+    elif entry.algorithm == "DuelingDoubleDQN":
+        policy = _load_dueling_policy(manifest_path, entry, role)
+    else:
+        policy = None
+    if policy is not None:
+        from cop_worker.rl.live_belief import LiveBeliefPolicy, wants_live_belief
+
+        if wants_live_belief(entry):
+            # Manifest-gated: only artifacts trained on the live filter get it.
+            policy = LiveBeliefPolicy(policy, role)
+        return policy
     raise CountedPolicyLoadError(f"unsupported counted algorithm {entry.algorithm!r}")
