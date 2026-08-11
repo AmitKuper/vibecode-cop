@@ -37,6 +37,22 @@ python -m tools.pdf_parser write out.pdf --title "T" --from-file notes.txt
 
 Console output is forced to UTF-8 (course PDFs contain Hebrew).
 
+## Real-world use: the final-project submission PDF
+
+This toolkit is part of the submission workflow (the submission artifacts
+themselves are deliberately kept outside the repos):
+
+1. **Parsing the course documents** — extracting the scent-law specification
+   from `police_thief_p2p.pdf` and reading the official submission template's
+   field layout (`read` / `search` subcommands).
+2. **Mining prior submissions** — pulling student identity fields out of the
+   earlier `vibecode-ex0N.pdf` files so the final form is consistent with them.
+3. **Verifying the generated submission** — after the fill-and-convert step
+   (done against the official Word template so field positions never move),
+   the produced `vibecode-ex07.pdf` is read back with this tool and checked
+   field-by-field (group id, repos, agent email, game table rows, totals)
+   against the league ledger in `results/counted_series.json`.
+
 ## Limits (by design)
 
 - The writer is a text-report generator, not a layout engine: one font, no
