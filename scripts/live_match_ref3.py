@@ -458,6 +458,18 @@ async def _wait_port(host: str, port: int, timeout: float = 30.0) -> None:
     raise TimeoutError(f"no listener on {host}:{port}")
 
 
+class NoGameHappened(TimeoutError):
+    """A window failure BEFORE any opponent step arrived.
+
+    Index-hold rule (agreed with uoh-sqak, 2026-08-12): a sub-game in which no
+    game actually happened — discovery failed, no matching greeting, or the peer
+    handshook and then never played a step — must NOT spend its index. The
+    series loop retries the same number, bounded by time, so a holding peer can
+    converge onto it. A window that died AFTER steps were exchanged is spent as
+    before (replaying a partially played index would corrupt the audit story).
+    """
+
+
 async def _poll_deque(dq, *, timeout: float, label: str) -> dict:
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
@@ -490,7 +502,7 @@ async def _poll_agreement(dq, sub_game: int, *, timeout: float) -> dict:
         if found is not None:
             return found
         await asyncio.sleep(0.05)
-    raise TimeoutError(f"timeout waiting for negotiate matching sub_game {sub_game}")
+    raise NoGameHappened(f"timeout waiting for negotiate matching sub_game {sub_game}")
 
 
 async def _poll_turn(inbox, step: int, *, timeout: float, session=None) -> dict:
@@ -511,7 +523,10 @@ async def _poll_turn(inbox, step: int, *, timeout: float, session=None) -> dict:
     if session is not None and getattr(session, "turn_messages", None):
         m = session.turn_messages[-1]
         last = (m.get("step"), m.get("sender"), str(m.get("timestamp"))[:23])
-    raise TimeoutError(
+    # Zero opponent steps ever = a zero-turn window (never settles, files no row):
+    # retriable at the same index. Any played step means the game truly started.
+    err_cls = NoGameHappened if not played else TimeoutError
+    raise err_cls(
         f"timeout after {timeout:.0f}s waiting for opponent turn step {step}; "
         f"steps played={played or 'none'}, buffered={sorted(inbox.buffered) or 'none'}, "
         f"their last inbound turn={last or 'NONE EVER'}"
@@ -1233,12 +1248,19 @@ async def _play_match(
         opponent_group if opponent_group and not opponent_group.startswith("sparring") else None
     )
     try:
-        for sg in range(1, sub_games + 1):
+        sg = 1
+        # Index-hold budget: while it lasts, a window in which no game happened is
+        # RETRIED at the same sub-game number instead of spending it (uoh-sqak
+        # convergence rule). None = not yet started timing this index.
+        hold_deadline: float | None = None
+        while sg <= sub_games:
             our_role = "thief" if sg % 2 == 1 else "police"
             peer_url = opp_cop_url if our_role == "thief" else opp_thief_url
             mcp_url = peer_url if peer_url.endswith("/mcp") else peer_url.rstrip("/") + "/mcp"
             base_url = mcp_url.removesuffix("/mcp")  # discover probes transports off the base
             in_session = sessions[our_role]
+            if hold_deadline is None:
+                hold_deadline = time.monotonic() + _t("subgame_hold_sec", 300.0)
             # Wait ONLY for the endpoint this sub-game must dial (peer binds per-window).
             print(f"[match] sg{sg} ({our_role}) — awaiting peer endpoint {mcp_url}")
             if not await _await_endpoint(mcp_url, Client, window_s=_t("endpoint_await_sec", 900.0)):
@@ -1251,6 +1273,8 @@ async def _play_match(
                         "error": "peer_window_never_opened",
                     }
                 )
+                sg += 1
+                hold_deadline = None
                 continue
             # Play once its window is open. A transient failure records the sub-game and
             # moves on — it never crashes the whole series (their windows re-run).
@@ -1269,12 +1293,18 @@ async def _play_match(
                 async with Client(transport, timeout=call_cap) as client:
                     # Generous probe/introspect deadlines: a tunnelled peer is slower
                     # than the 5s default, which otherwise fails discovery spuriously.
-                    _profile, out_session = await discover_reference_v3(
-                        base_url,
-                        tool_caller=_caller(client),
-                        probe_timeout_s=_t("probe_sec", 30.0),
-                        introspect_timeout_s=_t("introspect_sec", 30.0),
-                    )
+                    try:
+                        _profile, out_session = await discover_reference_v3(
+                            base_url,
+                            tool_caller=_caller(client),
+                            probe_timeout_s=_t("probe_sec", 30.0),
+                            introspect_timeout_s=_t("introspect_sec", 30.0),
+                        )
+                    except Exception as exc:
+                        # Discovery precedes the handshake: certainly no game yet.
+                        raise NoGameHappened(
+                            f"discovery failed: {type(exc).__name__}: {str(exc)[:120]}"
+                        ) from exc
                     sg_result = await _play_subgame(
                         out_session,
                         in_session,
@@ -1295,6 +1325,39 @@ async def _play_match(
                     if sg_result.get("opponent_group"):
                         confirmed_group = sg_result["opponent_group"]
                 print(f"[match] sg{sg} complete")
+            except NoGameHappened as exc:
+                # No game happened in this window (discovery / handshake / zero-turn
+                # failure): HOLD the index and retry so a peer that holds-and-converges
+                # can land on it, bounded by wall-clock — never by attempts. Only an
+                # exhausted budget spends the number (files the row, moves on).
+                if any(r.get("sub_game") == sg and r.get("audit_ok") for r in results):
+                    # Settled rows are sacred: never replay a settled index.
+                    print(f"[match] sg{sg} post-settlement noise — benign, continuing")
+                    sg += 1
+                    hold_deadline = None
+                    continue
+                if time.monotonic() < hold_deadline:
+                    print(
+                        f"[match] sg{sg} no game happened "
+                        f"({str(exc)[:110]}) — HOLDING index, retrying"
+                    )
+                    await asyncio.sleep(2.0)
+                    continue
+                print(
+                    f"[match] sg{sg} no game happened and hold budget exhausted "
+                    f"({str(exc)[:90]}) — recording, continuing"
+                )
+                results.append(
+                    {
+                        "sub_game": sg,
+                        "role": our_role,
+                        "audit_ok": False,
+                        "error": f"no_game_happened: {str(exc)[:180]}",
+                    }
+                )
+                sg += 1
+                hold_deadline = None
+                continue
             except Exception as exc:
                 # A peer that exits its per-window process AFTER settlement (imreeyal's
                 # design) makes our client teardown raise — after the verified audit.
@@ -1307,6 +1370,8 @@ async def _play_match(
                         f"[match] sg{sg} teardown noise after settlement "
                         f"({type(exc).__name__}: {str(exc)[:80]}) — benign, continuing"
                     )
+                    sg += 1
+                    hold_deadline = None
                     continue
                 print(
                     f"[match] sg{sg} failed ({type(exc).__name__}: {str(exc)[:110]}) — continuing"
@@ -1319,7 +1384,11 @@ async def _play_match(
                         "error": f"{type(exc).__name__}: {str(exc)[:200]}",
                     }
                 )
+                sg += 1
+                hold_deadline = None
                 continue
+            sg += 1
+            hold_deadline = None
     finally:
         for t in tasks:
             t.cancel()
