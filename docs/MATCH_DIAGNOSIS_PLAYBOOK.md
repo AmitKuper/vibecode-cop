@@ -64,3 +64,10 @@ the sentence to relay to the other group when the fault is on THEIR side.
   obs-mode guard refusal at load (env vs manifest — don't override, fix the env),
   `mcp_call_sec` refusal (config), repeated send retries with THEIR endpoint 406-healthy
   (our network path — check our router/forwarding).
+
+## Pre-window hygiene (added 2026-08-11)
+
+Never run training/evaluation jobs on the match machine during a game window.
+Measured: four CPU-pinned trainer processes starved the match event loop and froze
+a rehearsal for 16+ minutes at a sub-game audit; the identical build settles the
+same audit in milliseconds on a quiet machine.
