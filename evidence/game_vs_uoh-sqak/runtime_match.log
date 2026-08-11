@@ -1,0 +1,1275 @@
+01:58:00.578 [match] logging to D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\reports\ref3_matches\match_uoh-sqak_20260812-015800.log
+01:58:02.279 [08/12/26 01:58:02] INFO     Starting MCP server               transport.py:361
+                             'vibecode-police' with transport                  
+                             'http' on                                         
+                             http://0.0.0.0:61224/mcp                          
+01:58:02.297 INFO:     Started server process [24116]
+01:58:02.297 INFO:     Waiting for application startup.
+                    INFO     Starting MCP server               transport.py:361
+                             'vibecode-thief' with transport                   
+                             'http' on                                         
+                             http://0.0.0.0:61223/mcp                          
+01:58:02.335 INFO:     Started server process [24116]
+01:58:02.335 INFO:     Waiting for application startup.
+01:58:02.340 INFO:     Application startup complete.
+01:58:02.340 INFO:     Application startup complete.
+01:58:02.340 INFO:     Uvicorn running on http://0.0.0.0:61224 (Press CTRL+C to quit)
+01:58:02.340 INFO:     Uvicorn running on http://0.0.0.0:61223 (Press CTRL+C to quit)
+01:58:02.433 [match] serving cop:61224 thief:61223 vs uoh-sqak
+01:58:02.433 [match] sg1 (thief) — awaiting peer endpoint https://7f71-176-229-170-175.ngrok-free.app/mcp
+01:58:03.583 [match] peer endpoint UP: https://7f71-176-229-170-175.ngrok-free.app/mcp
+01:58:05.192 INFO:     176.229.170.175:50296 - "POST /mcp HTTP/1.1" 200 OK
+01:58:05.275 INFO:     176.229.170.175:50300 - "GET /mcp HTTP/1.1" 200 OK
+01:58:05.275 INFO:     176.229.170.175:50299 - "POST /mcp HTTP/1.1" 202 Accepted
+01:58:05.363 INFO:     176.229.170.175:50301 - "POST /mcp HTTP/1.1" 200 OK
+01:58:05.367 [wire<-] negotiate keys=['identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms'] group=None role='police' sub_game=1 uid='None' scent=81ebee59 wire=None
+01:58:05.476 INFO:     176.229.170.175:50302 - "POST /mcp HTTP/1.1" 200 OK
+01:58:05.514 INFO:     176.229.170.175:50304 - "DELETE /mcp HTTP/1.1" 200 OK
+01:58:06.499 INFO:     176.229.170.175:50308 - "POST /mcp HTTP/1.1" 200 OK
+01:58:06.577 INFO:     176.229.170.175:50309 - "POST /mcp HTTP/1.1" 202 Accepted
+01:58:06.578 INFO:     176.229.170.175:50310 - "GET /mcp HTTP/1.1" 200 OK
+01:58:06.629 INFO:     176.229.170.175:50311 - "POST /mcp HTTP/1.1" 200 OK
+01:58:06.630 [wire<-] control kind='enable' sender='police' sub_game=1 status=''
+01:58:06.736 INFO:     176.229.170.175:50313 - "POST /mcp HTTP/1.1" 200 OK
+01:58:06.757 [match] sg1 peer greeting sub_game=1 role=police
+01:58:06.757 [match] sg1 role=thief handshake OK vs uoh-sqak uid=e294ea6e-31c
+01:58:08.350 INFO:     176.229.170.175:50314 - "DELETE /mcp HTTP/1.1" 200 OK
+01:58:08.418 INFO:     176.229.170.175:50315 - "POST /mcp HTTP/1.1" 200 OK
+01:58:08.465 INFO:     176.229.170.175:50316 - "POST /mcp HTTP/1.1" 202 Accepted
+01:58:08.466 INFO:     176.229.170.175:50317 - "GET /mcp HTTP/1.1" 200 OK
+01:58:08.519 INFO:     176.229.170.175:50318 - "POST /mcp HTTP/1.1" 200 OK
+01:58:08.520 [wire<-] control kind='status' sender='police' sub_game=1 status='PLAYING'
+01:58:08.629 INFO:     176.229.170.175:50320 - "POST /mcp HTTP/1.1" 200 OK
+01:58:08.663 INFO:     176.229.170.175:50321 - "DELETE /mcp HTTP/1.1" 200 OK
+01:58:08.744 INFO:     176.229.170.175:50322 - "POST /mcp HTTP/1.1" 200 OK
+01:58:08.846 INFO:     176.229.170.175:50324 - "GET /mcp HTTP/1.1" 200 OK
+01:58:08.847 INFO:     176.229.170.175:50323 - "POST /mcp HTTP/1.1" 202 Accepted
+01:58:08.877 INFO:     176.229.170.175:50325 - "POST /mcp HTTP/1.1" 200 OK
+01:58:08.879 [wire<-] turn step=1 sender='police' commit=a699ca2c ts='2026-08-11T22:58:08.134' cells=12 barrier=None claim=None answer=None win=None
+01:58:08.935 [scent] sg1 step2: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+01:58:12.540 INFO:     176.229.170.175:50326 - "POST /mcp HTTP/1.1" 200 OK
+01:58:12.617 INFO:     176.229.170.175:50327 - "DELETE /mcp HTTP/1.1" 200 OK
+01:58:12.780 INFO:     176.229.170.175:50329 - "POST /mcp HTTP/1.1" 200 OK
+01:58:12.855 INFO:     176.229.170.175:50330 - "POST /mcp HTTP/1.1" 202 Accepted
+01:58:12.856 INFO:     176.229.170.175:50331 - "GET /mcp HTTP/1.1" 200 OK
+01:58:12.896 INFO:     176.229.170.175:50332 - "POST /mcp HTTP/1.1" 200 OK
+01:58:12.897 [wire<-] turn step=2 sender='police' commit=1bbb6cde ts='2026-08-11T22:58:12.202' cells=15 barrier=None claim=None answer=None win=None
+01:58:16.451 INFO:     176.229.170.175:50333 - "POST /mcp HTTP/1.1" 200 OK
+01:58:16.520 INFO:     176.229.170.175:50339 - "DELETE /mcp HTTP/1.1" 200 OK
+01:58:16.726 INFO:     176.229.170.175:50341 - "POST /mcp HTTP/1.1" 200 OK
+01:58:16.774 INFO:     176.229.170.175:50342 - "POST /mcp HTTP/1.1" 202 Accepted
+01:58:16.774 INFO:     176.229.170.175:50343 - "GET /mcp HTTP/1.1" 200 OK
+01:58:16.829 INFO:     176.229.170.175:50344 - "POST /mcp HTTP/1.1" 200 OK
+01:58:16.830 [wire<-] turn step=3 sender='police' commit=7b00921c ts='2026-08-11T22:58:16.134' cells=20 barrier=None claim=None answer=None win=None
+01:58:22.762 INFO:     176.229.170.175:50345 - "POST /mcp HTTP/1.1" 200 OK
+01:58:23.100 INFO:     176.229.170.175:50358 - "DELETE /mcp HTTP/1.1" 200 OK
+01:58:23.219 INFO:     176.229.170.175:50365 - "POST /mcp HTTP/1.1" 200 OK
+01:58:23.594 INFO:     176.229.170.175:50366 - "POST /mcp HTTP/1.1" 202 Accepted
+01:58:23.595 INFO:     176.229.170.175:50367 - "GET /mcp HTTP/1.1" 200 OK
+01:58:23.814 INFO:     176.229.170.175:50368 - "POST /mcp HTTP/1.1" 200 OK
+01:58:23.815 [wire<-] turn step=4 sender='police' commit=581602e8 ts='2026-08-11T22:58:22.574' cells=24 barrier=None claim=None answer=None win=None
+01:58:29.651 INFO:     176.229.170.175:50369 - "POST /mcp HTTP/1.1" 200 OK
+01:58:29.718 INFO:     176.229.170.175:50370 - "DELETE /mcp HTTP/1.1" 200 OK
+01:58:30.088 INFO:     176.229.170.175:50372 - "POST /mcp HTTP/1.1" 200 OK
+01:58:30.155 INFO:     176.229.170.175:50373 - "POST /mcp HTTP/1.1" 202 Accepted
+01:58:30.156 INFO:     176.229.170.175:50374 - "GET /mcp HTTP/1.1" 200 OK
+01:58:30.186 INFO:     176.229.170.175:50375 - "POST /mcp HTTP/1.1" 200 OK
+01:58:30.187 [wire<-] turn step=5 sender='police' commit=ad7f5c76 ts='2026-08-11T22:58:29.321' cells=26 barrier=None claim=None answer=None win=None
+01:58:35.333 INFO:     176.229.170.175:50376 - "POST /mcp HTTP/1.1" 200 OK
+01:58:35.371 INFO:     176.229.170.175:50382 - "DELETE /mcp HTTP/1.1" 200 OK
+01:58:35.591 INFO:     176.229.170.175:50384 - "POST /mcp HTTP/1.1" 200 OK
+01:58:35.658 INFO:     176.229.170.175:50385 - "POST /mcp HTTP/1.1" 202 Accepted
+01:58:35.659 INFO:     176.229.170.175:50386 - "GET /mcp HTTP/1.1" 200 OK
+01:58:35.713 INFO:     176.229.170.175:50387 - "POST /mcp HTTP/1.1" 200 OK
+01:58:35.714 [wire<-] turn step=6 sender='police' commit=c488c97b ts='2026-08-11T22:58:35.017' cells=28 barrier=None claim=None answer=None win=None
+01:58:39.725 INFO:     176.229.170.175:50388 - "POST /mcp HTTP/1.1" 200 OK
+01:58:39.782 INFO:     176.229.170.175:50390 - "DELETE /mcp HTTP/1.1" 200 OK
+01:58:40.076 INFO:     176.229.170.175:50392 - "POST /mcp HTTP/1.1" 200 OK
+01:58:40.170 INFO:     176.229.170.175:50393 - "POST /mcp HTTP/1.1" 202 Accepted
+01:58:40.170 INFO:     176.229.170.175:50394 - "GET /mcp HTTP/1.1" 200 OK
+01:58:40.214 INFO:     176.229.170.175:50396 - "POST /mcp HTTP/1.1" 200 OK
+01:58:40.215 [wire<-] turn step=7 sender='police' commit=f6c44412 ts='2026-08-11T22:58:39.474' cells=30 barrier=None claim=None answer=None win=None
+01:58:44.930 INFO:     176.229.170.175:50398 - "POST /mcp HTTP/1.1" 200 OK
+01:58:44.979 INFO:     176.229.170.175:50404 - "DELETE /mcp HTTP/1.1" 200 OK
+01:58:45.207 INFO:     176.229.170.175:50406 - "POST /mcp HTTP/1.1" 200 OK
+01:58:45.349 INFO:     176.229.170.175:50408 - "GET /mcp HTTP/1.1" 200 OK
+01:58:45.350 INFO:     176.229.170.175:50407 - "POST /mcp HTTP/1.1" 202 Accepted
+01:58:45.413 INFO:     176.229.170.175:50409 - "POST /mcp HTTP/1.1" 200 OK
+01:58:45.414 [wire<-] turn step=8 sender='police' commit=2b4d09d1 ts='2026-08-11T22:58:44.618' cells=30 barrier=None claim=None answer=None win=None
+01:58:48.541 INFO:     176.229.170.175:50410 - "POST /mcp HTTP/1.1" 200 OK
+01:58:48.586 INFO:     176.229.170.175:50411 - "DELETE /mcp HTTP/1.1" 200 OK
+01:58:49.024 INFO:     176.229.170.175:50413 - "POST /mcp HTTP/1.1" 200 OK
+01:58:49.233 INFO:     176.229.170.175:50414 - "POST /mcp HTTP/1.1" 202 Accepted
+01:58:49.234 INFO:     176.229.170.175:50415 - "GET /mcp HTTP/1.1" 200 OK
+01:58:49.303 INFO:     176.229.170.175:50416 - "POST /mcp HTTP/1.1" 200 OK
+01:58:49.304 [wire<-] turn step=9 sender='police' commit=6e69c78d ts='2026-08-11T22:58:48.240' cells=34 barrier=None claim=None answer=None win=None
+01:58:52.144 INFO:     176.229.170.175:50417 - "POST /mcp HTTP/1.1" 200 OK
+01:58:52.178 INFO:     176.229.170.175:50418 - "DELETE /mcp HTTP/1.1" 200 OK
+01:58:52.466 INFO:     176.229.170.175:50420 - "POST /mcp HTTP/1.1" 200 OK
+01:58:52.504 INFO:     176.229.170.175:50422 - "GET /mcp HTTP/1.1" 200 OK
+01:58:52.506 INFO:     176.229.170.175:50421 - "POST /mcp HTTP/1.1" 202 Accepted
+01:58:52.556 INFO:     176.229.170.175:50423 - "POST /mcp HTTP/1.1" 200 OK
+01:58:52.557 [wire<-] turn step=10 sender='police' commit=9e3965f8 ts='2026-08-11T22:58:51.862' cells=30 barrier=None claim=None answer=None win=None
+01:58:55.392 INFO:     176.229.170.175:50424 - "POST /mcp HTTP/1.1" 200 OK
+01:58:55.477 INFO:     176.229.170.175:50430 - "DELETE /mcp HTTP/1.1" 200 OK
+01:58:55.676 INFO:     176.229.170.175:50432 - "POST /mcp HTTP/1.1" 200 OK
+01:58:55.756 INFO:     176.229.170.175:50434 - "GET /mcp HTTP/1.1" 200 OK
+01:58:55.756 INFO:     176.229.170.175:50433 - "POST /mcp HTTP/1.1" 202 Accepted
+01:58:55.787 INFO:     176.229.170.175:50439 - "POST /mcp HTTP/1.1" 200 OK
+01:58:55.788 [wire<-] turn step=11 sender='police' commit=cfea257a ts='2026-08-11T22:58:55.083' cells=30 barrier=None claim=None answer=None win=None
+01:58:58.612 INFO:     176.229.170.175:50441 - "POST /mcp HTTP/1.1" 200 OK
+01:58:58.660 INFO:     176.229.170.175:50449 - "DELETE /mcp HTTP/1.1" 200 OK
+01:58:58.909 INFO:     176.229.170.175:50451 - "POST /mcp HTTP/1.1" 200 OK
+01:58:58.960 INFO:     176.229.170.175:50453 - "GET /mcp HTTP/1.1" 200 OK
+01:58:58.961 INFO:     176.229.170.175:50452 - "POST /mcp HTTP/1.1" 202 Accepted
+01:58:59.010 INFO:     176.229.170.175:50454 - "POST /mcp HTTP/1.1" 200 OK
+01:58:59.012 [wire<-] turn step=12 sender='police' commit=cc1df7e1 ts='2026-08-11T22:58:58.305' cells=30 barrier=None claim=None answer=None win=None
+01:59:01.804 INFO:     176.229.170.175:50455 - "POST /mcp HTTP/1.1" 200 OK
+01:59:01.842 INFO:     176.229.170.175:50456 - "DELETE /mcp HTTP/1.1" 200 OK
+01:59:02.088 INFO:     176.229.170.175:50458 - "POST /mcp HTTP/1.1" 200 OK
+01:59:02.125 INFO:     176.229.170.175:50459 - "POST /mcp HTTP/1.1" 202 Accepted
+01:59:02.126 INFO:     176.229.170.175:50460 - "GET /mcp HTTP/1.1" 200 OK
+01:59:02.152 INFO:     176.229.170.175:50461 - "POST /mcp HTTP/1.1" 200 OK
+01:59:02.153 [wire<-] turn step=13 sender='police' commit=2228c395 ts='2026-08-11T22:59:01.498' cells=30 barrier=None claim=None answer=None win=None
+01:59:05.011 INFO:     176.229.170.175:50462 - "POST /mcp HTTP/1.1" 200 OK
+01:59:05.100 INFO:     176.229.170.175:50469 - "DELETE /mcp HTTP/1.1" 200 OK
+01:59:05.357 INFO:     176.229.170.175:50471 - "POST /mcp HTTP/1.1" 200 OK
+01:59:05.399 INFO:     176.229.170.175:50472 - "POST /mcp HTTP/1.1" 202 Accepted
+01:59:05.399 INFO:     176.229.170.175:50473 - "GET /mcp HTTP/1.1" 200 OK
+01:59:05.452 INFO:     176.229.170.175:50474 - "POST /mcp HTTP/1.1" 200 OK
+01:59:05.453 [wire<-] turn step=14 sender='police' commit=72d3b66a ts='2026-08-11T22:59:04.765' cells=30 barrier=None claim=None answer=None win=None
+01:59:08.259 INFO:     176.229.170.175:50475 - "POST /mcp HTTP/1.1" 200 OK
+01:59:08.318 INFO:     176.229.170.175:50476 - "DELETE /mcp HTTP/1.1" 200 OK
+01:59:08.698 INFO:     176.229.170.175:50478 - "POST /mcp HTTP/1.1" 200 OK
+01:59:08.881 INFO:     176.229.170.175:50480 - "GET /mcp HTTP/1.1" 200 OK
+01:59:08.884 INFO:     176.229.170.175:50479 - "POST /mcp HTTP/1.1" 202 Accepted
+01:59:08.957 INFO:     176.229.170.175:50481 - "POST /mcp HTTP/1.1" 200 OK
+01:59:08.958 [wire<-] turn step=15 sender='police' commit=af8512d2 ts='2026-08-11T22:59:07.963' cells=30 barrier=None claim=None answer=None win=None
+01:59:11.769 INFO:     176.229.170.175:50482 - "POST /mcp HTTP/1.1" 200 OK
+01:59:11.874 INFO:     176.229.170.175:50483 - "DELETE /mcp HTTP/1.1" 200 OK
+01:59:12.161 INFO:     176.229.170.175:50485 - "POST /mcp HTTP/1.1" 200 OK
+01:59:12.364 INFO:     176.229.170.175:50486 - "POST /mcp HTTP/1.1" 202 Accepted
+01:59:12.364 INFO:     176.229.170.175:50487 - "GET /mcp HTTP/1.1" 200 OK
+01:59:12.581 INFO:     176.229.170.175:50488 - "POST /mcp HTTP/1.1" 200 OK
+01:59:12.582 [wire<-] turn step=16 sender='police' commit=ad08eb09 ts='2026-08-11T22:59:11.569' cells=30 barrier=None claim=None answer=None win=None
+01:59:15.432 INFO:     176.229.170.175:50489 - "POST /mcp HTTP/1.1" 200 OK
+01:59:15.504 INFO:     176.229.170.175:50495 - "DELETE /mcp HTTP/1.1" 200 OK
+01:59:15.724 INFO:     176.229.170.175:50497 - "POST /mcp HTTP/1.1" 200 OK
+01:59:15.759 INFO:     176.229.170.175:50498 - "POST /mcp HTTP/1.1" 202 Accepted
+01:59:15.817 INFO:     176.229.170.175:50499 - "GET /mcp HTTP/1.1" 200 OK
+01:59:15.872 INFO:     176.229.170.175:50500 - "POST /mcp HTTP/1.1" 200 OK
+01:59:15.873 [wire<-] turn step=17 sender='police' commit=fd0a1552 ts='2026-08-11T22:59:15.124' cells=30 barrier=None claim=None answer=None win=None
+01:59:18.730 INFO:     176.229.170.175:50501 - "POST /mcp HTTP/1.1" 200 OK
+01:59:18.916 INFO:     176.229.170.175:50502 - "DELETE /mcp HTTP/1.1" 200 OK
+01:59:19.005 INFO:     176.229.170.175:50504 - "POST /mcp HTTP/1.1" 200 OK
+01:59:19.075 INFO:     176.229.170.175:50505 - "POST /mcp HTTP/1.1" 202 Accepted
+01:59:19.075 INFO:     176.229.170.175:50506 - "GET /mcp HTTP/1.1" 200 OK
+01:59:19.104 INFO:     176.229.170.175:50507 - "POST /mcp HTTP/1.1" 200 OK
+01:59:19.105 [wire<-] turn step=18 sender='police' commit=aa3d5bc7 ts='2026-08-11T22:59:18.433' cells=30 barrier=None claim=None answer=None win=None
+01:59:21.953 INFO:     176.229.170.175:50508 - "POST /mcp HTTP/1.1" 200 OK
+01:59:22.017 INFO:     176.229.170.175:50509 - "DELETE /mcp HTTP/1.1" 200 OK
+01:59:22.258 INFO:     176.229.170.175:50511 - "POST /mcp HTTP/1.1" 200 OK
+01:59:22.299 INFO:     176.229.170.175:50512 - "POST /mcp HTTP/1.1" 202 Accepted
+01:59:22.300 INFO:     176.229.170.175:50513 - "GET /mcp HTTP/1.1" 200 OK
+01:59:22.351 INFO:     176.229.170.175:50514 - "POST /mcp HTTP/1.1" 200 OK
+01:59:22.352 [wire<-] turn step=19 sender='police' commit=86a447a6 ts='2026-08-11T22:59:21.649' cells=30 barrier=None claim=None answer=None win=None
+01:59:25.158 INFO:     176.229.170.175:50515 - "POST /mcp HTTP/1.1" 200 OK
+01:59:25.265 INFO:     176.229.170.175:50521 - "DELETE /mcp HTTP/1.1" 200 OK
+01:59:25.429 INFO:     176.229.170.175:50523 - "POST /mcp HTTP/1.1" 200 OK
+01:59:25.470 INFO:     176.229.170.175:50524 - "POST /mcp HTTP/1.1" 202 Accepted
+01:59:25.470 INFO:     176.229.170.175:50525 - "GET /mcp HTTP/1.1" 200 OK
+01:59:25.530 INFO:     176.229.170.175:50526 - "POST /mcp HTTP/1.1" 200 OK
+01:59:25.531 [wire<-] turn step=20 sender='police' commit=317219fb ts='2026-08-11T22:59:24.832' cells=30 barrier=None claim=None answer=None win=None
+01:59:28.338 INFO:     176.229.170.175:50527 - "POST /mcp HTTP/1.1" 200 OK
+01:59:28.916 INFO:     176.229.170.175:50529 - "DELETE /mcp HTTP/1.1" 200 OK
+01:59:29.026 INFO:     176.229.170.175:50530 - "POST /mcp HTTP/1.1" 200 OK
+01:59:29.071 INFO:     176.229.170.175:50531 - "POST /mcp HTTP/1.1" 202 Accepted
+01:59:29.072 INFO:     176.229.170.175:50532 - "GET /mcp HTTP/1.1" 200 OK
+01:59:29.148 INFO:     176.229.170.175:50533 - "POST /mcp HTTP/1.1" 200 OK
+01:59:29.149 [wire<-] turn step=21 sender='police' commit=862c2867 ts='2026-08-11T22:59:28.417' cells=30 barrier=None claim=None answer=None win=None
+01:59:31.986 INFO:     176.229.170.175:50534 - "POST /mcp HTTP/1.1" 200 OK
+01:59:32.022 INFO:     176.229.170.175:50535 - "DELETE /mcp HTTP/1.1" 200 OK
+01:59:32.300 INFO:     176.229.170.175:50537 - "POST /mcp HTTP/1.1" 200 OK
+01:59:32.350 INFO:     176.229.170.175:50538 - "POST /mcp HTTP/1.1" 202 Accepted
+01:59:32.350 INFO:     176.229.170.175:50539 - "GET /mcp HTTP/1.1" 200 OK
+01:59:32.399 INFO:     176.229.170.175:50540 - "POST /mcp HTTP/1.1" 200 OK
+01:59:32.400 [wire<-] turn step=22 sender='police' commit=0201f54b ts='2026-08-11T22:59:31.680' cells=30 barrier=None claim=None answer=None win=None
+01:59:32.448 INFO:     176.229.170.175:50541 - "POST /mcp HTTP/1.1" 200 OK
+01:59:35.381 INFO:     176.229.170.175:50547 - "DELETE /mcp HTTP/1.1" 200 OK
+01:59:35.475 INFO:     176.229.170.175:50549 - "POST /mcp HTTP/1.1" 200 OK
+01:59:35.616 INFO:     176.229.170.175:50550 - "POST /mcp HTTP/1.1" 202 Accepted
+01:59:35.617 INFO:     176.229.170.175:50551 - "GET /mcp HTTP/1.1" 200 OK
+01:59:35.691 INFO:     176.229.170.175:50552 - "POST /mcp HTTP/1.1" 200 OK
+01:59:35.692 [wire<-] turn step=23 sender='police' commit=dda8ebe6 ts='2026-08-11T22:59:34.898' cells=30 barrier=None claim=None answer=None win=None
+01:59:35.732 INFO:     176.229.170.175:50553 - "POST /mcp HTTP/1.1" 200 OK
+01:59:38.519 INFO:     176.229.170.175:50554 - "DELETE /mcp HTTP/1.1" 200 OK
+01:59:38.858 INFO:     176.229.170.175:50557 - "POST /mcp HTTP/1.1" 200 OK
+01:59:38.949 INFO:     176.229.170.175:50559 - "GET /mcp HTTP/1.1" 200 OK
+01:59:38.950 INFO:     176.229.170.175:50558 - "POST /mcp HTTP/1.1" 202 Accepted
+01:59:38.994 INFO:     176.229.170.175:50560 - "POST /mcp HTTP/1.1" 200 OK
+01:59:38.995 [wire<-] turn step=24 sender='police' commit=de9aad20 ts='2026-08-11T22:59:38.257' cells=30 barrier=None claim=None answer=None win=None
+01:59:41.780 INFO:     176.229.170.175:50561 - "POST /mcp HTTP/1.1" 200 OK
+01:59:42.026 INFO:     176.229.170.175:50565 - "DELETE /mcp HTTP/1.1" 200 OK
+01:59:42.132 INFO:     176.229.170.175:50566 - "POST /mcp HTTP/1.1" 200 OK
+01:59:42.196 INFO:     176.229.170.175:50567 - "POST /mcp HTTP/1.1" 202 Accepted
+01:59:42.196 INFO:     176.229.170.175:50568 - "GET /mcp HTTP/1.1" 200 OK
+01:59:42.263 INFO:     176.229.170.175:50569 - "POST /mcp HTTP/1.1" 200 OK
+01:59:42.263 [wire<-] turn step=25 sender='police' commit=be7369fb ts='2026-08-11T22:59:41.530' cells=30 barrier=None claim=None answer=None win=None
+01:59:45.132 INFO:     176.229.170.175:50570 - "POST /mcp HTTP/1.1" 200 OK
+01:59:45.206 INFO:     176.229.170.175:50576 - "DELETE /mcp HTTP/1.1" 200 OK
+01:59:45.408 INFO:     176.229.170.175:50578 - "POST /mcp HTTP/1.1" 200 OK
+01:59:45.605 INFO:     176.229.170.175:50579 - "POST /mcp HTTP/1.1" 202 Accepted
+01:59:45.609 INFO:     176.229.170.175:50580 - "GET /mcp HTTP/1.1" 200 OK
+01:59:45.638 INFO:     176.229.170.175:50581 - "POST /mcp HTTP/1.1" 200 OK
+01:59:45.639 [wire<-] turn step=26 sender='police' commit=cbb1cc44 ts='2026-08-11T22:59:44.824' cells=30 barrier=None claim=None answer=None win=None
+01:59:48.489 INFO:     176.229.170.175:50582 - "POST /mcp HTTP/1.1" 200 OK
+01:59:48.527 INFO:     176.229.170.175:50583 - "DELETE /mcp HTTP/1.1" 200 OK
+01:59:48.812 INFO:     176.229.170.175:50585 - "POST /mcp HTTP/1.1" 200 OK
+01:59:48.883 INFO:     176.229.170.175:50586 - "POST /mcp HTTP/1.1" 202 Accepted
+01:59:48.894 INFO:     176.229.170.175:50587 - "GET /mcp HTTP/1.1" 200 OK
+01:59:48.919 INFO:     176.229.170.175:50588 - "POST /mcp HTTP/1.1" 200 OK
+01:59:48.920 [wire<-] turn step=27 sender='police' commit=98f52c9d ts='2026-08-11T22:59:48.190' cells=30 barrier=None claim=None answer=None win=None
+01:59:51.740 INFO:     176.229.170.175:50589 - "POST /mcp HTTP/1.1" 200 OK
+01:59:51.899 INFO:     176.229.170.175:50590 - "DELETE /mcp HTTP/1.1" 200 OK
+01:59:52.053 INFO:     176.229.170.175:50592 - "POST /mcp HTTP/1.1" 200 OK
+01:59:52.151 INFO:     176.229.170.175:50593 - "POST /mcp HTTP/1.1" 202 Accepted
+01:59:52.157 INFO:     176.229.170.175:50594 - "GET /mcp HTTP/1.1" 200 OK
+01:59:52.182 INFO:     176.229.170.175:50595 - "POST /mcp HTTP/1.1" 200 OK
+01:59:52.183 [wire<-] turn step=28 sender='police' commit=64f7c9bf ts='2026-08-11T22:59:51.447' cells=30 barrier=None claim=None answer=None win=None
+01:59:55.011 INFO:     176.229.170.175:50596 - "POST /mcp HTTP/1.1" 200 OK
+01:59:55.043 INFO:     176.229.170.175:50602 - "DELETE /mcp HTTP/1.1" 200 OK
+01:59:55.276 INFO:     176.229.170.175:50604 - "POST /mcp HTTP/1.1" 200 OK
+01:59:55.343 INFO:     176.229.170.175:50605 - "POST /mcp HTTP/1.1" 202 Accepted
+01:59:55.343 INFO:     176.229.170.175:50606 - "GET /mcp HTTP/1.1" 200 OK
+01:59:55.375 INFO:     176.229.170.175:50607 - "POST /mcp HTTP/1.1" 200 OK
+01:59:55.376 [wire<-] turn step=29 sender='police' commit=2ff0b821 ts='2026-08-11T22:59:54.704' cells=30 barrier=None claim=None answer=None win=None
+01:59:58.220 INFO:     176.229.170.175:50608 - "POST /mcp HTTP/1.1" 200 OK
+01:59:58.259 INFO:     176.229.170.175:50609 - "DELETE /mcp HTTP/1.1" 200 OK
+01:59:58.526 INFO:     176.229.170.175:50611 - "POST /mcp HTTP/1.1" 200 OK
+01:59:58.567 INFO:     176.229.170.175:50612 - "POST /mcp HTTP/1.1" 202 Accepted
+01:59:58.567 INFO:     176.229.170.175:50613 - "GET /mcp HTTP/1.1" 200 OK
+01:59:58.707 INFO:     176.229.170.175:50614 - "POST /mcp HTTP/1.1" 200 OK
+01:59:58.708 [wire<-] turn step=30 sender='police' commit=ed7e706f ts='2026-08-11T22:59:57.924' cells=30 barrier=None claim=None answer=None win=None
+02:00:01.501 INFO:     176.229.170.175:50615 - "POST /mcp HTTP/1.1" 200 OK
+02:00:01.580 INFO:     176.229.170.175:50616 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:01.811 INFO:     176.229.170.175:50618 - "POST /mcp HTTP/1.1" 200 OK
+02:00:01.911 INFO:     176.229.170.175:50619 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:01.912 INFO:     176.229.170.175:50620 - "GET /mcp HTTP/1.1" 200 OK
+02:00:01.942 INFO:     176.229.170.175:50621 - "POST /mcp HTTP/1.1" 200 OK
+02:00:01.943 [wire<-] turn step=31 sender='police' commit=14298850 ts='2026-08-11T23:00:01.198' cells=30 barrier=None claim=None answer=None win=None
+02:00:04.755 INFO:     176.229.170.175:50622 - "POST /mcp HTTP/1.1" 200 OK
+02:00:04.791 INFO:     176.229.170.175:50628 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:05.019 INFO:     176.229.170.175:50630 - "POST /mcp HTTP/1.1" 200 OK
+02:00:05.088 INFO:     176.229.170.175:50631 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:05.089 INFO:     176.229.170.175:50632 - "GET /mcp HTTP/1.1" 200 OK
+02:00:05.189 INFO:     176.229.170.175:50633 - "POST /mcp HTTP/1.1" 200 OK
+02:00:05.190 [wire<-] turn step=32 sender='police' commit=dd453f0f ts='2026-08-11T23:00:04.448' cells=30 barrier=None claim=None answer=None win=None
+02:00:05.598 INFO:     176.229.170.175:50634 - "POST /mcp HTTP/1.1" 200 OK
+02:00:05.639 INFO:     176.229.170.175:50635 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:05.983 INFO:     176.229.170.175:50637 - "POST /mcp HTTP/1.1" 200 OK
+02:00:06.044 INFO:     176.229.170.175:50638 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:06.045 INFO:     176.229.170.175:50639 - "GET /mcp HTTP/1.1" 200 OK
+02:00:06.097 INFO:     176.229.170.175:50640 - "POST /mcp HTTP/1.1" 200 OK
+02:00:06.098 [wire<-] turn step=33 sender='police' commit=527ff4fc ts='2026-08-11T23:00:05.363' cells=30 barrier=None claim=None answer=None win=None
+02:00:06.135 INFO:     176.229.170.175:50641 - "POST /mcp HTTP/1.1" 200 OK
+02:00:06.214 INFO:     176.229.170.175:50642 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:06.530 INFO:     176.229.170.175:50644 - "POST /mcp HTTP/1.1" 200 OK
+02:00:06.591 INFO:     176.229.170.175:50645 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:06.592 INFO:     176.229.170.175:50646 - "GET /mcp HTTP/1.1" 200 OK
+02:00:06.620 INFO:     176.229.170.175:50647 - "POST /mcp HTTP/1.1" 200 OK
+02:00:06.621 [wire<-] turn step=34 sender='police' commit=0c2d1144 ts='2026-08-11T23:00:05.900' cells=25 barrier=None claim=None answer=None win=None
+02:00:06.659 INFO:     176.229.170.175:50648 - "POST /mcp HTTP/1.1" 200 OK
+02:00:06.728 INFO:     176.229.170.175:50649 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:06.864 INFO:     176.229.170.175:50651 - "POST /mcp HTTP/1.1" 200 OK
+02:00:06.949 INFO:     176.229.170.175:50652 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:06.949 INFO:     176.229.170.175:50653 - "GET /mcp HTTP/1.1" 200 OK
+02:00:07.005 INFO:     176.229.170.175:50654 - "POST /mcp HTTP/1.1" 200 OK
+02:00:07.006 [wire<-] audit sender='police' records=37 claim='survival'
+02:00:07.049 INFO:     176.229.170.175:50655 - "POST /mcp HTTP/1.1" 200 OK
+02:00:07.127 INFO:     176.229.170.175:50656 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:07.170 INFO:     176.229.170.175:50658 - "POST /mcp HTTP/1.1" 200 OK
+02:00:07.240 INFO:     176.229.170.175:50659 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:07.243 INFO:     176.229.170.175:50660 - "GET /mcp HTTP/1.1" 200 OK
+02:00:07.273 INFO:     176.229.170.175:50661 - "POST /mcp HTTP/1.1" 200 OK
+02:00:07.275 [wire<-] negotiate keys=['identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=None
+02:00:07.360 INFO:     176.229.170.175:50662 - "POST /mcp HTTP/1.1" 200 OK
+02:00:07.452 INFO:     176.229.170.175:50663 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:07.508 [match] sg1 audit ok=True errors=[] outcome=survival rl_moves=35 distinct=5 sample=['S', 'S', 'N', 'S', 'E', 'N', 'N', 'N']
+02:00:07.509 [match] sg1 complete
+02:00:07.509 [match] sg2 (police) — awaiting peer endpoint https://7f71-176-229-170-175.ngrok-free.app/mcp
+02:00:08.707 [match] peer endpoint UP: https://7f71-176-229-170-175.ngrok-free.app/mcp
+02:00:12.087 INFO:     176.229.170.175:50678 - "POST /mcp HTTP/1.1" 200 OK
+02:00:12.217 [match] sg2 peer greeting sub_game=2 role=thief
+02:00:12.217 [match] sg2 role=police handshake OK vs uoh-sqak uid=e294ea6e-31c
+02:00:12.244 INFO:     176.229.170.175:50681 - "GET /mcp HTTP/1.1" 200 OK
+02:00:12.252 INFO:     176.229.170.175:50680 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:12.296 INFO:     176.229.170.175:50682 - "POST /mcp HTTP/1.1" 200 OK
+02:00:12.297 [wire<-] control kind='enable' sender='thief' sub_game=1 status=''
+02:00:12.380 INFO:     176.229.170.175:50683 - "POST /mcp HTTP/1.1" 200 OK
+02:00:12.528 INFO:     176.229.170.175:50684 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:12.576 INFO:     176.229.170.175:50685 - "POST /mcp HTTP/1.1" 200 OK
+02:00:12.652 INFO:     176.229.170.175:50686 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:12.653 INFO:     176.229.170.175:50687 - "GET /mcp HTTP/1.1" 200 OK
+02:00:12.687 INFO:     176.229.170.175:50688 - "POST /mcp HTTP/1.1" 200 OK
+02:00:12.688 [wire<-] control kind='status' sender='thief' sub_game=2 status='PLAYING'
+02:00:12.867 INFO:     176.229.170.175:50689 - "POST /mcp HTTP/1.1" 200 OK
+02:00:12.908 INFO:     176.229.170.175:50690 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:13.064 INFO:     176.229.170.175:50691 - "POST /mcp HTTP/1.1" 200 OK
+02:00:13.113 INFO:     176.229.170.175:50692 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:13.113 INFO:     176.229.170.175:50693 - "GET /mcp HTTP/1.1" 200 OK
+02:00:13.164 INFO:     176.229.170.175:50699 - "POST /mcp HTTP/1.1" 200 OK
+02:00:13.165 [wire<-] turn step=1 sender='thief' commit=ef2097b5 ts='2026-08-11T23:00:12.437' cells=25 barrier=None claim=None answer=None win=None
+02:00:13.204 INFO:     176.229.170.175:50700 - "POST /mcp HTTP/1.1" 200 OK
+02:00:13.204 [scent] sg2 step1: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+02:00:22.106 INFO:     176.229.170.175:50702 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:22.297 INFO:     176.229.170.175:50704 - "POST /mcp HTTP/1.1" 200 OK
+02:00:22.358 INFO:     176.229.170.175:50705 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:22.359 INFO:     176.229.170.175:50706 - "GET /mcp HTTP/1.1" 200 OK
+02:00:22.411 INFO:     176.229.170.175:50707 - "POST /mcp HTTP/1.1" 200 OK
+02:00:22.412 [wire<-] turn step=2 sender='thief' commit=b558b6cb ts='2026-08-11T23:00:21.717' cells=30 barrier=None claim=None answer=False win=None
+02:00:24.665 INFO:     176.229.170.175:50708 - "POST /mcp HTTP/1.1" 200 OK
+02:00:24.773 INFO:     176.229.170.175:50715 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:25.085 INFO:     176.229.170.175:50717 - "POST /mcp HTTP/1.1" 200 OK
+02:00:25.149 INFO:     176.229.170.175:50719 - "GET /mcp HTTP/1.1" 200 OK
+02:00:25.151 INFO:     176.229.170.175:50718 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:25.180 INFO:     176.229.170.175:50720 - "POST /mcp HTTP/1.1" 200 OK
+02:00:25.181 [wire<-] turn step=3 sender='thief' commit=68a0d8cc ts='2026-08-11T23:00:24.316' cells=25 barrier=None claim=None answer=False win=None
+02:00:27.935 INFO:     176.229.170.175:50721 - "POST /mcp HTTP/1.1" 200 OK
+02:00:28.015 INFO:     176.229.170.175:50723 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:28.205 INFO:     176.229.170.175:50725 - "POST /mcp HTTP/1.1" 200 OK
+02:00:28.258 INFO:     176.229.170.175:50726 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:28.259 INFO:     176.229.170.175:50727 - "GET /mcp HTTP/1.1" 200 OK
+02:00:28.365 INFO:     176.229.170.175:50728 - "POST /mcp HTTP/1.1" 200 OK
+02:00:28.367 [wire<-] turn step=4 sender='thief' commit=99ba27ed ts='2026-08-11T23:00:27.589' cells=20 barrier=None claim=None answer=False win=None
+02:00:31.283 INFO:     176.229.170.175:50729 - "POST /mcp HTTP/1.1" 200 OK
+02:00:31.409 INFO:     176.229.170.175:50731 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:31.742 INFO:     176.229.170.175:50733 - "POST /mcp HTTP/1.1" 200 OK
+02:00:31.811 INFO:     176.229.170.175:50734 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:31.812 INFO:     176.229.170.175:50735 - "GET /mcp HTTP/1.1" 200 OK
+02:00:31.846 INFO:     176.229.170.175:50736 - "POST /mcp HTTP/1.1" 200 OK
+02:00:31.847 [wire<-] turn step=5 sender='thief' commit=2289751f ts='2026-08-11T23:00:31.161' cells=19 barrier=None claim=None answer=False win=None
+02:00:35.324 INFO:     176.229.170.175:50737 - "POST /mcp HTTP/1.1" 200 OK
+02:00:35.504 INFO:     176.229.170.175:50743 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:35.622 INFO:     176.229.170.175:50745 - "POST /mcp HTTP/1.1" 200 OK
+02:00:35.732 INFO:     176.229.170.175:50746 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:35.734 INFO:     176.229.170.175:50747 - "GET /mcp HTTP/1.1" 200 OK
+02:00:35.937 INFO:     176.229.170.175:50748 - "POST /mcp HTTP/1.1" 200 OK
+02:00:35.938 [wire<-] turn step=6 sender='thief' commit=a5787750 ts='2026-08-11T23:00:34.987' cells=16 barrier=None claim=None answer=False win=None
+02:00:38.211 INFO:     176.229.170.175:50749 - "POST /mcp HTTP/1.1" 200 OK
+02:00:38.278 INFO:     176.229.170.175:50751 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:38.483 INFO:     176.229.170.175:50753 - "POST /mcp HTTP/1.1" 200 OK
+02:00:38.553 INFO:     176.229.170.175:50755 - "GET /mcp HTTP/1.1" 200 OK
+02:00:38.554 INFO:     176.229.170.175:50754 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:38.585 INFO:     176.229.170.175:50756 - "POST /mcp HTTP/1.1" 200 OK
+02:00:38.586 [wire<-] turn step=7 sender='thief' commit=fd23f9ae ts='2026-08-11T23:00:37.902' cells=12 barrier=None claim=None answer=False win=None
+02:00:41.421 INFO:     176.229.170.175:50757 - "POST /mcp HTTP/1.1" 200 OK
+02:00:41.478 INFO:     176.229.170.175:50760 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:41.672 INFO:     176.229.170.175:50762 - "POST /mcp HTTP/1.1" 200 OK
+02:00:41.745 INFO:     176.229.170.175:50763 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:41.746 INFO:     176.229.170.175:50764 - "GET /mcp HTTP/1.1" 200 OK
+02:00:41.780 INFO:     176.229.170.175:50765 - "POST /mcp HTTP/1.1" 200 OK
+02:00:41.781 [wire<-] turn step=8 sender='thief' commit=4149b538 ts='2026-08-11T23:00:41.079' cells=16 barrier=None claim=None answer=False win=None
+02:00:45.167 INFO:     176.229.170.175:50766 - "POST /mcp HTTP/1.1" 200 OK
+02:00:45.458 INFO:     176.229.170.175:50773 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:45.521 INFO:     176.229.170.175:50774 - "POST /mcp HTTP/1.1" 200 OK
+02:00:45.626 INFO:     176.229.170.175:50775 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:45.627 INFO:     176.229.170.175:50776 - "GET /mcp HTTP/1.1" 200 OK
+02:00:45.726 INFO:     176.229.170.175:50777 - "POST /mcp HTTP/1.1" 200 OK
+02:00:45.727 [wire<-] turn step=9 sender='thief' commit=ad93fdfc ts='2026-08-11T23:00:44.926' cells=16 barrier=None claim=None answer=False win=None
+02:00:48.257 INFO:     176.229.170.175:50778 - "POST /mcp HTTP/1.1" 200 OK
+02:00:48.308 INFO:     176.229.170.175:50779 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:48.522 INFO:     176.229.170.175:50781 - "POST /mcp HTTP/1.1" 200 OK
+02:00:48.599 INFO:     176.229.170.175:50782 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:48.600 INFO:     176.229.170.175:50783 - "GET /mcp HTTP/1.1" 200 OK
+02:00:48.635 INFO:     176.229.170.175:50784 - "POST /mcp HTTP/1.1" 200 OK
+02:00:48.636 [wire<-] turn step=10 sender='thief' commit=2b7f5482 ts='2026-08-11T23:00:47.937' cells=12 barrier=None claim=None answer=False win=None
+02:00:50.650 INFO:     176.229.170.175:50785 - "POST /mcp HTTP/1.1" 200 OK
+02:00:50.687 INFO:     176.229.170.175:50786 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:50.978 INFO:     176.229.170.175:50788 - "POST /mcp HTTP/1.1" 200 OK
+02:00:51.148 INFO:     176.229.170.175:50790 - "GET /mcp HTTP/1.1" 200 OK
+02:00:51.149 INFO:     176.229.170.175:50789 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:51.181 INFO:     176.229.170.175:50791 - "POST /mcp HTTP/1.1" 200 OK
+02:00:51.182 [wire<-] turn step=11 sender='thief' commit=b7fa5ad6 ts='2026-08-11T23:00:50.313' cells=9 barrier=None claim=None answer=False win=None
+02:00:52.201 INFO:     176.229.170.175:50792 - "POST /mcp HTTP/1.1" 200 OK
+02:00:52.286 INFO:     176.229.170.175:50793 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:52.468 INFO:     176.229.170.175:50795 - "POST /mcp HTTP/1.1" 200 OK
+02:00:52.839 INFO:     176.229.170.175:50797 - "GET /mcp HTTP/1.1" 200 OK
+02:00:52.840 INFO:     176.229.170.175:50796 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:52.917 INFO:     176.229.170.175:50798 - "POST /mcp HTTP/1.1" 200 OK
+02:00:52.918 [wire<-] turn step=12 sender='thief' commit=1202ab12 ts='2026-08-11T23:00:51.859' cells=12 barrier=None claim=None answer=False win=None
+02:00:55.076 INFO:     176.229.170.175:50799 - "POST /mcp HTTP/1.1" 200 OK
+02:00:55.133 INFO:     176.229.170.175:50805 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:55.356 INFO:     176.229.170.175:50807 - "POST /mcp HTTP/1.1" 200 OK
+02:00:55.398 INFO:     176.229.170.175:50808 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:55.399 INFO:     176.229.170.175:50809 - "GET /mcp HTTP/1.1" 200 OK
+02:00:55.477 INFO:     176.229.170.175:50810 - "POST /mcp HTTP/1.1" 200 OK
+02:00:55.478 [wire<-] turn step=13 sender='thief' commit=36d1b566 ts='2026-08-11T23:00:54.737' cells=12 barrier=None claim=None answer=True win=None
+02:00:55.516 [match] sg2 thief conceded capture at step 13 (answer)
+02:00:55.576 INFO:     176.229.170.175:50811 - "POST /mcp HTTP/1.1" 200 OK
+02:00:55.635 INFO:     176.229.170.175:50812 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:55.689 INFO:     176.229.170.175:50813 - "POST /mcp HTTP/1.1" 200 OK
+02:00:55.860 INFO:     176.229.170.175:50815 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:55.861 INFO:     176.229.170.175:50816 - "GET /mcp HTTP/1.1" 200 OK
+02:00:55.900 INFO:     176.229.170.175:50817 - "POST /mcp HTTP/1.1" 200 OK
+02:00:55.901 [wire<-] audit sender='thief' records=17 claim='capture'
+02:00:55.977 INFO:     176.229.170.175:50818 - "POST /mcp HTTP/1.1" 200 OK
+02:00:56.012 INFO:     176.229.170.175:50819 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:56.085 INFO:     176.229.170.175:50820 - "POST /mcp HTTP/1.1" 200 OK
+02:00:56.183 [match] sg2 audit ok=True errors=[] outcome=capture rl_moves=12 distinct=3 sample=['S', 'S', 'S', 'E', 'E', 'S', 'E', 'E']
+02:00:56.183 [match] sg2 complete
+02:00:56.183 [match] sg3 (thief) — awaiting peer endpoint https://7f71-176-229-170-175.ngrok-free.app/mcp
+02:00:56.365 INFO:     176.229.170.175:50823 - "GET /mcp HTTP/1.1" 200 OK
+02:00:56.366 INFO:     176.229.170.175:50822 - "POST /mcp HTTP/1.1" 202 Accepted
+02:00:56.400 INFO:     176.229.170.175:50824 - "POST /mcp HTTP/1.1" 200 OK
+02:00:56.401 [wire<-] negotiate keys=['identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=None
+02:00:56.460 INFO:     176.229.170.175:50825 - "POST /mcp HTTP/1.1" 200 OK
+02:00:56.487 INFO:     176.229.170.175:50826 - "DELETE /mcp HTTP/1.1" 200 OK
+02:00:57.259 [match] peer endpoint UP: https://7f71-176-229-170-175.ngrok-free.app/mcp
+02:01:00.364 INFO:     176.229.170.175:50839 - "POST /mcp HTTP/1.1" 200 OK
+02:01:00.400 INFO:     176.229.170.175:50840 - "POST /mcp HTTP/1.1" 202 Accepted
+02:01:00.401 INFO:     176.229.170.175:50841 - "GET /mcp HTTP/1.1" 200 OK
+02:01:00.455 INFO:     176.229.170.175:50842 - "POST /mcp HTTP/1.1" 200 OK
+02:01:00.456 [wire<-] control kind='enable' sender='police' sub_game=1 status=''
+02:01:00.496 INFO:     176.229.170.175:50843 - "POST /mcp HTTP/1.1" 200 OK
+02:01:00.574 INFO:     176.229.170.175:50844 - "DELETE /mcp HTTP/1.1" 200 OK
+02:01:00.622 INFO:     176.229.170.175:50846 - "POST /mcp HTTP/1.1" 200 OK
+02:01:00.634 [match] sg3 peer greeting sub_game=3 role=police
+02:01:00.634 [match] sg3 role=thief handshake OK vs uoh-sqak uid=e294ea6e-31c
+02:01:00.695 INFO:     176.229.170.175:50847 - "POST /mcp HTTP/1.1" 202 Accepted
+02:01:00.697 INFO:     176.229.170.175:50848 - "GET /mcp HTTP/1.1" 200 OK
+02:01:00.721 INFO:     176.229.170.175:50849 - "POST /mcp HTTP/1.1" 200 OK
+02:01:00.721 [wire<-] control kind='status' sender='police' sub_game=3 status='PLAYING'
+02:01:00.788 INFO:     176.229.170.175:50850 - "POST /mcp HTTP/1.1" 200 OK
+02:01:00.815 INFO:     176.229.170.175:50851 - "DELETE /mcp HTTP/1.1" 200 OK
+02:01:00.900 INFO:     176.229.170.175:50853 - "POST /mcp HTTP/1.1" 200 OK
+02:01:01.073 INFO:     176.229.170.175:50854 - "POST /mcp HTTP/1.1" 202 Accepted
+02:01:01.073 INFO:     176.229.170.175:50855 - "GET /mcp HTTP/1.1" 200 OK
+02:01:01.103 INFO:     176.229.170.175:50856 - "POST /mcp HTTP/1.1" 200 OK
+02:01:01.103 [wire<-] turn step=1 sender='police' commit=a9f26900 ts='2026-08-11T23:01:00.315' cells=12 barrier=None claim=None answer=None win=None
+02:01:01.162 [scent] sg3 step2: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+02:01:04.786 INFO:     176.229.170.175:50857 - "POST /mcp HTTP/1.1" 200 OK
+02:01:04.876 INFO:     176.229.170.175:50863 - "DELETE /mcp HTTP/1.1" 200 OK
+02:01:05.115 INFO:     176.229.170.175:50865 - "POST /mcp HTTP/1.1" 200 OK
+02:01:05.280 INFO:     176.229.170.175:50866 - "POST /mcp HTTP/1.1" 202 Accepted
+02:01:05.280 INFO:     176.229.170.175:50867 - "GET /mcp HTTP/1.1" 200 OK
+02:01:05.330 INFO:     176.229.170.175:50868 - "POST /mcp HTTP/1.1" 200 OK
+02:01:05.331 [wire<-] turn step=2 sender='police' commit=8ce99fc2 ts='2026-08-11T23:01:04.524' cells=15 barrier=None claim=None answer=None win=None
+02:01:08.898 INFO:     176.229.170.175:50869 - "POST /mcp HTTP/1.1" 200 OK
+02:01:09.022 Exception in callback _ProactorBasePipeTransport._call_connection_lost()
+02:01:09.022 handle: <Handle _ProactorBasePipeTransport._call_connection_lost()>
+02:01:09.022 Traceback (most recent call last):
+02:01:09.022   File "C:\Users\kuper\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\events.py", line 94, in _run
+02:01:09.022     self._context.run(self._callback, *self._args)
+02:01:09.022     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+02:01:09.022   File "C:\Users\kuper\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\proactor_events.py", line 165, in _call_connection_lost
+02:01:09.022     self._sock.shutdown(socket.SHUT_RDWR)
+02:01:09.022     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+02:01:09.022 ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+02:01:09.061 INFO:     176.229.170.175:50873 - "DELETE /mcp HTTP/1.1" 200 OK
+02:01:09.167 INFO:     176.229.170.175:50875 - "POST /mcp HTTP/1.1" 200 OK
+02:01:09.207 INFO:     176.229.170.175:50876 - "POST /mcp HTTP/1.1" 202 Accepted
+02:01:09.207 INFO:     176.229.170.175:50877 - "GET /mcp HTTP/1.1" 200 OK
+02:01:09.259 INFO:     176.229.170.175:50878 - "POST /mcp HTTP/1.1" 200 OK
+02:01:09.260 [wire<-] turn step=3 sender='police' commit=fa490ba0 ts='2026-08-11T23:01:08.581' cells=20 barrier=None claim=None answer=None win=None
+02:01:14.922 INFO:     176.229.170.175:50879 - "POST /mcp HTTP/1.1" 200 OK
+02:01:14.960 INFO:     176.229.170.175:50885 - "DELETE /mcp HTTP/1.1" 200 OK
+02:01:15.168 INFO:     176.229.170.175:50887 - "POST /mcp HTTP/1.1" 200 OK
+02:01:15.245 INFO:     176.229.170.175:50888 - "POST /mcp HTTP/1.1" 202 Accepted
+02:01:15.245 INFO:     176.229.170.175:50889 - "GET /mcp HTTP/1.1" 200 OK
+02:01:15.295 INFO:     176.229.170.175:50890 - "POST /mcp HTTP/1.1" 200 OK
+02:01:15.296 [wire<-] turn step=4 sender='police' commit=1b2c1827 ts='2026-08-11T23:01:14.586' cells=24 barrier=None claim=None answer=None win=None
+02:01:20.733 INFO:     176.229.170.175:50891 - "POST /mcp HTTP/1.1" 200 OK
+02:01:20.769 INFO:     176.229.170.175:50892 - "DELETE /mcp HTTP/1.1" 200 OK
+02:01:21.051 INFO:     176.229.170.175:50894 - "POST /mcp HTTP/1.1" 200 OK
+02:01:21.097 INFO:     176.229.170.175:50895 - "POST /mcp HTTP/1.1" 202 Accepted
+02:01:21.098 INFO:     176.229.170.175:50896 - "GET /mcp HTTP/1.1" 200 OK
+02:01:21.145 INFO:     176.229.170.175:50897 - "POST /mcp HTTP/1.1" 200 OK
+02:01:21.146 [wire<-] turn step=5 sender='police' commit=a4497be9 ts='2026-08-11T23:01:20.430' cells=26 barrier=None claim=None answer=None win=None
+02:01:25.950 INFO:     176.229.170.175:50898 - "POST /mcp HTTP/1.1" 200 OK
+02:01:25.988 INFO:     176.229.170.175:50904 - "DELETE /mcp HTTP/1.1" 200 OK
+02:01:26.265 INFO:     176.229.170.175:50906 - "POST /mcp HTTP/1.1" 200 OK
+02:01:26.301 INFO:     176.229.170.175:50907 - "POST /mcp HTTP/1.1" 202 Accepted
+02:01:26.301 INFO:     176.229.170.175:50908 - "GET /mcp HTTP/1.1" 200 OK
+02:01:26.482 INFO:     176.229.170.175:50909 - "POST /mcp HTTP/1.1" 200 OK
+02:01:26.483 [wire<-] turn step=6 sender='police' commit=929ab270 ts='2026-08-11T23:01:25.675' cells=28 barrier=None claim=None answer=None win=None
+02:01:30.258 INFO:     176.229.170.175:50922 - "POST /mcp HTTP/1.1" 200 OK
+02:01:30.422 INFO:     176.229.170.175:50923 - "DELETE /mcp HTTP/1.1" 200 OK
+02:01:30.509 INFO:     176.229.170.175:50925 - "POST /mcp HTTP/1.1" 200 OK
+02:01:30.585 INFO:     176.229.170.175:50926 - "POST /mcp HTTP/1.1" 202 Accepted
+02:01:30.586 INFO:     176.229.170.175:50927 - "GET /mcp HTTP/1.1" 200 OK
+02:01:30.622 INFO:     176.229.170.175:50928 - "POST /mcp HTTP/1.1" 200 OK
+02:01:30.623 [wire<-] turn step=7 sender='police' commit=be30c142 ts='2026-08-11T23:01:29.934' cells=30 barrier=None claim=None answer=None win=None
+02:01:30.669 INFO:     176.229.170.175:50929 - "POST /mcp HTTP/1.1" 200 OK
+02:01:35.088 INFO:     176.229.170.175:50930 - "DELETE /mcp HTTP/1.1" 200 OK
+02:01:35.369 INFO:     176.229.170.175:50937 - "POST /mcp HTTP/1.1" 200 OK
+02:01:35.421 INFO:     176.229.170.175:50938 - "POST /mcp HTTP/1.1" 202 Accepted
+02:01:35.422 INFO:     176.229.170.175:50939 - "GET /mcp HTTP/1.1" 200 OK
+02:01:35.476 INFO:     176.229.170.175:50940 - "POST /mcp HTTP/1.1" 200 OK
+02:01:35.477 [wire<-] turn step=8 sender='police' commit=c1ef0490 ts='2026-08-11T23:01:34.779' cells=30 barrier=None claim=None answer=None win=None
+02:01:35.518 INFO:     176.229.170.175:50941 - "POST /mcp HTTP/1.1" 200 OK
+02:01:38.411 INFO:     176.229.170.175:50942 - "DELETE /mcp HTTP/1.1" 200 OK
+02:01:38.707 INFO:     176.229.170.175:50945 - "POST /mcp HTTP/1.1" 200 OK
+02:01:38.823 INFO:     176.229.170.175:50946 - "POST /mcp HTTP/1.1" 202 Accepted
+02:01:38.824 INFO:     176.229.170.175:50947 - "GET /mcp HTTP/1.1" 200 OK
+02:01:38.868 INFO:     176.229.170.175:50948 - "POST /mcp HTTP/1.1" 200 OK
+02:01:38.869 [wire<-] turn step=9 sender='police' commit=07de6e87 ts='2026-08-11T23:01:38.104' cells=34 barrier=None claim=None answer=None win=None
+02:01:41.504 INFO:     176.229.170.175:50949 - "POST /mcp HTTP/1.1" 200 OK
+02:01:41.540 INFO:     176.229.170.175:50952 - "DELETE /mcp HTTP/1.1" 200 OK
+02:01:41.812 INFO:     176.229.170.175:50954 - "POST /mcp HTTP/1.1" 200 OK
+02:01:41.960 INFO:     176.229.170.175:50955 - "POST /mcp HTTP/1.1" 202 Accepted
+02:01:41.960 INFO:     176.229.170.175:50956 - "GET /mcp HTTP/1.1" 200 OK
+02:01:41.994 INFO:     176.229.170.175:50957 - "POST /mcp HTTP/1.1" 200 OK
+02:01:41.996 [wire<-] turn step=10 sender='police' commit=d7cf05f3 ts='2026-08-11T23:01:41.221' cells=30 barrier=None claim=None answer=None win=None
+02:01:44.647 INFO:     176.229.170.175:50958 - "POST /mcp HTTP/1.1" 200 OK
+02:01:44.750 INFO:     176.229.170.175:50964 - "DELETE /mcp HTTP/1.1" 200 OK
+02:01:44.949 INFO:     176.229.170.175:50966 - "POST /mcp HTTP/1.1" 200 OK
+02:01:45.141 INFO:     176.229.170.175:50968 - "GET /mcp HTTP/1.1" 200 OK
+02:01:45.141 INFO:     176.229.170.175:50967 - "POST /mcp HTTP/1.1" 202 Accepted
+02:01:45.171 INFO:     176.229.170.175:50969 - "POST /mcp HTTP/1.1" 200 OK
+02:01:45.172 [wire<-] turn step=11 sender='police' commit=e87b0154 ts='2026-08-11T23:01:44.343' cells=30 barrier=None claim=None answer=None win=None
+02:01:48.022 INFO:     176.229.170.175:50970 - "POST /mcp HTTP/1.1" 200 OK
+02:01:48.098 INFO:     176.229.170.175:50971 - "DELETE /mcp HTTP/1.1" 200 OK
+02:01:48.323 INFO:     176.229.170.175:50973 - "POST /mcp HTTP/1.1" 200 OK
+02:01:48.399 INFO:     176.229.170.175:50974 - "POST /mcp HTTP/1.1" 202 Accepted
+02:01:48.400 INFO:     176.229.170.175:50975 - "GET /mcp HTTP/1.1" 200 OK
+02:01:48.429 INFO:     176.229.170.175:50976 - "POST /mcp HTTP/1.1" 200 OK
+02:01:48.430 [wire<-] turn step=12 sender='police' commit=8e882639 ts='2026-08-11T23:01:47.728' cells=30 barrier=None claim=None answer=None win=None
+02:01:51.249 INFO:     176.229.170.175:50977 - "POST /mcp HTTP/1.1" 200 OK
+02:01:51.397 INFO:     176.229.170.175:50978 - "DELETE /mcp HTTP/1.1" 200 OK
+02:01:51.571 INFO:     176.229.170.175:50980 - "POST /mcp HTTP/1.1" 200 OK
+02:01:51.617 INFO:     176.229.170.175:50982 - "GET /mcp HTTP/1.1" 200 OK
+02:01:51.618 INFO:     176.229.170.175:50981 - "POST /mcp HTTP/1.1" 202 Accepted
+02:01:51.670 INFO:     176.229.170.175:50983 - "POST /mcp HTTP/1.1" 200 OK
+02:01:51.671 [wire<-] turn step=13 sender='police' commit=4845d489 ts='2026-08-11T23:01:50.961' cells=30 barrier=None claim=None answer=None win=None
+02:01:54.498 INFO:     176.229.170.175:50984 - "POST /mcp HTTP/1.1" 200 OK
+02:01:54.645 INFO:     176.229.170.175:50990 - "DELETE /mcp HTTP/1.1" 200 OK
+02:01:54.765 INFO:     176.229.170.175:50992 - "POST /mcp HTTP/1.1" 200 OK
+02:01:54.830 INFO:     176.229.170.175:50993 - "POST /mcp HTTP/1.1" 202 Accepted
+02:01:54.831 INFO:     176.229.170.175:50994 - "GET /mcp HTTP/1.1" 200 OK
+02:01:54.858 INFO:     176.229.170.175:50995 - "POST /mcp HTTP/1.1" 200 OK
+02:01:54.859 [wire<-] turn step=14 sender='police' commit=09544c7e ts='2026-08-11T23:01:54.190' cells=30 barrier=None claim=None answer=None win=None
+02:01:57.705 INFO:     176.229.170.175:50996 - "POST /mcp HTTP/1.1" 200 OK
+02:01:57.822 INFO:     176.229.170.175:50997 - "DELETE /mcp HTTP/1.1" 200 OK
+02:01:58.018 INFO:     176.229.170.175:50999 - "POST /mcp HTTP/1.1" 200 OK
+02:01:58.061 INFO:     176.229.170.175:51000 - "POST /mcp HTTP/1.1" 202 Accepted
+02:01:58.062 INFO:     176.229.170.175:51001 - "GET /mcp HTTP/1.1" 200 OK
+02:01:58.106 INFO:     176.229.170.175:51002 - "POST /mcp HTTP/1.1" 200 OK
+02:01:58.108 [wire<-] turn step=15 sender='police' commit=18b00a06 ts='2026-08-11T23:01:57.407' cells=30 barrier=None claim=None answer=None win=None
+02:02:00.918 INFO:     176.229.170.175:51003 - "POST /mcp HTTP/1.1" 200 OK
+02:02:01.004 INFO:     176.229.170.175:51004 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:01.227 INFO:     176.229.170.175:51006 - "POST /mcp HTTP/1.1" 200 OK
+02:02:01.292 INFO:     176.229.170.175:51007 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:01.293 INFO:     176.229.170.175:51008 - "GET /mcp HTTP/1.1" 200 OK
+02:02:01.347 INFO:     176.229.170.175:51009 - "POST /mcp HTTP/1.1" 200 OK
+02:02:01.348 [wire<-] turn step=16 sender='police' commit=09312eff ts='2026-08-11T23:02:00.611' cells=30 barrier=None claim=None answer=None win=None
+02:02:04.142 INFO:     176.229.170.175:51010 - "POST /mcp HTTP/1.1" 200 OK
+02:02:04.178 INFO:     176.229.170.175:51016 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:04.417 INFO:     176.229.170.175:51018 - "POST /mcp HTTP/1.1" 200 OK
+02:02:04.524 INFO:     176.229.170.175:51020 - "GET /mcp HTTP/1.1" 200 OK
+02:02:04.525 INFO:     176.229.170.175:51019 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:04.583 INFO:     176.229.170.175:51021 - "POST /mcp HTTP/1.1" 200 OK
+02:02:04.583 [wire<-] turn step=17 sender='police' commit=1ffceef7 ts='2026-08-11T23:02:03.842' cells=30 barrier=None claim=None answer=None win=None
+02:02:07.450 INFO:     176.229.170.175:51022 - "POST /mcp HTTP/1.1" 200 OK
+02:02:07.490 INFO:     176.229.170.175:51023 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:07.778 INFO:     176.229.170.175:51025 - "POST /mcp HTTP/1.1" 200 OK
+02:02:07.878 INFO:     176.229.170.175:51027 - "GET /mcp HTTP/1.1" 200 OK
+02:02:07.879 INFO:     176.229.170.175:51026 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:07.970 INFO:     176.229.170.175:51028 - "POST /mcp HTTP/1.1" 200 OK
+02:02:07.971 [wire<-] turn step=18 sender='police' commit=5b3c2d16 ts='2026-08-11T23:02:07.141' cells=30 barrier=None claim=None answer=None win=None
+02:02:10.753 INFO:     176.229.170.175:51029 - "POST /mcp HTTP/1.1" 200 OK
+02:02:10.834 INFO:     176.229.170.175:51030 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:11.078 INFO:     176.229.170.175:51032 - "POST /mcp HTTP/1.1" 200 OK
+02:02:11.309 INFO:     176.229.170.175:51033 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:11.309 INFO:     176.229.170.175:51034 - "GET /mcp HTTP/1.1" 200 OK
+02:02:11.358 INFO:     176.229.170.175:51035 - "POST /mcp HTTP/1.1" 200 OK
+02:02:11.359 [wire<-] turn step=19 sender='police' commit=fb245d0f ts='2026-08-11T23:02:10.460' cells=30 barrier=None claim=None answer=None win=None
+02:02:14.235 INFO:     176.229.170.175:51036 - "POST /mcp HTTP/1.1" 200 OK
+02:02:14.324 INFO:     176.229.170.175:51042 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:14.510 INFO:     176.229.170.175:51044 - "POST /mcp HTTP/1.1" 200 OK
+02:02:14.606 INFO:     176.229.170.175:51046 - "GET /mcp HTTP/1.1" 200 OK
+02:02:14.608 INFO:     176.229.170.175:51045 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:14.664 INFO:     176.229.170.175:51047 - "POST /mcp HTTP/1.1" 200 OK
+02:02:14.665 [wire<-] turn step=20 sender='police' commit=74804481 ts='2026-08-11T23:02:13.936' cells=30 barrier=None claim=None answer=None win=None
+02:02:17.488 INFO:     176.229.170.175:51048 - "POST /mcp HTTP/1.1" 200 OK
+02:02:17.712 INFO:     176.229.170.175:51049 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:17.783 INFO:     176.229.170.175:51051 - "POST /mcp HTTP/1.1" 200 OK
+02:02:17.922 INFO:     176.229.170.175:51052 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:17.922 INFO:     176.229.170.175:51053 - "GET /mcp HTTP/1.1" 200 OK
+02:02:18.065 INFO:     176.229.170.175:51054 - "POST /mcp HTTP/1.1" 200 OK
+02:02:18.066 [wire<-] turn step=21 sender='police' commit=8b14791c ts='2026-08-11T23:02:17.204' cells=30 barrier=None claim=None answer=None win=None
+02:02:20.919 INFO:     176.229.170.175:51055 - "POST /mcp HTTP/1.1" 200 OK
+02:02:20.961 Exception in callback _ProactorBasePipeTransport._call_connection_lost()
+02:02:20.961 handle: <Handle _ProactorBasePipeTransport._call_connection_lost()>
+02:02:20.961 Traceback (most recent call last):
+02:02:20.961   File "C:\Users\kuper\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\events.py", line 94, in _run
+02:02:20.961     self._context.run(self._callback, *self._args)
+02:02:20.961     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+02:02:20.961   File "C:\Users\kuper\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\proactor_events.py", line 165, in _call_connection_lost
+02:02:20.961     self._sock.shutdown(socket.SHUT_RDWR)
+02:02:20.961     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+02:02:20.961 ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+02:02:20.989 INFO:     176.229.170.175:51056 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:21.266 INFO:     176.229.170.175:51058 - "POST /mcp HTTP/1.1" 200 OK
+02:02:21.308 INFO:     176.229.170.175:51059 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:21.309 INFO:     176.229.170.175:51060 - "GET /mcp HTTP/1.1" 200 OK
+02:02:21.378 INFO:     176.229.170.175:51061 - "POST /mcp HTTP/1.1" 200 OK
+02:02:21.379 [wire<-] turn step=22 sender='police' commit=a05d9978 ts='2026-08-11T23:02:20.662' cells=30 barrier=None claim=None answer=None win=None
+02:02:24.121 INFO:     176.229.170.175:51062 - "POST /mcp HTTP/1.1" 200 OK
+02:02:24.349 INFO:     176.229.170.175:51069 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:24.430 INFO:     176.229.170.175:51070 - "POST /mcp HTTP/1.1" 200 OK
+02:02:24.469 INFO:     176.229.170.175:51072 - "GET /mcp HTTP/1.1" 200 OK
+02:02:24.470 INFO:     176.229.170.175:51071 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:24.537 INFO:     176.229.170.175:51073 - "POST /mcp HTTP/1.1" 200 OK
+02:02:24.538 [wire<-] turn step=23 sender='police' commit=099c5ef8 ts='2026-08-11T23:02:23.848' cells=30 barrier=None claim=None answer=None win=None
+02:02:27.370 INFO:     176.229.170.175:51074 - "POST /mcp HTTP/1.1" 200 OK
+02:02:27.532 INFO:     176.229.170.175:51075 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:27.633 INFO:     176.229.170.175:51077 - "POST /mcp HTTP/1.1" 200 OK
+02:02:27.704 INFO:     176.229.170.175:51078 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:27.704 INFO:     176.229.170.175:51079 - "GET /mcp HTTP/1.1" 200 OK
+02:02:27.734 INFO:     176.229.170.175:51080 - "POST /mcp HTTP/1.1" 200 OK
+02:02:27.735 [wire<-] turn step=24 sender='police' commit=dff5d0a6 ts='2026-08-11T23:02:27.060' cells=30 barrier=None claim=None answer=None win=None
+02:02:30.577 INFO:     176.229.170.175:51081 - "POST /mcp HTTP/1.1" 200 OK
+02:02:30.621 INFO:     176.229.170.175:51082 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:30.897 INFO:     176.229.170.175:51084 - "POST /mcp HTTP/1.1" 200 OK
+02:02:30.939 INFO:     176.229.170.175:51085 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:30.941 INFO:     176.229.170.175:51086 - "GET /mcp HTTP/1.1" 200 OK
+02:02:30.998 INFO:     176.229.170.175:51087 - "POST /mcp HTTP/1.1" 200 OK
+02:02:30.999 [wire<-] turn step=25 sender='police' commit=cec05d61 ts='2026-08-11T23:02:30.273' cells=30 barrier=None claim=None answer=None win=None
+02:02:33.878 INFO:     176.229.170.175:51088 - "POST /mcp HTTP/1.1" 200 OK
+02:02:34.487 INFO:     176.229.170.175:51095 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:34.586 INFO:     176.229.170.175:51096 - "POST /mcp HTTP/1.1" 200 OK
+02:02:34.670 INFO:     176.229.170.175:51097 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:34.670 INFO:     176.229.170.175:51098 - "GET /mcp HTTP/1.1" 200 OK
+02:02:34.703 INFO:     176.229.170.175:51099 - "POST /mcp HTTP/1.1" 200 OK
+02:02:34.704 [wire<-] turn step=26 sender='police' commit=52ca6e02 ts='2026-08-11T23:02:33.991' cells=30 barrier=None claim=None answer=None win=None
+02:02:37.521 INFO:     176.229.170.175:51100 - "POST /mcp HTTP/1.1" 200 OK
+02:02:37.590 INFO:     176.229.170.175:51103 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:37.899 INFO:     176.229.170.175:51105 - "POST /mcp HTTP/1.1" 200 OK
+02:02:38.069 INFO:     176.229.170.175:51107 - "GET /mcp HTTP/1.1" 200 OK
+02:02:38.070 INFO:     176.229.170.175:51106 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:38.107 INFO:     176.229.170.175:51108 - "POST /mcp HTTP/1.1" 200 OK
+02:02:38.108 [wire<-] turn step=27 sender='police' commit=26275bfd ts='2026-08-11T23:02:37.248' cells=30 barrier=None claim=None answer=None win=None
+02:02:40.954 INFO:     176.229.170.175:51109 - "POST /mcp HTTP/1.1" 200 OK
+02:02:41.011 INFO:     176.229.170.175:51112 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:41.224 INFO:     176.229.170.175:51114 - "POST /mcp HTTP/1.1" 200 OK
+02:02:41.259 INFO:     176.229.170.175:51115 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:41.260 INFO:     176.229.170.175:51116 - "GET /mcp HTTP/1.1" 200 OK
+02:02:41.288 INFO:     176.229.170.175:51117 - "POST /mcp HTTP/1.1" 200 OK
+02:02:41.289 [wire<-] turn step=28 sender='police' commit=5b5f9a8d ts='2026-08-11T23:02:40.645' cells=30 barrier=None claim=None answer=None win=None
+02:02:44.082 INFO:     176.229.170.175:51118 - "POST /mcp HTTP/1.1" 200 OK
+02:02:44.119 INFO:     176.229.170.175:51124 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:44.358 INFO:     176.229.170.175:51126 - "POST /mcp HTTP/1.1" 200 OK
+02:02:44.417 INFO:     176.229.170.175:51128 - "GET /mcp HTTP/1.1" 200 OK
+02:02:44.418 INFO:     176.229.170.175:51127 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:44.493 INFO:     176.229.170.175:51129 - "POST /mcp HTTP/1.1" 200 OK
+02:02:44.494 [wire<-] turn step=29 sender='police' commit=23a6c64e ts='2026-08-11T23:02:43.782' cells=30 barrier=None claim=None answer=None win=None
+02:02:47.297 INFO:     176.229.170.175:51130 - "POST /mcp HTTP/1.1" 200 OK
+02:02:47.378 INFO:     176.229.170.175:51131 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:47.566 INFO:     176.229.170.175:51133 - "POST /mcp HTTP/1.1" 200 OK
+02:02:47.603 INFO:     176.229.170.175:51134 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:47.603 INFO:     176.229.170.175:51135 - "GET /mcp HTTP/1.1" 200 OK
+02:02:47.629 INFO:     176.229.170.175:51136 - "POST /mcp HTTP/1.1" 200 OK
+02:02:47.630 [wire<-] turn step=30 sender='police' commit=1a083d7b ts='2026-08-11T23:02:46.987' cells=30 barrier=None claim=None answer=None win=None
+02:02:50.445 INFO:     176.229.170.175:51137 - "POST /mcp HTTP/1.1" 200 OK
+02:02:50.562 INFO:     176.229.170.175:51138 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:50.738 INFO:     176.229.170.175:51140 - "POST /mcp HTTP/1.1" 200 OK
+02:02:50.803 INFO:     176.229.170.175:51141 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:50.803 INFO:     176.229.170.175:51142 - "GET /mcp HTTP/1.1" 200 OK
+02:02:50.865 INFO:     176.229.170.175:51143 - "POST /mcp HTTP/1.1" 200 OK
+02:02:50.866 [wire<-] turn step=31 sender='police' commit=c11e7e8d ts='2026-08-11T23:02:50.135' cells=30 barrier=None claim=None answer=None win=None
+02:02:53.689 INFO:     176.229.170.175:51144 - "POST /mcp HTTP/1.1" 200 OK
+02:02:54.371 INFO:     176.229.170.175:51151 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:54.452 INFO:     176.229.170.175:51152 - "POST /mcp HTTP/1.1" 200 OK
+02:02:54.490 INFO:     176.229.170.175:51154 - "GET /mcp HTTP/1.1" 200 OK
+02:02:54.491 INFO:     176.229.170.175:51153 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:54.550 INFO:     176.229.170.175:51155 - "POST /mcp HTTP/1.1" 200 OK
+02:02:54.551 [wire<-] turn step=32 sender='police' commit=85d05975 ts='2026-08-11T23:02:53.872' cells=30 barrier=None claim=None answer=None win=None
+02:02:54.940 INFO:     176.229.170.175:51156 - "POST /mcp HTTP/1.1" 200 OK
+02:02:54.983 INFO:     176.229.170.175:51157 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:55.202 INFO:     176.229.170.175:51159 - "POST /mcp HTTP/1.1" 200 OK
+02:02:55.351 INFO:     176.229.170.175:51160 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:55.352 INFO:     176.229.170.175:51161 - "GET /mcp HTTP/1.1" 200 OK
+02:02:55.379 INFO:     176.229.170.175:51162 - "POST /mcp HTTP/1.1" 200 OK
+02:02:55.380 [wire<-] turn step=33 sender='police' commit=6e70dfd0 ts='2026-08-11T23:02:54.628' cells=30 barrier=None claim=None answer=None win=None
+02:02:55.455 INFO:     176.229.170.175:51163 - "POST /mcp HTTP/1.1" 200 OK
+02:02:55.490 INFO:     176.229.170.175:51164 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:55.752 INFO:     176.229.170.175:51166 - "POST /mcp HTTP/1.1" 200 OK
+02:02:55.790 INFO:     176.229.170.175:51167 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:55.791 INFO:     176.229.170.175:51168 - "GET /mcp HTTP/1.1" 200 OK
+02:02:55.817 INFO:     176.229.170.175:51169 - "POST /mcp HTTP/1.1" 200 OK
+02:02:55.818 [wire<-] turn step=34 sender='police' commit=31dd4205 ts='2026-08-11T23:02:55.161' cells=25 barrier=None claim=None answer=None win=None
+02:02:55.898 INFO:     176.229.170.175:51170 - "POST /mcp HTTP/1.1" 200 OK
+02:02:55.931 INFO:     176.229.170.175:51171 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:56.073 INFO:     176.229.170.175:51173 - "POST /mcp HTTP/1.1" 200 OK
+02:02:56.171 INFO:     176.229.170.175:51174 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:56.172 INFO:     176.229.170.175:51175 - "GET /mcp HTTP/1.1" 200 OK
+02:02:56.273 INFO:     176.229.170.175:51176 - "POST /mcp HTTP/1.1" 200 OK
+02:02:56.274 [wire<-] audit sender='police' records=38 claim='survival'
+02:02:56.416 INFO:     176.229.170.175:51178 - "POST /mcp HTTP/1.1" 200 OK
+02:02:56.500 INFO:     176.229.170.175:51179 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:56.624 INFO:     176.229.170.175:51180 - "POST /mcp HTTP/1.1" 200 OK
+02:02:56.778 [match] sg3 audit ok=True errors=[] outcome=survival rl_moves=35 distinct=5 sample=['S', 'S', 'N', 'S', 'E', 'N', 'N', 'N']
+02:02:56.779 [match] sg3 complete
+02:02:56.779 [match] sg4 (police) — awaiting peer endpoint https://7f71-176-229-170-175.ngrok-free.app/mcp
+02:02:56.976 INFO:     176.229.170.175:51185 - "POST /mcp HTTP/1.1" 202 Accepted
+02:02:56.977 INFO:     176.229.170.175:51186 - "GET /mcp HTTP/1.1" 200 OK
+02:02:57.019 INFO:     176.229.170.175:51187 - "POST /mcp HTTP/1.1" 200 OK
+02:02:57.020 [wire<-] negotiate keys=['identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=None
+02:02:57.104 INFO:     176.229.170.175:51188 - "POST /mcp HTTP/1.1" 200 OK
+02:02:57.228 INFO:     176.229.170.175:51190 - "DELETE /mcp HTTP/1.1" 200 OK
+02:02:57.886 [match] peer endpoint UP: https://7f71-176-229-170-175.ngrok-free.app/mcp
+02:03:01.142 INFO:     176.229.170.175:51203 - "POST /mcp HTTP/1.1" 200 OK
+02:03:01.248 INFO:     176.229.170.175:51204 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:01.249 INFO:     176.229.170.175:51205 - "GET /mcp HTTP/1.1" 200 OK
+02:03:01.385 INFO:     176.229.170.175:51207 - "POST /mcp HTTP/1.1" 200 OK
+02:03:01.386 [wire<-] control kind='enable' sender='thief' sub_game=1 status=''
+02:03:01.415 [match] sg4 peer greeting sub_game=4 role=thief
+02:03:01.415 [match] sg4 role=police handshake OK vs uoh-sqak uid=e294ea6e-31c
+02:03:01.444 INFO:     176.229.170.175:51208 - "POST /mcp HTTP/1.1" 200 OK
+02:03:01.500 INFO:     176.229.170.175:51209 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:01.638 INFO:     176.229.170.175:51210 - "POST /mcp HTTP/1.1" 200 OK
+02:03:01.757 INFO:     176.229.170.175:51211 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:01.760 INFO:     176.229.170.175:51212 - "GET /mcp HTTP/1.1" 200 OK
+02:03:01.807 INFO:     176.229.170.175:51213 - "POST /mcp HTTP/1.1" 200 OK
+02:03:01.808 [wire<-] control kind='status' sender='thief' sub_game=4 status='PLAYING'
+02:03:01.849 INFO:     176.229.170.175:51214 - "POST /mcp HTTP/1.1" 200 OK
+02:03:01.908 INFO:     176.229.170.175:51215 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:01.960 INFO:     176.229.170.175:51216 - "POST /mcp HTTP/1.1" 200 OK
+02:03:02.024 INFO:     176.229.170.175:51218 - "GET /mcp HTTP/1.1" 200 OK
+02:03:02.024 INFO:     176.229.170.175:51217 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:02.054 INFO:     176.229.170.175:51219 - "POST /mcp HTTP/1.1" 200 OK
+02:03:02.055 [wire<-] turn step=1 sender='thief' commit=49651ef1 ts='2026-08-11T23:03:01.374' cells=25 barrier=None claim=None answer=None win=None
+02:03:02.079 [scent] sg4 step1: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+02:03:11.269 INFO:     176.229.170.175:51220 - "POST /mcp HTTP/1.1" 200 OK
+02:03:11.365 INFO:     176.229.170.175:51226 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:11.536 INFO:     176.229.170.175:51228 - "POST /mcp HTTP/1.1" 200 OK
+02:03:11.636 INFO:     176.229.170.175:51230 - "GET /mcp HTTP/1.1" 200 OK
+02:03:11.637 INFO:     176.229.170.175:51229 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:11.667 INFO:     176.229.170.175:51231 - "POST /mcp HTTP/1.1" 200 OK
+02:03:11.668 [wire<-] turn step=2 sender='thief' commit=7fdc6e22 ts='2026-08-11T23:03:10.934' cells=30 barrier=None claim=None answer=False win=None
+02:03:14.077 INFO:     176.229.170.175:51232 - "POST /mcp HTTP/1.1" 200 OK
+02:03:14.323 INFO:     176.229.170.175:51239 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:14.408 INFO:     176.229.170.175:51240 - "POST /mcp HTTP/1.1" 200 OK
+02:03:14.454 INFO:     176.229.170.175:51241 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:14.455 INFO:     176.229.170.175:51242 - "GET /mcp HTTP/1.1" 200 OK
+02:03:14.502 INFO:     176.229.170.175:51243 - "POST /mcp HTTP/1.1" 200 OK
+02:03:14.503 [wire<-] turn step=3 sender='thief' commit=0781a5b8 ts='2026-08-11T23:03:13.787' cells=25 barrier=None claim=None answer=False win=None
+02:03:17.474 INFO:     176.229.170.175:51244 - "POST /mcp HTTP/1.1" 200 OK
+02:03:17.927 INFO:     176.229.170.175:51246 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:18.028 INFO:     176.229.170.175:51247 - "POST /mcp HTTP/1.1" 200 OK
+02:03:18.101 INFO:     176.229.170.175:51249 - "GET /mcp HTTP/1.1" 200 OK
+02:03:18.103 INFO:     176.229.170.175:51248 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:18.132 INFO:     176.229.170.175:51250 - "POST /mcp HTTP/1.1" 200 OK
+02:03:18.133 [wire<-] turn step=4 sender='thief' commit=c0df9041 ts='2026-08-11T23:03:17.392' cells=20 barrier=None claim=None answer=False win=None
+02:03:21.239 INFO:     176.229.170.175:51251 - "POST /mcp HTTP/1.1" 200 OK
+02:03:21.278 INFO:     176.229.170.175:51252 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:21.682 INFO:     176.229.170.175:51254 - "POST /mcp HTTP/1.1" 200 OK
+02:03:21.727 INFO:     176.229.170.175:51255 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:21.729 INFO:     176.229.170.175:51256 - "GET /mcp HTTP/1.1" 200 OK
+02:03:21.771 INFO:     176.229.170.175:51257 - "POST /mcp HTTP/1.1" 200 OK
+02:03:21.773 [wire<-] turn step=5 sender='thief' commit=73c6143f ts='2026-08-11T23:03:21.062' cells=19 barrier=None claim=None answer=False win=None
+02:03:25.435 INFO:     176.229.170.175:51258 - "POST /mcp HTTP/1.1" 200 OK
+02:03:26.081 INFO:     176.229.170.175:51265 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:26.113 INFO:     176.229.170.175:51266 - "POST /mcp HTTP/1.1" 200 OK
+02:03:26.181 INFO:     176.229.170.175:51268 - "GET /mcp HTTP/1.1" 200 OK
+02:03:26.181 INFO:     176.229.170.175:51267 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:26.219 INFO:     176.229.170.175:51269 - "POST /mcp HTTP/1.1" 200 OK
+02:03:26.220 [wire<-] turn step=6 sender='thief' commit=97d82197 ts='2026-08-11T23:03:25.540' cells=16 barrier=None claim=None answer=False win=None
+02:03:28.633 INFO:     176.229.170.175:51270 - "POST /mcp HTTP/1.1" 200 OK
+02:03:28.684 INFO:     176.229.170.175:51271 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:28.939 INFO:     176.229.170.175:51273 - "POST /mcp HTTP/1.1" 200 OK
+02:03:29.002 INFO:     176.229.170.175:51274 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:29.003 INFO:     176.229.170.175:51275 - "GET /mcp HTTP/1.1" 200 OK
+02:03:29.084 INFO:     176.229.170.175:51276 - "POST /mcp HTTP/1.1" 200 OK
+02:03:29.085 [wire<-] turn step=7 sender='thief' commit=9b2fada2 ts='2026-08-11T23:03:28.349' cells=15 barrier=None claim=None answer=False win=None
+02:03:31.972 INFO:     176.229.170.175:51277 - "POST /mcp HTTP/1.1" 200 OK
+02:03:32.126 INFO:     176.229.170.175:51279 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:32.218 INFO:     176.229.170.175:51281 - "POST /mcp HTTP/1.1" 200 OK
+02:03:32.256 INFO:     176.229.170.175:51282 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:32.257 INFO:     176.229.170.175:51283 - "GET /mcp HTTP/1.1" 200 OK
+02:03:32.310 INFO:     176.229.170.175:51284 - "POST /mcp HTTP/1.1" 200 OK
+02:03:32.311 [wire<-] turn step=8 sender='thief' commit=76233d59 ts='2026-08-11T23:03:31.634' cells=16 barrier=None claim=None answer=False win=None
+02:03:35.749 INFO:     176.229.170.175:51291 - "POST /mcp HTTP/1.1" 200 OK
+02:03:35.801 INFO:     176.229.170.175:51292 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:35.905 INFO:     176.229.170.175:51294 - "POST /mcp HTTP/1.1" 200 OK
+02:03:35.949 INFO:     176.229.170.175:51295 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:35.950 INFO:     176.229.170.175:51296 - "GET /mcp HTTP/1.1" 200 OK
+02:03:36.025 INFO:     176.229.170.175:51297 - "POST /mcp HTTP/1.1" 200 OK
+02:03:36.026 [wire<-] turn step=9 sender='thief' commit=709215ef ts='2026-08-11T23:03:35.292' cells=16 barrier=None claim=None answer=False win=None
+02:03:36.066 INFO:     176.229.170.175:51298 - "POST /mcp HTTP/1.1" 200 OK
+02:03:38.754 INFO:     176.229.170.175:51299 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:39.078 INFO:     176.229.170.175:51302 - "POST /mcp HTTP/1.1" 200 OK
+02:03:39.135 INFO:     176.229.170.175:51303 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:39.136 INFO:     176.229.170.175:51304 - "GET /mcp HTTP/1.1" 200 OK
+02:03:39.215 INFO:     176.229.170.175:51305 - "POST /mcp HTTP/1.1" 200 OK
+02:03:39.216 [wire<-] turn step=10 sender='thief' commit=0ca15d73 ts='2026-08-11T23:03:38.451' cells=12 barrier=None claim=None answer=False win=None
+02:03:40.662 INFO:     176.229.170.175:51306 - "POST /mcp HTTP/1.1" 200 OK
+02:03:40.911 INFO:     176.229.170.175:51310 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:40.962 INFO:     176.229.170.175:51311 - "POST /mcp HTTP/1.1" 200 OK
+02:03:41.039 INFO:     176.229.170.175:51312 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:41.039 INFO:     176.229.170.175:51313 - "GET /mcp HTTP/1.1" 200 OK
+02:03:41.071 INFO:     176.229.170.175:51314 - "POST /mcp HTTP/1.1" 200 OK
+02:03:41.072 [wire<-] turn step=11 sender='thief' commit=b19af915 ts='2026-08-11T23:03:40.377' cells=9 barrier=None claim=None answer=False win=None
+02:03:42.114 INFO:     176.229.170.175:51315 - "POST /mcp HTTP/1.1" 200 OK
+02:03:42.169 INFO:     176.229.170.175:51316 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:42.378 INFO:     176.229.170.175:51318 - "POST /mcp HTTP/1.1" 200 OK
+02:03:42.566 INFO:     176.229.170.175:51319 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:42.566 INFO:     176.229.170.175:51320 - "GET /mcp HTTP/1.1" 200 OK
+02:03:42.676 INFO:     176.229.170.175:51321 - "POST /mcp HTTP/1.1" 200 OK
+02:03:42.677 [wire<-] turn step=12 sender='thief' commit=92a6c429 ts='2026-08-11T23:03:41.771' cells=12 barrier=None claim=None answer=False win=None
+02:03:44.757 INFO:     176.229.170.175:51322 - "POST /mcp HTTP/1.1" 200 OK
+02:03:44.808 INFO:     176.229.170.175:51328 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:45.044 INFO:     176.229.170.175:51330 - "POST /mcp HTTP/1.1" 200 OK
+02:03:45.115 INFO:     176.229.170.175:51331 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:45.115 INFO:     176.229.170.175:51332 - "GET /mcp HTTP/1.1" 200 OK
+02:03:45.171 INFO:     176.229.170.175:51333 - "POST /mcp HTTP/1.1" 200 OK
+02:03:45.172 [wire<-] turn step=13 sender='thief' commit=fd927133 ts='2026-08-11T23:03:44.434' cells=12 barrier=None claim=None answer=True win=None
+02:03:45.208 [match] sg4 thief conceded capture at step 13 (answer)
+02:03:45.231 INFO:     176.229.170.175:51334 - "POST /mcp HTTP/1.1" 200 OK
+02:03:45.266 INFO:     176.229.170.175:51335 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:45.352 INFO:     176.229.170.175:51336 - "POST /mcp HTTP/1.1" 200 OK
+02:03:45.429 INFO:     176.229.170.175:51338 - "GET /mcp HTTP/1.1" 200 OK
+02:03:45.432 INFO:     176.229.170.175:51337 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:45.461 INFO:     176.229.170.175:51340 - "POST /mcp HTTP/1.1" 200 OK
+02:03:45.462 [wire<-] audit sender='thief' records=17 claim='capture'
+02:03:45.541 INFO:     176.229.170.175:51341 - "POST /mcp HTTP/1.1" 200 OK
+02:03:45.667 INFO:     176.229.170.175:51342 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:45.753 INFO:     176.229.170.175:51344 - "POST /mcp HTTP/1.1" 200 OK
+02:03:45.778 [match] sg4 audit ok=True errors=[] outcome=capture rl_moves=12 distinct=3 sample=['S', 'S', 'S', 'E', 'E', 'S', 'E', 'E']
+02:03:45.778 [match] sg4 complete
+02:03:45.779 [match] sg5 (thief) — awaiting peer endpoint https://7f71-176-229-170-175.ngrok-free.app/mcp
+02:03:45.970 INFO:     176.229.170.175:51346 - "GET /mcp HTTP/1.1" 200 OK
+02:03:45.970 INFO:     176.229.170.175:51345 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:46.032 INFO:     176.229.170.175:51347 - "POST /mcp HTTP/1.1" 200 OK
+02:03:46.033 [wire<-] negotiate keys=['identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=None
+02:03:46.075 INFO:     176.229.170.175:51348 - "POST /mcp HTTP/1.1" 200 OK
+02:03:46.187 INFO:     176.229.170.175:51349 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:46.820 [match] peer endpoint UP: https://7f71-176-229-170-175.ngrok-free.app/mcp
+02:03:49.944 INFO:     176.229.170.175:51362 - "POST /mcp HTTP/1.1" 200 OK
+02:03:49.996 INFO:     176.229.170.175:51363 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:49.997 INFO:     176.229.170.175:51364 - "GET /mcp HTTP/1.1" 200 OK
+02:03:50.054 INFO:     176.229.170.175:51365 - "POST /mcp HTTP/1.1" 200 OK
+02:03:50.055 [wire<-] control kind='enable' sender='police' sub_game=1 status=''
+02:03:50.160 INFO:     176.229.170.175:51366 - "POST /mcp HTTP/1.1" 200 OK
+02:03:50.218 [match] sg5 peer greeting sub_game=5 role=police
+02:03:50.219 [match] sg5 role=thief handshake OK vs uoh-sqak uid=e294ea6e-31c
+02:03:50.250 INFO:     176.229.170.175:51368 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:50.300 INFO:     176.229.170.175:51369 - "POST /mcp HTTP/1.1" 200 OK
+02:03:50.395 INFO:     176.229.170.175:51371 - "GET /mcp HTTP/1.1" 200 OK
+02:03:50.397 INFO:     176.229.170.175:51370 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:50.456 INFO:     176.229.170.175:51372 - "POST /mcp HTTP/1.1" 200 OK
+02:03:50.457 [wire<-] control kind='status' sender='police' sub_game=5 status='PLAYING'
+02:03:50.504 INFO:     176.229.170.175:51374 - "POST /mcp HTTP/1.1" 200 OK
+02:03:50.592 INFO:     176.229.170.175:51375 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:50.679 INFO:     176.229.170.175:51376 - "POST /mcp HTTP/1.1" 200 OK
+02:03:50.795 INFO:     176.229.170.175:51377 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:50.795 INFO:     176.229.170.175:51378 - "GET /mcp HTTP/1.1" 200 OK
+02:03:50.911 INFO:     176.229.170.175:51379 - "POST /mcp HTTP/1.1" 200 OK
+02:03:50.912 [wire<-] turn step=1 sender='police' commit=66839eff ts='2026-08-11T23:03:50.061' cells=12 barrier=None claim=None answer=None win=None
+02:03:50.965 [scent] sg5 step2: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+02:03:54.821 INFO:     176.229.170.175:51380 - "POST /mcp HTTP/1.1" 200 OK
+02:03:54.864 INFO:     176.229.170.175:51387 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:55.159 INFO:     176.229.170.175:51389 - "POST /mcp HTTP/1.1" 200 OK
+02:03:55.194 INFO:     176.229.170.175:51390 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:55.195 INFO:     176.229.170.175:51391 - "GET /mcp HTTP/1.1" 200 OK
+02:03:55.256 INFO:     176.229.170.175:51392 - "POST /mcp HTTP/1.1" 200 OK
+02:03:55.257 [wire<-] turn step=2 sender='police' commit=b6f4d673 ts='2026-08-11T23:03:54.561' cells=15 barrier=None claim=None answer=None win=None
+02:03:55.295 INFO:     176.229.170.175:51393 - "POST /mcp HTTP/1.1" 200 OK
+02:03:59.074 INFO:     176.229.170.175:51394 - "DELETE /mcp HTTP/1.1" 200 OK
+02:03:59.378 INFO:     176.229.170.175:51396 - "POST /mcp HTTP/1.1" 200 OK
+02:03:59.446 INFO:     176.229.170.175:51397 - "POST /mcp HTTP/1.1" 202 Accepted
+02:03:59.447 INFO:     176.229.170.175:51398 - "GET /mcp HTTP/1.1" 200 OK
+02:03:59.480 INFO:     176.229.170.175:51399 - "POST /mcp HTTP/1.1" 200 OK
+02:03:59.481 [wire<-] turn step=3 sender='police' commit=e0130cd2 ts='2026-08-11T23:03:58.760' cells=20 barrier=None claim=None answer=None win=None
+02:04:05.589 INFO:     176.229.170.175:51400 - "POST /mcp HTTP/1.1" 200 OK
+02:04:05.703 INFO:     176.229.170.175:51406 - "DELETE /mcp HTTP/1.1" 200 OK
+02:04:05.857 INFO:     176.229.170.175:51408 - "POST /mcp HTTP/1.1" 200 OK
+02:04:06.051 INFO:     176.229.170.175:51409 - "POST /mcp HTTP/1.1" 202 Accepted
+02:04:06.052 INFO:     176.229.170.175:51410 - "GET /mcp HTTP/1.1" 200 OK
+02:04:06.124 INFO:     176.229.170.175:51411 - "POST /mcp HTTP/1.1" 200 OK
+02:04:06.125 [wire<-] turn step=4 sender='police' commit=37e105f3 ts='2026-08-11T23:04:05.277' cells=24 barrier=None claim=None answer=None win=None
+02:04:06.168 INFO:     176.229.170.175:51412 - "POST /mcp HTTP/1.1" 200 OK
+02:04:11.951 INFO:     176.229.170.175:51413 - "DELETE /mcp HTTP/1.1" 200 OK
+02:04:12.199 INFO:     176.229.170.175:51415 - "POST /mcp HTTP/1.1" 200 OK
+02:04:12.292 INFO:     176.229.170.175:51417 - "GET /mcp HTTP/1.1" 200 OK
+02:04:12.295 INFO:     176.229.170.175:51416 - "POST /mcp HTTP/1.1" 202 Accepted
+02:04:12.359 INFO:     176.229.170.175:51418 - "POST /mcp HTTP/1.1" 200 OK
+02:04:12.360 [wire<-] turn step=5 sender='police' commit=8a920b44 ts='2026-08-11T23:04:11.617' cells=26 barrier=None claim=None answer=None win=None
+02:04:17.185 INFO:     176.229.170.175:51419 - "POST /mcp HTTP/1.1" 200 OK
+02:04:17.325 INFO:     176.229.170.175:51425 - "DELETE /mcp HTTP/1.1" 200 OK
+02:04:17.479 INFO:     176.229.170.175:51427 - "POST /mcp HTTP/1.1" 200 OK
+02:04:17.519 INFO:     176.229.170.175:51428 - "POST /mcp HTTP/1.1" 202 Accepted
+02:04:17.519 INFO:     176.229.170.175:51429 - "GET /mcp HTTP/1.1" 200 OK
+02:04:17.611 INFO:     176.229.170.175:51430 - "POST /mcp HTTP/1.1" 200 OK
+02:04:17.612 [wire<-] turn step=6 sender='police' commit=579facdc ts='2026-08-11T23:04:16.884' cells=28 barrier=None claim=None answer=None win=None
+02:04:21.330 INFO:     176.229.170.175:51431 - "POST /mcp HTTP/1.1" 200 OK
+02:04:21.430 INFO:     176.229.170.175:51435 - "DELETE /mcp HTTP/1.1" 200 OK
+02:04:21.665 INFO:     176.229.170.175:51437 - "POST /mcp HTTP/1.1" 200 OK
+02:04:21.705 INFO:     176.229.170.175:51438 - "POST /mcp HTTP/1.1" 202 Accepted
+02:04:21.707 INFO:     176.229.170.175:51439 - "GET /mcp HTTP/1.1" 200 OK
+02:04:21.735 INFO:     176.229.170.175:51440 - "POST /mcp HTTP/1.1" 200 OK
+02:04:21.736 [wire<-] turn step=7 sender='police' commit=dfe080d6 ts='2026-08-11T23:04:21.059' cells=30 barrier=None claim=None answer=None win=None
+02:04:26.227 INFO:     176.229.170.175:51441 - "POST /mcp HTTP/1.1" 200 OK
+02:04:26.281 INFO:     176.229.170.175:51461 - "DELETE /mcp HTTP/1.1" 200 OK
+02:04:26.545 INFO:     176.229.170.175:51463 - "POST /mcp HTTP/1.1" 200 OK
+02:04:26.631 INFO:     176.229.170.175:51465 - "GET /mcp HTTP/1.1" 200 OK
+02:04:26.633 INFO:     176.229.170.175:51464 - "POST /mcp HTTP/1.1" 202 Accepted
+02:04:26.681 INFO:     176.229.170.175:51466 - "POST /mcp HTTP/1.1" 200 OK
+02:04:26.682 [wire<-] turn step=8 sender='police' commit=5751e005 ts='2026-08-11T23:04:25.890' cells=30 barrier=None claim=None answer=None win=None
+02:04:26.723 INFO:     176.229.170.175:51467 - "POST /mcp HTTP/1.1" 200 OK
+02:04:29.872 INFO:     176.229.170.175:51468 - "DELETE /mcp HTTP/1.1" 200 OK
+02:04:30.217 INFO:     176.229.170.175:51475 - "POST /mcp HTTP/1.1" 200 OK
+02:04:30.327 INFO:     176.229.170.175:51477 - "GET /mcp HTTP/1.1" 200 OK
+02:04:30.328 INFO:     176.229.170.175:51476 - "POST /mcp HTTP/1.1" 202 Accepted
+02:04:30.394 INFO:     176.229.170.175:51478 - "POST /mcp HTTP/1.1" 200 OK
+02:04:30.395 [wire<-] turn step=9 sender='police' commit=8f3d84d8 ts='2026-08-11T23:04:29.576' cells=34 barrier=None claim=None answer=None win=None
+02:04:33.235 INFO:     176.229.170.175:51479 - "POST /mcp HTTP/1.1" 200 OK
+02:04:33.284 INFO:     176.229.170.175:51480 - "DELETE /mcp HTTP/1.1" 200 OK
+02:04:33.604 INFO:     176.229.170.175:51487 - "POST /mcp HTTP/1.1" 200 OK
+02:04:33.696 INFO:     176.229.170.175:51488 - "POST /mcp HTTP/1.1" 202 Accepted
+02:04:33.699 INFO:     176.229.170.175:51489 - "GET /mcp HTTP/1.1" 200 OK
+02:04:33.897 INFO:     176.229.170.175:51490 - "POST /mcp HTTP/1.1" 200 OK
+02:04:33.910 [wire<-] turn step=10 sender='police' commit=629c5f6b ts='2026-08-11T23:04:32.946' cells=30 barrier=None claim=None answer=None win=None
+02:04:36.570 INFO:     176.229.170.175:51491 - "POST /mcp HTTP/1.1" 200 OK
+02:04:36.636 INFO:     176.229.170.175:51492 - "DELETE /mcp HTTP/1.1" 200 OK
+02:04:36.846 INFO:     176.229.170.175:51494 - "POST /mcp HTTP/1.1" 200 OK
+02:04:36.887 INFO:     176.229.170.175:51495 - "POST /mcp HTTP/1.1" 202 Accepted
+02:04:36.888 INFO:     176.229.170.175:51496 - "GET /mcp HTTP/1.1" 200 OK
+02:04:37.056 INFO:     176.229.170.175:51497 - "POST /mcp HTTP/1.1" 200 OK
+02:04:37.057 [wire<-] turn step=11 sender='police' commit=accf5bb1 ts='2026-08-11T23:04:36.247' cells=30 barrier=None claim=None answer=None win=None
+02:04:39.956 INFO:     176.229.170.175:51498 - "POST /mcp HTTP/1.1" 200 OK
+02:04:40.003 INFO:     176.229.170.175:51502 - "DELETE /mcp HTTP/1.1" 200 OK
+02:04:40.374 INFO:     176.229.170.175:51504 - "POST /mcp HTTP/1.1" 200 OK
+02:04:40.445 INFO:     176.229.170.175:51509 - "POST /mcp HTTP/1.1" 202 Accepted
+02:04:40.446 INFO:     176.229.170.175:51510 - "GET /mcp HTTP/1.1" 200 OK
+02:04:40.478 INFO:     176.229.170.175:51511 - "POST /mcp HTTP/1.1" 200 OK
+02:04:40.478 [wire<-] turn step=12 sender='police' commit=217bd820 ts='2026-08-11T23:04:39.688' cells=30 barrier=None claim=None answer=None win=None
+02:04:43.213 INFO:     176.229.170.175:51512 - "POST /mcp HTTP/1.1" 200 OK
+02:04:43.403 INFO:     176.229.170.175:51519 - "DELETE /mcp HTTP/1.1" 200 OK
+02:04:43.661 INFO:     176.229.170.175:51526 - "POST /mcp HTTP/1.1" 200 OK
+02:04:43.808 INFO:     176.229.170.175:51527 - "POST /mcp HTTP/1.1" 202 Accepted
+02:04:43.809 INFO:     176.229.170.175:51528 - "GET /mcp HTTP/1.1" 200 OK
+02:04:44.061 INFO:     176.229.170.175:51529 - "POST /mcp HTTP/1.1" 200 OK
+02:04:44.062 [wire<-] turn step=13 sender='police' commit=5baa5450 ts='2026-08-11T23:04:42.931' cells=30 barrier=None claim=None answer=None win=None
+02:04:46.807 INFO:     176.229.170.175:51530 - "POST /mcp HTTP/1.1" 200 OK
+02:04:46.889 INFO:     176.229.170.175:51531 - "DELETE /mcp HTTP/1.1" 200 OK
+02:04:47.086 INFO:     176.229.170.175:51533 - "POST /mcp HTTP/1.1" 200 OK
+02:04:47.164 INFO:     176.229.170.175:51535 - "GET /mcp HTTP/1.1" 200 OK
+02:04:47.165 INFO:     176.229.170.175:51534 - "POST /mcp HTTP/1.1" 202 Accepted
+02:04:47.531 INFO:     176.229.170.175:51536 - "POST /mcp HTTP/1.1" 200 OK
+02:04:47.532 [wire<-] turn step=14 sender='police' commit=04882011 ts='2026-08-11T23:04:46.508' cells=30 barrier=None claim=None answer=None win=None
+02:04:50.368 INFO:     176.229.170.175:51537 - "POST /mcp HTTP/1.1" 200 OK
+02:04:50.428 Exception in callback _ProactorBasePipeTransport._call_connection_lost()
+02:04:50.428 handle: <Handle _ProactorBasePipeTransport._call_connection_lost()>
+02:04:50.428 Traceback (most recent call last):
+02:04:50.428   File "C:\Users\kuper\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\events.py", line 94, in _run
+02:04:50.428     self._context.run(self._callback, *self._args)
+02:04:50.428     ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+02:04:50.428   File "C:\Users\kuper\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\proactor_events.py", line 165, in _call_connection_lost
+02:04:50.428     self._sock.shutdown(socket.SHUT_RDWR)
+02:04:50.428     ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+02:04:50.428 ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+02:04:50.448 INFO:     176.229.170.175:51538 - "DELETE /mcp HTTP/1.1" 200 OK
+02:04:50.752 INFO:     176.229.170.175:51540 - "POST /mcp HTTP/1.1" 200 OK
+02:04:50.976 INFO:     176.229.170.175:51542 - "GET /mcp HTTP/1.1" 200 OK
+02:04:51.836 INFO:     176.229.170.175:51541 - "POST /mcp HTTP/1.1" 202 Accepted
+02:04:51.896 INFO:     176.229.170.175:51543 - "POST /mcp HTTP/1.1" 200 OK
+02:04:51.897 [wire<-] turn step=15 sender='police' commit=cd14ad9d ts='2026-08-11T23:04:50.073' cells=30 barrier=None claim=None answer=None win=None
+02:04:54.739 INFO:     176.229.170.175:51544 - "POST /mcp HTTP/1.1" 200 OK
+02:04:54.886 INFO:     176.229.170.175:51550 - "DELETE /mcp HTTP/1.1" 200 OK
+02:04:55.076 INFO:     176.229.170.175:51552 - "POST /mcp HTTP/1.1" 200 OK
+02:04:55.113 INFO:     176.229.170.175:51553 - "POST /mcp HTTP/1.1" 202 Accepted
+02:04:55.113 INFO:     176.229.170.175:51554 - "GET /mcp HTTP/1.1" 200 OK
+02:04:55.154 INFO:     176.229.170.175:51555 - "POST /mcp HTTP/1.1" 200 OK
+02:04:55.155 [wire<-] turn step=16 sender='police' commit=03cb012c ts='2026-08-11T23:04:54.450' cells=30 barrier=None claim=None answer=None win=None
+02:04:57.977 INFO:     176.229.170.175:51556 - "POST /mcp HTTP/1.1" 200 OK
+02:04:58.085 INFO:     176.229.170.175:51557 - "DELETE /mcp HTTP/1.1" 200 OK
+02:04:58.243 INFO:     176.229.170.175:51559 - "POST /mcp HTTP/1.1" 200 OK
+02:04:58.280 INFO:     176.229.170.175:51561 - "POST /mcp HTTP/1.1" 202 Accepted
+02:04:58.281 INFO:     176.229.170.175:51562 - "GET /mcp HTTP/1.1" 200 OK
+02:04:58.350 INFO:     176.229.170.175:51563 - "POST /mcp HTTP/1.1" 200 OK
+02:04:58.351 [wire<-] turn step=17 sender='police' commit=da4d7295 ts='2026-08-11T23:04:57.666' cells=30 barrier=None claim=None answer=None win=None
+02:05:01.233 INFO:     176.229.170.175:51564 - "POST /mcp HTTP/1.1" 200 OK
+02:05:01.318 INFO:     176.229.170.175:51565 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:01.514 INFO:     176.229.170.175:51567 - "POST /mcp HTTP/1.1" 200 OK
+02:05:01.551 INFO:     176.229.170.175:51568 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:01.553 INFO:     176.229.170.175:51569 - "GET /mcp HTTP/1.1" 200 OK
+02:05:01.630 INFO:     176.229.170.175:51570 - "POST /mcp HTTP/1.1" 200 OK
+02:05:01.631 [wire<-] turn step=18 sender='police' commit=eba1d124 ts='2026-08-11T23:05:00.924' cells=30 barrier=None claim=None answer=None win=None
+02:05:04.469 INFO:     176.229.170.175:51571 - "POST /mcp HTTP/1.1" 200 OK
+02:05:04.506 INFO:     176.229.170.175:51577 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:04.750 INFO:     176.229.170.175:51579 - "POST /mcp HTTP/1.1" 200 OK
+02:05:04.802 INFO:     176.229.170.175:51580 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:04.802 INFO:     176.229.170.175:51581 - "GET /mcp HTTP/1.1" 200 OK
+02:05:04.880 INFO:     176.229.170.175:51582 - "POST /mcp HTTP/1.1" 200 OK
+02:05:04.881 [wire<-] turn step=19 sender='police' commit=4b0612df ts='2026-08-11T23:05:04.172' cells=30 barrier=None claim=None answer=None win=None
+02:05:07.702 INFO:     176.229.170.175:51583 - "POST /mcp HTTP/1.1" 200 OK
+02:05:07.758 INFO:     176.229.170.175:51584 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:07.975 INFO:     176.229.170.175:51586 - "POST /mcp HTTP/1.1" 200 OK
+02:05:08.012 INFO:     176.229.170.175:51587 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:08.014 INFO:     176.229.170.175:51588 - "GET /mcp HTTP/1.1" 200 OK
+02:05:08.075 INFO:     176.229.170.175:51589 - "POST /mcp HTTP/1.1" 200 OK
+02:05:08.076 [wire<-] turn step=20 sender='police' commit=05da9a6e ts='2026-08-11T23:05:07.392' cells=30 barrier=None claim=None answer=None win=None
+02:05:10.922 INFO:     176.229.170.175:51590 - "POST /mcp HTTP/1.1" 200 OK
+02:05:11.052 INFO:     176.229.170.175:51591 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:11.231 INFO:     176.229.170.175:51593 - "POST /mcp HTTP/1.1" 200 OK
+02:05:11.268 INFO:     176.229.170.175:51594 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:11.269 INFO:     176.229.170.175:51595 - "GET /mcp HTTP/1.1" 200 OK
+02:05:11.294 INFO:     176.229.170.175:51596 - "POST /mcp HTTP/1.1" 200 OK
+02:05:11.295 [wire<-] turn step=21 sender='police' commit=6551d6ff ts='2026-08-11T23:05:10.628' cells=30 barrier=None claim=None answer=None win=None
+02:05:14.154 INFO:     176.229.170.175:51597 - "POST /mcp HTTP/1.1" 200 OK
+02:05:14.327 INFO:     176.229.170.175:51603 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:14.465 INFO:     176.229.170.175:51605 - "POST /mcp HTTP/1.1" 200 OK
+02:05:14.644 INFO:     176.229.170.175:51606 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:14.655 INFO:     176.229.170.175:51607 - "GET /mcp HTTP/1.1" 200 OK
+02:05:14.778 INFO:     176.229.170.175:51608 - "POST /mcp HTTP/1.1" 200 OK
+02:05:14.779 [wire<-] turn step=22 sender='police' commit=a954d6d4 ts='2026-08-11T23:05:13.850' cells=30 barrier=None claim=None answer=None win=None
+02:05:17.464 INFO:     176.229.170.175:51609 - "POST /mcp HTTP/1.1" 200 OK
+02:05:18.020 INFO:     176.229.170.175:51611 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:18.130 INFO:     176.229.170.175:51612 - "POST /mcp HTTP/1.1" 200 OK
+02:05:18.225 INFO:     176.229.170.175:51613 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:18.226 INFO:     176.229.170.175:51614 - "GET /mcp HTTP/1.1" 200 OK
+02:05:18.324 INFO:     176.229.170.175:51615 - "POST /mcp HTTP/1.1" 200 OK
+02:05:18.325 [wire<-] turn step=23 sender='police' commit=e1c10334 ts='2026-08-11T23:05:17.514' cells=30 barrier=None claim=None answer=None win=None
+02:05:21.071 INFO:     176.229.170.175:51616 - "POST /mcp HTTP/1.1" 200 OK
+02:05:21.132 INFO:     176.229.170.175:51619 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:21.365 INFO:     176.229.170.175:51621 - "POST /mcp HTTP/1.1" 200 OK
+02:05:21.416 INFO:     176.229.170.175:51622 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:21.416 INFO:     176.229.170.175:51623 - "GET /mcp HTTP/1.1" 200 OK
+02:05:21.492 INFO:     176.229.170.175:51625 - "POST /mcp HTTP/1.1" 200 OK
+02:05:21.493 [wire<-] turn step=24 sender='police' commit=05013522 ts='2026-08-11T23:05:20.761' cells=30 barrier=None claim=None answer=None win=None
+02:05:24.146 INFO:     176.229.170.175:51626 - "POST /mcp HTTP/1.1" 200 OK
+02:05:24.378 INFO:     176.229.170.175:51633 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:24.458 INFO:     176.229.170.175:51636 - "POST /mcp HTTP/1.1" 200 OK
+02:05:24.496 INFO:     176.229.170.175:51637 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:24.496 INFO:     176.229.170.175:51638 - "GET /mcp HTTP/1.1" 200 OK
+02:05:24.548 INFO:     176.229.170.175:51639 - "POST /mcp HTTP/1.1" 200 OK
+02:05:24.549 [wire<-] turn step=25 sender='police' commit=9b84ddda ts='2026-08-11T23:05:23.878' cells=30 barrier=None claim=None answer=None win=None
+02:05:27.263 INFO:     176.229.170.175:51640 - "POST /mcp HTTP/1.1" 200 OK
+02:05:27.427 INFO:     176.229.170.175:51641 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:27.531 INFO:     176.229.170.175:51643 - "POST /mcp HTTP/1.1" 200 OK
+02:05:27.616 INFO:     176.229.170.175:51644 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:27.617 INFO:     176.229.170.175:51645 - "GET /mcp HTTP/1.1" 200 OK
+02:05:27.649 INFO:     176.229.170.175:51646 - "POST /mcp HTTP/1.1" 200 OK
+02:05:27.650 [wire<-] turn step=26 sender='police' commit=ff787d56 ts='2026-08-11T23:05:26.950' cells=30 barrier=None claim=None answer=None win=None
+02:05:30.331 INFO:     176.229.170.175:51647 - "POST /mcp HTTP/1.1" 200 OK
+02:05:30.417 INFO:     176.229.170.175:51648 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:30.609 INFO:     176.229.170.175:51650 - "POST /mcp HTTP/1.1" 200 OK
+02:05:30.647 INFO:     176.229.170.175:51651 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:30.653 INFO:     176.229.170.175:51652 - "GET /mcp HTTP/1.1" 200 OK
+02:05:30.713 INFO:     176.229.170.175:51653 - "POST /mcp HTTP/1.1" 200 OK
+02:05:30.714 [wire<-] turn step=27 sender='police' commit=ec2a26d3 ts='2026-08-11T23:05:30.019' cells=30 barrier=None claim=None answer=None win=None
+02:05:33.385 INFO:     176.229.170.175:51654 - "POST /mcp HTTP/1.1" 200 OK
+02:05:33.501 INFO:     176.229.170.175:51660 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:33.771 INFO:     176.229.170.175:51662 - "POST /mcp HTTP/1.1" 200 OK
+02:05:33.808 INFO:     176.229.170.175:51663 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:33.809 INFO:     176.229.170.175:51664 - "GET /mcp HTTP/1.1" 200 OK
+02:05:33.863 INFO:     176.229.170.175:51665 - "POST /mcp HTTP/1.1" 200 OK
+02:05:33.864 [wire<-] turn step=28 sender='police' commit=7ae547fb ts='2026-08-11T23:05:33.186' cells=30 barrier=None claim=None answer=None win=None
+02:05:36.581 INFO:     176.229.170.175:51666 - "POST /mcp HTTP/1.1" 200 OK
+02:05:36.845 INFO:     176.229.170.175:51667 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:36.965 INFO:     176.229.170.175:51669 - "POST /mcp HTTP/1.1" 200 OK
+02:05:37.035 INFO:     176.229.170.175:51670 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:37.035 INFO:     176.229.170.175:51671 - "GET /mcp HTTP/1.1" 200 OK
+02:05:37.067 INFO:     176.229.170.175:51672 - "POST /mcp HTTP/1.1" 200 OK
+02:05:37.068 [wire<-] turn step=29 sender='police' commit=97042b4b ts='2026-08-11T23:05:36.342' cells=30 barrier=None claim=None answer=None win=None
+02:05:39.747 INFO:     176.229.170.175:51673 - "POST /mcp HTTP/1.1" 200 OK
+02:05:39.810 INFO:     176.229.170.175:51674 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:40.027 INFO:     176.229.170.175:51676 - "POST /mcp HTTP/1.1" 200 OK
+02:05:40.064 INFO:     176.229.170.175:51677 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:40.065 INFO:     176.229.170.175:51678 - "GET /mcp HTTP/1.1" 200 OK
+02:05:40.127 INFO:     176.229.170.175:51679 - "POST /mcp HTTP/1.1" 200 OK
+02:05:40.128 [wire<-] turn step=30 sender='police' commit=98908767 ts='2026-08-11T23:05:39.448' cells=30 barrier=None claim=None answer=None win=None
+02:05:40.167 INFO:     176.229.170.175:51680 - "POST /mcp HTTP/1.1" 200 OK
+02:05:42.912 INFO:     176.229.170.175:51681 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:43.518 INFO:     176.229.170.175:51688 - "POST /mcp HTTP/1.1" 200 OK
+02:05:43.558 INFO:     176.229.170.175:51689 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:43.562 INFO:     176.229.170.175:51690 - "GET /mcp HTTP/1.1" 200 OK
+02:05:43.637 INFO:     176.229.170.175:51691 - "POST /mcp HTTP/1.1" 200 OK
+02:05:43.639 [wire<-] turn step=31 sender='police' commit=a1351a0c ts='2026-08-11T23:05:42.893' cells=30 barrier=None claim=None answer=None win=None
+02:05:46.477 INFO:     176.229.170.175:51692 - "POST /mcp HTTP/1.1" 200 OK
+02:05:46.526 INFO:     176.229.170.175:51693 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:46.766 INFO:     176.229.170.175:51695 - "POST /mcp HTTP/1.1" 200 OK
+02:05:46.870 INFO:     176.229.170.175:51696 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:46.871 INFO:     176.229.170.175:51697 - "GET /mcp HTTP/1.1" 200 OK
+02:05:46.901 INFO:     176.229.170.175:51698 - "POST /mcp HTTP/1.1" 200 OK
+02:05:46.902 [wire<-] turn step=32 sender='police' commit=b8647fa5 ts='2026-08-11T23:05:46.168' cells=30 barrier=None claim=None answer=None win=None
+02:05:47.300 INFO:     176.229.170.175:51699 - "POST /mcp HTTP/1.1" 200 OK
+02:05:47.427 INFO:     176.229.170.175:51700 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:47.542 INFO:     176.229.170.175:51702 - "POST /mcp HTTP/1.1" 200 OK
+02:05:47.616 INFO:     176.229.170.175:51703 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:47.617 INFO:     176.229.170.175:51704 - "GET /mcp HTTP/1.1" 200 OK
+02:05:47.643 INFO:     176.229.170.175:51705 - "POST /mcp HTTP/1.1" 200 OK
+02:05:47.644 [wire<-] turn step=33 sender='police' commit=b4d46b5a ts='2026-08-11T23:05:46.964' cells=30 barrier=None claim=None answer=None win=None
+02:05:47.724 INFO:     176.229.170.175:51706 - "POST /mcp HTTP/1.1" 200 OK
+02:05:47.758 INFO:     176.229.170.175:51707 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:48.019 INFO:     176.229.170.175:51709 - "POST /mcp HTTP/1.1" 200 OK
+02:05:48.058 INFO:     176.229.170.175:51710 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:48.059 INFO:     176.229.170.175:51711 - "GET /mcp HTTP/1.1" 200 OK
+02:05:48.136 INFO:     176.229.170.175:51712 - "POST /mcp HTTP/1.1" 200 OK
+02:05:48.137 [wire<-] turn step=34 sender='police' commit=4c7255dd ts='2026-08-11T23:05:47.418' cells=25 barrier=None claim=None answer=None win=None
+02:05:48.223 INFO:     176.229.170.175:51713 - "POST /mcp HTTP/1.1" 200 OK
+02:05:48.433 INFO:     176.229.170.175:51714 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:48.516 INFO:     176.229.170.175:51716 - "POST /mcp HTTP/1.1" 200 OK
+02:05:48.613 INFO:     176.229.170.175:51717 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:48.613 INFO:     176.229.170.175:51718 - "GET /mcp HTTP/1.1" 200 OK
+02:05:48.667 INFO:     176.229.170.175:51719 - "POST /mcp HTTP/1.1" 200 OK
+02:05:48.668 [wire<-] audit sender='police' records=38 claim='survival'
+02:05:48.753 INFO:     176.229.170.175:51721 - "POST /mcp HTTP/1.1" 200 OK
+02:05:48.852 INFO:     176.229.170.175:51722 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:48.949 INFO:     176.229.170.175:51723 - "POST /mcp HTTP/1.1" 200 OK
+02:05:49.045 INFO:     176.229.170.175:51724 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:49.046 INFO:     176.229.170.175:51725 - "GET /mcp HTTP/1.1" 200 OK
+02:05:49.102 [match] sg5 audit ok=True errors=[] outcome=survival rl_moves=35 distinct=5 sample=['S', 'S', 'N', 'S', 'E', 'N', 'N', 'N']
+02:05:49.103 [match] sg5 complete
+02:05:49.103 [match] sg6 (police) — awaiting peer endpoint https://7f71-176-229-170-175.ngrok-free.app/mcp
+02:05:49.284 INFO:     176.229.170.175:51727 - "POST /mcp HTTP/1.1" 200 OK
+02:05:49.285 [wire<-] negotiate keys=['identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=None
+02:05:49.448 INFO:     176.229.170.175:51728 - "POST /mcp HTTP/1.1" 200 OK
+02:05:49.491 INFO:     176.229.170.175:51729 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:50.064 [match] peer endpoint UP: https://7f71-176-229-170-175.ngrok-free.app/mcp
+02:05:53.012 INFO:     176.229.170.175:51742 - "POST /mcp HTTP/1.1" 200 OK
+02:05:53.113 INFO:     176.229.170.175:51743 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:53.113 INFO:     176.229.170.175:51744 - "GET /mcp HTTP/1.1" 200 OK
+02:05:53.141 INFO:     176.229.170.175:51745 - "POST /mcp HTTP/1.1" 200 OK
+02:05:53.142 [wire<-] control kind='enable' sender='thief' sub_game=1 status=''
+02:05:53.182 INFO:     176.229.170.175:51746 - "POST /mcp HTTP/1.1" 200 OK
+02:05:53.249 [match] sg6 peer greeting sub_game=6 role=thief
+02:05:53.249 [match] sg6 role=police handshake OK vs uoh-sqak uid=e294ea6e-31c
+02:05:53.255 INFO:     176.229.170.175:51748 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:53.321 INFO:     176.229.170.175:51749 - "POST /mcp HTTP/1.1" 200 OK
+02:05:53.364 INFO:     176.229.170.175:51750 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:53.366 INFO:     176.229.170.175:51751 - "GET /mcp HTTP/1.1" 200 OK
+02:05:53.419 INFO:     176.229.170.175:51754 - "POST /mcp HTTP/1.1" 200 OK
+02:05:53.420 [wire<-] control kind='status' sender='thief' sub_game=6 status='PLAYING'
+02:05:53.464 INFO:     176.229.170.175:51758 - "POST /mcp HTTP/1.1" 200 OK
+02:05:53.590 INFO:     176.229.170.175:51759 - "DELETE /mcp HTTP/1.1" 200 OK
+02:05:53.659 INFO:     176.229.170.175:51760 - "POST /mcp HTTP/1.1" 200 OK
+02:05:53.743 INFO:     176.229.170.175:51762 - "GET /mcp HTTP/1.1" 200 OK
+02:05:53.745 INFO:     176.229.170.175:51761 - "POST /mcp HTTP/1.1" 202 Accepted
+02:05:53.775 INFO:     176.229.170.175:51763 - "POST /mcp HTTP/1.1" 200 OK
+02:05:53.776 [wire<-] turn step=1 sender='thief' commit=bbe0f089 ts='2026-08-11T23:05:53.074' cells=25 barrier=None claim=None answer=None win=None
+02:05:53.832 [scent] sg6 step1: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+02:06:03.124 INFO:     176.229.170.175:51764 - "POST /mcp HTTP/1.1" 200 OK
+02:06:03.190 INFO:     176.229.170.175:51765 - "DELETE /mcp HTTP/1.1" 200 OK
+02:06:03.390 INFO:     176.229.170.175:51767 - "POST /mcp HTTP/1.1" 200 OK
+02:06:03.463 INFO:     176.229.170.175:51773 - "POST /mcp HTTP/1.1" 202 Accepted
+02:06:03.464 INFO:     176.229.170.175:51774 - "GET /mcp HTTP/1.1" 200 OK
+02:06:03.503 INFO:     176.229.170.175:51775 - "POST /mcp HTTP/1.1" 200 OK
+02:06:03.505 [wire<-] turn step=2 sender='thief' commit=6b74cb0d ts='2026-08-11T23:06:02.784' cells=30 barrier=None claim=None answer=False win=None
+02:06:05.932 INFO:     176.229.170.175:51776 - "POST /mcp HTTP/1.1" 200 OK
+02:06:06.368 INFO:     176.229.170.175:51778 - "DELETE /mcp HTTP/1.1" 200 OK
+02:06:06.432 INFO:     176.229.170.175:51779 - "POST /mcp HTTP/1.1" 200 OK
+02:06:06.475 INFO:     176.229.170.175:51780 - "POST /mcp HTTP/1.1" 202 Accepted
+02:06:06.476 INFO:     176.229.170.175:51781 - "GET /mcp HTTP/1.1" 200 OK
+02:06:06.528 INFO:     176.229.170.175:51782 - "POST /mcp HTTP/1.1" 200 OK
+02:06:06.529 [wire<-] turn step=3 sender='thief' commit=820921bf ts='2026-08-11T23:06:05.834' cells=25 barrier=None claim=None answer=False win=None
+02:06:09.550 INFO:     176.229.170.175:51783 - "POST /mcp HTTP/1.1" 200 OK
+02:06:09.628 INFO:     176.229.170.175:51784 - "DELETE /mcp HTTP/1.1" 200 OK
+02:06:09.811 INFO:     176.229.170.175:51786 - "POST /mcp HTTP/1.1" 200 OK
+02:06:09.918 INFO:     176.229.170.175:51788 - "GET /mcp HTTP/1.1" 200 OK
+02:06:09.919 INFO:     176.229.170.175:51787 - "POST /mcp HTTP/1.1" 202 Accepted
+02:06:09.951 INFO:     176.229.170.175:51789 - "POST /mcp HTTP/1.1" 200 OK
+02:06:09.952 [wire<-] turn step=4 sender='thief' commit=67bd7511 ts='2026-08-11T23:06:09.211' cells=20 barrier=None claim=None answer=False win=None
+02:06:12.918 INFO:     176.229.170.175:51790 - "POST /mcp HTTP/1.1" 200 OK
+02:06:12.984 INFO:     176.229.170.175:51791 - "DELETE /mcp HTTP/1.1" 200 OK
+02:06:13.209 INFO:     176.229.170.175:51793 - "POST /mcp HTTP/1.1" 200 OK
+02:06:13.286 INFO:     176.229.170.175:51794 - "POST /mcp HTTP/1.1" 202 Accepted
+02:06:13.286 INFO:     176.229.170.175:51795 - "GET /mcp HTTP/1.1" 200 OK
+02:06:13.321 INFO:     176.229.170.175:51796 - "POST /mcp HTTP/1.1" 200 OK
+02:06:13.322 [wire<-] turn step=5 sender='thief' commit=4f8d235d ts='2026-08-11T23:06:12.571' cells=19 barrier=None claim=None answer=False win=None
+02:06:16.582 INFO:     176.229.170.175:51797 - "POST /mcp HTTP/1.1" 200 OK
+02:06:16.810 INFO:     176.229.170.175:51803 - "DELETE /mcp HTTP/1.1" 200 OK
+02:06:16.878 INFO:     176.229.170.175:51805 - "POST /mcp HTTP/1.1" 200 OK
+02:06:16.922 INFO:     176.229.170.175:51806 - "POST /mcp HTTP/1.1" 202 Accepted
+02:06:16.924 INFO:     176.229.170.175:51807 - "GET /mcp HTTP/1.1" 200 OK
+02:06:16.985 INFO:     176.229.170.175:51808 - "POST /mcp HTTP/1.1" 200 OK
+02:06:16.986 [wire<-] turn step=6 sender='thief' commit=cce61aca ts='2026-08-11T23:06:16.275' cells=16 barrier=None claim=None answer=False win=None
+02:06:20.546 INFO:     176.229.170.175:51809 - "POST /mcp HTTP/1.1" 200 OK
+02:06:20.601 INFO:     176.229.170.175:51811 - "DELETE /mcp HTTP/1.1" 200 OK
+02:06:20.900 INFO:     176.229.170.175:51813 - "POST /mcp HTTP/1.1" 200 OK
+02:06:20.962 INFO:     176.229.170.175:51814 - "POST /mcp HTTP/1.1" 202 Accepted
+02:06:20.962 INFO:     176.229.170.175:51815 - "GET /mcp HTTP/1.1" 200 OK
+02:06:21.014 INFO:     176.229.170.175:51816 - "POST /mcp HTTP/1.1" 200 OK
+02:06:21.015 [wire<-] turn step=7 sender='thief' commit=0aea62ef ts='2026-08-11T23:06:20.323' cells=16 barrier=None claim=None answer=False win=None
+02:06:23.933 INFO:     176.229.170.175:51817 - "POST /mcp HTTP/1.1" 200 OK
+02:06:24.052 INFO:     176.229.170.175:51833 - "DELETE /mcp HTTP/1.1" 200 OK
+02:06:24.199 INFO:     176.229.170.175:51836 - "POST /mcp HTTP/1.1" 200 OK
+02:06:24.273 INFO:     176.229.170.175:51839 - "GET /mcp HTTP/1.1" 200 OK
+02:06:24.276 INFO:     176.229.170.175:51838 - "POST /mcp HTTP/1.1" 202 Accepted
+02:06:24.310 INFO:     176.229.170.175:51840 - "POST /mcp HTTP/1.1" 200 OK
+02:06:24.311 [wire<-] turn step=8 sender='thief' commit=64fe2530 ts='2026-08-11T23:06:23.611' cells=13 barrier=None claim=None answer=False win=None
+02:06:26.547 INFO:     176.229.170.175:51842 - "POST /mcp HTTP/1.1" 200 OK
+02:06:27.139 INFO:     176.229.170.175:51845 - "DELETE /mcp HTTP/1.1" 200 OK
+02:06:27.354 INFO:     176.229.170.175:51847 - "POST /mcp HTTP/1.1" 200 OK
+02:06:27.731 INFO:     176.229.170.175:51848 - "POST /mcp HTTP/1.1" 202 Accepted
+02:06:27.731 INFO:     176.229.170.175:51849 - "GET /mcp HTTP/1.1" 200 OK
+02:06:27.939 INFO:     176.229.170.175:51850 - "POST /mcp HTTP/1.1" 200 OK
+02:06:27.940 [wire<-] turn step=9 sender='thief' commit=d0659293 ts='2026-08-11T23:06:26.609' cells=12 barrier=None claim=None answer=False win=None
+02:06:29.521 INFO:     176.229.170.175:51851 - "POST /mcp HTTP/1.1" 200 OK
+02:06:29.576 INFO:     176.229.170.175:51852 - "DELETE /mcp HTTP/1.1" 200 OK
+02:06:29.784 INFO:     176.229.170.175:51854 - "POST /mcp HTTP/1.1" 200 OK
+02:06:29.827 INFO:     176.229.170.175:51855 - "POST /mcp HTTP/1.1" 202 Accepted
+02:06:29.832 INFO:     176.229.170.175:51856 - "GET /mcp HTTP/1.1" 200 OK
+02:06:29.892 INFO:     176.229.170.175:51857 - "POST /mcp HTTP/1.1" 200 OK
+02:06:29.893 [wire<-] turn step=10 sender='thief' commit=bb6d7363 ts='2026-08-11T23:06:29.181' cells=12 barrier=None claim=None answer=False win=None
+02:06:31.275 INFO:     176.229.170.175:51858 - "POST /mcp HTTP/1.1" 200 OK
+02:06:31.368 INFO:     176.229.170.175:51859 - "DELETE /mcp HTTP/1.1" 200 OK
+02:06:31.520 INFO:     176.229.170.175:51861 - "POST /mcp HTTP/1.1" 200 OK
+02:06:31.562 INFO:     176.229.170.175:51863 - "GET /mcp HTTP/1.1" 200 OK
+02:06:31.563 INFO:     176.229.170.175:51862 - "POST /mcp HTTP/1.1" 202 Accepted
+02:06:31.615 INFO:     176.229.170.175:51864 - "POST /mcp HTTP/1.1" 200 OK
+02:06:31.616 [wire<-] turn step=11 sender='thief' commit=508bc501 ts='2026-08-11T23:06:30.932' cells=9 barrier=None claim=None answer=False win=None
+02:06:31.656 INFO:     176.229.170.175:51865 - "POST /mcp HTTP/1.1" 200 OK
+02:06:40.286 INFO:     176.229.170.175:51866 - "DELETE /mcp HTTP/1.1" 200 OK
+02:06:41.055 INFO:     176.229.170.175:51873 - "POST /mcp HTTP/1.1" 200 OK
+02:06:41.159 INFO:     176.229.170.175:51875 - "GET /mcp HTTP/1.1" 200 OK
+02:06:41.161 INFO:     176.229.170.175:51874 - "POST /mcp HTTP/1.1" 202 Accepted
+02:06:41.191 INFO:     176.229.170.175:51876 - "POST /mcp HTTP/1.1" 200 OK
+02:06:41.192 [wire<-] turn step=12 sender='thief' commit=d9c68691 ts='2026-08-11T23:06:40.465' cells=12 barrier=None claim=None answer=False win=None
+02:06:43.145 INFO:     176.229.170.175:51877 - "POST /mcp HTTP/1.1" 200 OK
+02:06:43.351 INFO:     176.229.170.175:51878 - "DELETE /mcp HTTP/1.1" 200 OK
+02:06:43.401 INFO:     176.229.170.175:51880 - "POST /mcp HTTP/1.1" 200 OK
+02:06:43.438 INFO:     176.229.170.175:51886 - "POST /mcp HTTP/1.1" 202 Accepted
+02:06:43.440 INFO:     176.229.170.175:51887 - "GET /mcp HTTP/1.1" 200 OK
+02:06:43.465 INFO:     176.229.170.175:51888 - "POST /mcp HTTP/1.1" 200 OK
+02:06:43.466 [wire<-] turn step=13 sender='thief' commit=c2e4f7d1 ts='2026-08-11T23:06:42.813' cells=12 barrier=None claim=None answer=True win=None
+02:06:43.519 [match] sg6 thief conceded capture at step 13 (answer)
+02:06:43.534 INFO:     176.229.170.175:51889 - "POST /mcp HTTP/1.1" 200 OK
+02:06:43.594 INFO:     176.229.170.175:51890 - "DELETE /mcp HTTP/1.1" 200 OK
+02:06:43.637 INFO:     176.229.170.175:51891 - "POST /mcp HTTP/1.1" 200 OK
+02:06:43.712 INFO:     176.229.170.175:51892 - "POST /mcp HTTP/1.1" 202 Accepted
+02:06:43.713 INFO:     176.229.170.175:51893 - "GET /mcp HTTP/1.1" 200 OK
+02:06:43.741 INFO:     176.229.170.175:51895 - "POST /mcp HTTP/1.1" 200 OK
+02:06:43.742 [wire<-] audit sender='thief' records=17 claim='capture'
+02:06:43.824 INFO:     176.229.170.175:51896 - "POST /mcp HTTP/1.1" 200 OK
+02:06:43.937 INFO:     176.229.170.175:51897 - "DELETE /mcp HTTP/1.1" 200 OK
+02:06:44.075 [match] sg6 audit ok=True errors=[] outcome=capture rl_moves=12 distinct=3 sample=['S', 'S', 'S', 'E', 'S', 'E', 'E', 'S']
+02:06:44.075 [match] sg6 complete
+02:06:44.078 ERROR:    Traceback (most recent call last):
+02:06:44.078   File "D:\Researches\LLM_Harmful_Pipeline\venv\Lib\site-packages\starlette\routing.py", line 645, in lifespan
+02:06:44.078     await receive()
+02:06:44.078   File "D:\Researches\LLM_Harmful_Pipeline\venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+02:06:44.078     return await self.receive_queue.get()
+02:06:44.078            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+02:06:44.078   File "C:\Users\kuper\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\queues.py", line 186, in get
+02:06:44.078     await getter
+02:06:44.078 asyncio.exceptions.CancelledError
+
+02:06:44.078 ERROR:    Traceback (most recent call last):
+02:06:44.078   File "D:\Researches\LLM_Harmful_Pipeline\venv\Lib\site-packages\starlette\routing.py", line 645, in lifespan
+02:06:44.078     await receive()
+02:06:44.078   File "D:\Researches\LLM_Harmful_Pipeline\venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+02:06:44.078     return await self.receive_queue.get()
+02:06:44.078            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+02:06:44.078   File "C:\Users\kuper\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\queues.py", line 186, in get
+02:06:44.078     await getter
+02:06:44.079 asyncio.exceptions.CancelledError
+
+
+02:06:44.082 [match] STATUS: audits 6/6 ok
+02:06:44.083 [match] saved config profile used vs uoh-sqak -> config/opponents/uoh-sqak/ (existing profile files preserved)
+02:06:44.152 [match] artifacts: 6x(config+log) + declaration + result under results/ and config/games/
+02:06:44.153 [match] result: {'vibecode': 90, 'uoh-sqak': 30} winner=vibecode
+02:06:45.774 [match] emailed result ONLY to rmisegal+uoh26finalgame@gmail.com (id=19ff3140bfdfea7c)
+02:06:45.774 [match] counted ledger updated: counted_games_played=3 (results/counted_series.json)
