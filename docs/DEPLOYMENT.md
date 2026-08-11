@@ -76,7 +76,7 @@ standard): `docs/counted_game_checklist.md`.
 
 A series runs in agreed windows starting at a written time **T**. Summary — the full
 log-signature → instruction table lives at the workspace level in
-`../docs/MATCH_DIAGNOSIS_PLAYBOOK.md`:
+`docs/MATCH_DIAGNOSIS_PLAYBOOK.md`:
 
 - **Before T, probe the opponent** (and have them probe us): a bare HTTP request to
   `http://<host>:<port>/mcp` answering **406 = READY** (an MCP server refusing a
