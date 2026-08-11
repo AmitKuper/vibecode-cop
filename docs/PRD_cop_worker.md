@@ -30,7 +30,7 @@ Architecture context: `docs/DESIGN.md`. Move-engine theory: `docs/PRD_search_eng
 ### Input — what arrives on the wire
 
 - `negotiate`: peer greeting with signed flat terms (exactly the 14
-  `TERMS_KEYS` of `protocol/reference_v3.py`), lock hashes
+  `TERMS_KEYS` of `protocol/reference_v3/constants.py`), lock hashes
   (`scent_model_sha256`, `wire_shape_sha256`), `game_uid`, role and sub-game
   index. Any mismatch is a deterministic refusal (SPAR-N02..N10) with a diag diff.
 - `receive_turn`: sealed turn — exactly these keys: `step`, `sender`, `commit`

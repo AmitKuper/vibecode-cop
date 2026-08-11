@@ -148,7 +148,7 @@ always override profile values.
 The negotiated scent law is set per opponent in
 `config/opponents/<opp>/runtime.toml` under `[protocol] scent_model`
 (or `--scent-model`). Two registered models, each with a locked doc hash
-(`cop_worker/protocol/reference_v3.py::SCENT_LOCKS`):
+(`cop_worker/protocol/reference_v3/constants.py::SCENT_LOCKS`):
 
 - `multiplicative_book_v1` (`934c220d…`)
 - `subtractive_chebyshev_v1` (`81ebee59…`) — used vs imreeyal; makes the
@@ -206,7 +206,7 @@ Rendered from a real rule-46/47 game between the shipped `hybrid_search` policie
 |---|---|
 | `scripts/live_match_ref3.py` | Match orchestrator and CLI entry point (self-test + live match) |
 | `scripts/ref3_artifacts.py` | League-schema artifact emission, `config_sha256` |
-| `cop_worker/protocol/reference_v3.py` | Reference-v3 wire: canonical JSON, commits, terms, locks, session |
+| `cop_worker/protocol/reference_v3/` | Reference-v3 wire: canonical JSON, commits, terms, locks, session |
 | `cop_worker/protocol/protocol_agent.py` | Pre-game LLM protocol-understanding agent (never in-game) |
 | `cop_worker/rl/pursuit_search.py` | Depth-limited minimax with territory evaluation (both roles) |
 | `cop_worker/rl/search_policy.py` | Serving adapter: minimax first, RL fallback |
