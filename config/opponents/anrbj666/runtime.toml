@@ -84,5 +84,6 @@ scent_model = "multiplicative_book_v1"
 move_policy = "hybrid_search"
 # PRE-GAME MANUAL STEP (obs-mode guard will otherwise refuse): repoint
 # models/MANIFEST.json at the book-mode pair before an anrbj666 window —
-# cop_prodobs_candidate_v2.pt / thief_recurrent_champion.pt (or their T1/T4
-# successors; see ../docs/ANRBJ666_BOOK_SCENT_PREP.md).
+# cop_decoded_book_champion.pt (sha 2bba21a7…, NEEDS COPTHIEF_DECODED_SCENT=1 —
+# A/B-promoted 2026-08-11: 0.5683/0.2583 vs v2 0.5083/0.1833, 20 series x2 seeds)
+# + thief_recurrent_champion.pt. See ../docs/ANRBJ666_BOOK_SCENT_PREP.md.
