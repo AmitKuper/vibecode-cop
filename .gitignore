@@ -61,3 +61,6 @@ artifacts/
 reports/
 .coverage
 coverage.json
+
+# Training scratch (per-date experiment dirs): never in the repo
+rl_experiments_*/
