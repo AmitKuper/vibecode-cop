@@ -1,0 +1,23 @@
+# uoh-sqak pairing — single-service peer (one URL, both roles), ngrok tunnel.
+[network]
+our_cop_port      = 61224
+our_thief_port    = 61223
+our_cop_mcp_url   = "http://62.56.220.143:61224/mcp"
+our_thief_mcp_url = "http://62.56.220.143:61223/mcp"
+opponent_group = "uoh-sqak"
+opp_cop_url    = "https://7f71-176-229-170-175.ngrok-free.app/mcp"
+opp_thief_url  = "https://7f71-176-229-170-175.ngrok-free.app/mcp"
+
+[protocol]
+scent_model  = "subtractive_chebyshev_v1"
+move_policy  = "hybrid_search"
+mcp_call_sec = 10.0
+
+[report]
+# FRIENDLY: to each other only — their operator inbox + our own archive copy.
+recipient  = "skadah324@gmail.com"
+mode       = "send"
+token_path = "secrets/gmail/token.json"
+
+[counted]
+counted_played = 2
