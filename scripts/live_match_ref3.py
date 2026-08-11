@@ -93,10 +93,15 @@ class RLMover:
         # Hybrid serving: minimax over exact chebyshev tracking with the RL policy as
         # fallback for blind frames. Only meaningful when the locked model makes the
         # frame an oracle; the plain RL path stays byte-identical under "rl".
-        if move_policy == "hybrid_search":
+        if move_policy in ("hybrid_search", "hybrid_search_belief"):
             from cop_worker.rl.search_policy import wrap_with_search
 
-            self.policy = wrap_with_search(self.policy, manifest_role, terms)
+            self.policy = wrap_with_search(
+                self.policy,
+                manifest_role,
+                terms,
+                belief_mode=(move_policy == "hybrid_search_belief"),
+            )
         elif move_policy != "rl":
             raise ValueError(f"unknown move_policy {move_policy!r}")
         start = terms["cop_start"] if role == "police" else terms["thief_start"]
@@ -1544,7 +1549,7 @@ def main() -> int:
     p.add_argument(
         "--move-policy",
         default=None,
-        choices=("rl", "hybrid_search"),
+        choices=("rl", "hybrid_search", "hybrid_search_belief"),
         help="Move engine: plain RL, or minimax-over-exact-tracking with RL fallback",
     )
     args = p.parse_args()
