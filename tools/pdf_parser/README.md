@@ -47,11 +47,14 @@ themselves are deliberately kept outside the repos):
    field layout (`read` / `search` subcommands).
 2. **Mining prior submissions** — pulling student identity fields out of the
    earlier `vibecode-ex0N.pdf` files so the final form is consistent with them.
-3. **Verifying the generated submission** — after the fill-and-convert step
-   (done against the official Word template so field positions never move),
-   the produced `vibecode-ex07.pdf` is read back with this tool and checked
-   field-by-field (group id, repos, agent email, game table rows, totals)
-   against the league ledger in `results/counted_series.json`.
+3. **Generating the submission** — `docx_form.py` (this package) fills the
+   official Word template append-only (field positions never move) and converts
+   it to PDF; the course-specific field mapping lives in
+   `tools/submission_builder/`.
+4. **Verifying the generated submission** — the produced `vibecode-ex07.pdf`
+   is read back with this tool and checked field-by-field (group id, repos,
+   agent email, game table rows, totals) against the league ledger in
+   `results/counted_series.json`.
 
 ## Limits (by design)
 
