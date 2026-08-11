@@ -85,7 +85,9 @@ def test_play_subgame_resets_the_mover_before_the_first_turn() -> None:
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
 
-    source = inspect.getsource(module._play_subgame)
+    # The turn loop (mover lifecycle + call-site pins) lives in _run_turns since the
+    # ref3_match decomposition; the facade re-exports it precisely for this pin.
+    source = inspect.getsource(module._run_turns)
     construct = source.index("RLMover(")
     reset = source.index("policy.reset()")
     assert reset > construct, "reset() must follow the RLMover construction"

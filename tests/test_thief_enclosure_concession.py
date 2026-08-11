@@ -81,7 +81,10 @@ class TestServingLoopCallSites:
         sys.path.insert(0, str(REPO_ROOT / "scripts"))
         import live_match_ref3
 
-        return inspect.getsource(live_match_ref3._play_subgame)
+        # The turn loop (barrier tracking, self-check, concession, audit submission)
+        # lives in _run_turns since the ref3_match decomposition; the facade re-exports
+        # it precisely for this pin.
+        return inspect.getsource(live_match_ref3._run_turns)
 
     def test_loop_tracks_peer_barriers_and_self_checks(self) -> None:
         src = self._subgame_source()

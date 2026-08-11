@@ -17,7 +17,13 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
-from live_match_ref3 import _corroborate_caught, _play_subgame  # noqa: E402
+from live_match_ref3 import (  # noqa: E402
+    _absorb_inbound_caught,
+    _compose_and_send_turn,
+    _corroborate_caught,
+    _refine_disputed_trail,
+    _settle,
+)
 
 
 class TestCorroborateCaught:
@@ -51,7 +57,8 @@ class TestClaimEmissionCallSites:
     """Source-level pins: the loop actually claims, settles, and corroborates."""
 
     def test_cop_claims_its_own_cell_every_turn(self) -> None:
-        src = inspect.getsource(_play_subgame)
+        # Turn composition lives in _compose_and_send_turn since the ref3_match split.
+        src = inspect.getsource(_compose_and_send_turn)
         # The claim travels in the kit's wire convention [row, col] — our internal
         # [x, y] transposed. Sending [x, y] raw registered our cells TRANSPOSED in
         # the peer's physics (live finding, 2026-08-10 rehearsal).
@@ -59,12 +66,13 @@ class TestClaimEmissionCallSites:
         assert "capture_claim=capture_claim" in src
 
     def test_settlement_corroborates_before_recording(self) -> None:
-        src = inspect.getsource(_play_subgame)
+        # Inbound caught=true handling lives in _absorb_inbound_caught; the audit-time
+        # trail-end refinement in _refine_disputed_trail (degrades: notes, never accuses).
+        src = inspect.getsource(_absorb_inbound_caught)
         assert "_corroborate_caught" in src
         assert "disputed_capture" in src
-        # Audit-time trail-end refinement exists and degrades (notes, never accuses).
-        assert "trail_end_mismatch" in src
+        assert "trail_end_mismatch" in inspect.getsource(_refine_disputed_trail)
 
     def test_summary_carries_the_disputed_flag(self) -> None:
-        src = inspect.getsource(_play_subgame)
+        src = inspect.getsource(_settle)
         assert '"disputed_capture": disputed_capture' in src
