@@ -86,4 +86,6 @@ move_policy = "hybrid_search"
 # models/MANIFEST.json at the book-mode pair before an anrbj666 window —
 # cop_decoded_book_champion.pt (sha 2bba21a7…, NEEDS COPTHIEF_DECODED_SCENT=1 —
 # A/B-promoted 2026-08-11: 0.5683/0.2583 vs v2 0.5083/0.1833, 20 series x2 seeds)
-# + thief_recurrent_champion.pt. See ../docs/ANRBJ666_BOOK_SCENT_PREP.md.
+# + thief_ddqn_book_champion.pt (sha 722fd36d…, T4 PSRO — A/B-promoted
+# 2026-08-11: 0.8808/0.525 vs recurrent incumbent 0.7275/0.000, 20 series).
+# See ../docs/ANRBJ666_BOOK_SCENT_PREP.md.
