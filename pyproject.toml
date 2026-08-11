@@ -1,5 +1,5 @@
 [project]
-name = "cop-thief-game"
+name = "vibecode-cop"
 version = "3.0.0"
 description = "Cop/Thief league agent: reference-v3 MCP wire, minimax-over-oracle move engine, RL fallback"
 license = { file = "LICENSE" }

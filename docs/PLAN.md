@@ -1,9 +1,12 @@
 # Implementation Plan — Cop Agent (vibecode-cop)
-**Version:** 2.0 | **Group:** vibecode | **Date:** 2026-08-08
+**Version:** 2.1 | **Group:** vibecode | **Date:** 2026-08-12
 
-> Architecture authority: `docs/DESIGN.md` (3-process redesign). This plan describes
-> the built structure of `vibecode-cop`, which ships **two** packages: `league_manager`
-> (the match orchestrator / external MCP facade) and `cop_worker` (the cop role).
+> Architecture authority: `docs/DESIGN.md`. **Production runtime is one process**:
+> `scripts/live_match_ref3.py` serves both roles (cop `:61224`, thief `:61223`) and
+> drives the whole series (DESIGN AD-1). The repo still ships **two** packages —
+> `cop_worker` (game semantics, RL, language) and `league_manager` (ledger, reports,
+> routing) — which the runner uses as libraries; their 3-process
+> LeagueManager+worker composition survives only as a **simulation/dev harness**.
 
 ---
 
@@ -21,13 +24,35 @@
         ▼                   ▼                   ▼
 ┌───────────────────────────────────────────────────────────────────┐
 │                         vibecode product                          │
-│  LeagueManager  +  Cop Worker  +  Thief Worker (vibecode-thief)    │
+│  Match runner (live_match_ref3) + cop_worker + thief model repo   │
 │  Autonomous P2P cops-and-robbers: signed Step-0, commit-reveal,   │
-│  six gamelets, RL movement, mutual audit. No central referee.     │
+│  six sub-games, minimax/RL movement, mutual audit. No referee.    │
 └───────────────────────────────────────────────────────────────────┘
 ```
 
-### Level 2 — Container Diagram (3 processes)
+### Level 2 — Container Diagram
+
+**Production** — one match-runner process, both roles (DESIGN AD-1):
+
+```
+                     opponent peer (MCP/HTTP)
+                       │                  │
+                       ▼                  ▼
+┌────────────────────────────────────────────────────────────┐
+│  Match runner  scripts/live_match_ref3.py  (one process)   │
+│  cop MCP endpoint :61224      thief MCP endpoint :61223    │
+│  Step-0 negotiate → sealed turns → mutual audit → settle   │
+│  libraries: cop_worker/ (protocol, domain, RL, language),  │
+│  league_manager/ (ledger, reports), gmail pipeline,        │
+│  models/MANIFEST.json, config/ profiles, artifacts/        │
+└────────────────────────────────────────────────────────────┘
+```
+
+Both ports are bound by the runner itself (static public IP, router
+port-forwarding, no tunnel).
+
+**Simulation / dev harness only** — the 3-process composition below still runs
+(`python -m league_manager`) but is **not** the production path:
 
 ```
                      opponent peer (MCP/HTTP)
@@ -52,8 +77,8 @@
 └────────────────────────┘
 ```
 
-A peer may also connect **directly** to a worker's MCP port (cop `:61224`,
-thief `:61223`) in the direct topology — see `docs/DEPLOYMENT_TUNNEL_RUNBOOK.md`.
+In production the peer connects **directly** to `:61224`/`:61223`, which the
+match runner binds — see `docs/DEPLOYMENT_TUNNEL_RUNBOOK.md` for the network path.
 
 ### Level 3 — Component Diagram (Cop Worker)
 
@@ -81,29 +106,33 @@ thief `:61223`) in the direct topology — see `docs/DEPLOYMENT_TUNNEL_RUNBOOK.m
 
 ---
 
-## 2. Match Lifecycle
+## 2. Match Lifecycle (production)
 
 ```
-CLI: python -m league_manager --counted --port 61222
-  → LeagueManager starts, auto-spawns cop_worker + thief_worker (worker_lifecycle)
-  → signed bilateral Step-0 (step0/series_declaration + worker gamelet declarations)
-  → protocol detection / ref-v3 adapter locks a profile (protocol/)
-  → six gamelets, role schedule {1:cop,2:thief,3:cop,4:thief,5:cop,6:thief}
-      each gamelet: LM routes tool calls → worker commit-reveal loop
-        commit (SHA-256) → ack → reveal → verify → apply → check terminal
-  → mutual comprehensive audit → signed result consensus (audit/result_consensus)
-  → league_ledger update → independent Gmail reports → DONE
+CLI: python scripts/live_match_ref3.py --match --config <opp> [--counted --report-to <addr>]
+  → one match-runner process binds cop :61224 + thief :61223, dials the peer
+  → per sub-game: signed Step-0 negotiate (flat terms, scent/wire locks, game_uid)
+  → six sub-games, role schedule {1:cop,2:thief,3:cop,4:thief,5:cop,6:thief}
+      sealed turns (commit-reveal): thief first, cop replies; hint attached
+  → mutual comprehensive audit per sub-game (reveal + rehash every commit)
+  → settlement → artifacts + league ledger → Gmail report
+    (friendly: own inbox; counted: --report-to, passed by hand) → DONE
 ```
+
+The dev-harness lifecycle (`python -m league_manager --counted --port 61222`,
+auto-spawned workers, LM routing) exercises the same packages in simulation but
+is not the counted path.
 
 ---
 
 ## 3. Cop Movement Selection
 
 ```
-select_move():
-  1. RL path (primary): MANIFEST-pinned RecurrentA2C-GRU champion, legal-action masked
-  2. Deterministic heuristic fallback: minimise Chebyshev(cop_pos, scent_peak),
-     respecting legal-move + barrier masks
+select_move()  (--move-policy hybrid_search, the shipped default vs imreeyal):
+  1. Exact fix from the chebyshev frame (0.8-peak oracle) → depth-limited
+     minimax with territory evaluation (DESIGN AD-3, AD-4)
+  2. Blind/ambiguous frame → MANIFEST-pinned RL champion, legal-action masked
+--move-policy rl serves the RL path alone (byte-identical fallback net).
 ```
 
 Free-language hints and the belief-map update may use a direct Claude call
@@ -124,9 +153,11 @@ Neither side can choose a move after seeing the opponent's. Commitment payload i
 `{game_id, gamelet, step, role, state_hash, move, hint, intent, nonce}`; the `gamelet`
 field prevents cross-gamelet replay (`cop_worker/commit_reveal.py`, `crypto.py`).
 
-### AD-3: LeagueManager as Facade, not Game Owner
+### AD-3: LeagueManager as Facade, not Game Owner (dev harness)
 One stable external URL for all six sub-games; workers remain autonomous P2P agents.
-Boundary: LM = transport/routing; worker = game protocol semantics (DESIGN Decisions 2–5).
+Boundary: LM = transport/routing; worker = game protocol semantics. In production
+the LM process does not run — the match runner uses `league_manager/` as a library
+(ledger, reports) per DESIGN AD-1.
 
 ### AD-4: Signed Bilateral Step-0 + Mutual Audit
 Each side publishes a signed declaration (hardware, model SHA, git SHA, config SHA) and
@@ -159,6 +190,7 @@ use is free-text hints and belief updates.
 ## 6. File Structure (vibecode-cop)
 
 ```
+scripts/live_match_ref3.py ← PRODUCTION match runner: both roles, one process (DESIGN AD-1)
 cop/__main__.py            ← thin entry; delegates to cop_worker
 cop_worker/                ← cop role (internal MCP server)
 ├── __main__.py            ← worker CLI (serve on --port)
@@ -176,8 +208,8 @@ cop_worker/                ← cop role (internal MCP server)
 ├── step0/                 ← signed gamelet declaration + signing
 ├── gmail/                 ← gatekeeper, sender, quota/DOS/circuit-breaker
 ├── config/, reliability/, protocol/, replay/, gui/
-league_manager/            ← match orchestrator / external MCP facade
-├── __main__.py            ← `python -m league_manager --counted --port 61222`
+league_manager/            ← routing facade (dev harness) + ledger/report libraries
+├── __main__.py            ← `python -m league_manager --counted --port 61222` (simulation)
 ├── admin_api.py           ← localhost control HTTP (:8080)
 ├── router.py              ← routes ref-v3 calls to the correct worker (identity only)
 ├── worker_lifecycle.py    ← spawns/monitors cop & thief worker subprocesses
