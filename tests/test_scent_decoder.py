@@ -18,20 +18,7 @@ import pytest
 from cop_worker.observation import BeliefState, LocalObservation
 from cop_worker.rules_engine import RulesEngine
 from cop_worker.scent_decoder import EmitterDecoder
-
-GRID = 7
-
-
-def _wire_step(field: np.ndarray, emitter: tuple[int, int]) -> np.ndarray:
-    """clamp(0.9*old + kernel, 0, 0.9) -- RulesEngine.update_scent, written out."""
-    kernel = RulesEngine._SCENT_KERNEL
-    px, py = emitter
-    out = field.copy()
-    for y in range(GRID):
-        for x in range(GRID):
-            emission = kernel.get((x - px) ** 2 + (y - py) ** 2, 0.0)
-            out[y][x] = min(0.9, max(0.0, 0.9 * out[y][x] + emission))
-    return out
+from tests.helpers_scent_decoder import GRID, _wire_step
 
 
 def test_kernel_ring_at_dist_sq_8_can_never_saturate() -> None:
