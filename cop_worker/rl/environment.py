@@ -1,6 +1,8 @@
 """Self-play RL environment for cop-and-thief training.
 
 Gym-compatible, simultaneous-action, mirrors the commit-reveal protocol.
+Action constants and metadata/observation helpers live in
+``cop_worker.rl.env_meta`` and are re-exported here unchanged.
 """
 
 from __future__ import annotations
@@ -11,21 +13,31 @@ from typing import Any
 
 from cop_worker.board import Board
 from cop_worker.rl.config import RLGameConfig
-from cop_worker.rl.env_helpers import apply_place_action, manhattan_dist, random_starts
+from cop_worker.rl.env_helpers import apply_place_action
+from cop_worker.rl.env_meta import (
+    _PLACE_DELTAS,
+    ACTIONS,
+    COP_ACTIONS,
+    N_ACTIONS,
+    N_COP_ACTIONS,
+    EnvMetaMixin,
+)
 from cop_worker.rl.env_rewards import RewardsMixin
-from cop_worker.rl.observation import cop_observation, thief_observation
 from cop_worker.rules_engine import GameOutcome, RulesEngine
 
 logger = logging.getLogger(__name__)
 
-ACTIONS = ["NORTH", "SOUTH", "EAST", "WEST", "STAY"]
-N_ACTIONS = len(ACTIONS)
-COP_ACTIONS = ["NORTH", "SOUTH", "EAST", "WEST", "STAY", "PLACE_N", "PLACE_S", "PLACE_E", "PLACE_W"]  # noqa: E501
-N_COP_ACTIONS = len(COP_ACTIONS)
-_PLACE_DELTAS = {"PLACE_N", "PLACE_S", "PLACE_E", "PLACE_W"}  # barrier actions set
+__all__ = [
+    "ACTIONS",
+    "COP_ACTIONS",
+    "N_ACTIONS",
+    "N_COP_ACTIONS",
+    "CopThiefEnv",
+    "_PLACE_DELTAS",
+]
 
 
-class CopThiefEnv(RewardsMixin):
+class CopThiefEnv(RewardsMixin, EnvMetaMixin):
     """Simultaneous-action self-play environment (mirrors the commit-reveal protocol)."""
 
     def __init__(self, config: RLGameConfig | None = None):
@@ -35,22 +47,6 @@ class CopThiefEnv(RewardsMixin):
         self._prev_dist: int = 0
         self._cop_barriers_remaining: int = 0
         self._prev_cop_pos: list[int] = [0, 0]
-
-    @property
-    def n_cop_actions(self) -> int:
-        return N_COP_ACTIONS if self.config.cop_barrier_quota > 0 else N_ACTIONS
-
-    @property
-    def n_thief_actions(self) -> int:
-        return N_ACTIONS
-
-    @property
-    def n_cop_channels(self) -> int:
-        return 5 if self.config.cop_barrier_quota > 0 else 4
-
-    @property
-    def n_thief_channels(self) -> int:
-        return 4  # thief: position, cop_last_revealed, barriers, turns_remaining
 
     # --- Gym interface ---
 
@@ -75,12 +71,6 @@ class CopThiefEnv(RewardsMixin):
         self._cop_barriers_remaining = cfg.cop_barrier_quota
         self._prev_cop_pos = list(self._board.cop_position)
         return self._observations()
-
-    def _random_starts(self) -> tuple[list[int], list[int]]:
-        return random_starts(self.config.grid_size, self.config.barriers)
-
-    def _manhattan_dist(self) -> int:
-        return manhattan_dist(self._board)
 
     def step(
         self, cop_action: int, thief_action: int
@@ -142,35 +132,3 @@ class CopThiefEnv(RewardsMixin):
 
         cop_obs, thief_obs = self._observations()
         return cop_obs, thief_obs, cop_reward, thief_reward, done, info
-
-    # --- Metadata helpers ---
-
-    @property
-    def n_actions(self) -> int:
-        return N_ACTIONS
-
-    def observation_shape(self, role: str = "thief") -> tuple[int, int, int]:
-        """(channels, height, width) for building network input layers."""
-        n = self.config.grid_size
-        n_ch = self.n_cop_channels if role == "cop" else self.n_thief_channels
-        return (n_ch, n, n)
-
-    def action_meanings(self) -> list[str]:
-        return list(ACTIONS)
-
-    # --- Internal helpers ---
-
-    def _observations(self) -> tuple[list, list]:
-        cfg = self.config
-        cop_obs = cop_observation(
-            self._board,
-            self._rules,
-            cfg.max_steps,
-            barriers_remaining=self._cop_barriers_remaining,
-            barrier_quota=cfg.cop_barrier_quota,
-        )
-        thief_obs = thief_observation(
-            self._board,
-            cfg.max_steps,
-        )
-        return cop_obs, thief_obs
