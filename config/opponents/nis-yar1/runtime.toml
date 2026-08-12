@@ -7,8 +7,8 @@ our_cop_mcp_url   = "http://62.56.220.143:61224/mcp"
 our_thief_mcp_url = "http://62.56.220.143:61223/mcp"
 
 opponent_group = "nis-yar1"
-opp_cop_url    = "FILL-AT-T"
-opp_thief_url  = "FILL-AT-T"
+opp_cop_url    = "https://nov-handles-wife-tray.trycloudflare.com/mcp"
+opp_thief_url  = "https://hosts-childrens-society-residence.trycloudflare.com/mcp"
 
 [protocol]
 scent_model  = "subtractive_chebyshev_v1"

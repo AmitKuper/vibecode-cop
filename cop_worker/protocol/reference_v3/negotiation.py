@@ -82,7 +82,7 @@ def build_negotiation(
     default_identity = {
         "group_id": group_id,
         "group_name": group_name,
-        "llm_model": "role-specific-recurrent-policy",
+        "llm_model": "none (template hints; pure-Python algorithmic movement)",
         "mcp_servers": {},
         "repos": {},
         "members": [],

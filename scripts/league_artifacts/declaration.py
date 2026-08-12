@@ -45,7 +45,7 @@ def build_declaration(
         "group_name": "vibecode",
         "hardware_spec": hw,
         "hardware_spec_sha256": _sha(hw) if hw else "",
-        "llm_model": "role-specific-recurrent-policy",
+        "llm_model": "none (template hints; pure-Python algorithmic movement)",
         "mcp_servers": OUR_MCP,
         "members": members,
         "repos": OUR_REPOS,

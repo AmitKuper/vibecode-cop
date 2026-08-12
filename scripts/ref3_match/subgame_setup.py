@@ -66,11 +66,12 @@ async def _handshake(
     our_identity = {
         "group_id": group_id,
         "group_name": group_name,
-        # Honest declaration: movement is the trained role-specific RL policy; the verbal layer
-        # is template-generated (no language model is called during play, so no LLM tokens are
-        # consumed). The book forbids letting a model decide movement, and hints provably cannot
-        # affect ours — local_obs_to_tensor never reads last_hint.
-        "llm_model": "none (template hints; role-specific-recurrent-policy movement)",
+        # Honest declaration: the verbal layer is template-generated (no language model is
+        # called during play, so no LLM tokens are consumed). Movement is deliberately
+        # described only as algorithmic Python — the book requires declaring the LLM, not
+        # the movement strategy, and hints provably cannot affect ours (local_obs_to_tensor
+        # never reads last_hint).
+        "llm_model": "none (template hints; pure-Python algorithmic movement)",
         "mcp_servers": OUR_MCP,
         "repos": OUR_REPOS,
         "members": members or [],
