@@ -22,8 +22,14 @@ from ref3_match.wire import _from_wire_cell, _to_wire_cell
 
 
 async def _run_turns(
-    out_session, in_session, *, role: str, sub_game: int,
-    terms: dict, scent_model: str, move_policy: str,
+    out_session,
+    in_session,
+    *,
+    role: str,
+    sub_game: int,
+    terms: dict,
+    scent_model: str,
+    move_policy: str,
 ):
     """Play the sub-game's turns; returns (mover, rl_moves, captured, disputed, caught_cell)."""
     from cop_worker.language.deception_policy import NaturalLanguagePolicy
@@ -53,7 +59,9 @@ async def _run_turns(
                 in_session.turns, step, timeout=_t("turn_poll_sec", 120.0), session=in_session
             )
             opp = _latest_turn(in_session, step)
-            cell, disputed, done = _absorb_inbound_caught(opp, mover, our_last_claim, sub_game, step)
+            cell, disputed, done = _absorb_inbound_caught(
+                opp, mover, our_last_claim, sub_game, step
+            )
             if done:
                 settled_caught_cell, disputed_capture, captured = cell, disputed, True
                 break

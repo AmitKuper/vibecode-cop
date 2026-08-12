@@ -24,9 +24,7 @@ def test_value_training_cli_ddqn_and_qtable(monkeypatch, tmp_path):
 
     monkeypatch.setattr(cli, "train_ddqn", fake_ddqn)
     monkeypatch.setattr(cli, "train_q_table", fake_qtable)
-    monkeypatch.setattr(
-        cli, "evaluate_crossplay", lambda *a, **kw: {"games": 0}
-    )
+    monkeypatch.setattr(cli, "evaluate_crossplay", lambda *a, **kw: {"games": 0})
     monkeypatch.setattr(cli, "evaluate_families", lambda *a, **kw: {"role": "cop"})
     monkeypatch.setattr(cli, "load_dqn_policy", lambda *a: object())
     import torch
@@ -68,9 +66,7 @@ def test_tournaments_run_tiny_scripted_matchup():
     thief = ScriptedResearchPolicy("thief", "belief_pursuit_evasion")
     cross = evaluate_crossplay(cop, thief, series=1, seed=7, random_start=False)
     assert cross["games"] == 6 and "cop" in cross and "thief" in cross
-    fam = evaluate_families(
-        cop, "cop", thief, series_per_family=1, seed=7, random_start=False
-    )
+    fam = evaluate_families(cop, "cop", thief, series_per_family=1, seed=7, random_start=False)
     assert fam["role"] == "cop" and fam["held_out_series"] > 0
 
 

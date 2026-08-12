@@ -88,9 +88,7 @@ def test_loader_wraps_only_live_belief_artifacts(monkeypatch, tmp_path):
             return True, ""
 
     fake_inner = _Inner()
-    monkeypatch.setattr(
-        "cop_worker.rl.model_schema.load_manifest", lambda p: {"cop": _FakeEntry()}
-    )
+    monkeypatch.setattr("cop_worker.rl.model_schema.load_manifest", lambda p: {"cop": _FakeEntry()})
     monkeypatch.setattr(
         "cop_worker.rl.recurrent_policy.load_recurrent_policy", lambda p, r: fake_inner
     )

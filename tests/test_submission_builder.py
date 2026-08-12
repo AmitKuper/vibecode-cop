@@ -40,10 +40,14 @@ def _write_fixture_results(tmp_path):
                 {
                     "final_result": {"games_played_including_this": {name: 2, "vibecode": 1}},
                     "sub_games": [
-                        {"started_at": f"2026-08-{day}T19:14:06+00:00",
-                         "ended_at": f"2026-08-{day}T19:15:00+00:00"},
-                        {"started_at": f"2026-08-{day}T19:15:30+00:00",
-                         "ended_at": f"2026-08-{day}T19:16:13+00:00"},
+                        {
+                            "started_at": f"2026-08-{day}T19:14:06+00:00",
+                            "ended_at": f"2026-08-{day}T19:15:00+00:00",
+                        },
+                        {
+                            "started_at": f"2026-08-{day}T19:15:30+00:00",
+                            "ended_at": f"2026-08-{day}T19:16:13+00:00",
+                        },
                     ],
                 }
             ),
@@ -119,10 +123,20 @@ def test_build_submission_fills_template(tmp_path):
                 "cop_repo": "https://example/cop",
                 "thief_repo": "https://example/thief",
                 "agent_email": "agent@example.com",
-                "student1": {"id_card": "1", "first_en": "A", "last_en": "K",
-                             "first_he": "א", "last_he": "ק"},
-                "student2": {"id_card": "2", "first_en": "R", "last_en": "M",
-                             "first_he": "ר", "last_he": "מ"},
+                "student1": {
+                    "id_card": "1",
+                    "first_en": "A",
+                    "last_en": "K",
+                    "first_he": "א",
+                    "last_he": "ק",
+                },
+                "student2": {
+                    "id_card": "2",
+                    "first_en": "R",
+                    "last_en": "M",
+                    "first_he": "ר",
+                    "last_he": "מ",
+                },
                 "bonus_eligibility": "No",
                 "opponent_agent_emails": {"oppa": "a@x.com", "oppb": "b@x.com"},
             }

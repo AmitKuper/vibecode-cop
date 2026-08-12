@@ -107,9 +107,7 @@ def test_reset_clears_the_engine_and_wrap_flag_passthrough():
     net = _Net()
     policy = wrap_with_search(net, "police", {"max_steps": 35}, belief_mode=True)
     assert policy.belief_mode is True and policy.role == "cop"
-    policy.select_action(
-        _obs(_book_blanket(3, 3)), BeliefState.uniform(N, step=1), ["N", "STAY"]
-    )
+    policy.select_action(_obs(_book_blanket(3, 3)), BeliefState.uniform(N, step=1), ["N", "STAY"])
     assert policy._belief_engine is not None
     policy.reset()
     assert policy._belief_engine is None and net.resets == 1

@@ -17,9 +17,7 @@ from tools.pdf_parser.writer import CHARS_PER_LINE, LINES_PER_PAGE
 
 def test_write_then_read_round_trip(tmp_path):
     target = tmp_path / "report.pdf"
-    written = write_text_pdf(
-        target, "Match Report", ["Cop won 90-30.", "Audits: 6/6 Verified OK."]
-    )
+    written = write_text_pdf(target, "Match Report", ["Cop won 90-30.", "Audits: 6/6 Verified OK."])
     assert written == target and target.stat().st_size > 0
     pages = read_pdf_text(target)
     assert len(pages) == 1

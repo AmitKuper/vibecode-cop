@@ -28,9 +28,7 @@ async def _run_all(our_port: int, sparring_port: int, kit: Path, n_sub_games: in
 
     # Inbound session — populated when sparring calls OUR tools
     in_session = ReferenceV3Session(
-        lambda t, p: (_ for _ in ()).throw(
-            RuntimeError(f"outbound not configured in server ({t})")
-        )
+        lambda t, p: (_ for _ in ()).throw(RuntimeError(f"outbound not configured in server ({t})"))
     )
 
     # Start our SSE server as a background task

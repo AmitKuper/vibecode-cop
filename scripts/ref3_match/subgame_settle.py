@@ -85,7 +85,12 @@ async def _settle(
         }
         for rec in (their_audit.get("records") or [])
     ]
-    if captured and role == "police" and disputed_capture is None and settled_caught_cell is not None:
+    if (
+        captured
+        and role == "police"
+        and disputed_capture is None
+        and settled_caught_cell is not None
+    ):
         disputed_capture = _refine_disputed_trail(opp_records, settled_caught_cell, sub_game)
     # Mutual step-0 audit: their sealed step_zero must declare the same github_commit as
     # their negotiate identity (else they equivocated between handshake and audit).

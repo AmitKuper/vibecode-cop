@@ -133,7 +133,9 @@ async def _play_match(
                         f"[match] sg{sg} failed "
                         f"({type(exc).__name__}: {str(exc)[:110]}) — continuing"
                     )
-                    results.append(_error_row(sg, our_role, f"{type(exc).__name__}: {str(exc)[:200]}"))
+                    results.append(
+                        _error_row(sg, our_role, f"{type(exc).__name__}: {str(exc)[:200]}")
+                    )
             sg += 1
             hold_deadline = None
     finally:

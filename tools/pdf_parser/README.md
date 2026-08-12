@@ -13,11 +13,11 @@ briefs) and producing report/evidence exports.
 
 ```python
 from tools.pdf_parser import (
-    read_pdf_text,      # (path, page=None) -> list[str], one string per page
+    read_pdf_text,  # (path, page=None) -> list[str], one string per page
     read_pdf_metadata,  # (path) -> dict incl. "pages"
-    search_pdf,         # (path, needle, ignore_case=True) -> [{page, line_number, line}]
-    write_text_pdf,     # (path, title, paragraphs) -> Path
-    PdfParserError,     # raised for missing/garbage files, bad pages, empty search
+    search_pdf,  # (path, needle, ignore_case=True) -> [{page, line_number, line}]
+    write_text_pdf,  # (path, title, paragraphs) -> Path
+    PdfParserError,  # raised for missing/garbage files, bad pages, empty search
 )
 
 write_text_pdf("out/report.pdf", "Match Report", ["Cop won 90-30.", "Audits 6/6."])

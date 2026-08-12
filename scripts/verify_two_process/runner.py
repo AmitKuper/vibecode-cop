@@ -14,9 +14,7 @@ from verify_two_process.verify import _verify_artifacts
 
 # The original scripts/verify_local_two_process.py docstring — kept verbatim so
 # the argparse --help description is byte-identical to the pre-split script.
-_DESCRIPTION = (
-    "Run and independently verify the real clean-tree two-process counted series."
-)
+_DESCRIPTION = "Run and independently verify the real clean-tree two-process counted series."
 
 
 def run(output: Path) -> dict:

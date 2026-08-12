@@ -42,7 +42,14 @@ def _run_gamelet(
             game_id, step, "cop", cop_state, cop_move, "cop hint", "truth", gamelet, cop_nonce
         )
         thief_commit, _ = create_commitment(
-            game_id, step, "thief", thief_state, thief_move, "thief hint", "truth", gamelet,
+            game_id,
+            step,
+            "thief",
+            thief_state,
+            thief_move,
+            "thief hint",
+            "truth",
+            gamelet,
             thief_nonce,
         )
         before_root = canonical_domain_state_root(state, config_hash)
