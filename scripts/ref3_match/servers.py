@@ -1,4 +1,4 @@
-"""Our serving side: port preflight, both role endpoints, the outbound gateway caller."""
+"""Serving side: port preflight, role endpoints, the outbound gateway caller."""
 
 from __future__ import annotations
 
@@ -11,24 +11,18 @@ from ref3_match.runtime_cfg import _t
 
 
 def _preflight_ports(our_cop_port: int, our_thief_port: int) -> None:
-    """Port-free preflight: a stray process from an earlier attempt holding our port would
-    silently swallow the peer's traffic (our run_async fails in its task while the stray
-    socket answers _wait_port). Refuse loudly instead — WARNINGS §5.
+    """Port-free preflight: a stray process holding our port would silently swallow
+    the peer's traffic. Refuse loudly instead — WARNINGS §5.
     """
     for _pname, _p in (("cop", our_cop_port), ("thief", our_thief_port)):
         if _check_port("127.0.0.1", _p):
-            raise RuntimeError(
-                f"port {_p} (our {_pname} endpoint) is already in use — a stray process "
-                f"from a previous attempt would swallow this match; kill it first"
-            )
+            raise RuntimeError(f"port {_p} (our {_pname} endpoint) is already in use; kill it")
 
 
 def _gateway_caller(client):
-    """At-least-once tool caller with the 10s cap, routed through the central outbound
-    gateway (rate pacing + bounded retries). Retries are dedup-safe by design: turns
-    dedupe on commit, duplicate greetings are drained, and a re-sent audit re-carries
-    identical records (imreeyal §3.15 tolerates duplicates; equivocation, not
-    repetition, is the refusal).
+    """At-least-once tool caller through the central outbound gateway (pacing +
+    bounded retries). Dedup-safe: turns dedupe on commit, greetings are drained,
+    a re-sent audit re-carries identical records (equivocation is the refusal).
     """
 
     async def _call(tool: str, params: dict) -> dict:
@@ -54,33 +48,33 @@ def _gateway_caller(client):
     return _call
 
 
-async def _start_server_one(host: str, port: int, role_name: str):
+async def _start_server_one(host: str, port: int, role_name: str, session=None):
     """Serve ONE reference-v3 role endpoint; returns (session, task).
 
-    The split architecture's building block: a role-worker process calls this for
-    exactly its own role, so cop code and thief code live in separate OS processes
-    (Appendix E rule 1). Inline mode composes two of these in one process.
+    One role per OS process (rule 1); inline mode composes two in one process.
+    Passing an existing ``session`` REBUILDS the HTTP stack around it (door_guard
+    recovery for a wedged streamable-http layer); banked greetings survive.
     """
     from fastmcp import FastMCP
 
     from cop_worker.protocol.reference_v3 import register_reference_v3_tools
 
-    _Session = _wire_session_class()
-    sess = _Session(lambda t, p: (_ for _ in ()).throw(RuntimeError(f"no outbound ({t})")))
+    if session is None:
+        _Session = _wire_session_class()
+        session = _Session(lambda t, p: (_ for _ in ()).throw(RuntimeError(f"no outbound ({t})")))
     app = FastMCP(name=f"vibecode-{role_name}")
-    register_reference_v3_tools(app, sess)
+    register_reference_v3_tools(app, session)
     task = asyncio.create_task(
         app.run_async(transport="http", host=host, port=port, show_banner=False)
     )
     await _wait_port("127.0.0.1", port, timeout=15.0)
-    return sess, task
+    return session, task
 
 
 async def _start_servers(host: str, our_cop_port: int, our_thief_port: int):
     """Serve both endpoints in THIS process (legacy inline mode).
 
-    Returns (sessions, tasks): sessions by role name, and the uvicorn tasks the
-    caller must cancel at teardown.
+    Returns (sessions, tasks); the caller cancels the tasks at teardown.
     """
     sessions, tasks = {}, []
     for role_name, port in (("police", our_cop_port), ("thief", our_thief_port)):
@@ -114,10 +108,8 @@ async def _dial_and_play(
     from ref3_match.subgame import _play_subgame
 
     transport = StreamableHttpTransport(mcp_url)
-    # Per-call cap STRICTLY below the signed response_timeout_sec (30): the MCP
-    # SDK's unset default leaves a 300s read ceiling, so one delivered-but-
-    # unanswered push could breach a signed deadline while every call "looks
-    # fine" (imreeyal §3.5). 10s matches the proven league configuration.
+    # Per-call cap STRICTLY below the signed response_timeout_sec (30); the SDK's
+    # unset default (300s read ceiling) could breach a signed deadline (imreeyal §3.5).
     call_cap = _t("mcp_call_sec", 10.0)
     if call_cap >= float(terms.get("response_timeout_sec", 30) or 30):
         raise RuntimeError(

@@ -1,10 +1,9 @@
 """The series loop on the SPLIT architecture: three processes, same semantics.
 
-This orchestrator spawns one cop worker and one thief worker (Appendix E rules
-1-3: separate role processes, orchestrator as single entry point) and preserves
-series.py's exact conventions: role alternation, the index-hold convergence
-rule, settled-row discipline, and teardown-noise absorption. It holds no game
-secrets — nonces, commits and movers live inside the role workers.
+Spawns one cop worker and one thief worker (Appendix E rules 1-3) and preserves
+series.py's conventions: role alternation, index-hold convergence, settled-row
+discipline, teardown-noise absorption. Holds no game secrets — nonces, commits
+and movers live inside the role workers.
 """
 
 from __future__ import annotations
@@ -55,7 +54,7 @@ async def _play_match_split(
         "scent_model": scent_model,
         "move_policy": move_policy,
     }
-    from ref3_match.worker_proc import role_init  # optional [network] gui_*_port -> workers
+    from ref3_match.worker_proc import role_init
 
     net = runtime_snapshot().get("network", {})
     workers = {
@@ -130,6 +129,7 @@ async def _play_match_split(
                     await asyncio.sleep(2.0)
                     continue
                 else:
+                    print(f"[match] sg{sg} hold budget exhausted — recording, continuing")
                     results.append(
                         _error_row(sg, our_role, f"no_game_happened: {frame.get('error')}")
                     )

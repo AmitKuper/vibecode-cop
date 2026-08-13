@@ -100,6 +100,7 @@ async def _main() -> int:
     sys.stdout = sys.stderr  # play-path prints become worker logs, never protocol frames
 
     init = json.loads(await _read_line())
+    from ref3_match.door_guard import ensure_door_answers
     from ref3_match.gui_bridge import maybe_start_gui, stop_gui
     from ref3_match.runtime_cfg import apply_runtime_config
     from ref3_match.servers import _start_server_one
@@ -123,6 +124,9 @@ async def _main() -> int:
                 _emit({"type": "bye"})
                 return 0
             if cmd.get("type") == "play":
+                # Self-heal a wedged inbound door before playing (same session,
+                # fresh HTTP stack — banked greetings survive). See door_guard.
+                session, server_task = await ensure_door_answers(role, init, session, server_task)
                 _emit(await _play_window(cmd, session, init))
             elif cmd.get("type") == "drain":
                 _emit({"type": "strays", "stray_greetings": _drain_strays(session)})
