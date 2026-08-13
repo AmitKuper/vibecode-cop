@@ -1,9 +1,11 @@
 {
-  "version": "3.0.0",
-  "_doc": "Outbound-call pacing for cop_worker.net_gateway.NetGateway. capacity = token-bucket burst size; refill_per_s = sustained rate. The mcp kind mirrors the signed rate_limiter_gatekeeper terms (30/min) with burst headroom. Loaded at match start; code defaults are identical so a missing file changes nothing.",
+  "version": "4.0.0",
+  "_doc": "Outbound-call pacing for cop_worker.net_gateway.NetGateway and the Gmail Gatekeeper. capacity = token-bucket burst size; refill_per_s = sustained rate. Every kind honors the signed rate_limiter_gatekeeper terms: 30/min sustained (refill 0.5/s) with burst 30. queue_depth bounds pending outbound calls (signed minimum 100). Loaded at match start; code defaults are identical so a missing file changes nothing.",
+  "queue_depth": 100,
   "kinds": {
-    "mcp": { "capacity": 30, "refill_per_s": 2.0 },
+    "mcp": { "capacity": 30, "refill_per_s": 0.5 },
     "llm": { "capacity": 10, "refill_per_s": 0.5 },
-    "http": { "capacity": 30, "refill_per_s": 2.0 }
+    "http": { "capacity": 30, "refill_per_s": 0.5 },
+    "gmail": { "capacity": 30, "refill_per_s": 0.5 }
   }
 }

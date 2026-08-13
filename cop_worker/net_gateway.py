@@ -27,11 +27,20 @@ logger = logging.getLogger(__name__)
 
 #: Default pacing per call kind; override via ``configure()`` from runtime config.
 DEFAULT_RATES: dict[str, tuple[int, float]] = {
-    # kind: (bucket capacity, refill per second)
-    "mcp": (30, 2.0),  # matches the signed rate_limiter_gatekeeper 30/min with burst
+    # kind: (bucket capacity, refill per second). 0.5/s = the signed
+    # rate_limiter_gatekeeper 30/min SUSTAINED cap; capacity 30 is burst headroom.
+    "mcp": (30, 0.5),
     "llm": (10, 0.5),
-    "http": (30, 2.0),
+    "http": (30, 0.5),
+    "gmail": (30, 0.5),
 }
+
+#: Signed gatekeeper minimum: bound on outbound calls waiting for a bucket token.
+DEFAULT_QUEUE_DEPTH = 100
+
+
+class GatewayQueueFullError(RuntimeError):
+    """More outbound calls are pending than the signed queue depth allows."""
 
 
 @dataclass
@@ -58,10 +67,16 @@ class _Bucket:
 class NetGateway:
     """Rate-limited, retrying executor for outbound async calls."""
 
-    def __init__(self, rates: dict[str, tuple[int, float]] | None = None) -> None:
+    def __init__(
+        self,
+        rates: dict[str, tuple[int, float]] | None = None,
+        queue_depth: int = DEFAULT_QUEUE_DEPTH,
+    ) -> None:
         self._buckets = {
             kind: _Bucket(cap, refill) for kind, (cap, refill) in (rates or DEFAULT_RATES).items()
         }
+        self._queue_depth = int(queue_depth)
+        self._pending = 0
 
     def configure(self, kind: str, capacity: int, refill_per_s: float) -> None:
         self._buckets[kind] = _Bucket(capacity, refill_per_s)
@@ -84,25 +99,33 @@ class NetGateway:
         bucket = self._buckets.get(kind)
         if bucket is None:
             raise KeyError(f"unknown gateway kind {kind!r}; configure() it first")
-        delay = backoff_s
-        for attempt in range(1, max(1, retries) + 1):
-            await bucket.take()
-            try:
-                return await fn()
-            except Exception as exc:
-                if attempt == max(1, retries):
-                    raise
-                logger.warning(
-                    "gateway %s%s attempt %d/%d failed (%s); retrying in %.1fs",
-                    kind,
-                    f":{label}" if label else "",
-                    attempt,
-                    retries,
-                    type(exc).__name__,
-                    delay,
-                )
-                await asyncio.sleep(delay)
-                delay = min(delay * 2, max_backoff_s)
+        if self._pending >= self._queue_depth:
+            raise GatewayQueueFullError(
+                f"{self._pending} outbound calls pending >= queue depth {self._queue_depth}"
+            )
+        self._pending += 1
+        try:
+            delay = backoff_s
+            for attempt in range(1, max(1, retries) + 1):
+                await bucket.take()
+                try:
+                    return await fn()
+                except Exception as exc:
+                    if attempt == max(1, retries):
+                        raise
+                    logger.warning(
+                        "gateway %s%s attempt %d/%d failed (%s); retrying in %.1fs",
+                        kind,
+                        f":{label}" if label else "",
+                        attempt,
+                        retries,
+                        type(exc).__name__,
+                        delay,
+                    )
+                    await asyncio.sleep(delay)
+                    delay = min(delay * 2, max_backoff_s)
+        finally:
+            self._pending -= 1
 
 
 def load_rates(path: str | None = None) -> dict[str, tuple[int, float]]:
@@ -127,5 +150,19 @@ def load_rates(path: str | None = None) -> dict[str, tuple[int, float]]:
         return dict(DEFAULT_RATES)
 
 
+def load_queue_depth(path: str | None = None) -> int:
+    """Read the signed pending-call bound from ``config/rate_limits.json``."""
+    import json
+    from pathlib import Path
+
+    default = Path(__file__).resolve().parents[1] / "config" / "rate_limits.json"
+    candidate = Path(path) if path else default
+    try:
+        doc = json.loads(candidate.read_text(encoding="utf-8"))
+        return int(doc.get("queue_depth", DEFAULT_QUEUE_DEPTH))
+    except (OSError, TypeError, ValueError):
+        return DEFAULT_QUEUE_DEPTH
+
+
 #: Process-wide instance; the match runner and hint generator share pacing state.
-GATEWAY = NetGateway(load_rates())
+GATEWAY = NetGateway(load_rates(), queue_depth=load_queue_depth())

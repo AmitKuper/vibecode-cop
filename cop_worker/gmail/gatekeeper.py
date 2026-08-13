@@ -6,14 +6,15 @@ from collections.abc import Callable
 
 from cop_worker.gmail.circuit_breaker import CircuitBreaker
 from cop_worker.gmail.dos_detector import DosDetector
-from cop_worker.gmail.token_bucket import TokenBucket
+from cop_worker.gmail.token_bucket import TokenBucket, load_gmail_rate
 
 RECIPIENT = "agentsorch@gmail.com"
 DAILY_QUOTA = 20
 MAX_CONCURRENT = 2
 MIN_INTERVAL_S = 5.0
 MAX_RETRIES = 3
-MIN_RETRY_DELAY_S = 2.0
+# Signed rate_limiter_gatekeeper terms: retry backoff minimum is 5 seconds.
+MIN_RETRY_DELAY_S = 5.0
 
 
 class GatekeeperError(ValueError):
@@ -27,12 +28,18 @@ class Gatekeeper:
     def __init__(
         self,
         gmail_sender: Callable,
-        capacity: float = 10.0,
-        refill_rate: float = 0.1,
+        capacity: float | None = None,
+        refill_rate: float | None = None,
     ):
         # gmail_sender: Callable(to, subject, body, attachments) -> message_id
+        # Pacing is config-driven (config/rate_limits.json [kinds.gmail]);
+        # explicit ctor args override for tests.
+        cfg_capacity, cfg_refill = load_gmail_rate()
         self._sender = gmail_sender
-        self._bucket = TokenBucket(capacity, refill_rate)
+        self._bucket = TokenBucket(
+            cfg_capacity if capacity is None else capacity,
+            cfg_refill if refill_rate is None else refill_rate,
+        )
         self._dos = DosDetector()
         self._cb = CircuitBreaker()
         self._semaphore = threading.Semaphore(MAX_CONCURRENT)
@@ -48,9 +55,11 @@ class Gatekeeper:
         subject: str,
         body: str,
         attachments: list | None = None,
+        recipient: str | None = None,
     ) -> str:
         """Send email through full pipeline. Returns message_id."""
         attachments = attachments or []
+        recipient = recipient or RECIPIENT
 
         # 1. Schema validation: body must be JSON result, not plain text
         if not body.strip().startswith("{"):
@@ -90,7 +99,7 @@ class Gatekeeper:
             last_err = None
             for attempt in range(MAX_RETRIES):
                 try:
-                    message_id = self._sender(RECIPIENT, subject, body, attachments)
+                    message_id = self._sender(recipient, subject, body, attachments)
                     self._cb.on_success()
                     with self._lock:
                         self._idempotency[idempotency_key] = message_id

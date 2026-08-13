@@ -52,16 +52,44 @@ def update_counted_ledger(
     return ledger
 
 
+_GATEKEEPERS: dict = {}  # per token_path: idempotency + pacing survive across calls
+
+
+def _mime_sender(token_path: Path):
+    """Adapter matching the Gatekeeper's sender contract: build MIME, send, return id."""
+
+    def _send(to: str, subject: str, body: str, attachments: list) -> str:
+        from email.mime.application import MIMEApplication
+        from email.mime.multipart import MIMEMultipart
+        from email.mime.text import MIMEText
+
+        from league_manager.reports.gmail_send import gmail_api_send, load_oauth_credentials
+
+        msg = MIMEMultipart()
+        msg["To"] = to
+        msg["Subject"] = subject
+        msg.attach(MIMEText(body, "plain", "utf-8"))
+        for filename, payload in attachments:
+            att = MIMEApplication(payload, _subtype="json")
+            att.add_header("Content-Disposition", "attachment", filename=filename)
+            msg.attach(att)
+        return gmail_api_send(msg, load_oauth_credentials(token_path))
+
+    return _send
+
+
 def email_result(result: dict, recipient: str, filename: str, token_path: Path) -> str:
-    """Email the result: pretty-printed body + one attachment (same bytes), like anrbj666's.
+    """Email the result THROUGH the Gmail Gatekeeper (token bucket, DOS detector,
+    quota, circuit breaker, retries — Appendix E rules 28-29), body + attachment
+    carrying the same bytes, like anrbj666's.
 
     Subject: 'P2P league SERIES result - <game_id> - winner=<w> - <a>:<sa> <b>:<sb>'.
     """
-    from email.mime.application import MIMEApplication
-    from email.mime.multipart import MIMEMultipart
-    from email.mime.text import MIMEText
+    from cop_worker.gmail.gatekeeper import Gatekeeper
 
-    from league_manager.reports.gmail_send import gmail_api_send, load_oauth_credentials
+    gate = _GATEKEEPERS.get(str(token_path))
+    if gate is None:
+        gate = _GATEKEEPERS[str(token_path)] = Gatekeeper(_mime_sender(token_path))
 
     body = json.dumps(result, indent=2, ensure_ascii=False)
     fr = result["final_result"]
@@ -71,11 +99,11 @@ def email_result(result: dict, recipient: str, filename: str, token_path: Path) 
         f"P2P league SERIES result - {result['game_id']} - "
         f"winner={fr['winner_group']} - {score_str}"
     )
-    msg = MIMEMultipart()
-    msg["To"] = recipient
-    msg["Subject"] = subject
-    msg.attach(MIMEText(body, "plain", "utf-8"))
-    att = MIMEApplication(body.encode("utf-8"), _subtype="json")
-    att.add_header("Content-Disposition", "attachment", filename=filename)
-    msg.attach(att)
-    return gmail_api_send(msg, load_oauth_credentials(token_path))
+    return gate.send(
+        idempotency_key=f"{result['game_id']}:{filename}:{recipient}",
+        game_id=result["game_id"],
+        subject=subject,
+        body=body,
+        attachments=[(filename, body.encode("utf-8"))],
+        recipient=recipient,
+    )

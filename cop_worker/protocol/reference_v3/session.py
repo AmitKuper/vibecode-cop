@@ -89,14 +89,27 @@ class ReferenceV3Session:
 
 
 def register_reference_v3_tools(mcp, session: ReferenceV3Session) -> None:
-    """Expose the exact non-blocking FastMCP surface used by the unmodified league kit."""
+    """Expose the exact non-blocking FastMCP surface used by the unmodified league kit.
+
+    Every tool sits behind an :class:`InboundGuard` (rule 29): a flooding peer
+    gets a structured refusal, never a session-state mutation or a crash.
+    """
     import logging as _logging
 
+    from cop_worker.protocol.reference_v3.inbound_guard import InboundGuard
+
     _log = _logging.getLogger(__name__)
+    _guard = InboundGuard()
+
+    def _flooded(tool: str) -> dict:
+        _log.warning("INBOUND GUARD refused %s (%d refusals so far)", tool, _guard.refused)
+        return {"ok": False, "error": "rate_limited", "tool": tool}
 
     @mcp.tool
     def negotiate(message: dict) -> dict:
         """Receive the opponent's signed game agreement."""
+        if not _guard.allow():
+            return _flooded("negotiate")
         _log.info(
             "TOOL_CALLED negotiate keys=%s",
             list(message.keys()) if isinstance(message, dict) else type(message),
@@ -107,6 +120,8 @@ def register_reference_v3_tools(mcp, session: ReferenceV3Session) -> None:
     @mcp.tool
     def receive_turn(message: dict) -> dict:
         """Receive the opponent's turn message."""
+        if not _guard.allow():
+            return _flooded("receive_turn")
         _log.info(
             "TOOL_CALLED receive_turn keys=%s",
             list(message.keys()) if isinstance(message, dict) else type(message),
@@ -117,6 +132,8 @@ def register_reference_v3_tools(mcp, session: ReferenceV3Session) -> None:
     @mcp.tool
     def submit_audit(payload: dict) -> dict:
         """Receive the opponent's end-of-game audit reveal (records + nonces)."""
+        if not _guard.allow():
+            return _flooded("submit_audit")
         _log.info(
             "TOOL_CALLED submit_audit keys=%s",
             list(payload.keys()) if isinstance(payload, dict) else type(payload),
@@ -127,6 +144,8 @@ def register_reference_v3_tools(mcp, session: ReferenceV3Session) -> None:
     @mcp.tool
     def receive_control(message: dict) -> dict:
         """Receive an opponent control signal (enable / status / restart / quit)."""
+        if not _guard.allow():
+            return _flooded("receive_control")
         _log.info(
             "TOOL_CALLED receive_control session_id=%s controls_before=%d keys=%s",
             id(session),

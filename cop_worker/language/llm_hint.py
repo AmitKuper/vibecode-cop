@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+from cop_worker.language import token_ledger  # noqa: E402
 from cop_worker.language.llm_prompts import (  # noqa: E402,F401  (re-exports)
     _DIRECTION_NAMES,
     _OPPOSITES,
@@ -41,6 +42,9 @@ def _record_tokens(prompt: int, completion: int) -> None:
     _TOKEN_METER["prompt"] += int(prompt)
     _TOKEN_METER["completion"] += int(completion)
     _TOKEN_METER["total"] += int(prompt) + int(completion)
+    # Real usage only: called solely when a backend response carried usage counts.
+    # The template path never reaches here, so the ledger stays 0 with the LLM off.
+    token_ledger.record(int(prompt), int(completion))
 
 
 class LLMHintGenerator:

@@ -1,7 +1,32 @@
 """Token bucket for rate limiting."""
 
+import json
 import threading
 import time
+from pathlib import Path
+
+# Historical code defaults for Gatekeeper pacing. config/rate_limits.json, when
+# present, overrides them; a missing or malformed file changes nothing.
+DEFAULT_CAPACITY = 10.0
+DEFAULT_REFILL_PER_S = 0.1
+
+_RATE_LIMITS_PATH = Path(__file__).resolve().parents[2] / "config" / "rate_limits.json"
+
+
+def load_gmail_rate(path: str | Path | None = None) -> tuple[float, float]:
+    """Read Gmail pacing from ``config/rate_limits.json`` (externalized, versioned).
+
+    Returns ``(capacity, refill_per_s)``. Falls back to the code defaults when
+    the file is absent or malformed — configuration is the override mechanism,
+    never a behavioral dependency.
+    """
+    candidate = Path(path) if path else _RATE_LIMITS_PATH
+    try:
+        doc = json.loads(candidate.read_text(encoding="utf-8"))
+        spec = doc["kinds"]["gmail"]
+        return float(spec["capacity"]), float(spec["refill_per_s"])
+    except (OSError, KeyError, TypeError, ValueError):
+        return (DEFAULT_CAPACITY, DEFAULT_REFILL_PER_S)
 
 
 class TokenBucket:

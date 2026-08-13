@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from cop_worker.language import token_ledger
 from league_artifacts.core import load_constitution
 
 
@@ -21,7 +22,11 @@ def score_series(
     games_played_including_this increments by 1 ONLY for a counted game (rules 37-38).
     """
     rows, tot_us, tot_them, won_us, won_them = [], 0, 0, 0, 0
-    for sg in sub_games:
+    # OUR real LLM spend from the process-wide ledger (template hints record nothing,
+    # so this is 0 with the LLM off — byte-identical to the old hardcoded zeros).
+    # The opponent's spend is unknowable from our side and stays 0.
+    our_gamelet_tokens = token_ledger.gamelet_history()
+    for idx, sg in enumerate(sub_games):
         n, role = sg["sub_game"], sg["role"]
         cop_s, thief_s = (20, 5) if sg.get("outcome") == "capture" else (5, 10)
         us, them = (cop_s, thief_s) if role == "police" else (thief_s, cop_s)
@@ -43,7 +48,10 @@ def score_series(
                     "vibecode": sg.get("our_commit", "unknown"),
                     opponent: opp_commit,
                 },
-                "tokens": {"vibecode": 0, opponent: 0},
+                "tokens": {
+                    "vibecode": our_gamelet_tokens[idx] if idx < len(our_gamelet_tokens) else 0,
+                    opponent: 0,
+                },
                 "score": {"vibecode": us, opponent: them},
                 "log_files": {
                     "vibecode": f"log_{game_id}_g{n:02d}.json",
@@ -83,7 +91,7 @@ def score_series(
         # tie_rule series_add is DECLARED in the written pairing agreement, never as an
         # extra result field — the grader's template is the authority (imreeyal §3.17).
         "series_tie": series_tie,
-        "tokens_total_series": {"vibecode": 0, opponent: 0},
+        "tokens_total_series": {"vibecode": token_ledger.series_total(), opponent: 0},
         "games_played_including_this": {"vibecode": our_played + inc, opponent: opp_played + inc},
         "first_meeting_between_groups": True,
         "diversity_reward_applied": diversity,
