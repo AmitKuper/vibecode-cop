@@ -13,12 +13,17 @@ from ref3_match.match_log import _install_match_log
 from ref3_match.report_guard import _emit_artifacts
 from ref3_match.runtime_cfg import KIT_ROOT
 from ref3_match.selftest import _self_test
+from ref3_match.selftest_split import _self_test_split
 from ref3_match.series import _play_match
+from ref3_match.series_split import _play_match_split
 
 
 def _build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description="Reference-v3 match orchestrator (RL policy moves)")
     p.add_argument("--self-test", action="store_true", help="Play vs the local sparring peer")
+    # Process architecture: split = one OS process per role + this orchestrator
+    # (Appendix E rules 1-3); inline = the legacy single-process runtime.
+    p.add_argument("--arch", choices=["split", "inline"], default="split")
     p.add_argument("--role", choices=["police", "thief"], default="police")
     p.add_argument("--sub-games", type=int, default=1)
     p.add_argument("--our-port", type=int, default=5011)
@@ -80,8 +85,9 @@ def main() -> int:
             return 2
         _install_match_log(args.opponent_group or "unknown")
         members = [m.strip() for m in args.members.split(",") if m.strip()]
+        play = _play_match_split if args.arch == "split" else _play_match
         result = asyncio.run(
-            _play_match(
+            play(
                 opp_cop_url=args.opp_cop_url,
                 opp_thief_url=args.opp_thief_url,
                 our_cop_port=args.our_cop_port,
@@ -109,8 +115,9 @@ def main() -> int:
         print(f"ERROR: not a league-protocol clone: {kit}")
         return 1
     _install_match_log("selftest")
+    self_test = _self_test_split if args.arch == "split" else _self_test
     result = asyncio.run(
-        _self_test(
+        self_test(
             args.role,
             args.sub_games,
             args.our_port,
@@ -123,7 +130,7 @@ def main() -> int:
     print("\n[match] RESULT:", _json.dumps(result, indent=2))
     oks = [sg for sg in result["sub_games"] if sg.get("audit_ok")]
     sgs = result["sub_games"]
-    rl_ok = all(sg["distinct_moves"] > 1 for sg in sgs) if sgs else False
+    rl_ok = all(sg.get("distinct_moves", 0) > 1 for sg in sgs) if sgs else False
     print(
         f"[match] STATUS: audits {len(oks)}/{len(result['sub_games'])} ok; RL-varied-moves={rl_ok}"
     )

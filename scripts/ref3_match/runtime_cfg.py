@@ -21,6 +21,11 @@ def _t(key: str, default):
     return _RT.get("timeouts", {}).get(key, default)
 
 
+def runtime_snapshot() -> dict:
+    """The applied runtime config, for handing to a spawned role-worker process."""
+    return dict(_RT)
+
+
 def apply_runtime_config(runtime: dict) -> None:
     """Install a loaded runtime.toml (from config_loader) for the helpers below to read."""
     global _RT

@@ -7,6 +7,8 @@ Mixed into :class:`ref3_match.mover.RLMover`. Requires the host to provide
 
 from __future__ import annotations
 
+from ref3_match.gui_bridge import publish_view
+
 
 class MoverStateMixin:
     def _opponent_scent_grid(self, smell_grid: dict) -> list[list[float]]:
@@ -20,6 +22,8 @@ class MoverStateMixin:
                 continue
             if 0 <= r < n and 0 <= c < n:
                 g[r][c] = float(val)
+        # Optional live GUI (guarded no-op when none is registered; never affects play).
+        publish_view(self, g)
         return g
 
     def observe_peer_barrier(self, cell) -> None:

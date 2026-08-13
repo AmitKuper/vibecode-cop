@@ -54,30 +54,39 @@ def _gateway_caller(client):
     return _call
 
 
-async def _start_servers(host: str, our_cop_port: int, our_thief_port: int):
-    """Serve both our reference-v3 endpoints (cop + thief), one inbound session each.
+async def _start_server_one(host: str, port: int, role_name: str):
+    """Serve ONE reference-v3 role endpoint; returns (session, task).
 
-    Returns (sessions, tasks): sessions by role name, and the uvicorn tasks the
-    caller must cancel at teardown.
+    The split architecture's building block: a role-worker process calls this for
+    exactly its own role, so cop code and thief code live in separate OS processes
+    (Appendix E rule 1). Inline mode composes two of these in one process.
     """
     from fastmcp import FastMCP
 
     from cop_worker.protocol.reference_v3 import register_reference_v3_tools
 
-    sessions, tasks = {}, []
     _Session = _wire_session_class()
+    sess = _Session(lambda t, p: (_ for _ in ()).throw(RuntimeError(f"no outbound ({t})")))
+    app = FastMCP(name=f"vibecode-{role_name}")
+    register_reference_v3_tools(app, sess)
+    task = asyncio.create_task(
+        app.run_async(transport="http", host=host, port=port, show_banner=False)
+    )
+    await _wait_port("127.0.0.1", port, timeout=15.0)
+    return sess, task
+
+
+async def _start_servers(host: str, our_cop_port: int, our_thief_port: int):
+    """Serve both endpoints in THIS process (legacy inline mode).
+
+    Returns (sessions, tasks): sessions by role name, and the uvicorn tasks the
+    caller must cancel at teardown.
+    """
+    sessions, tasks = {}, []
     for role_name, port in (("police", our_cop_port), ("thief", our_thief_port)):
-        sess = _Session(lambda t, p: (_ for _ in ()).throw(RuntimeError(f"no outbound ({t})")))
-        app = FastMCP(name=f"vibecode-{role_name}")
-        register_reference_v3_tools(app, sess)
+        sess, task = await _start_server_one(host, port, role_name)
         sessions[role_name] = sess
-        tasks.append(
-            asyncio.create_task(
-                app.run_async(transport="http", host=host, port=port, show_banner=False)
-            )
-        )
-    await _wait_port("127.0.0.1", our_cop_port, timeout=15.0)
-    await _wait_port("127.0.0.1", our_thief_port, timeout=15.0)
+        tasks.append(task)
     return sessions, tasks
 
 
