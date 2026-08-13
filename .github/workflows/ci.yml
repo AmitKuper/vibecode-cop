@@ -20,13 +20,13 @@ jobs:
         run: uv run pytest tests/ cop_worker/tests/ league_manager/tests/ -q --tb=short
       - name: Coverage
         # Real source packages after the 3-process restructure (agent/ -> cop_worker/
-        # + league_manager/). Branch coverage is stricter than line: current line
-        # coverage is ~85% and branch ~83%, so the gate floor is 80.
+        # + league_manager/). Branch coverage is stricter than line; current branch
+        # coverage is ~95%, so the gate floor is 94 (small margin for platform drift).
         run: |
           uv run pytest tests/ cop_worker/tests/ league_manager/tests/ \
             --cov=cop_worker --cov=league_manager --cov-branch \
             --cov-report=xml \
-            --cov-fail-under=90
+            --cov-fail-under=94
       - name: Ruff lint
         run: uv run ruff check .
       - name: Ruff format
