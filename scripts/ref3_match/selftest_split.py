@@ -17,6 +17,7 @@ from ref3_match.local_proxy import SwitchingProxy
 from ref3_match.net import _wait_port
 from ref3_match.runtime_cfg import runtime_snapshot
 from ref3_match.series import _error_row
+from ref3_match.watchdog_bridge import OrchestratorWatchdog
 from ref3_match.worker_proc import WorkerProc, WorkerProcError, absorb_strays, drain_other
 
 
@@ -57,6 +58,8 @@ async def _self_test_split(
     }
     ports = {"police": cop_port, "thief": thief_port}
     await asyncio.gather(*(w.start() for w in workers.values()))
+    watchdog = OrchestratorWatchdog("selftest")  # exercise the rule-7 watchdog here too
+    await watchdog.start()
 
     proxy = SwitchingProxy(host, our_port, ports[role])
     await proxy.start()
@@ -130,6 +133,7 @@ async def _self_test_split(
                     results.append(_error_row(sg, sg_role, str(frame.get("error"))[:200]))
                 break
     finally:
+        await watchdog.stop()
         await proxy.stop()
         await asyncio.gather(*(w.stop() for w in workers.values()), return_exceptions=True)
         sparring.terminate()

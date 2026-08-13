@@ -15,6 +15,7 @@ import time
 from ref3_match.net import _check_port
 from ref3_match.runtime_cfg import _t, runtime_snapshot
 from ref3_match.series import _error_row
+from ref3_match.watchdog_bridge import OrchestratorWatchdog
 from ref3_match.worker_proc import WorkerProc, WorkerProcError, absorb_strays, drain_other
 
 
@@ -54,20 +55,18 @@ async def _play_match_split(
         "scent_model": scent_model,
         "move_policy": move_policy,
     }
-    # Optional live-GUI plumbing: [network] gui_cop_port / gui_thief_port (absent by
-    # default) flow into the role-worker init dicts; nothing else changes when unset.
-    net_cfg = runtime_snapshot().get("network", {})
-    cop_init = dict(base_init, port=our_cop_port)
-    thief_init = dict(base_init, port=our_thief_port)
-    if isinstance(net_cfg.get("gui_cop_port"), int):
-        cop_init["gui_port"] = int(net_cfg["gui_cop_port"])
-    if isinstance(net_cfg.get("gui_thief_port"), int):
-        thief_init["gui_port"] = int(net_cfg["gui_thief_port"])
+    from ref3_match.worker_proc import role_init  # optional [network] gui_*_port -> workers
+
+    net = runtime_snapshot().get("network", {})
     workers = {
-        "police": WorkerProc("police", cop_init),
-        "thief": WorkerProc("thief", thief_init),
+        "police": WorkerProc("police", role_init(base_init, our_cop_port, net.get("gui_cop_port"))),
+        "thief": WorkerProc(
+            "thief", role_init(base_init, our_thief_port, net.get("gui_thief_port"))
+        ),
     }
     await asyncio.gather(*(w.start() for w in workers.values()))
+    watchdog = OrchestratorWatchdog(opponent_group)  # independent watchdog on us (rule 7)
+    await watchdog.start()
     print(
         f"[match] SPLIT arch: cop pid={workers['police'].proc.pid} "
         f"thief pid={workers['thief'].proc.pid} orchestrator holds no game state"
@@ -146,5 +145,6 @@ async def _play_match_split(
             sg += 1
             hold_deadline = None
     finally:
+        await watchdog.stop()  # first: the watchdog must not fire during teardown
         await asyncio.gather(*(w.stop() for w in workers.values()), return_exceptions=True)
     return {"opponent": opponent_group, "sub_games": results}

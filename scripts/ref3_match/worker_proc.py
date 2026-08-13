@@ -111,6 +111,14 @@ class WorkerProc:
         await self.start()
 
 
+def role_init(base_init: dict, port: int, gui_port) -> dict:
+    """Per-role worker init: base + this role's port, plus an optional int GUI port."""
+    init = dict(base_init, port=port)
+    if isinstance(gui_port, int) and not isinstance(gui_port, bool):
+        init["gui_port"] = int(gui_port)
+    return init
+
+
 def absorb_strays(pending: dict, frame: dict) -> None:
     """Bank a frame's misrouted greetings by sub-game for later re-injection."""
     for g in frame.get("stray_greetings") or []:

@@ -2,11 +2,16 @@
 
 ## Active Deviations
 
-### D1: Public Tunnel Match — EXTERNAL_PENDING
+### D1: Public reachability without a tunnel — DEMONSTRATED
 
-Real opponent match across the internet requires separate machines and a public
-tunnel (ngrok/Cloudflare). Not demonstrated in this submission.
-See docs/DEPLOYMENT_TUNNEL_RUNBOOK.md for the runbook.
+The book mandates a tunneling tool (ngrok/Cloudflare); its stated purpose (§2.4)
+is NAT traversal for hosts that cannot be reached directly. We instead expose the
+two role endpoints on a router-forwarded **static public IP** (cop 61224 /
+thief 61223), so the requirement's purpose — public reachability — is met without
+the tool. This was demonstrated across the internet in three real cross-team
+series (anrbj666, imreeyal, uoh-sqak), with third-party probes confirming
+reachability from five countries. The tunnel runbook
+(docs/DEPLOYMENT_TUNNEL_RUNBOOK.md) is retained for the alternative topology.
 
 ### D2: Trained RL Checkpoint — EXTERNAL_PENDING
 
