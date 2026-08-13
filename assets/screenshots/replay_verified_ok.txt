@@ -1,0 +1,19 @@
+$ uv run python scripts/replay_viewer.py evidence/game_vs_uoh-sqak
+
+Auditing log_uoh-sqak-vs-vibecode_g02.json...
+  Integrity:   OK  (sha256: 70ce986c11f4...)
+  Commitments: OK  (30/30 verified)
+=== VERIFIED OK ===
+
+Auditing log_uoh-sqak-vs-vibecode_g04.json...
+  Integrity:   OK  (sha256: 562ad6e43061...)
+  Commitments: OK  (30/30 verified)
+=== VERIFIED OK ===
+
+Auditing log_uoh-sqak-vs-vibecode_g06.json...
+  Integrity:   OK  (sha256: 4118e7c39988...)
+  Commitments: OK  (30/30 verified)
+=== VERIFIED OK ===
+
+(exit code 0 — all logs verified; captured 2026-08-13 from the repo root
+against the counted-series evidence in evidence/game_vs_uoh-sqak/)

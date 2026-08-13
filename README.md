@@ -59,7 +59,8 @@ cd vibecode-cop && uv sync --frozen
 uv run pytest tests/ cop_worker/tests/ league_manager/tests/ -q
 ```
 
-Expected: ~1,478 tests pass (the same suite CI gates, with branch coverage >= 80%).
+Expected: ~1,680 tests pass (the same suite CI gates, with branch coverage >= 80%;
+the suite currently measures ≈91%).
 
 ## Quick start — self-test against the bundled sparring peer
 
@@ -200,6 +201,141 @@ Rendered from a real rule-46/47 game between the shipped `hybrid_search` policie
 |---|---|---|
 | ![trajectory](assets/screenshots/match_trajectory.png) | ![scent](assets/screenshots/scent_heatmap.png) | ![territory](assets/screenshots/search_territory.png) |
 
+## Game-rules enforcement
+
+All game physics lives in **one pure function**:
+`apply_joint_action()` in [`cop_worker/domain/transition.py`](cop_worker/domain/transition.py).
+It takes an immutable `DomainState` plus both committed actions and returns a new
+state with the outcome — no side effects, no hidden inputs. The thief repo carries
+a byte-identical mirror (`thief_worker/domain/transition.py`); cross-repo
+conformance tests pin that identical inputs produce identical outputs on both peers.
+
+What it enforces, clause by clause:
+
+- **Board mechanics.** Grid of `grid_size >= 7` (default 7×7), cop start `(0,0)`,
+  thief start `(3,3)`. A destination is legal only if it is in bounds and not a
+  barrier cell (`_is_valid`). Illegal moves never crash a game: the mover stays in
+  place and the step is flagged `*_action_legal = False` in the `TransitionResult`.
+- **Orthogonal movement.** Exactly `NORTH/SOUTH/EAST/WEST/STAY` (aliases `N/S/E/W`
+  accepted from the wire); no diagonals exist in the delta table. Both moves are
+  applied simultaneously to the pre-step state.
+- **Barriers (quota 14, rules 46/47).** Only the cop places barriers, via
+  `PLACE_N/S/E/W` onto an adjacent cell. The quota is tracked as
+  `cop_barriers_remaining`; placement with an empty quota, out of bounds, or onto
+  an existing barrier is refused. Rule 46: a barrier placed **onto the thief's
+  cell** is an immediate capture. Rule 47 edge case: a barrier placed
+  simultaneously with a thief move into that same cell deterministically blocks
+  the (already committed, then-legal) move without branding it a violation.
+- **Capture and survival.** Cop wins by position overlap, by the thief standing on
+  a barrier cell, or by trapping (thief has no orthogonal escape; STAY does not
+  count as an escape). Thief wins by surviving to `survival_threshold` turns
+  (minimum 35).
+- **Scoring (20/5/10/5, tie 2).** Capture: cop 20 / thief 5. Survival: thief 10 /
+  cop 5. Tie: 2 points each. These are Appendix-F fixed values enforced by
+  [`cop_worker/domain/config_validator.py`](cop_worker/domain/config_validator.py),
+  whose pydantic validator **rejects any config** where `max_barriers != 14`,
+  scoring differs from 20/5/10/5, or `survival_threshold < 35` — a non-conforming
+  `game.json` cannot even be loaded. Each `TransitionResult` carries the
+  `cop_score`/`thief_score` awarded by the clause that ended the sub-game.
+
+Two runtime layers wrap the transition. [`cop_worker/rules_engine.py`](cop_worker/rules_engine.py)
+(`RulesEngine`) validates per-role move legality against the live board and owns
+the **mandatory scent law** (5×5 radial kernel, per-turn decay 0.9, clamp to 0.9 —
+the kit's receiver checks every transmitted frame against this law with zero
+tolerance). [`cop_worker/gamelet.py`](cop_worker/gamelet.py) (with its
+`gamelet_moves/gamelet_events/gamelet_obs/gamelet_results` mixins) coordinates one
+sub-game's lifecycle: it refuses to start on invalid negotiated terms
+(`parameter_registry.validate_terms`), drives the state machine
+(`NEGOTIATING → LOCKED → PLAYING → … → SETTLED`), and accumulates the audit records.
+
+## Protocol — reference-v3
+
+The production wire is the `copthief-league-reference-v3` dialect, implemented in
+[`cop_worker/protocol/reference_v3/`](cop_worker/protocol/reference_v3/) and pinned
+against the kit's frozen test vectors (`vectors.py` fails closed at startup if this
+interpreter cannot reproduce them).
+
+**Four MCP tools** carry an entire series
+(`cop_worker/protocol/reference_v3/constants.py::REFERENCE_V3_TOOLS`):
+
+| Tool | Purpose |
+|---|---|
+| `negotiate` | Step-0: signed terms, scent/wire locks, `game_uid` agreement |
+| `receive_turn` | One sealed turn per step (commit + hint + scent frame) |
+| `submit_audit` | End-of-sub-game reveal of the full sealed record list |
+| `receive_control` | Control signals (settlement, aborts, claims resolution) |
+
+**Commit-reveal.** Every turn is sealed before it is played:
+
+```text
+commit = SHA256( canonical_json(payload) + "|" + nonce )
+```
+
+where `canonical_json` is the kit's canonical form (compact separators, sorted
+keys, native UTF-8 — `hashing.py`) and the payload has exactly the fields
+`step`, `role`, `sub_game`, `position`, `move`, `intent`. The wire turn carries
+only the **hash** plus the public envelope (`step`, `sender`, `hint`,
+`smell_grid`, timestamp, claims) — the nonce and payload stay private until the
+audit (`turns.py`: *"the nonce never enters the wire turn"*), so neither side can
+adapt its move to the opponent's, and neither can later claim to have played a
+different move.
+
+**Mutual audit.** After the last step both sides exchange their complete record
+lists (`payload + nonce + commit` per step) via `submit_audit`. Our verifier
+(`turns.py::verify_audit`) rehashes **every** record, binds each played step's
+received commitment to its reveal, and rejects equivocation (the same step
+revealed under two different commitments). Only a bilateral *Verified OK* settles
+the sub-game; the same records are what the artifacts publish.
+
+**Offline replay verification.** [`scripts/replay_viewer.py`](scripts/replay_viewer.py)
+re-audits any published `log_*.json` after the fact — it verifies file integrity,
+rehashes every sealed record on **both** sides (`records` + `opponent_records`),
+handles both log formats (internal gamelet `h_commit` logs and production
+reference-v3 wire logs), prints `=== VERIFIED OK ===` per log, and exits non-zero
+on any mismatch. Run against the real counted-series evidence in this repo
+(full capture in [`assets/screenshots/replay_verified_ok.txt`](assets/screenshots/replay_verified_ok.txt)):
+
+```text
+$ uv run python scripts/replay_viewer.py evidence/game_vs_uoh-sqak
+
+Auditing log_uoh-sqak-vs-vibecode_g02.json...
+  Integrity:   OK  (sha256: 70ce986c11f4...)
+  Commitments: OK  (30/30 verified)
+=== VERIFIED OK ===
+
+Auditing log_uoh-sqak-vs-vibecode_g04.json...
+  Integrity:   OK  (sha256: 562ad6e43061...)
+  Commitments: OK  (30/30 verified)
+=== VERIFIED OK ===
+
+Auditing log_uoh-sqak-vs-vibecode_g06.json...
+  Integrity:   OK  (sha256: 4118e7c39988...)
+  Commitments: OK  (30/30 verified)
+=== VERIFIED OK ===
+```
+
+## Strategy
+
+High level only (the repo's public design docs carry the details):
+
+- **Cop — search over exact tracking.** When the negotiated scent law makes the
+  transmitted frame informative enough to localise the opponent
+  (`cop_worker/rl/chebyshev_tracker.py`), the cop plays a depth-limited **minimax
+  with territory evaluation** (`cop_worker/rl/pursuit_search.py`) over that fix —
+  including barrier placement as ordinary search actions under the quota.
+- **Trained RL fallback.** For blind frames (no usable fix) the serving adapter
+  (`cop_worker/rl/search_policy.py`) falls back to the manifest-pinned trained
+  recurrent policy. The obs-mode serving guard guarantees a checkpoint is never
+  served under physics it was not trained on.
+- **Thief — survival play.** The thief side (companion repo) plays to survive its
+  35-round windows: the same search engine evaluates escape territory instead of
+  pursuit, with the trained thief net as its blind-frame fallback.
+- **Belief and hints.** Both roles observe only `LocalObservation` + `BeliefState`
+  (`cop_worker/observation.py` — no hidden coordinates ever enter a policy), and
+  exchange free-language hints each turn: a deception policy chooses a
+  truth/lie intent, and the text comes from templates or a local LLM
+  (`cop_worker/language/`).
+
 ## Module reference
 
 | Path | Purpose |
@@ -267,6 +403,37 @@ diagnose from `[wire<-]` and `[diag]` lines, not guesswork.
 3. Aspire to <= 150 lines per module (project rule; existing oversized modules
    are recorded as an accepted deviation in `docs/KNOWN_DEVIATIONS.md`).
 4. Never edit `evidence/`, `config/game.json` hashes, or the external kit.
+
+## Self-grade (code quality)
+
+This grade covers **code quality only** — never league results. Basis, all
+reproducible from the repo: ~1,680 tests collected, branch coverage ≈91%
+(CI-gated at 80%), `ruff check` + `ruff format --check` gating every commit, and
+a 150-line-per-module discipline (three documented exceptions in
+[`docs/KNOWN_DEVIATIONS.md`](docs/KNOWN_DEVIATIONS.md)).
+
+**Self-grade: 92/100**
+
+| Dimension | Grade | Why |
+|---|---|---|
+| Correctness | 93 | Physics is one pure conformance-pinned function; kit vectors fail closed; serving guards refuse mismatched checkpoints |
+| Tests | 93 | ~1,680 tests, ≈91% branch coverage, conformance vectors, source-pin tests on the production seams |
+| Documentation | 90 | DESIGN/PRDs/runbooks current; deviations documented rather than hidden |
+| Architecture | 92 | Single transition source of truth, mixin-decomposed gamelet, ≤150-line modules with 3 justified exceptions |
+| Style | 92 | ruff + format zero-finding CI; docstrings throughout |
+
+What would raise it: eliminating the last three over-150 modules and lifting the
+weakest per-module coverage pockets to the suite average.
+
+## Submission
+
+The graded submission state of this repository is the annotated tag
+**`v5.0-submission`** (created at the final commit). The two repositories
+cross-link each other — this README links
+[vibecode-thief](https://github.com/AmitKuper/vibecode-thief) above, and the
+thief README links back here — and are operated as one distributed product.
+Interpretation decisions are recorded in
+[`docs/KNOWN_DEVIATIONS.md`](docs/KNOWN_DEVIATIONS.md).
 
 ## License and credits
 
