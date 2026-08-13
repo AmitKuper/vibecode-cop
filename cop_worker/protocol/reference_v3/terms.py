@@ -87,25 +87,30 @@ def default_terms(config: dict | None = None) -> dict:
 
 
 def _object_argument(tool, argument: str) -> bool:
+    """The tool's expected argument must be an object-typed property; SUPERSET tolerated.
+
+    The kit surface advertises exactly one required object argument per tool and
+    still passes. A peer may advertise alias properties alongside it (accepting
+    ``message`` OR ``payload`` on every tool) with none marked required — every
+    kit-shaped call we make succeeds against such a surface unchanged, so
+    discovery accepts it (live finding vs najamjad, 2026-08-13). A missing or
+    non-object expected name still refuses.
+    """
     schema = tool.input_schema if isinstance(tool.input_schema, dict) else {}
     properties = schema.get("properties", {})
-    required = schema.get("required", [])
+    if not isinstance(properties, dict):
+        return False
     prop = properties.get(argument)
-    return (
-        isinstance(properties, dict)
-        and set(properties) == {argument}
-        and argument in required
-        and isinstance(prop, dict)
-        and prop.get("type") == "object"
-    )
+    return isinstance(prop, dict) and prop.get("type", "object") == "object"
 
 
 def is_reference_v3_surface(introspection: IntrospectionResult) -> bool:
-    """Recognize the exact four-tool reference surface from sanitized MCP schemas.
+    """Recognize the four-tool reference surface from sanitized MCP schemas.
 
-    Extra advertised tools are tolerated, but the four protected names must each have the exact
-    one-object argument (including the ``submit_audit(payload)`` asymmetry).  Semantic agreement
-    is established later by the signed negotiation and model lock, never from descriptions.
+    Extra advertised tools AND extra alias properties are tolerated, but the four
+    protected names must each expose their expected object argument (including the
+    ``submit_audit(payload)`` asymmetry).  Semantic agreement is established later
+    by the signed negotiation and model lock, never from descriptions.
     """
     for tool_name, argument in REFERENCE_V3_TOOLS.items():
         tool = introspection.get_tool(tool_name)
