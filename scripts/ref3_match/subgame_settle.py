@@ -9,10 +9,13 @@ from ref3_match.runtime_cfg import _t
 
 
 def _refine_disputed_trail(opp_records, settled_caught_cell, sub_game: int):
-    """Audit-time refinement of a settled caught=true: the conceded/answered cell must be
-    where the thief's REVEALED trail actually ends. Degradation contract (SPEC §3.1):
-    a peer whose payloads carry no parseable position is fully conforming — note, never
-    accuse; only a parseable trail that contradicts the cell marks the capture disputed.
+    """Audit-time refinement of a settled caught=true: the conceded/answered cell must end
+    the thief's REVEALED trail. Two conforming trail shapes (live finding, najamjad
+    2026-08-13, 3/3 capture windows): kit-style concession records carry ONE post-answer
+    move, so the caught cell legitimately sits at trail[-2] with the concession record
+    (the one answering caught) as trail[-1]. Degradation contract (SPEC §3.1): a peer
+    whose payloads carry no parseable position is fully conforming — note, never accuse;
+    only a trail that contradicts BOTH shapes marks the capture disputed.
     """
     _trail = [
         (int(p["step"]), list(p["position"]))
@@ -22,17 +25,23 @@ def _refine_disputed_trail(opp_records, settled_caught_cell, sub_game: int):
         and isinstance(p.get("position"), (list, tuple))
         and len(p.get("position")) == 2
     ]
-    if _trail and list(max(_trail)[1]) != list(settled_caught_cell):
-        print(
-            f"[match] sg{sub_game} audit: caught cell {settled_caught_cell} does not "
-            f"end the revealed trail (final={max(_trail)[1]}) — recording disputed"
-        )
-        return {
-            "cell": list(settled_caught_cell),
-            "kind": "trail_end_mismatch",
-            "revealed_final": list(max(_trail)[1]),
-        }
-    return None
+    if not _trail:
+        return None
+    cell = list(settled_caught_cell)
+    ordered = sorted(_trail)
+    if list(ordered[-1][1]) == cell:
+        return None  # strict shape: trail ends on the caught cell
+    if len(ordered) >= 2 and list(ordered[-2][1]) == cell:
+        return None  # concession shape: one post-answer record after the caught cell
+    print(
+        f"[match] sg{sub_game} audit: caught cell {cell} does not end the revealed "
+        f"trail (final={ordered[-1][1]}) — recording disputed"
+    )
+    return {
+        "cell": cell,
+        "kind": "trail_end_mismatch",
+        "revealed_final": list(ordered[-1][1]),
+    }
 
 
 async def _settle(
@@ -94,11 +103,15 @@ async def _settle(
         disputed_capture = _refine_disputed_trail(opp_records, settled_caught_cell, sub_game)
     # Mutual step-0 audit: their sealed step_zero must declare the same github_commit as
     # their negotiate identity (else they equivocated between handshake and audit).
+    # Peers name the record differently — anrbj666 "step_zero", najamjad "system_spec"
+    # (2026-08-13: their hardware/token declaration rode a system_spec record and our
+    # summary recorded null). Accept either shape; the commit check below still only
+    # fires when the record actually carries a github_commit.
     opp_sz = next(
         (
             r.get("payload")
             for r in opp_records
-            if (r.get("payload") or {}).get("type") == "step_zero"
+            if (r.get("payload") or {}).get("type") in ("step_zero", "system_spec")
         ),
         None,
     )

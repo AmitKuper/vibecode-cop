@@ -16,11 +16,21 @@ def _write_result(result: dict) -> Path:
     return path
 
 
-def _save_opponent_profile(opp: str) -> None:
-    """Save the exact config used to play this opponent: config/opponents/<opp>/."""
+def _save_opponent_profile(opp: str, played_profile: str | None = None) -> None:
+    """Save the exact config used to play this opponent: config/opponents/<opp>/.
+
+    When the match was launched from a NAMED profile (--config) whose directory
+    name differs from the opponent's group_id, that profile IS the played config —
+    creating a sibling dir from base config would plant a misleading record
+    (bench finding vs peersim01, 2026-08-13). Skip the auto-save in that case.
+    """
     try:
         import shutil
 
+        if played_profile and played_profile != opp:
+            prof_dir = REPO_ROOT / "config" / "opponents" / str(played_profile)
+            if prof_dir.is_dir():
+                return  # the played profile already records this pairing's config
         prof = REPO_ROOT / "config" / "opponents" / opp
         prof.mkdir(parents=True, exist_ok=True)
         for f in ("game.json", "runtime.toml"):
@@ -53,7 +63,7 @@ def _emit_files(result: dict, args) -> dict:
     from cop_worker.protocol.reference_v3 import default_terms, derive_game_id, derive_game_uid
 
     opp = args.opponent_group
-    _save_opponent_profile(opp)
+    _save_opponent_profile(opp, played_profile=getattr(args, "config", None))
     game_id = derive_game_id("vibecode", opp)
     game_uid = derive_game_uid(default_terms({"setting": args.setting}), "vibecode", opp)
     cop_commit = _git_head(REPO_ROOT)

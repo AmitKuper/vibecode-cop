@@ -50,9 +50,13 @@ def build_result(
     opp_repos: dict | None = None,
 ) -> dict:
     """The emailed final_game_result (series aggregate). Key order mirrors anrbj666's."""
-    confirmed = bool(rows) and all(r.get("audit", {}).get("log_verified") for r in rows)
+    # Consensus requires the WHOLE six-window series, not just "every played row verified":
+    # a 4/6 series must never carry confirmed=true (live finding vs najamjad, 2026-08-13 —
+    # the guard withheld the email but the artifact still asserted confirmed consensus).
+    complete = len(rows) == 6
+    confirmed = complete and all(r.get("audit", {}).get("log_verified") for r in rows)
     mutual = {"sha256": mutual_agreement_sha(game_id, rows, final_result), "confirmed": confirmed}
-    return {
+    result = {
         "_schema": (
             "Summary and final result for the WHOLE series between two teams: "
             "per-sub-game scores + aggregate; identity lives in the declaration."
@@ -75,3 +79,7 @@ def build_result(
         "final_result": final_result,
         "mutual_agreement": mutual,
     }
+    if not complete:  # annotate ONLY the incomplete case: complete artifacts stay byte-identical
+        result["series_complete"] = False
+        result["sub_games_expected"] = 6
+    return result

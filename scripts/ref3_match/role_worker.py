@@ -104,6 +104,9 @@ async def _main() -> int:
     from ref3_match.gui_bridge import maybe_start_gui, stop_gui
     from ref3_match.runtime_cfg import apply_runtime_config
     from ref3_match.servers import _start_server_one
+    from ref3_match.worker_log import install_worker_log
+
+    log_path = install_worker_log(init["role"])  # survives a dead stderr pump
 
     apply_runtime_config(init.get("runtime") or {})
     role = init["role"]
@@ -111,7 +114,10 @@ async def _main() -> int:
         init.get("host", "0.0.0.0"), int(init["port"]), role
     )
     gui_task = await maybe_start_gui(role, init)  # None unless init carries "gui_port"
-    print(f"[{role}-worker] endpoint live on :{init['port']} (pid={__import__('os').getpid()})")
+    print(
+        f"[{role}-worker] endpoint live on :{init['port']} "
+        f"(pid={__import__('os').getpid()}, log={log_path})"
+    )
     _emit({"type": "ready", "role": role})
 
     try:

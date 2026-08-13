@@ -6,6 +6,20 @@ from cop_worker.language import token_ledger
 from league_artifacts.core import load_constitution
 
 
+def _opp_cumulative_tokens(sg: dict) -> int:
+    """The opponent's self-declared CUMULATIVE token count from its step-0 record.
+
+    Peers that spend LLM tokens transmit ``tokens_total`` in their step-0 payload
+    (najamjad, 2026-08-13: 97 → 4894 → 6702 → 8467 across windows). Zero when the
+    peer sends none — never invented.
+    """
+    for rec in sg.get("opp_records") or []:
+        val = (rec.get("payload") or {}).get("tokens_total")
+        if isinstance(val, (int, float)):
+            return int(val)
+    return 0
+
+
 def score_series(
     sub_games: list,
     opponent: str,
@@ -24,10 +38,16 @@ def score_series(
     rows, tot_us, tot_them, won_us, won_them = [], 0, 0, 0, 0
     # OUR real LLM spend from the process-wide ledger (template hints record nothing,
     # so this is 0 with the LLM off — byte-identical to the old hardcoded zeros).
-    # The opponent's spend is unknowable from our side and stays 0.
+    # The OPPONENT's spend is harvested from its own step-0 tokens_total (cumulative);
+    # per-window value = the delta between consecutive declarations.
     our_gamelet_tokens = token_ledger.gamelet_history()
+    opp_prev_cum = opp_last_cum = 0
     for idx, sg in enumerate(sub_games):
         n, role = sg["sub_game"], sg["role"]
+        opp_cum = _opp_cumulative_tokens(sg)
+        opp_window = max(0, opp_cum - opp_prev_cum) if opp_cum else 0
+        if opp_cum:
+            opp_prev_cum = opp_last_cum = opp_cum
         cop_s, thief_s = (20, 5) if sg.get("outcome") == "capture" else (5, 10)
         us, them = (cop_s, thief_s) if role == "police" else (thief_s, cop_s)
         tot_us += us
@@ -50,7 +70,7 @@ def score_series(
                 },
                 "tokens": {
                     "vibecode": our_gamelet_tokens[idx] if idx < len(our_gamelet_tokens) else 0,
-                    opponent: 0,
+                    opponent: opp_window,
                 },
                 "score": {"vibecode": us, opponent: them},
                 "log_files": {
@@ -91,7 +111,7 @@ def score_series(
         # tie_rule series_add is DECLARED in the written pairing agreement, never as an
         # extra result field — the grader's template is the authority (imreeyal §3.17).
         "series_tie": series_tie,
-        "tokens_total_series": {"vibecode": token_ledger.series_total(), opponent: 0},
+        "tokens_total_series": {"vibecode": token_ledger.series_total(), opponent: opp_last_cum},
         "games_played_including_this": {"vibecode": our_played + inc, opponent: opp_played + inc},
         "first_meeting_between_groups": True,
         "diversity_reward_applied": diversity,

@@ -48,9 +48,15 @@ opponent whose group_id sorts AFTER `vibecode`, the hardcoded split is inverted 
    and the same for vibecode-thief must be on origin.
 5. **Know our counted count.** `--counted-played N` = our prior counted games, read from
    `results/counted_series.json` (`counted_games_played`). It is the count BEFORE this game (rules
-   37-38); the lecturer cross-checks. (Currently 1 → next counted game passes `--counted-played 1`.)
+   37-38); the lecturer cross-checks. (Currently 3 → next counted game passes `--counted-played 3`.)
 6. **Endpoints up + cross-probe both directions (T−20).** Our two servers reachable from outside;
    the opponent's two URLs reachable from us (real MCP `list_tools`). Pass/fail in writing.
+7. **PROTOCOL-LEVEL probe of the opponent (at pairing time AND at T−10) — not just TCP/406:**
+   `uv run python scripts/preflight_opponent.py <their_url> [<their_url_2>]` runs tools/list
+   introspection + our real reference-v3 discovery and prints ACCEPT or the exact refusal.
+   A surface mismatch found here costs minutes; found at T it costs the window (najamjad,
+   2026-08-13: superset tool schema refused by discovery — 30 seconds of this probe would
+   have caught it hours early). Run it the FIRST time a new opponent's endpoint is ever live.
    Opponent endpoints returning `502`/`530` before they arm is NORMAL — the driver tolerates it
    and waits, but confirm they are actually serving by T.
 
