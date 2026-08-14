@@ -63,7 +63,7 @@ async def _self_test_split(
 
     proxy = SwitchingProxy(host, our_port, ports[role])
     await proxy.start()
-    print(f"[match] SPLIT self-test: proxy :{our_port} → cop :{cop_port} / thief :{thief_port}")
+    print(f"[match] SPLIT self-test: proxy :{our_port} -> cop :{cop_port} / thief :{thief_port}")
 
     sparring = subprocess.Popen(
         [
