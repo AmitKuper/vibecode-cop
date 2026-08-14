@@ -9,7 +9,6 @@ from league_manager.reports.gmail_compose import (
     build_email_message,
     collect_attachments,
 )
-
 from league_manager.reports.gmail_delivery import GmailDeliveryMixin
 from league_manager.reports.gmail_send import (  # noqa: F401  (patchable seams)
     gmail_api_send,
