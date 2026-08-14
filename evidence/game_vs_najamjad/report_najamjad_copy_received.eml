@@ -1,0 +1,423 @@
+Delivered-To: agentsorch@gmail.com
+Received: by 2002:a05:6214:4948:b0:8ef:cfdb:29a3 with SMTP id pe8csp2390734qvb;
+        Fri, 14 Aug 2026 12:08:55 -0700 (PDT)
+X-Received: by 2002:a05:6402:a6cf:10b0:6a0:d320:1ed4 with SMTP id 4fb4d7f45d1cf-6a381505542mr5001481a12.1.1786734535121;
+        Fri, 14 Aug 2026 12:08:55 -0700 (PDT)
+ARC-Seal: i=2; a=rsa-sha256; t=1786734535; cv=pass;
+        d=google.com; s=arc-20260327;
+        b=hjPgBamplgeQmdNSsyNbiSZ0Bzkh5ukyr+B5E03GDnuqqCgEMxYzfcNbvuDMmwSRWw
+         eS2kY5CNLHWFd6CyKZ8Xfwr0Nqo1VrI8khWQJo8PREJH44Tj7saIbvW/l5f9w7TepUGS
+         TAK0mjU1rx+oioIeVggpqC62Yy8zLcg65rbl+1e1eWpMKaLVny1vI19GBNV+FHFbcw/V
+         6hlmZ3PlgybFw+AugovzCPtzagahB4k4Yd8invH/BWwxdbCvdvHrWG5r8Rsgx0+P0VMU
+         7oH3asBPSA09NpMzMYx4+s5uuPvz+geZj/h7zut6TK9EQkuHQpJuD7K57zkbKrD0+Cgv
+         dAWw==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :dkim-signature;
+        bh=UuHSvO4L+G9GqIivgiAtAOHPcvQgFz+QDYRRY85kCcY=;
+        fh=ZBENhEVGQSFS05X5kEbRDqMIDmFyAa5PBLYf7d2ny1E=;
+        b=mpNG0wMr8OHdZPdxZxUZ10NPvy/CHZIxvm0XYDvsjEeYXaE1/w7+AK4SkvHijJzbvm
+         uqSB2+UFCUfl1odeK3lioS6NZZXHhnMbaPm8BeN996TmmsXAXW4X22XLRhWhmIxROKSX
+         8uauP+gpGSIXNr35LI9TSP+4uCsqWQlKJE3EIBtB1yhZsuairRXzTK7zVnYCzKUkLVBI
+         0Sr4D6vU1g6i9l+IGpMofthdLQqgWpIFBl82qCIh2+ufLyNi3KFz1wn6ogv4GHBkkbre
+         9W+48XqmYcOiyOcvsmpDCiJiTqBNwrFzFZdnT/5QY177ryT9ZhFOgj3HfyaHENlndlwU
+         ct4A==;
+        dara=google.com
+ARC-Authentication-Results: i=2; mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20251104 header.b=MwBT2NCa;
+       arc=pass (i=1);
+       spf=pass (google.com: domain of najikayal4@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=najikayal4@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;
+       dara=pass header.i=@gmail.com
+Return-Path: <najikayal4@gmail.com>
+Received: from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])
+        by mx.google.com with SMTPS id 4fb4d7f45d1cf-6a38d791d67sor839242a12.8.2026.08.14.12.08.54
+        for <agentsorch@gmail.com>
+        (Google Transport Security);
+        Fri, 14 Aug 2026 12:08:55 -0700 (PDT)
+Received-SPF: pass (google.com: domain of najikayal4@gmail.com designates 209.85.220.41 as permitted sender) client-ip=209.85.220.41;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20251104 header.b=MwBT2NCa;
+       arc=pass (i=1);
+       spf=pass (google.com: domain of najikayal4@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=najikayal4@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;
+       dara=pass header.i=@gmail.com
+ARC-Seal: i=1; a=rsa-sha256; t=1786734534; cv=none;
+        d=google.com; s=arc-20260327;
+        b=h56L6FqRa339cZmEnge4KBX2/BAf42DYXM1PFQgYuANue8geSF9uB9TdF6IzL/sn6Q
+         mGnR0b7k5Vuwlzw8OL5Tfm2C6pEHyZZJ5ukkgduC32f4IDCIVCASK/F5TlxrySBR6fcK
+         urzI0NgT8hF9aeJdcr619d2C0cqNgykCzfX9Kxszd/ftw5IvZqFxXrevCx1nQHtOSqmV
+         tz85rb30zqpa/UY1BTvcNkTDVzPpnD4undJCoOzxB9Uaiz99t1J+milwbLXR33NxMuVH
+         ZsHs6GZJuTUbmohGDbeaKRBHIwGU9eiBzVSfGbFWiaMuO2mhQpPU0RZ03efsMTZAqDkp
+         F7Ow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :dkim-signature;
+        bh=UuHSvO4L+G9GqIivgiAtAOHPcvQgFz+QDYRRY85kCcY=;
+        fh=ZBENhEVGQSFS05X5kEbRDqMIDmFyAa5PBLYf7d2ny1E=;
+        b=YwYGBepLP5Xf0y94DvRCCTqeC0WUJe9YEtkrvOGxCwoh1IdIViLVJE+YiuaCqB1eUr
+         WZhD59qk/oW1tja61jt6il2WiByMAWbYM5pF4/Vhg6V9CKRVlA3fT/cWdMityox7UI2s
+         eJxPFTH+5cQ6PVTSa0OZ31MmykU15fy6p3wcN/o2exFQj/Hw+Wxry9IP92SZIguMk+5l
+         psAmNraCHA81aOB1dAXmTDBRaufj8rusyE4h5/RkJ9ttUm+yqumfaI8tQNdEMrUNFpw7
+         cqlBZNXbS7uywCZF7tMbyCV83iZsf7wpywKPRs7KQfDFkZ69FCmsOQErKQvHFtFdltlr
+         j3Ag==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786734534; x=1787339334; dara=google.com;
+        h=content-type:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=UuHSvO4L+G9GqIivgiAtAOHPcvQgFz+QDYRRY85kCcY=;
+        b=MwBT2NCaRFwMB+jCVhSeO8xE0PszR//3U/6a1ZGNucnCslu5BPobK87K1bkVDVioPV
+         R1WyC9Zpw6tOk/YZhfLF5hKMS70ABQmLRks/c2X3o1jVHUK9kKYQny+jnI6nNCy2R5+E
+         6zZdEOyV8rQCyHEaZGYeUWqb/HkdzmFlqc9OkCSWstcyuO5T1U3BZuph+++NjMxKoc1B
+         up5H61X3S2pVP+Bh0ix9GY03OoePN3nZmDKeHXehq/E51JOLjnZ00wG3AUE6y+hpNpfZ
+         hQ8d3ojmhAT57NuRN00C46FM6fEHlHf4pSOzxnwqHjWTqTlWQHyIM63M68LTN1ODs+B1
+         1zpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786734534; x=1787339334;
+        h=content-type:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=UuHSvO4L+G9GqIivgiAtAOHPcvQgFz+QDYRRY85kCcY=;
+        b=J0xWu9pTFKrZWs4YdP0YDhgIz9ycsqURD659pu83ZpsptPCVilTbo4W2P+Fg8q1HBS
+         ZMOzkdUVbU8UxFuPyhyT4yj6FnskqSLYWqLzsv1Jh7AZjcykBdkyx22LUJ00tL5AFg3Q
+         lKxMMoOSMV+Eq0z4Kf3zCfyUMC6y8WVDc9B+g7njoUSyyocew+KNH6C7izZ1QpcHbRqp
+         BFnltO/GlwrLpiDI89UmVgBSNSjeuiVODQPAPcXEtQgeDJLG5pGCd1RiT4uyLGU7Zv5Q
+         RxOkZgosa1KMtaATUsM9JM2WKZQz0/fHPe/zDjf7nQVljtZW8ZNEMPSGBgbGRCqL4zSg
+         PBlw==
+X-Gm-Message-State: AOJu0Ywhc0LPIZttoLHYkSlK0ccaMPX+t2dK2f7hiSU5jtBsuWrm0JOS
+	jLNwpnlf7OpvAEeLbACODynsTJzRqD4SH7SastHicWosCpxWekgneppcQ/2J3bqf2SIkeNRF97J
+	n/T6Y2dMV1ZSRSQUIi4ap3Cp1RAAY7sg8RPaQ
+X-Gm-Gg: AR+sD126q102xdF+VcibWBKXf3DVzHsgfs3XhRaAw7Vl7y3wnVxw+ULA8vQ7VGhcenb
+	KKhiN1RQafuKtS2YpcBqrxnvB7rENObttWVUW0AZ2tMCW/LDEl5UO908Cgs1M/YNEHTL/GROAh3
+	/TwYDKGRfKhLTPyssuT5L8KQ4xvRbw1KxJ1y0XI+EabHlzFH6MHLgFlEpHYnP0NAcNZb2dXrFp4
+	4yB4S2I4etU/+5Sc1sU8yHlRVodn7VxdWef3HPOXTHwUFmMuIJAXXsuJwvQW/+PJXRK1gVaq5a0
+	VfAQ/y6mqNG+LDyGtT0iiflzrs2Gf1rt+Nirguee6jOjORTJcueteyohK1bFG98GuUOxQKkz12k
+	=
+X-Received: by 2002:a05:6402:5191:b0:69e:2ca5:53bb with SMTP id
+ 4fb4d7f45d1cf-6a38ac8853cmr3358077a12.0.1786734534254; Fri, 14 Aug 2026
+ 12:08:54 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAP=UcF+tPXqJHPokDr_acg6xtmMuWwbjVbS0eMtp40G4c7v-vA@mail.gmail.com>
+In-Reply-To: <CAP=UcF+tPXqJHPokDr_acg6xtmMuWwbjVbS0eMtp40G4c7v-vA@mail.gmail.com>
+From: Naji Kayal <najikayal4@gmail.com>
+Date: Fri, 14 Aug 2026 22:08:41 +0300
+X-Gm-Features: AcwNN1X2rYeAto0fK4VIxO21kFVupvSH8_vEQ9f4I2EC0OjYR007XNOd3FU01bs
+Message-ID: <CAP=UcF+0=PGd41Fp-pMb-ENAD1V8ayZDUfwxN2Fhg0QJsaLE5g@mail.gmail.com>
+Subject: Fwd: Police-Thief series result: winner vibecode (reported by police)
+To: agentsorch@gmail.com
+Content-Type: multipart/mixed; boundary="000000000000391b5e0659068d8c"
+
+--000000000000391b5e0659068d8c
+Content-Type: multipart/alternative; boundary="000000000000391b5d0659068d8a"
+
+--000000000000391b5d0659068d8a
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+---------- Forwarded message ---------
+From: Naji Kayal <najikayal4@gmail.com>
+Date: Fri, 14 Aug 2026 at 22:03
+Subject: Police-Thief series result: winner vibecode (reported by police)
+To: <rmisegal+uoh26finalgame@gmail.com>
+
+
+{"all_configs":["config_najamjad-vs-vibecode_g01.json","config_najamjad-vs-=
+vibecode_g02.json","config_najamjad-vs-vibecode_g03.json","config_najamjad-=
+vs-vibecode_g04.json","config_najamjad-vs-vibecode_g05.json","config_najamj=
+ad-vs-vibecode_g06.json"],"all_logs":["log_najamjad-vs-vibecode_g01.json","=
+log_najamjad-vs-vibecode_g02.json","log_najamjad-vs-vibecode_g03.json","log=
+_najamjad-vs-vibecode_g04.json","log_najamjad-vs-vibecode_g05.json","log_na=
+jamjad-vs-vibecode_g06.json"],"final_result":{"diversity_reward_applied":{"=
+najamjad":false,"vibecode":true},"first_meeting_between_groups":true,"games=
+_played_including_this":{"najamjad":3,"vibecode":5},"series_tie":false,"sub=
+_games_won":{"najamjad":0,"vibecode":6},"technical_endings":0,"ties":0,"tok=
+ens_total_series":{"najamjad":0,"vibecode":0},"total_score":{"najamjad":30,=
+"vibecode":90},"winner_group":"vibecode"},"game_id":"najamjad-vs-vibecode",=
+"game_uid":"eb6ddfa3-6dde-836d-78d5-8c4e8e2d1372","groups":["najamjad","vib=
+ecode"],"links":{"config":"config_najamjad-vs-vibecode_g01.json","declarati=
+on":"declaration_najamjad-vs-vibecode.json","log":"log_najamjad-vs-vibecode=
+_g01.json","result":"result_najamjad-vs-vibecode.json"},"mutual_agreement":=
+{"confirmed":true,"opponent_group_id":"vibecode","sha256":"041880e56de2349c=
+f23f20ea20b713891a249fbecb1e2703809cda06458ec790"},"num_sub_games":6,"repor=
+t_type":"final_game_result","repositories":{"najamjad":{"cop":"
+https://github.com/najikay/najamjad-cop","thief":"
+https://github.com/najikay/najamjad-thief"},"vibecode":{"cop":"
+https://github.com/AmitKuper/vibecode-cop","thief":"
+https://github.com/AmitKuper/vibecode-thief
+"}},"schema_version":"1.1","sub_games":[{"audit":{"log_verified":true,"tamp=
+ered":false},"ended_at":"2026-08-14T19:00:18.508688+00:00","github_commit":=
+{"najamjad":"f80d07cbfacc49b2763bd9e1ea710c1b61a2ce2a","vibecode":"8dc9ff66=
+094a0aa9c1f87ae8c8625c1a88c63b32"},"log_files":{"najamjad":"log_najamjad-vs=
+-vibecode_g01.json","vibecode":"log_najamjad-vs-vibecode_g01.json"},"result=
+":"survival","roles":{"najamjad":"police","vibecode":"thief"},"score":{"naj=
+amjad":5,"vibecode":10},"started_at":"2026-08-14T18:59:45.819026+00:00","su=
+b_game_number":1,"tie":false,"tokens":{"najamjad":0,"vibecode":0},"winner_g=
+roup":"vibecode"},{"audit":{"log_verified":true,"tampered":false},"ended_at=
+":"2026-08-14T19:00:45.219595+00:00","github_commit":{"najamjad":"f80d07cbf=
+acc49b2763bd9e1ea710c1b61a2ce2a","vibecode":"6c3ea00d33ece171c0c7a8c5fd8eff=
+52ac677992"},"log_files":{"najamjad":"log_najamjad-vs-vibecode_g02.json","v=
+ibecode":"log_najamjad-vs-vibecode_g02.json"},"result":"capture","roles":{"=
+najamjad":"thief","vibecode":"police"},"score":{"najamjad":5,"vibecode":20}=
+,"started_at":"2026-08-14T19:00:24.002409+00:00","sub_game_number":2,"tie":=
+false,"tokens":{"najamjad":0,"vibecode":0},"winner_group":"vibecode"},{"aud=
+it":{"log_verified":true,"tampered":false},"ended_at":"2026-08-14T19:01:15.=
+820892+00:00","github_commit":{"najamjad":"f80d07cbfacc49b2763bd9e1ea710c1b=
+61a2ce2a","vibecode":"8dc9ff66094a0aa9c1f87ae8c8625c1a88c63b32"},"log_files=
+":{"najamjad":"log_najamjad-vs-vibecode_g03.json","vibecode":"log_najamjad-=
+vs-vibecode_g03.json"},"result":"survival","roles":{"najamjad":"police","vi=
+becode":"thief"},"score":{"najamjad":5,"vibecode":10},"started_at":"2026-08=
+-14T19:00:50.641810+00:00","sub_game_number":3,"tie":false,"tokens":{"najam=
+jad":0,"vibecode":0},"winner_group":"vibecode"},{"audit":{"log_verified":tr=
+ue,"tampered":false},"ended_at":"2026-08-14T19:01:41.646091+00:00","github_=
+commit":{"najamjad":"f80d07cbfacc49b2763bd9e1ea710c1b61a2ce2a","vibecode":"=
+6c3ea00d33ece171c0c7a8c5fd8eff52ac677992"},"log_files":{"najamjad":"log_naj=
+amjad-vs-vibecode_g04.json","vibecode":"log_najamjad-vs-vibecode_g04.json"}=
+,"result":"capture","roles":{"najamjad":"thief","vibecode":"police"},"score=
+":{"najamjad":5,"vibecode":20},"started_at":"2026-08-14T19:01:23.296251+00:=
+00","sub_game_number":4,"tie":false,"tokens":{"najamjad":0,"vibecode":0},"w=
+inner_group":"vibecode"},{"audit":{"log_verified":true,"tampered":false},"e=
+nded_at":"2026-08-14T19:02:31.827511+00:00","github_commit":{"najamjad":"f8=
+0d07cbfacc49b2763bd9e1ea710c1b61a2ce2a","vibecode":"8dc9ff66094a0aa9c1f87ae=
+8c8625c1a88c63b32"},"log_files":{"najamjad":"log_najamjad-vs-vibecode_g05.j=
+son","vibecode":"log_najamjad-vs-vibecode_g05.json"},"result":"survival","r=
+oles":{"najamjad":"police","vibecode":"thief"},"score":{"najamjad":5,"vibec=
+ode":10},"started_at":"2026-08-14T19:01:47.185885+00:00","sub_game_number":=
+5,"tie":false,"tokens":{"najamjad":0,"vibecode":0},"winner_group":"vibecode=
+"},{"audit":{"log_verified":true,"tampered":false},"ended_at":"2026-08-14T1=
+9:02:57.362135+00:00","github_commit":{"najamjad":"f80d07cbfacc49b2763bd9e1=
+ea710c1b61a2ce2a","vibecode":"6c3ea00d33ece171c0c7a8c5fd8eff52ac677992"},"l=
+og_files":{"najamjad":"log_najamjad-vs-vibecode_g06.json","vibecode":"log_n=
+ajamjad-vs-vibecode_g06.json"},"result":"capture","roles":{"najamjad":"thie=
+f","vibecode":"police"},"score":{"najamjad":5,"vibecode":20},"started_at":"=
+2026-08-14T19:02:39.414783+00:00","sub_game_number":6,"tie":false,"tokens":=
+{"najamjad":0,"vibecode":0},"winner_group":"vibecode"}],"timezone":"Asia/Je=
+rusalem"}
+
+--000000000000391b5d0659068d8a
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><br><br><div class=3D"gmail_quote gmail_quote_container"><=
+div dir=3D"ltr" class=3D"gmail_attr">---------- Forwarded message ---------=
+<br>From: <strong class=3D"gmail_sendername" dir=3D"auto">Naji Kayal</stron=
+g> <span dir=3D"auto">&lt;<a href=3D"mailto:najikayal4@gmail.com">najikayal=
+4@gmail.com</a>&gt;</span><br>Date: Fri, 14 Aug 2026 at 22:03<br>Subject: P=
+olice-Thief series result: winner vibecode (reported by police)<br>To:  &lt=
+;<a href=3D"mailto:rmisegal%2Buoh26finalgame@gmail.com">rmisegal+uoh26final=
+game@gmail.com</a>&gt;<br></div><br><br>{&quot;all_configs&quot;:[&quot;con=
+fig_najamjad-vs-vibecode_g01.json&quot;,&quot;config_najamjad-vs-vibecode_g=
+02.json&quot;,&quot;config_najamjad-vs-vibecode_g03.json&quot;,&quot;config=
+_najamjad-vs-vibecode_g04.json&quot;,&quot;config_najamjad-vs-vibecode_g05.=
+json&quot;,&quot;config_najamjad-vs-vibecode_g06.json&quot;],&quot;all_logs=
+&quot;:[&quot;log_najamjad-vs-vibecode_g01.json&quot;,&quot;log_najamjad-vs=
+-vibecode_g02.json&quot;,&quot;log_najamjad-vs-vibecode_g03.json&quot;,&quo=
+t;log_najamjad-vs-vibecode_g04.json&quot;,&quot;log_najamjad-vs-vibecode_g0=
+5.json&quot;,&quot;log_najamjad-vs-vibecode_g06.json&quot;],&quot;final_res=
+ult&quot;:{&quot;diversity_reward_applied&quot;:{&quot;najamjad&quot;:false=
+,&quot;vibecode&quot;:true},&quot;first_meeting_between_groups&quot;:true,&=
+quot;games_played_including_this&quot;:{&quot;najamjad&quot;:3,&quot;vibeco=
+de&quot;:5},&quot;series_tie&quot;:false,&quot;sub_games_won&quot;:{&quot;n=
+ajamjad&quot;:0,&quot;vibecode&quot;:6},&quot;technical_endings&quot;:0,&qu=
+ot;ties&quot;:0,&quot;tokens_total_series&quot;:{&quot;najamjad&quot;:0,&qu=
+ot;vibecode&quot;:0},&quot;total_score&quot;:{&quot;najamjad&quot;:30,&quot=
+;vibecode&quot;:90},&quot;winner_group&quot;:&quot;vibecode&quot;},&quot;ga=
+me_id&quot;:&quot;najamjad-vs-vibecode&quot;,&quot;game_uid&quot;:&quot;eb6=
+ddfa3-6dde-836d-78d5-8c4e8e2d1372&quot;,&quot;groups&quot;:[&quot;najamjad&=
+quot;,&quot;vibecode&quot;],&quot;links&quot;:{&quot;config&quot;:&quot;con=
+fig_najamjad-vs-vibecode_g01.json&quot;,&quot;declaration&quot;:&quot;decla=
+ration_najamjad-vs-vibecode.json&quot;,&quot;log&quot;:&quot;log_najamjad-v=
+s-vibecode_g01.json&quot;,&quot;result&quot;:&quot;result_najamjad-vs-vibec=
+ode.json&quot;},&quot;mutual_agreement&quot;:{&quot;confirmed&quot;:true,&q=
+uot;opponent_group_id&quot;:&quot;vibecode&quot;,&quot;sha256&quot;:&quot;0=
+41880e56de2349cf23f20ea20b713891a249fbecb1e2703809cda06458ec790&quot;},&quo=
+t;num_sub_games&quot;:6,&quot;report_type&quot;:&quot;final_game_result&quo=
+t;,&quot;repositories&quot;:{&quot;najamjad&quot;:{&quot;cop&quot;:&quot;<a=
+ href=3D"https://github.com/najikay/najamjad-cop" rel=3D"noreferrer" target=
+=3D"_blank">https://github.com/najikay/najamjad-cop</a>&quot;,&quot;thief&q=
+uot;:&quot;<a href=3D"https://github.com/najikay/najamjad-thief" rel=3D"nor=
+eferrer" target=3D"_blank">https://github.com/najikay/najamjad-thief</a>&qu=
+ot;},&quot;vibecode&quot;:{&quot;cop&quot;:&quot;<a href=3D"https://github.=
+com/AmitKuper/vibecode-cop" rel=3D"noreferrer" target=3D"_blank">https://gi=
+thub.com/AmitKuper/vibecode-cop</a>&quot;,&quot;thief&quot;:&quot;<a href=
+=3D"https://github.com/AmitKuper/vibecode-thief" rel=3D"noreferrer" target=
+=3D"_blank">https://github.com/AmitKuper/vibecode-thief</a>&quot;}},&quot;s=
+chema_version&quot;:&quot;1.1&quot;,&quot;sub_games&quot;:[{&quot;audit&quo=
+t;:{&quot;log_verified&quot;:true,&quot;tampered&quot;:false},&quot;ended_a=
+t&quot;:&quot;2026-08-14T19:00:18.508688+00:00&quot;,&quot;github_commit&qu=
+ot;:{&quot;najamjad&quot;:&quot;f80d07cbfacc49b2763bd9e1ea710c1b61a2ce2a&qu=
+ot;,&quot;vibecode&quot;:&quot;8dc9ff66094a0aa9c1f87ae8c8625c1a88c63b32&quo=
+t;},&quot;log_files&quot;:{&quot;najamjad&quot;:&quot;log_najamjad-vs-vibec=
+ode_g01.json&quot;,&quot;vibecode&quot;:&quot;log_najamjad-vs-vibecode_g01.=
+json&quot;},&quot;result&quot;:&quot;survival&quot;,&quot;roles&quot;:{&quo=
+t;najamjad&quot;:&quot;police&quot;,&quot;vibecode&quot;:&quot;thief&quot;}=
+,&quot;score&quot;:{&quot;najamjad&quot;:5,&quot;vibecode&quot;:10},&quot;s=
+tarted_at&quot;:&quot;2026-08-14T18:59:45.819026+00:00&quot;,&quot;sub_game=
+_number&quot;:1,&quot;tie&quot;:false,&quot;tokens&quot;:{&quot;najamjad&qu=
+ot;:0,&quot;vibecode&quot;:0},&quot;winner_group&quot;:&quot;vibecode&quot;=
+},{&quot;audit&quot;:{&quot;log_verified&quot;:true,&quot;tampered&quot;:fa=
+lse},&quot;ended_at&quot;:&quot;2026-08-14T19:00:45.219595+00:00&quot;,&quo=
+t;github_commit&quot;:{&quot;najamjad&quot;:&quot;f80d07cbfacc49b2763bd9e1e=
+a710c1b61a2ce2a&quot;,&quot;vibecode&quot;:&quot;6c3ea00d33ece171c0c7a8c5fd=
+8eff52ac677992&quot;},&quot;log_files&quot;:{&quot;najamjad&quot;:&quot;log=
+_najamjad-vs-vibecode_g02.json&quot;,&quot;vibecode&quot;:&quot;log_najamja=
+d-vs-vibecode_g02.json&quot;},&quot;result&quot;:&quot;capture&quot;,&quot;=
+roles&quot;:{&quot;najamjad&quot;:&quot;thief&quot;,&quot;vibecode&quot;:&q=
+uot;police&quot;},&quot;score&quot;:{&quot;najamjad&quot;:5,&quot;vibecode&=
+quot;:20},&quot;started_at&quot;:&quot;2026-08-14T19:00:24.002409+00:00&quo=
+t;,&quot;sub_game_number&quot;:2,&quot;tie&quot;:false,&quot;tokens&quot;:{=
+&quot;najamjad&quot;:0,&quot;vibecode&quot;:0},&quot;winner_group&quot;:&qu=
+ot;vibecode&quot;},{&quot;audit&quot;:{&quot;log_verified&quot;:true,&quot;=
+tampered&quot;:false},&quot;ended_at&quot;:&quot;2026-08-14T19:01:15.820892=
++00:00&quot;,&quot;github_commit&quot;:{&quot;najamjad&quot;:&quot;f80d07cb=
+facc49b2763bd9e1ea710c1b61a2ce2a&quot;,&quot;vibecode&quot;:&quot;8dc9ff660=
+94a0aa9c1f87ae8c8625c1a88c63b32&quot;},&quot;log_files&quot;:{&quot;najamja=
+d&quot;:&quot;log_najamjad-vs-vibecode_g03.json&quot;,&quot;vibecode&quot;:=
+&quot;log_najamjad-vs-vibecode_g03.json&quot;},&quot;result&quot;:&quot;sur=
+vival&quot;,&quot;roles&quot;:{&quot;najamjad&quot;:&quot;police&quot;,&quo=
+t;vibecode&quot;:&quot;thief&quot;},&quot;score&quot;:{&quot;najamjad&quot;=
+:5,&quot;vibecode&quot;:10},&quot;started_at&quot;:&quot;2026-08-14T19:00:5=
+0.641810+00:00&quot;,&quot;sub_game_number&quot;:3,&quot;tie&quot;:false,&q=
+uot;tokens&quot;:{&quot;najamjad&quot;:0,&quot;vibecode&quot;:0},&quot;winn=
+er_group&quot;:&quot;vibecode&quot;},{&quot;audit&quot;:{&quot;log_verified=
+&quot;:true,&quot;tampered&quot;:false},&quot;ended_at&quot;:&quot;2026-08-=
+14T19:01:41.646091+00:00&quot;,&quot;github_commit&quot;:{&quot;najamjad&qu=
+ot;:&quot;f80d07cbfacc49b2763bd9e1ea710c1b61a2ce2a&quot;,&quot;vibecode&quo=
+t;:&quot;6c3ea00d33ece171c0c7a8c5fd8eff52ac677992&quot;},&quot;log_files&qu=
+ot;:{&quot;najamjad&quot;:&quot;log_najamjad-vs-vibecode_g04.json&quot;,&qu=
+ot;vibecode&quot;:&quot;log_najamjad-vs-vibecode_g04.json&quot;},&quot;resu=
+lt&quot;:&quot;capture&quot;,&quot;roles&quot;:{&quot;najamjad&quot;:&quot;=
+thief&quot;,&quot;vibecode&quot;:&quot;police&quot;},&quot;score&quot;:{&qu=
+ot;najamjad&quot;:5,&quot;vibecode&quot;:20},&quot;started_at&quot;:&quot;2=
+026-08-14T19:01:23.296251+00:00&quot;,&quot;sub_game_number&quot;:4,&quot;t=
+ie&quot;:false,&quot;tokens&quot;:{&quot;najamjad&quot;:0,&quot;vibecode&qu=
+ot;:0},&quot;winner_group&quot;:&quot;vibecode&quot;},{&quot;audit&quot;:{&=
+quot;log_verified&quot;:true,&quot;tampered&quot;:false},&quot;ended_at&quo=
+t;:&quot;2026-08-14T19:02:31.827511+00:00&quot;,&quot;github_commit&quot;:{=
+&quot;najamjad&quot;:&quot;f80d07cbfacc49b2763bd9e1ea710c1b61a2ce2a&quot;,&=
+quot;vibecode&quot;:&quot;8dc9ff66094a0aa9c1f87ae8c8625c1a88c63b32&quot;},&=
+quot;log_files&quot;:{&quot;najamjad&quot;:&quot;log_najamjad-vs-vibecode_g=
+05.json&quot;,&quot;vibecode&quot;:&quot;log_najamjad-vs-vibecode_g05.json&=
+quot;},&quot;result&quot;:&quot;survival&quot;,&quot;roles&quot;:{&quot;naj=
+amjad&quot;:&quot;police&quot;,&quot;vibecode&quot;:&quot;thief&quot;},&quo=
+t;score&quot;:{&quot;najamjad&quot;:5,&quot;vibecode&quot;:10},&quot;starte=
+d_at&quot;:&quot;2026-08-14T19:01:47.185885+00:00&quot;,&quot;sub_game_numb=
+er&quot;:5,&quot;tie&quot;:false,&quot;tokens&quot;:{&quot;najamjad&quot;:0=
+,&quot;vibecode&quot;:0},&quot;winner_group&quot;:&quot;vibecode&quot;},{&q=
+uot;audit&quot;:{&quot;log_verified&quot;:true,&quot;tampered&quot;:false},=
+&quot;ended_at&quot;:&quot;2026-08-14T19:02:57.362135+00:00&quot;,&quot;git=
+hub_commit&quot;:{&quot;najamjad&quot;:&quot;f80d07cbfacc49b2763bd9e1ea710c=
+1b61a2ce2a&quot;,&quot;vibecode&quot;:&quot;6c3ea00d33ece171c0c7a8c5fd8eff5=
+2ac677992&quot;},&quot;log_files&quot;:{&quot;najamjad&quot;:&quot;log_naja=
+mjad-vs-vibecode_g06.json&quot;,&quot;vibecode&quot;:&quot;log_najamjad-vs-=
+vibecode_g06.json&quot;},&quot;result&quot;:&quot;capture&quot;,&quot;roles=
+&quot;:{&quot;najamjad&quot;:&quot;thief&quot;,&quot;vibecode&quot;:&quot;p=
+olice&quot;},&quot;score&quot;:{&quot;najamjad&quot;:5,&quot;vibecode&quot;=
+:20},&quot;started_at&quot;:&quot;2026-08-14T19:02:39.414783+00:00&quot;,&q=
+uot;sub_game_number&quot;:6,&quot;tie&quot;:false,&quot;tokens&quot;:{&quot=
+;najamjad&quot;:0,&quot;vibecode&quot;:0},&quot;winner_group&quot;:&quot;vi=
+becode&quot;}],&quot;timezone&quot;:&quot;Asia/Jerusalem&quot;}<br>
+</div></div>
+
+--000000000000391b5d0659068d8a--
+--000000000000391b5e0659068d8c
+Content-Type: application/json; name="result_najamjad-vs-vibecode.json"
+Content-Disposition: attachment; filename="result_najamjad-vs-vibecode.json"
+Content-Transfer-Encoding: base64
+Content-ID: <1a001ad0b3eb7be11e41>
+X-Attachment-Id: 1a001ad0b3eb7be11e41
+
+eyJhbGxfY29uZmlncyI6WyJjb25maWdfbmFqYW1qYWQtdnMtdmliZWNvZGVfZzAxLmpzb24iLCJj
+b25maWdfbmFqYW1qYWQtdnMtdmliZWNvZGVfZzAyLmpzb24iLCJjb25maWdfbmFqYW1qYWQtdnMt
+dmliZWNvZGVfZzAzLmpzb24iLCJjb25maWdfbmFqYW1qYWQtdnMtdmliZWNvZGVfZzA0Lmpzb24i
+LCJjb25maWdfbmFqYW1qYWQtdnMtdmliZWNvZGVfZzA1Lmpzb24iLCJjb25maWdfbmFqYW1qYWQt
+dnMtdmliZWNvZGVfZzA2Lmpzb24iXSwiYWxsX2xvZ3MiOlsibG9nX25hamFtamFkLXZzLXZpYmVj
+b2RlX2cwMS5qc29uIiwibG9nX25hamFtamFkLXZzLXZpYmVjb2RlX2cwMi5qc29uIiwibG9nX25h
+amFtamFkLXZzLXZpYmVjb2RlX2cwMy5qc29uIiwibG9nX25hamFtamFkLXZzLXZpYmVjb2RlX2cw
+NC5qc29uIiwibG9nX25hamFtamFkLXZzLXZpYmVjb2RlX2cwNS5qc29uIiwibG9nX25hamFtamFk
+LXZzLXZpYmVjb2RlX2cwNi5qc29uIl0sImZpbmFsX3Jlc3VsdCI6eyJkaXZlcnNpdHlfcmV3YXJk
+X2FwcGxpZWQiOnsibmFqYW1qYWQiOmZhbHNlLCJ2aWJlY29kZSI6dHJ1ZX0sImZpcnN0X21lZXRp
+bmdfYmV0d2Vlbl9ncm91cHMiOnRydWUsImdhbWVzX3BsYXllZF9pbmNsdWRpbmdfdGhpcyI6eyJu
+YWphbWphZCI6MywidmliZWNvZGUiOjV9LCJzZXJpZXNfdGllIjpmYWxzZSwic3ViX2dhbWVzX3dv
+biI6eyJuYWphbWphZCI6MCwidmliZWNvZGUiOjZ9LCJ0ZWNobmljYWxfZW5kaW5ncyI6MCwidGll
+cyI6MCwidG9rZW5zX3RvdGFsX3NlcmllcyI6eyJuYWphbWphZCI6MCwidmliZWNvZGUiOjB9LCJ0
+b3RhbF9zY29yZSI6eyJuYWphbWphZCI6MzAsInZpYmVjb2RlIjo5MH0sIndpbm5lcl9ncm91cCI6
+InZpYmVjb2RlIn0sImdhbWVfaWQiOiJuYWphbWphZC12cy12aWJlY29kZSIsImdhbWVfdWlkIjoi
+ZWI2ZGRmYTMtNmRkZS04MzZkLTc4ZDUtOGM0ZThlMmQxMzcyIiwiZ3JvdXBzIjpbIm5hamFtamFk
+IiwidmliZWNvZGUiXSwibGlua3MiOnsiY29uZmlnIjoiY29uZmlnX25hamFtamFkLXZzLXZpYmVj
+b2RlX2cwMS5qc29uIiwiZGVjbGFyYXRpb24iOiJkZWNsYXJhdGlvbl9uYWphbWphZC12cy12aWJl
+Y29kZS5qc29uIiwibG9nIjoibG9nX25hamFtamFkLXZzLXZpYmVjb2RlX2cwMS5qc29uIiwicmVz
+dWx0IjoicmVzdWx0X25hamFtamFkLXZzLXZpYmVjb2RlLmpzb24ifSwibXV0dWFsX2FncmVlbWVu
+dCI6eyJjb25maXJtZWQiOnRydWUsIm9wcG9uZW50X2dyb3VwX2lkIjoidmliZWNvZGUiLCJzaGEy
+NTYiOiIwNDE4ODBlNTZkZTIzNDljZjIzZjIwZWEyMGI3MTM4OTFhMjQ5ZmJlY2IxZTI3MDM4MDlj
+ZGEwNjQ1OGVjNzkwIn0sIm51bV9zdWJfZ2FtZXMiOjYsInJlcG9ydF90eXBlIjoiZmluYWxfZ2Ft
+ZV9yZXN1bHQiLCJyZXBvc2l0b3JpZXMiOnsibmFqYW1qYWQiOnsiY29wIjoiaHR0cHM6Ly9naXRo
+dWIuY29tL25hamlrYXkvbmFqYW1qYWQtY29wIiwidGhpZWYiOiJodHRwczovL2dpdGh1Yi5jb20v
+bmFqaWtheS9uYWphbWphZC10aGllZiJ9LCJ2aWJlY29kZSI6eyJjb3AiOiJodHRwczovL2dpdGh1
+Yi5jb20vQW1pdEt1cGVyL3ZpYmVjb2RlLWNvcCIsInRoaWVmIjoiaHR0cHM6Ly9naXRodWIuY29t
+L0FtaXRLdXBlci92aWJlY29kZS10aGllZiJ9fSwic2NoZW1hX3ZlcnNpb24iOiIxLjEiLCJzdWJf
+Z2FtZXMiOlt7ImF1ZGl0Ijp7ImxvZ192ZXJpZmllZCI6dHJ1ZSwidGFtcGVyZWQiOmZhbHNlfSwi
+ZW5kZWRfYXQiOiIyMDI2LTA4LTE0VDE5OjAwOjE4LjUwODY4OCswMDowMCIsImdpdGh1Yl9jb21t
+aXQiOnsibmFqYW1qYWQiOiJmODBkMDdjYmZhY2M0OWIyNzYzYmQ5ZTFlYTcxMGMxYjYxYTJjZTJh
+IiwidmliZWNvZGUiOiI4ZGM5ZmY2NjA5NGEwYWE5YzFmODdhZThjODYyNWMxYTg4YzYzYjMyIn0s
+ImxvZ19maWxlcyI6eyJuYWphbWphZCI6ImxvZ19uYWphbWphZC12cy12aWJlY29kZV9nMDEuanNv
+biIsInZpYmVjb2RlIjoibG9nX25hamFtamFkLXZzLXZpYmVjb2RlX2cwMS5qc29uIn0sInJlc3Vs
+dCI6InN1cnZpdmFsIiwicm9sZXMiOnsibmFqYW1qYWQiOiJwb2xpY2UiLCJ2aWJlY29kZSI6InRo
+aWVmIn0sInNjb3JlIjp7Im5hamFtamFkIjo1LCJ2aWJlY29kZSI6MTB9LCJzdGFydGVkX2F0Ijoi
+MjAyNi0wOC0xNFQxODo1OTo0NS44MTkwMjYrMDA6MDAiLCJzdWJfZ2FtZV9udW1iZXIiOjEsInRp
+ZSI6ZmFsc2UsInRva2VucyI6eyJuYWphbWphZCI6MCwidmliZWNvZGUiOjB9LCJ3aW5uZXJfZ3Jv
+dXAiOiJ2aWJlY29kZSJ9LHsiYXVkaXQiOnsibG9nX3ZlcmlmaWVkIjp0cnVlLCJ0YW1wZXJlZCI6
+ZmFsc2V9LCJlbmRlZF9hdCI6IjIwMjYtMDgtMTRUMTk6MDA6NDUuMjE5NTk1KzAwOjAwIiwiZ2l0
+aHViX2NvbW1pdCI6eyJuYWphbWphZCI6ImY4MGQwN2NiZmFjYzQ5YjI3NjNiZDllMWVhNzEwYzFi
+NjFhMmNlMmEiLCJ2aWJlY29kZSI6IjZjM2VhMDBkMzNlY2UxNzFjMGM3YThjNWZkOGVmZjUyYWM2
+Nzc5OTIifSwibG9nX2ZpbGVzIjp7Im5hamFtamFkIjoibG9nX25hamFtamFkLXZzLXZpYmVjb2Rl
+X2cwMi5qc29uIiwidmliZWNvZGUiOiJsb2dfbmFqYW1qYWQtdnMtdmliZWNvZGVfZzAyLmpzb24i
+fSwicmVzdWx0IjoiY2FwdHVyZSIsInJvbGVzIjp7Im5hamFtamFkIjoidGhpZWYiLCJ2aWJlY29k
+ZSI6InBvbGljZSJ9LCJzY29yZSI6eyJuYWphbWphZCI6NSwidmliZWNvZGUiOjIwfSwic3RhcnRl
+ZF9hdCI6IjIwMjYtMDgtMTRUMTk6MDA6MjQuMDAyNDA5KzAwOjAwIiwic3ViX2dhbWVfbnVtYmVy
+IjoyLCJ0aWUiOmZhbHNlLCJ0b2tlbnMiOnsibmFqYW1qYWQiOjAsInZpYmVjb2RlIjowfSwid2lu
+bmVyX2dyb3VwIjoidmliZWNvZGUifSx7ImF1ZGl0Ijp7ImxvZ192ZXJpZmllZCI6dHJ1ZSwidGFt
+cGVyZWQiOmZhbHNlfSwiZW5kZWRfYXQiOiIyMDI2LTA4LTE0VDE5OjAxOjE1LjgyMDg5MiswMDow
+MCIsImdpdGh1Yl9jb21taXQiOnsibmFqYW1qYWQiOiJmODBkMDdjYmZhY2M0OWIyNzYzYmQ5ZTFl
+YTcxMGMxYjYxYTJjZTJhIiwidmliZWNvZGUiOiI4ZGM5ZmY2NjA5NGEwYWE5YzFmODdhZThjODYy
+NWMxYTg4YzYzYjMyIn0sImxvZ19maWxlcyI6eyJuYWphbWphZCI6ImxvZ19uYWphbWphZC12cy12
+aWJlY29kZV9nMDMuanNvbiIsInZpYmVjb2RlIjoibG9nX25hamFtamFkLXZzLXZpYmVjb2RlX2cw
+My5qc29uIn0sInJlc3VsdCI6InN1cnZpdmFsIiwicm9sZXMiOnsibmFqYW1qYWQiOiJwb2xpY2Ui
+LCJ2aWJlY29kZSI6InRoaWVmIn0sInNjb3JlIjp7Im5hamFtamFkIjo1LCJ2aWJlY29kZSI6MTB9
+LCJzdGFydGVkX2F0IjoiMjAyNi0wOC0xNFQxOTowMDo1MC42NDE4MTArMDA6MDAiLCJzdWJfZ2Ft
+ZV9udW1iZXIiOjMsInRpZSI6ZmFsc2UsInRva2VucyI6eyJuYWphbWphZCI6MCwidmliZWNvZGUi
+OjB9LCJ3aW5uZXJfZ3JvdXAiOiJ2aWJlY29kZSJ9LHsiYXVkaXQiOnsibG9nX3ZlcmlmaWVkIjp0
+cnVlLCJ0YW1wZXJlZCI6ZmFsc2V9LCJlbmRlZF9hdCI6IjIwMjYtMDgtMTRUMTk6MDE6NDEuNjQ2
+MDkxKzAwOjAwIiwiZ2l0aHViX2NvbW1pdCI6eyJuYWphbWphZCI6ImY4MGQwN2NiZmFjYzQ5YjI3
+NjNiZDllMWVhNzEwYzFiNjFhMmNlMmEiLCJ2aWJlY29kZSI6IjZjM2VhMDBkMzNlY2UxNzFjMGM3
+YThjNWZkOGVmZjUyYWM2Nzc5OTIifSwibG9nX2ZpbGVzIjp7Im5hamFtamFkIjoibG9nX25hamFt
+amFkLXZzLXZpYmVjb2RlX2cwNC5qc29uIiwidmliZWNvZGUiOiJsb2dfbmFqYW1qYWQtdnMtdmli
+ZWNvZGVfZzA0Lmpzb24ifSwicmVzdWx0IjoiY2FwdHVyZSIsInJvbGVzIjp7Im5hamFtamFkIjoi
+dGhpZWYiLCJ2aWJlY29kZSI6InBvbGljZSJ9LCJzY29yZSI6eyJuYWphbWphZCI6NSwidmliZWNv
+ZGUiOjIwfSwic3RhcnRlZF9hdCI6IjIwMjYtMDgtMTRUMTk6MDE6MjMuMjk2MjUxKzAwOjAwIiwi
+c3ViX2dhbWVfbnVtYmVyIjo0LCJ0aWUiOmZhbHNlLCJ0b2tlbnMiOnsibmFqYW1qYWQiOjAsInZp
+YmVjb2RlIjowfSwid2lubmVyX2dyb3VwIjoidmliZWNvZGUifSx7ImF1ZGl0Ijp7ImxvZ192ZXJp
+ZmllZCI6dHJ1ZSwidGFtcGVyZWQiOmZhbHNlfSwiZW5kZWRfYXQiOiIyMDI2LTA4LTE0VDE5OjAy
+OjMxLjgyNzUxMSswMDowMCIsImdpdGh1Yl9jb21taXQiOnsibmFqYW1qYWQiOiJmODBkMDdjYmZh
+Y2M0OWIyNzYzYmQ5ZTFlYTcxMGMxYjYxYTJjZTJhIiwidmliZWNvZGUiOiI4ZGM5ZmY2NjA5NGEw
+YWE5YzFmODdhZThjODYyNWMxYTg4YzYzYjMyIn0sImxvZ19maWxlcyI6eyJuYWphbWphZCI6Imxv
+Z19uYWphbWphZC12cy12aWJlY29kZV9nMDUuanNvbiIsInZpYmVjb2RlIjoibG9nX25hamFtamFk
+LXZzLXZpYmVjb2RlX2cwNS5qc29uIn0sInJlc3VsdCI6InN1cnZpdmFsIiwicm9sZXMiOnsibmFq
+YW1qYWQiOiJwb2xpY2UiLCJ2aWJlY29kZSI6InRoaWVmIn0sInNjb3JlIjp7Im5hamFtamFkIjo1
+LCJ2aWJlY29kZSI6MTB9LCJzdGFydGVkX2F0IjoiMjAyNi0wOC0xNFQxOTowMTo0Ny4xODU4ODUr
+MDA6MDAiLCJzdWJfZ2FtZV9udW1iZXIiOjUsInRpZSI6ZmFsc2UsInRva2VucyI6eyJuYWphbWph
+ZCI6MCwidmliZWNvZGUiOjB9LCJ3aW5uZXJfZ3JvdXAiOiJ2aWJlY29kZSJ9LHsiYXVkaXQiOnsi
+bG9nX3ZlcmlmaWVkIjp0cnVlLCJ0YW1wZXJlZCI6ZmFsc2V9LCJlbmRlZF9hdCI6IjIwMjYtMDgt
+MTRUMTk6MDI6NTcuMzYyMTM1KzAwOjAwIiwiZ2l0aHViX2NvbW1pdCI6eyJuYWphbWphZCI6ImY4
+MGQwN2NiZmFjYzQ5YjI3NjNiZDllMWVhNzEwYzFiNjFhMmNlMmEiLCJ2aWJlY29kZSI6IjZjM2Vh
+MDBkMzNlY2UxNzFjMGM3YThjNWZkOGVmZjUyYWM2Nzc5OTIifSwibG9nX2ZpbGVzIjp7Im5hamFt
+amFkIjoibG9nX25hamFtamFkLXZzLXZpYmVjb2RlX2cwNi5qc29uIiwidmliZWNvZGUiOiJsb2df
+bmFqYW1qYWQtdnMtdmliZWNvZGVfZzA2Lmpzb24ifSwicmVzdWx0IjoiY2FwdHVyZSIsInJvbGVz
+Ijp7Im5hamFtamFkIjoidGhpZWYiLCJ2aWJlY29kZSI6InBvbGljZSJ9LCJzY29yZSI6eyJuYWph
+bWphZCI6NSwidmliZWNvZGUiOjIwfSwic3RhcnRlZF9hdCI6IjIwMjYtMDgtMTRUMTk6MDI6Mzku
+NDE0NzgzKzAwOjAwIiwic3ViX2dhbWVfbnVtYmVyIjo2LCJ0aWUiOmZhbHNlLCJ0b2tlbnMiOnsi
+bmFqYW1qYWQiOjAsInZpYmVjb2RlIjowfSwid2lubmVyX2dyb3VwIjoidmliZWNvZGUifV0sInRp
+bWV6b25lIjoiQXNpYS9KZXJ1c2FsZW0ifQ==
+--000000000000391b5e0659068d8c--
