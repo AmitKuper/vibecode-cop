@@ -1,0 +1,81 @@
+{
+  "_schema": "p2p-police-artifacts",
+  "consensus_signature": "abe852b4a456fd9ad7a554789f48231cafe5147a4819f601b6cd2dd57a445648",
+  "declaration_type": "pre_game_declaration",
+  "declared_at": "2026-08-14T19:02:57.754428+00:00",
+  "game_ended_at": "2026-08-14T19:02:57.754428+00:00",
+  "game_id": "najamjad-vs-vibecode",
+  "game_started_at": "2026-08-14T18:59:45.532562+00:00",
+  "game_uid": "eb6ddfa3-6dde-836d-78d5-8c4e8e2d1372",
+  "groups": {
+    "group_1": {
+      "code_version": "1.00",
+      "counted_games_played": 4,
+      "counted_matches_played": 4,
+      "opponents_already_counted": [
+        "anrbj666",
+        "imreeyal",
+        "rstabcde",
+        "uoh-sqak"
+      ],
+      "group_id": "vibecode",
+      "group_name": "vibecode",
+      "hardware_spec": {
+        "cpu_cores": 16,
+        "cpu_type": "Intel64 Family 6 Model 158 Stepping 13, GenuineIntel",
+        "machine": "AMD64",
+        "os": "Windows 11",
+        "python": "3.13.14",
+        "ram_gb": 34
+      },
+      "hardware_spec_sha256": "7caa489c0d9af45783090ac85dba82f01d34b2e8c5929bb63a5671499bc63b46",
+      "llm_model": "none (template hints; pure-Python algorithmic movement)",
+      "mcp_servers": {
+        "cop": "http://62.56.220.143:61224/mcp",
+        "thief": "http://62.56.220.143:61223/mcp"
+      },
+      "members": [
+        "Ron Marom",
+        "Amit Kuperminz"
+      ],
+      "repos": {
+        "cop": "https://github.com/AmitKuper/vibecode-cop",
+        "thief": "https://github.com/AmitKuper/vibecode-thief"
+      },
+      "signature": "sha256:1616aa29caa74de2bd3106d17b9e3ba3dcccf429f4c415827d7cf376bec02a5b"
+    },
+    "group_2": {
+      "group_id": "najamjad",
+      "group_name": "NajAmjad",
+      "counted_games_played": 2,
+      "hardware_spec": {},
+      "hardware_spec_sha256": "",
+      "llm_model": "deepseek-v4-flash",
+      "mcp_servers": {
+        "cop": "https://cop.4laboratory.com/mcp",
+        "thief": "https://cop.4laboratory.com/mcp"
+      },
+      "members": [
+        "Naji Kayal",
+        "Amjad Abed"
+      ],
+      "repos": {
+        "cop": "https://github.com/najikay/najamjad-cop",
+        "thief": "https://github.com/najikay/najamjad-thief"
+      },
+      "signature": "undeclared"
+    }
+  },
+  "links": {
+    "config": "config_najamjad-vs-vibecode_g<NN>.json",
+    "declaration": "declaration_najamjad-vs-vibecode.json",
+    "log": "log_najamjad-vs-vibecode_g<NN>.json",
+    "result": "result_najamjad-vs-vibecode.json"
+  },
+  "max_tokens_per_game": 200000,
+  "num_sub_games": 6,
+  "report_type": "declaration",
+  "schema_version": "1.00",
+  "timezone": "Asia/Jerusalem",
+  "token_budget_per_series": 200000
+}

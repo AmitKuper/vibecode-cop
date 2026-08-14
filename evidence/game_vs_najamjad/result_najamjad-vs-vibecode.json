@@ -1,0 +1,253 @@
+{
+  "_schema": "Summary and final result for the WHOLE series between two teams: per-sub-game scores + aggregate; identity lives in the declaration.",
+  "schema_version": "1.1",
+  "report_type": "final_game_result",
+  "game_id": "najamjad-vs-vibecode",
+  "game_uid": "eb6ddfa3-6dde-836d-78d5-8c4e8e2d1372",
+  "links": {
+    "declaration": "declaration_najamjad-vs-vibecode.json",
+    "config": "config_najamjad-vs-vibecode_g<NN>.json",
+    "log": "log_najamjad-vs-vibecode_g<NN>.json",
+    "result": "result_najamjad-vs-vibecode.json",
+    "github": {
+      "vibecode": {
+        "cop": "https://github.com/AmitKuper/vibecode-cop",
+        "thief": "https://github.com/AmitKuper/vibecode-thief"
+      },
+      "najamjad": {
+        "cop": "https://github.com/najikay/najamjad-cop",
+        "thief": "https://github.com/najikay/najamjad-thief"
+      }
+    }
+  },
+  "timezone": "Asia/Jerusalem",
+  "groups": [
+    "najamjad",
+    "vibecode"
+  ],
+  "num_sub_games": 6,
+  "sub_games": [
+    {
+      "sub_game_number": 1,
+      "roles": {
+        "vibecode": "thief",
+        "najamjad": "police"
+      },
+      "started_at": "2026-08-14T18:59:45.532562+00:00",
+      "ended_at": "2026-08-14T19:00:18.838868+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "8dc9ff66094a0aa9c1f87ae8c8625c1a88c63b32",
+        "najamjad": "f80d07cbfacc49b2763bd9e1ea710c1b61a2ce2a"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "najamjad": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "najamjad": 5
+      },
+      "log_files": {
+        "vibecode": "log_najamjad-vs-vibecode_g01.json",
+        "najamjad": "log_najamjad-vs-vibecode_g01.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 2,
+      "roles": {
+        "vibecode": "police",
+        "najamjad": "thief"
+      },
+      "started_at": "2026-08-14T19:00:23.751743+00:00",
+      "ended_at": "2026-08-14T19:00:45.542588+00:00",
+      "result": "capture",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "6c3ea00d33ece171c0c7a8c5fd8eff52ac677992",
+        "najamjad": "f80d07cbfacc49b2763bd9e1ea710c1b61a2ce2a"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "najamjad": 0
+      },
+      "score": {
+        "vibecode": 20,
+        "najamjad": 5
+      },
+      "log_files": {
+        "vibecode": "log_najamjad-vs-vibecode_g02.json",
+        "najamjad": "log_najamjad-vs-vibecode_g02.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 3,
+      "roles": {
+        "vibecode": "thief",
+        "najamjad": "police"
+      },
+      "started_at": "2026-08-14T19:00:50.389217+00:00",
+      "ended_at": "2026-08-14T19:01:17.940881+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "8dc9ff66094a0aa9c1f87ae8c8625c1a88c63b32",
+        "najamjad": "f80d07cbfacc49b2763bd9e1ea710c1b61a2ce2a"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "najamjad": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "najamjad": 5
+      },
+      "log_files": {
+        "vibecode": "log_najamjad-vs-vibecode_g03.json",
+        "najamjad": "log_najamjad-vs-vibecode_g03.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 4,
+      "roles": {
+        "vibecode": "police",
+        "najamjad": "thief"
+      },
+      "started_at": "2026-08-14T19:01:22.970631+00:00",
+      "ended_at": "2026-08-14T19:01:41.989374+00:00",
+      "result": "capture",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "6c3ea00d33ece171c0c7a8c5fd8eff52ac677992",
+        "najamjad": "f80d07cbfacc49b2763bd9e1ea710c1b61a2ce2a"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "najamjad": 0
+      },
+      "score": {
+        "vibecode": 20,
+        "najamjad": 5
+      },
+      "log_files": {
+        "vibecode": "log_najamjad-vs-vibecode_g04.json",
+        "najamjad": "log_najamjad-vs-vibecode_g04.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 5,
+      "roles": {
+        "vibecode": "thief",
+        "najamjad": "police"
+      },
+      "started_at": "2026-08-14T19:01:46.930396+00:00",
+      "ended_at": "2026-08-14T19:02:33.920953+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "8dc9ff66094a0aa9c1f87ae8c8625c1a88c63b32",
+        "najamjad": "f80d07cbfacc49b2763bd9e1ea710c1b61a2ce2a"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "najamjad": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "najamjad": 5
+      },
+      "log_files": {
+        "vibecode": "log_najamjad-vs-vibecode_g05.json",
+        "najamjad": "log_najamjad-vs-vibecode_g05.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 6,
+      "roles": {
+        "vibecode": "police",
+        "najamjad": "thief"
+      },
+      "started_at": "2026-08-14T19:02:39.161511+00:00",
+      "ended_at": "2026-08-14T19:02:57.754428+00:00",
+      "result": "capture",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "6c3ea00d33ece171c0c7a8c5fd8eff52ac677992",
+        "najamjad": "f80d07cbfacc49b2763bd9e1ea710c1b61a2ce2a"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "najamjad": 0
+      },
+      "score": {
+        "vibecode": 20,
+        "najamjad": 5
+      },
+      "log_files": {
+        "vibecode": "log_najamjad-vs-vibecode_g06.json",
+        "najamjad": "log_najamjad-vs-vibecode_g06.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    }
+  ],
+  "final_result": {
+    "total_score": {
+      "vibecode": 90,
+      "najamjad": 30
+    },
+    "sub_games_won": {
+      "vibecode": 6,
+      "najamjad": 0
+    },
+    "ties": 0,
+    "winner_group": "vibecode",
+    "series_tie": false,
+    "tokens_total_series": {
+      "vibecode": 0,
+      "najamjad": 0
+    },
+    "games_played_including_this": {
+      "vibecode": 5,
+      "najamjad": 3
+    },
+    "first_meeting_between_groups": true,
+    "diversity_reward_applied": {
+      "vibecode": true,
+      "najamjad": false
+    }
+  },
+  "mutual_agreement": {
+    "sha256": "041880e56de2349cf23f20ea20b713891a249fbecb1e2703809cda06458ec790",
+    "confirmed": true
+  }
+}

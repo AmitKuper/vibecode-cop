@@ -1,0 +1,492 @@
+21:59:38.553 [match] logging to D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\reports\ref3_matches\match_najamjad_20260814-215938.log
+21:59:40.335 [pw] [08/14/26 21:59:40] INFO     Starting MCP server               transport.py:361
+21:59:40.335 [tw] [08/14/26 21:59:40] INFO     Starting MCP server               transport.py:361
+21:59:40.335 [tw]                              'vibecode-thief' with transport
+21:59:40.335 [tw]                              'http' on
+21:59:40.335 [tw]                              http://0.0.0.0:61223/mcp
+21:59:40.335 [pw]                              'vibecode-police' with transport
+21:59:40.335 [pw]                              'http' on
+21:59:40.336 [pw]                              http://0.0.0.0:61224/mcp
+21:59:40.361 [tw] INFO:     Started server process [16372]
+21:59:40.361 [tw] INFO:     Waiting for application startup.
+21:59:40.361 [pw] INFO:     Started server process [22556]
+21:59:40.361 [pw] INFO:     Waiting for application startup.
+21:59:40.364 [tw] INFO:     Application startup complete.
+21:59:40.364 [pw] INFO:     Application startup complete.
+21:59:40.365 [tw] INFO:     Uvicorn running on http://0.0.0.0:61223 (Press CTRL+C to quit)
+21:59:40.365 [pw] INFO:     Uvicorn running on http://0.0.0.0:61224 (Press CTRL+C to quit)
+21:59:40.489 [tw] [thief-worker] endpoint live on :61223 (pid=16372, log=D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\reports\ref3_matches\worker_thief_20260814-215939.log)
+21:59:40.489 [pw] [police-worker] endpoint live on :61224 (pid=22556, log=D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\reports\ref3_matches\worker_police_20260814-215939.log)
+21:59:40.489 [match] thief worker ready (pid=5388)
+21:59:40.489 [match] police worker ready (pid=8120)
+21:59:40.496 [match] SPLIT arch: cop pid=8120 thief pid=5388 orchestrator holds no game state
+21:59:40.496 [match] sg1 (thief) — dispatching to thief worker
+21:59:40.684 [tw] INFO:     127.0.0.1:54404 - "POST /mcp HTTP/1.1" 400 Bad Request
+21:59:42.349 [tw] [match] peer endpoint UP: https://cop.4laboratory.com/mcp
+21:59:42.783 [tw] INFO:     188.120.129.32:1908 - "POST /mcp HTTP/1.1" 400 Bad Request
+21:59:43.130 [tw] INFO:     188.120.129.32:1910 - "POST /mcp HTTP/1.1" 200 OK
+21:59:43.237 [tw] INFO:     188.120.129.32:1930 - "GET /mcp HTTP/1.1" 200 OK
+21:59:43.246 [tw] INFO:     188.120.129.32:1918 - "POST /mcp HTTP/1.1" 202 Accepted
+21:59:43.325 [tw] INFO:     188.120.129.32:1944 - "POST /mcp HTTP/1.1" 200 OK
+21:59:43.334 [tw] [wire<-] negotiate keys=['game_uid', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms'] group=None role='police' sub_game=1 uid='eb6ddfa3-6dde' scent=81ebee59 wire=None
+21:59:43.560 [tw] INFO:     188.120.129.32:1958 - "POST /mcp HTTP/1.1" 200 OK
+21:59:46.162 [tw] [match] sg1 peer greeting sub_game=1 role=police
+21:59:46.162 [tw] [match] sg1 role=thief handshake OK vs najamjad uid=eb6ddfa3-6dd
+21:59:47.821 [tw] INFO:     188.120.129.32:1960 - "POST /mcp HTTP/1.1" 200 OK
+21:59:47.828 [tw] [wire<-] turn step=1 sender='police' commit=3cef56a3 ts='2026-08-14T18:59:47.795' cells=12 barrier=None claim=None answer=None win=None
+21:59:47.843 [tw] [scent] sg1 step2: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+21:59:48.904 [tw] INFO:     188.120.129.32:1962 - "POST /mcp HTTP/1.1" 200 OK
+21:59:48.907 [tw] [wire<-] turn step=2 sender='police' commit=9846de92 ts='2026-08-14T18:59:48.299' cells=16 barrier=None claim=None answer=None win=None
+21:59:51.066 [tw] INFO:     188.120.129.32:1870 - "POST /mcp HTTP/1.1" 200 OK
+21:59:51.070 [tw] [wire<-] turn step=3 sender='police' commit=381431a8 ts='2026-08-14T18:59:49.410' cells=20 barrier=None claim=None answer=None win=None
+21:59:52.329 [tw] INFO:     188.120.129.32:1876 - "POST /mcp HTTP/1.1" 200 OK
+21:59:52.330 [tw] [wire<-] turn step=4 sender='police' commit=aff828b9 ts='2026-08-14T18:59:51.735' cells=24 barrier=None claim=None answer=None win=None
+21:59:53.539 [tw] INFO:     188.120.129.32:1882 - "POST /mcp HTTP/1.1" 200 OK
+21:59:53.543 [tw] [wire<-] turn step=5 sender='police' commit=48888e71 ts='2026-08-14T18:59:52.963' cells=29 barrier=None claim=None answer=None win=None
+21:59:54.676 [tw] INFO:     188.120.129.32:1900 - "POST /mcp HTTP/1.1" 200 OK
+21:59:54.677 [tw] [wire<-] turn step=6 sender='police' commit=aaf872ac ts='2026-08-14T18:59:54.083' cells=33 barrier=None claim=None answer=None win=None
+21:59:55.940 [tw] INFO:     188.120.129.32:1906 - "POST /mcp HTTP/1.1" 200 OK
+21:59:55.943 [tw] [wire<-] turn step=7 sender='police' commit=d0fda7ea ts='2026-08-14T18:59:55.269' cells=33 barrier=[4, 3] claim=None answer=None win=None
+21:59:57.410 [tw] INFO:     188.120.129.32:1902 - "POST /mcp HTTP/1.1" 200 OK
+21:59:57.414 [tw] [wire<-] turn step=8 sender='police' commit=7d56c595 ts='2026-08-14T18:59:56.439' cells=34 barrier=None claim=None answer=None win=None
+21:59:59.342 [tw] INFO:     188.120.129.32:1912 - "POST /mcp HTTP/1.1" 200 OK
+21:59:59.346 [tw] [wire<-] turn step=9 sender='police' commit=c46b7204 ts='2026-08-14T18:59:58.501' cells=39 barrier=None claim=None answer=None win=None
+22:00:00.651 [tw] INFO:     188.120.129.32:1926 - "POST /mcp HTTP/1.1" 200 OK
+22:00:00.654 [tw] [wire<-] turn step=10 sender='police' commit=2f0c359b ts='2026-08-14T19:00:00.198' cells=34 barrier=None claim=None answer=None win=None
+22:00:01.909 [tw] INFO:     188.120.129.32:1932 - "POST /mcp HTTP/1.1" 200 OK
+22:00:01.913 [tw] [wire<-] turn step=11 sender='police' commit=30b1e430 ts='2026-08-14T19:00:01.110' cells=27 barrier=[5, 3] claim=None answer=None win=None
+22:00:03.018 [tw] INFO:     188.120.129.32:1938 - "POST /mcp HTTP/1.1" 200 OK
+22:00:03.021 [tw] [wire<-] turn step=12 sender='police' commit=6825e8d8 ts='2026-08-14T19:00:02.442' cells=25 barrier=None claim=None answer=None win=None
+22:00:04.016 [tw] INFO:     188.120.129.32:1946 - "POST /mcp HTTP/1.1" 200 OK
+22:00:04.020 [tw] [wire<-] turn step=13 sender='police' commit=3ab74fd1 ts='2026-08-14T19:00:03.404' cells=26 barrier=None claim=None answer=None win=None
+22:00:05.087 [tw] INFO:     188.120.129.32:1878 - "POST /mcp HTTP/1.1" 200 OK
+22:00:05.090 [tw] [wire<-] turn step=14 sender='police' commit=3e803542 ts='2026-08-14T19:00:04.428' cells=24 barrier=None claim=None answer=None win=None
+22:00:06.570 [tw] INFO:     188.120.129.32:1884 - "POST /mcp HTTP/1.1" 200 OK
+22:00:06.571 [tw] [wire<-] turn step=15 sender='police' commit=ff397932 ts='2026-08-14T19:00:05.580' cells=23 barrier=None claim=None answer=None win=None
+22:00:08.277 [tw] INFO:     188.120.129.32:1920 - "POST /mcp HTTP/1.1" 200 OK
+22:00:08.280 [tw] [wire<-] turn step=16 sender='police' commit=75ca1ee4 ts='2026-08-14T19:00:07.243' cells=28 barrier=None claim=None answer=None win=None
+22:00:09.333 [tw] INFO:     188.120.129.32:1928 - "POST /mcp HTTP/1.1" 200 OK
+22:00:09.334 [tw] [wire<-] turn step=17 sender='police' commit=b7c5ade7 ts='2026-08-14T19:00:08.714' cells=32 barrier=None claim=None answer=None win=None
+22:00:09.937 [tw] INFO:     188.120.129.32:1886 - "POST /mcp HTTP/1.1" 200 OK
+22:00:09.938 [tw] [wire<-] turn step=18 sender='police' commit=56fa070d ts='2026-08-14T19:00:09.902' cells=35 barrier=None claim=None answer=None win=None
+22:00:10.433 [tw] INFO:     188.120.129.32:1888 - "POST /mcp HTTP/1.1" 200 OK
+22:00:10.435 [tw] [wire<-] turn step=19 sender='police' commit=692db2b0 ts='2026-08-14T19:00:10.407' cells=34 barrier=[2, 3] claim=None answer=None win=None
+22:00:10.955 [tw] INFO:     188.120.129.32:1890 - "POST /mcp HTTP/1.1" 200 OK
+22:00:10.956 [tw] [wire<-] turn step=20 sender='police' commit=8fd8716b ts='2026-08-14T19:00:10.923' cells=34 barrier=None claim=None answer=None win=None
+22:00:11.507 [tw] INFO:     188.120.129.32:1904 - "POST /mcp HTTP/1.1" 200 OK
+22:00:11.508 [tw] [wire<-] turn step=21 sender='police' commit=84f5acdf ts='2026-08-14T19:00:11.465' cells=37 barrier=None claim=None answer=None win=None
+22:00:12.040 [tw] INFO:     188.120.129.32:1914 - "POST /mcp HTTP/1.1" 200 OK
+22:00:12.045 [tw] [wire<-] turn step=22 sender='police' commit=537d3c28 ts='2026-08-14T19:00:12.010' cells=34 barrier=None claim=None answer=None win=None
+22:00:12.576 [tw] INFO:     188.120.129.32:1916 - "POST /mcp HTTP/1.1" 200 OK
+22:00:12.579 [tw] [wire<-] turn step=23 sender='police' commit=5624d287 ts='2026-08-14T19:00:12.545' cells=30 barrier=None claim=None answer=None win=None
+22:00:12.998 [tw] INFO:     188.120.129.32:1922 - "POST /mcp HTTP/1.1" 200 OK
+22:00:13.001 [tw] [wire<-] turn step=24 sender='police' commit=6e9db039 ts='2026-08-14T19:00:12.967' cells=32 barrier=None claim=None answer=None win=None
+22:00:13.487 [tw] INFO:     188.120.129.32:1924 - "POST /mcp HTTP/1.1" 200 OK
+22:00:13.491 [tw] [wire<-] turn step=25 sender='police' commit=f18e2d8d ts='2026-08-14T19:00:13.453' cells=30 barrier=None claim=None answer=None win=None
+22:00:13.962 [tw] INFO:     188.120.129.32:1934 - "POST /mcp HTTP/1.1" 200 OK
+22:00:13.965 [tw] [wire<-] turn step=26 sender='police' commit=30e52ebe ts='2026-08-14T19:00:13.936' cells=34 barrier=None claim=None answer=None win=None
+22:00:14.463 [tw] INFO:     188.120.129.32:1936 - "POST /mcp HTTP/1.1" 200 OK
+22:00:14.464 [tw] [wire<-] turn step=27 sender='police' commit=cd057569 ts='2026-08-14T19:00:14.414' cells=36 barrier=None claim=None answer=None win=None
+22:00:14.907 [tw] INFO:     188.120.129.32:1940 - "POST /mcp HTTP/1.1" 200 OK
+22:00:14.912 [tw] [wire<-] turn step=28 sender='police' commit=d73ed844 ts='2026-08-14T19:00:14.874' cells=39 barrier=None claim=None answer=None win=None
+22:00:15.439 [tw] INFO:     188.120.129.32:1865 - "POST /mcp HTTP/1.1" 200 OK
+22:00:15.444 [tw] [wire<-] turn step=29 sender='police' commit=4fff9b18 ts='2026-08-14T19:00:15.411' cells=36 barrier=None claim=None answer=None win=None
+22:00:15.977 [tw] INFO:     188.120.129.32:1893 - "POST /mcp HTTP/1.1" 200 OK
+22:00:15.978 [tw] [wire<-] turn step=30 sender='police' commit=5fc52489 ts='2026-08-14T19:00:15.939' cells=34 barrier=None claim=None answer=None win=None
+22:00:16.522 [tw] INFO:     188.120.129.32:1867 - "POST /mcp HTTP/1.1" 200 OK
+22:00:16.525 [tw] [wire<-] turn step=31 sender='police' commit=47e50094 ts='2026-08-14T19:00:16.486' cells=30 barrier=None claim=None answer=None win=None
+22:00:17.066 [tw] INFO:     188.120.129.32:1869 - "POST /mcp HTTP/1.1" 200 OK
+22:00:17.067 [tw] [wire<-] turn step=32 sender='police' commit=67650476 ts='2026-08-14T19:00:17.038' cells=32 barrier=None claim=None answer=None win=None
+22:00:17.504 [tw] INFO:     188.120.129.32:1871 - "POST /mcp HTTP/1.1" 200 OK
+22:00:17.507 [tw] [wire<-] turn step=33 sender='police' commit=ec0fad24 ts='2026-08-14T19:00:17.485' cells=30 barrier=None claim=None answer=None win=None
+22:00:17.911 [tw] INFO:     188.120.129.32:1873 - "POST /mcp HTTP/1.1" 200 OK
+22:00:17.912 [tw] [wire<-] turn step=34 sender='police' commit=864a28ed ts='2026-08-14T19:00:17.886' cells=34 barrier=None claim=None answer=None win=None
+22:00:18.437 [tw] INFO:     188.120.129.32:1875 - "POST /mcp HTTP/1.1" 200 OK
+22:00:18.439 [tw] [wire<-] audit sender='police' records=35 claim='survival'
+22:00:18.517 [tw] INFO:     188.120.129.32:1878 - "DELETE /mcp HTTP/1.1" 200 OK
+22:00:18.839 [tw] [match] sg1 audit ok=True errors=[] outcome=survival rl_moves=35 distinct=5 sample=['S', 'S', 'N', 'S', 'E', 'N', 'STAY', 'S']
+22:00:18.913 [pw] INFO:     188.120.129.32:1879 - "POST /mcp HTTP/1.1" 200 OK
+22:00:19.023 [pw] INFO:     188.120.129.32:1881 - "GET /mcp HTTP/1.1" 200 OK
+22:00:19.030 [pw] INFO:     188.120.129.32:1883 - "POST /mcp HTTP/1.1" 202 Accepted
+22:00:19.112 [pw] INFO:     188.120.129.32:1885 - "POST /mcp HTTP/1.1" 200 OK
+22:00:19.117 [pw] [wire<-] negotiate keys=['game_uid', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms'] group=None role='thief' sub_game=2 uid='eb6ddfa3-6dde' scent=81ebee59 wire=None
+22:00:19.120 [match] sg1 complete
+22:00:19.120 [match] sg2 (police) — dispatching to police worker
+22:00:19.289 [pw] INFO:     188.120.129.32:1887 - "POST /mcp HTTP/1.1" 200 OK
+22:00:19.295 [pw] INFO:     127.0.0.1:61395 - "POST /mcp HTTP/1.1" 400 Bad Request
+22:00:20.673 [pw] [match] peer endpoint UP: https://cop.4laboratory.com/mcp
+22:00:24.075 [pw] INFO:     188.120.129.32:1880 - "POST /mcp HTTP/1.1" 200 OK
+22:00:24.079 [pw] [wire<-] turn step=1 sender='thief' commit=3d83485b ts='2026-08-14T19:00:24.050' cells=25 barrier=None claim=None answer=None win=None
+22:00:24.366 [pw] [match] sg2 peer greeting sub_game=2 role=thief
+22:00:24.366 [pw] [match] sg2 role=police handshake OK vs najamjad uid=eb6ddfa3-6dd
+22:00:25.712 [pw] [scent] sg2 step1: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+22:00:26.489 [pw] INFO:     188.120.129.32:1889 - "POST /mcp HTTP/1.1" 200 OK
+22:00:26.492 [pw] [wire<-] turn step=2 sender='thief' commit=3864ddca ts='2026-08-14T19:00:26.472' cells=30 barrier=None claim=None answer=False win=None
+22:00:27.862 [pw] INFO:     188.120.129.32:1893 - "POST /mcp HTTP/1.1" 200 OK
+22:00:27.863 [pw] [wire<-] turn step=3 sender='thief' commit=2dd23920 ts='2026-08-14T19:00:27.834' cells=30 barrier=None claim=None answer=False win=None
+22:00:29.159 [pw] INFO:     188.120.129.32:1895 - "POST /mcp HTTP/1.1" 200 OK
+22:00:29.161 [pw] [wire<-] turn step=4 sender='thief' commit=3604e4d8 ts='2026-08-14T19:00:29.135' cells=25 barrier=None claim=None answer=False win=None
+22:00:30.308 [pw] INFO:     188.120.129.32:1899 - "POST /mcp HTTP/1.1" 200 OK
+22:00:30.309 [pw] [wire<-] turn step=5 sender='thief' commit=4aef590f ts='2026-08-14T19:00:30.273' cells=23 barrier=None claim=None answer=False win=None
+22:00:31.906 [pw] INFO:     188.120.129.32:1900 - "POST /mcp HTTP/1.1" 200 OK
+22:00:31.913 [pw] [wire<-] turn step=6 sender='thief' commit=c573fbee ts='2026-08-14T19:00:31.880' cells=21 barrier=None claim=None answer=False win=None
+22:00:33.797 [pw] INFO:     188.120.129.32:1901 - "POST /mcp HTTP/1.1" 200 OK
+22:00:33.798 [pw] [wire<-] turn step=7 sender='thief' commit=6124848a ts='2026-08-14T19:00:33.782' cells=15 barrier=None claim=None answer=False win=None
+22:00:36.041 [pw] INFO:     188.120.129.32:1952 - "POST /mcp HTTP/1.1" 200 OK
+22:00:36.042 [pw] [wire<-] turn step=8 sender='thief' commit=ead4f37a ts='2026-08-14T19:00:35.994' cells=13 barrier=None claim=None answer=False win=None
+22:00:38.615 [pw] INFO:     188.120.129.32:1902 - "POST /mcp HTTP/1.1" 200 OK
+22:00:38.616 [pw] [wire<-] turn step=9 sender='thief' commit=44bfde2c ts='2026-08-14T19:00:38.589' cells=13 barrier=None claim=None answer=False win=None
+22:00:40.581 [pw] INFO:     188.120.129.32:1903 - "POST /mcp HTTP/1.1" 200 OK
+22:00:40.582 [pw] [wire<-] turn step=10 sender='thief' commit=f44b0587 ts='2026-08-14T19:00:40.557' cells=12 barrier=None claim=None answer=False win=None
+22:00:42.074 [pw] INFO:     188.120.129.32:1905 - "POST /mcp HTTP/1.1" 200 OK
+22:00:42.077 [pw] [wire<-] turn step=11 sender='thief' commit=e0fe0de2 ts='2026-08-14T19:00:42.041' cells=12 barrier=None claim=None answer=False win=None
+22:00:42.938 [pw] INFO:     188.120.129.32:1907 - "POST /mcp HTTP/1.1" 200 OK
+22:00:42.943 [pw] [wire<-] turn step=12 sender='thief' commit=e3dfe07c ts='2026-08-14T19:00:42.903' cells=12 barrier=None claim=None answer=False win=None
+22:00:43.998 [pw] INFO:     188.120.129.32:1954 - "POST /mcp HTTP/1.1" 200 OK
+22:00:44.006 [pw] [wire<-] turn step=13 sender='thief' commit=929549c1 ts='2026-08-14T19:00:43.969' cells=9 barrier=None claim=None answer=False win=None
+22:00:44.607 [pw] INFO:     188.120.129.32:1909 - "POST /mcp HTTP/1.1" 200 OK
+22:00:44.608 [pw] [wire<-] turn step=14 sender='thief' commit=2e8b37b4 ts='2026-08-14T19:00:44.583' cells=9 barrier=None claim=None answer=False win=None
+22:00:44.960 [pw] INFO:     188.120.129.32:1911 - "POST /mcp HTTP/1.1" 200 OK
+22:00:44.964 [pw] [wire<-] turn step=15 sender='thief' commit=911bc909 ts='2026-08-14T19:00:44.934' cells=9 barrier=None claim=None answer=True win=None
+22:00:44.965 [pw] [match] sg2 thief conceded capture at step 15 (answer)
+22:00:45.134 [pw] INFO:     188.120.129.32:1913 - "POST /mcp HTTP/1.1" 200 OK
+22:00:45.143 [pw] [wire<-] audit sender='thief' records=16 claim='capture'
+22:00:45.236 [pw] INFO:     188.120.129.32:1915 - "DELETE /mcp HTTP/1.1" 200 OK
+22:00:45.542 [pw] [match] sg2 audit ok=True errors=[] outcome=capture rl_moves=14 distinct=3 sample=['S', 'S', 'S', 'E', 'S', 'E', 'E', 'E']
+22:00:45.603 [tw] INFO:     188.120.129.32:1917 - "POST /mcp HTTP/1.1" 200 OK
+22:00:45.688 [tw] INFO:     188.120.129.32:1919 - "POST /mcp HTTP/1.1" 202 Accepted
+22:00:45.694 [tw] INFO:     188.120.129.32:1921 - "GET /mcp HTTP/1.1" 200 OK
+22:00:45.765 [tw] INFO:     188.120.129.32:1923 - "POST /mcp HTTP/1.1" 200 OK
+22:00:45.768 [tw] [wire<-] negotiate keys=['game_uid', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms'] group=None role='police' sub_game=3 uid='eb6ddfa3-6dde' scent=81ebee59 wire=None
+22:00:45.837 [match] sg2 complete
+22:00:45.837 [match] sg3 (thief) — dispatching to thief worker
+22:00:46.016 [tw] INFO:     188.120.129.32:1925 - "POST /mcp HTTP/1.1" 200 OK
+22:00:46.018 [tw] INFO:     127.0.0.1:49430 - "POST /mcp HTTP/1.1" 400 Bad Request
+22:00:47.391 [tw] [match] peer endpoint UP: https://cop.4laboratory.com/mcp
+22:00:51.015 [tw] [match] sg3 peer greeting sub_game=3 role=police
+22:00:51.015 [tw] [match] sg3 role=thief handshake OK vs najamjad uid=eb6ddfa3-6dd
+22:00:51.294 [tw] INFO:     188.120.129.32:1866 - "POST /mcp HTTP/1.1" 200 OK
+22:00:51.295 [tw] [wire<-] turn step=1 sender='police' commit=8bdc1fa1 ts='2026-08-14T19:00:51.270' cells=12 barrier=None claim=None answer=None win=None
+22:00:51.308 [tw] [scent] sg3 step2: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+22:00:51.771 [tw] INFO:     188.120.129.32:1927 - "POST /mcp HTTP/1.1" 200 OK
+22:00:51.773 [tw] [wire<-] turn step=2 sender='police' commit=ff99f634 ts='2026-08-14T19:00:51.749' cells=16 barrier=None claim=None answer=None win=None
+22:00:52.263 [tw] INFO:     188.120.129.32:1929 - "POST /mcp HTTP/1.1" 200 OK
+22:00:52.264 [tw] [wire<-] turn step=3 sender='police' commit=379f4aa5 ts='2026-08-14T19:00:52.240' cells=20 barrier=None claim=None answer=None win=None
+22:00:52.874 [tw] INFO:     188.120.129.32:1931 - "POST /mcp HTTP/1.1" 200 OK
+22:00:52.877 [tw] [wire<-] turn step=4 sender='police' commit=1afc8eae ts='2026-08-14T19:00:52.844' cells=24 barrier=None claim=None answer=None win=None
+22:00:53.558 [tw] INFO:     188.120.129.32:1933 - "POST /mcp HTTP/1.1" 200 OK
+22:00:53.563 [tw] [wire<-] turn step=5 sender='police' commit=acee1710 ts='2026-08-14T19:00:53.525' cells=29 barrier=None claim=None answer=None win=None
+22:00:54.163 [tw] INFO:     188.120.129.32:1935 - "POST /mcp HTTP/1.1" 200 OK
+22:00:54.167 [tw] [wire<-] turn step=6 sender='police' commit=c1d2a0f7 ts='2026-08-14T19:00:54.136' cells=33 barrier=None claim=None answer=None win=None
+22:00:54.811 [tw] INFO:     188.120.129.32:1937 - "POST /mcp HTTP/1.1" 200 OK
+22:00:54.814 [tw] [wire<-] turn step=7 sender='police' commit=f4949271 ts='2026-08-14T19:00:54.781' cells=33 barrier=[4, 3] claim=None answer=None win=None
+22:00:55.236 [tw] INFO:     188.120.129.32:1939 - "POST /mcp HTTP/1.1" 200 OK
+22:00:55.240 [tw] [wire<-] turn step=8 sender='police' commit=1d4792d1 ts='2026-08-14T19:00:55.209' cells=34 barrier=None claim=None answer=None win=None
+22:00:55.864 [tw] INFO:     188.120.129.32:1941 - "POST /mcp HTTP/1.1" 200 OK
+22:00:55.867 [tw] [wire<-] turn step=9 sender='police' commit=2078add0 ts='2026-08-14T19:00:55.838' cells=39 barrier=None claim=None answer=None win=None
+22:00:56.385 [tw] INFO:     188.120.129.32:1943 - "POST /mcp HTTP/1.1" 200 OK
+22:00:56.388 [tw] [wire<-] turn step=10 sender='police' commit=74e9f159 ts='2026-08-14T19:00:56.349' cells=34 barrier=None claim=None answer=None win=None
+22:00:56.888 [tw] INFO:     188.120.129.32:1945 - "POST /mcp HTTP/1.1" 200 OK
+22:00:56.889 [tw] [wire<-] turn step=11 sender='police' commit=7974b2e0 ts='2026-08-14T19:00:56.861' cells=27 barrier=[5, 3] claim=None answer=None win=None
+22:00:57.331 [tw] INFO:     188.120.129.32:1956 - "POST /mcp HTTP/1.1" 200 OK
+22:00:57.333 [tw] [wire<-] turn step=12 sender='police' commit=fe722aed ts='2026-08-14T19:00:57.305' cells=25 barrier=None claim=None answer=None win=None
+22:00:57.844 [tw] INFO:     188.120.129.32:1947 - "POST /mcp HTTP/1.1" 200 OK
+22:00:57.848 [tw] [wire<-] turn step=13 sender='police' commit=92affe9e ts='2026-08-14T19:00:57.822' cells=23 barrier=None claim=None answer=None win=None
+22:00:58.289 [tw] INFO:     188.120.129.32:1949 - "POST /mcp HTTP/1.1" 200 OK
+22:00:58.290 [tw] [wire<-] turn step=14 sender='police' commit=8e8bbfd7 ts='2026-08-14T19:00:58.268' cells=20 barrier=None claim=None answer=None win=None
+22:00:58.684 [tw] INFO:     188.120.129.32:1951 - "POST /mcp HTTP/1.1" 200 OK
+22:00:58.689 [tw] [wire<-] turn step=15 sender='police' commit=ad192c81 ts='2026-08-14T19:00:58.662' cells=23 barrier=None claim=None answer=None win=None
+22:00:59.063 [tw] INFO:     188.120.129.32:1953 - "POST /mcp HTTP/1.1" 200 OK
+22:00:59.067 [tw] [wire<-] turn step=16 sender='police' commit=43a5e7fe ts='2026-08-14T19:00:59.032' cells=22 barrier=None claim=None answer=None win=None
+22:00:59.445 [tw] INFO:     188.120.129.32:1955 - "POST /mcp HTTP/1.1" 200 OK
+22:00:59.457 [tw] [wire<-] turn step=17 sender='police' commit=3d0d372a ts='2026-08-14T19:00:59.412' cells=23 barrier=None claim=None answer=None win=None
+22:00:59.878 [tw] INFO:     188.120.129.32:1957 - "POST /mcp HTTP/1.1" 200 OK
+22:00:59.881 [tw] [wire<-] turn step=18 sender='police' commit=c1e35d05 ts='2026-08-14T19:00:59.861' cells=28 barrier=None claim=None answer=None win=None
+22:01:00.337 [tw] INFO:     188.120.129.32:1959 - "POST /mcp HTTP/1.1" 200 OK
+22:01:00.338 [tw] [wire<-] turn step=19 sender='police' commit=a2044950 ts='2026-08-14T19:01:00.309' cells=32 barrier=None claim=None answer=None win=None
+22:01:00.857 [tw] INFO:     188.120.129.32:1961 - "POST /mcp HTTP/1.1" 200 OK
+22:01:00.858 [tw] [wire<-] turn step=20 sender='police' commit=ce33c106 ts='2026-08-14T19:01:00.829' cells=35 barrier=None claim=None answer=None win=None
+22:01:01.581 [tw] INFO:     188.120.129.32:1963 - "POST /mcp HTTP/1.1" 200 OK
+22:01:01.586 [tw] [wire<-] turn step=21 sender='police' commit=a7613324 ts='2026-08-14T19:01:01.543' cells=39 barrier=None claim=None answer=None win=None
+22:01:02.055 [tw] INFO:     188.120.129.32:1602 - "POST /mcp HTTP/1.1" 200 OK
+22:01:02.056 [tw] [wire<-] turn step=22 sender='police' commit=f9c78501 ts='2026-08-14T19:01:02.024' cells=42 barrier=None claim=None answer=None win=None
+22:01:02.616 [tw] INFO:     188.120.129.32:1606 - "POST /mcp HTTP/1.1" 200 OK
+22:01:02.617 [tw] [wire<-] turn step=23 sender='police' commit=2e81ff3e ts='2026-08-14T19:01:02.578' cells=38 barrier=None claim=None answer=None win=None
+22:01:03.088 [tw] INFO:     188.120.129.32:1608 - "POST /mcp HTTP/1.1" 200 OK
+22:01:03.090 [tw] [wire<-] turn step=24 sender='police' commit=67a3ed84 ts='2026-08-14T19:01:03.049' cells=39 barrier=None claim=None answer=None win=None
+22:01:03.555 [tw] INFO:     188.120.129.32:2026 - "POST /mcp HTTP/1.1" 200 OK
+22:01:03.557 [tw] [wire<-] turn step=25 sender='police' commit=8b47d78e ts='2026-08-14T19:01:03.536' cells=33 barrier=None claim=None answer=None win=None
+22:01:03.948 [tw] INFO:     188.120.129.32:2040 - "POST /mcp HTTP/1.1" 200 OK
+22:01:03.949 [tw] [wire<-] turn step=26 sender='police' commit=65eb0457 ts='2026-08-14T19:01:03.928' cells=29 barrier=None claim=None answer=None win=None
+22:01:04.405 [tw] INFO:     188.120.129.32:1874 - "POST /mcp HTTP/1.1" 200 OK
+22:01:04.406 [tw] [wire<-] turn step=27 sender='police' commit=1ebb0daf ts='2026-08-14T19:01:04.377' cells=30 barrier=None claim=None answer=None win=None
+22:01:04.818 [tw] INFO:     188.120.129.32:1546 - "POST /mcp HTTP/1.1" 200 OK
+22:01:04.821 [tw] [wire<-] turn step=28 sender='police' commit=95d43e0b ts='2026-08-14T19:01:04.788' cells=28 barrier=None claim=None answer=None win=None
+22:01:05.174 [tw] INFO:     188.120.129.32:1559 - "POST /mcp HTTP/1.1" 200 OK
+22:01:05.176 [tw] [wire<-] turn step=29 sender='police' commit=9f629581 ts='2026-08-14T19:01:05.149' cells=26 barrier=None claim=None answer=None win=None
+22:01:05.630 [tw] INFO:     188.120.129.32:1560 - "POST /mcp HTTP/1.1" 200 OK
+22:01:05.633 [tw] [wire<-] turn step=30 sender='police' commit=bff5af0d ts='2026-08-14T19:01:05.601' cells=28 barrier=None claim=None answer=None win=None
+22:01:06.048 [tw] INFO:     188.120.129.32:1576 - "POST /mcp HTTP/1.1" 200 OK
+22:01:06.049 [tw] [wire<-] turn step=31 sender='police' commit=3d7358a5 ts='2026-08-14T19:01:06.029' cells=32 barrier=None claim=None answer=None win=None
+22:01:07.856 [tw] INFO:     188.120.129.32:1865 - "POST /mcp HTTP/1.1" 200 OK
+22:01:07.857 [tw] [wire<-] turn step=32 sender='police' commit=65e78dc4 ts='2026-08-14T19:01:07.810' cells=35 barrier=None claim=None answer=None win=None
+22:01:09.923 [tw] INFO:     188.120.129.32:1872 - "POST /mcp HTTP/1.1" 200 OK
+22:01:09.927 [tw] [wire<-] turn step=33 sender='police' commit=97b994cd ts='2026-08-14T19:01:09.898' cells=39 barrier=None claim=None answer=None win=None
+22:01:11.857 [tw] INFO:     188.120.129.32:1896 - "POST /mcp HTTP/1.1" 200 OK
+22:01:11.860 [tw] [wire<-] turn step=34 sender='police' commit=37c5ea3d ts='2026-08-14T19:01:11.817' cells=34 barrier=None claim=None answer=None win=None
+22:01:14.042 [tw] INFO:     188.120.129.32:2032 - "POST /mcp HTTP/1.1" 200 OK
+22:01:14.043 [tw] [wire<-] audit sender='police' records=35 claim='survival'
+22:01:15.840 [tw] INFO:     188.120.129.32:2046 - "DELETE /mcp HTTP/1.1" 200 OK
+22:01:16.158 [pw] INFO:     188.120.129.32:2028 - "POST /mcp HTTP/1.1" 200 OK
+22:01:16.248 [pw] INFO:     188.120.129.32:2034 - "GET /mcp HTTP/1.1" 200 OK
+22:01:16.250 [pw] INFO:     188.120.129.32:2030 - "POST /mcp HTTP/1.1" 202 Accepted
+22:01:16.331 [pw] INFO:     188.120.129.32:2038 - "POST /mcp HTTP/1.1" 200 OK
+22:01:16.332 [pw] [wire<-] negotiate keys=['game_uid', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms'] group=None role='thief' sub_game=4 uid='eb6ddfa3-6dde' scent=81ebee59 wire=None
+22:01:16.415 [pw] INFO:     188.120.129.32:1536 - "POST /mcp HTTP/1.1" 200 OK
+22:01:17.941 [tw] [match] sg3 audit ok=True errors=[] outcome=survival rl_moves=35 distinct=5 sample=['S', 'S', 'N', 'S', 'E', 'N', 'STAY', 'S']
+22:01:18.227 [match] sg3 complete
+22:01:18.227 [match] sg4 (police) — dispatching to police worker
+22:01:18.387 [pw] INFO:     127.0.0.1:52467 - "POST /mcp HTTP/1.1" 400 Bad Request
+22:01:19.969 [pw] [match] peer endpoint UP: https://cop.4laboratory.com/mcp
+22:01:23.328 [pw] INFO:     188.120.129.32:1898 - "POST /mcp HTTP/1.1" 200 OK
+22:01:23.329 [pw] [wire<-] turn step=1 sender='thief' commit=a3294b4e ts='2026-08-14T19:01:23.312' cells=25 barrier=None claim=None answer=None win=None
+22:01:23.655 [pw] [match] sg4 peer greeting sub_game=4 role=thief
+22:01:23.655 [pw] [match] sg4 role=police handshake OK vs najamjad uid=eb6ddfa3-6dd
+22:01:23.660 [pw] [scent] sg4 step1: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+22:01:24.496 [pw] INFO:     188.120.129.32:1610 - "POST /mcp HTTP/1.1" 200 OK
+22:01:24.497 [pw] [wire<-] turn step=2 sender='thief' commit=d054bafa ts='2026-08-14T19:01:24.471' cells=30 barrier=None claim=None answer=False win=None
+22:01:25.726 [pw] INFO:     188.120.129.32:1942 - "POST /mcp HTTP/1.1" 200 OK
+22:01:25.727 [pw] [wire<-] turn step=3 sender='thief' commit=fa85949c ts='2026-08-14T19:01:25.700' cells=30 barrier=None claim=None answer=False win=None
+22:01:26.813 [pw] INFO:     188.120.129.32:1538 - "POST /mcp HTTP/1.1" 200 OK
+22:01:26.814 [pw] [wire<-] turn step=4 sender='thief' commit=027b2f05 ts='2026-08-14T19:01:26.788' cells=25 barrier=None claim=None answer=False win=None
+22:01:27.989 [pw] INFO:     188.120.129.32:1544 - "POST /mcp HTTP/1.1" 200 OK
+22:01:27.993 [pw] [wire<-] turn step=5 sender='thief' commit=3b4eea15 ts='2026-08-14T19:01:27.965' cells=23 barrier=None claim=None answer=False win=None
+22:01:29.550 [pw] INFO:     188.120.129.32:1548 - "POST /mcp HTTP/1.1" 200 OK
+22:01:29.554 [pw] [wire<-] turn step=6 sender='thief' commit=cdc34d10 ts='2026-08-14T19:01:29.529' cells=19 barrier=None claim=None answer=False win=None
+22:01:31.374 [pw] INFO:     188.120.129.32:1554 - "POST /mcp HTTP/1.1" 200 OK
+22:01:31.376 [pw] [wire<-] turn step=7 sender='thief' commit=6820465f ts='2026-08-14T19:01:31.353' cells=15 barrier=None claim=None answer=False win=None
+22:01:33.468 [pw] INFO:     188.120.129.32:1948 - "POST /mcp HTTP/1.1" 200 OK
+22:01:33.469 [pw] [wire<-] turn step=8 sender='thief' commit=a4207b75 ts='2026-08-14T19:01:33.445' cells=13 barrier=None claim=None answer=False win=None
+22:01:35.528 [pw] INFO:     188.120.129.32:1575 - "POST /mcp HTTP/1.1" 200 OK
+22:01:35.530 [pw] [wire<-] turn step=9 sender='thief' commit=7632a41f ts='2026-08-14T19:01:35.501' cells=13 barrier=None claim=None answer=False win=None
+22:01:37.390 [pw] INFO:     188.120.129.32:1551 - "POST /mcp HTTP/1.1" 200 OK
+22:01:37.391 [pw] [wire<-] turn step=10 sender='thief' commit=9f0218c7 ts='2026-08-14T19:01:37.360' cells=12 barrier=None claim=None answer=False win=None
+22:01:38.879 [pw] INFO:     188.120.129.32:1556 - "POST /mcp HTTP/1.1" 200 OK
+22:01:38.880 [pw] [wire<-] turn step=11 sender='thief' commit=1cb5f7d9 ts='2026-08-14T19:01:38.862' cells=12 barrier=None claim=None answer=False win=None
+22:01:39.771 [pw] INFO:     188.120.129.32:1864 - "POST /mcp HTTP/1.1" 200 OK
+22:01:39.775 [pw] [wire<-] turn step=12 sender='thief' commit=6f6e2e5e ts='2026-08-14T19:01:39.752' cells=12 barrier=None claim=None answer=False win=None
+22:01:40.601 [pw] INFO:     188.120.129.32:1883 - "POST /mcp HTTP/1.1" 200 OK
+22:01:40.604 [pw] [wire<-] turn step=13 sender='thief' commit=7f9c45b2 ts='2026-08-14T19:01:40.574' cells=9 barrier=None claim=None answer=False win=None
+22:01:41.055 [pw] INFO:     188.120.129.32:1578 - "POST /mcp HTTP/1.1" 200 OK
+22:01:41.059 [pw] [wire<-] turn step=14 sender='thief' commit=447918b0 ts='2026-08-14T19:01:41.030' cells=9 barrier=None claim=None answer=False win=None
+22:01:41.356 [pw] INFO:     188.120.129.32:1590 - "POST /mcp HTTP/1.1" 200 OK
+22:01:41.357 [pw] [wire<-] turn step=15 sender='thief' commit=6ead4457 ts='2026-08-14T19:01:41.336' cells=9 barrier=None claim=None answer=True win=None
+22:01:41.373 [pw] [match] sg4 thief conceded capture at step 15 (answer)
+22:01:41.540 [pw] INFO:     188.120.129.32:1880 - "POST /mcp HTTP/1.1" 200 OK
+22:01:41.543 [pw] [wire<-] audit sender='thief' records=16 claim='capture'
+22:01:41.662 [pw] INFO:     188.120.129.32:2024 - "DELETE /mcp HTTP/1.1" 200 OK
+22:01:41.988 [tw] INFO:     188.120.129.32:1540 - "POST /mcp HTTP/1.1" 200 OK
+22:01:41.989 [pw] [match] sg4 audit ok=True errors=[] outcome=capture rl_moves=14 distinct=4 sample=['S', 'S', 'S', 'E', 'E', 'E', 'S', 'E']
+22:01:42.082 [tw] INFO:     188.120.129.32:1552 - "GET /mcp HTTP/1.1" 200 OK
+22:01:42.084 [tw] INFO:     188.120.129.32:1543 - "POST /mcp HTTP/1.1" 202 Accepted
+22:01:42.157 [tw] INFO:     188.120.129.32:1562 - "POST /mcp HTTP/1.1" 200 OK
+22:01:42.159 [tw] [wire<-] negotiate keys=['game_uid', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms'] group=None role='police' sub_game=5 uid='eb6ddfa3-6dde' scent=81ebee59 wire=None
+22:01:42.247 [tw] INFO:     188.120.129.32:1576 - "POST /mcp HTTP/1.1" 200 OK
+22:01:42.278 [match] sg4 complete
+22:01:42.278 [match] sg5 (thief) — dispatching to thief worker
+22:01:42.436 [tw] INFO:     127.0.0.1:52504 - "POST /mcp HTTP/1.1" 400 Bad Request
+22:01:43.895 [tw] [match] peer endpoint UP: https://cop.4laboratory.com/mcp
+22:01:47.548 [tw] [match] sg5 peer greeting sub_game=5 role=police
+22:01:47.548 [tw] [match] sg5 role=thief handshake OK vs najamjad uid=eb6ddfa3-6dd
+22:01:47.874 [tw] INFO:     188.120.129.32:1944 - "POST /mcp HTTP/1.1" 200 OK
+22:01:47.882 [tw] [wire<-] turn step=1 sender='police' commit=97b51919 ts='2026-08-14T19:01:47.833' cells=12 barrier=None claim=None answer=None win=None
+22:01:47.945 [tw] [scent] sg5 step2: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+22:01:48.528 [tw] INFO:     188.120.129.32:1958 - "POST /mcp HTTP/1.1" 200 OK
+22:01:48.529 [tw] [wire<-] turn step=2 sender='police' commit=8386cfe0 ts='2026-08-14T19:01:48.511' cells=16 barrier=None claim=None answer=None win=None
+22:01:49.027 [tw] INFO:     188.120.129.32:1960 - "POST /mcp HTTP/1.1" 200 OK
+22:01:49.030 [tw] [wire<-] turn step=3 sender='police' commit=a3a66e39 ts='2026-08-14T19:01:49.003' cells=20 barrier=None claim=None answer=None win=None
+22:01:49.635 [tw] INFO:     188.120.129.32:1962 - "POST /mcp HTTP/1.1" 200 OK
+22:01:49.640 [tw] [wire<-] turn step=4 sender='police' commit=c3791b47 ts='2026-08-14T19:01:49.607' cells=25 barrier=None claim=None answer=None win=None
+22:01:50.322 [tw] INFO:     188.120.129.32:1908 - "POST /mcp HTTP/1.1" 200 OK
+22:01:50.323 [tw] [wire<-] turn step=5 sender='police' commit=c417f47e ts='2026-08-14T19:01:50.296' cells=30 barrier=None claim=None answer=None win=None
+22:01:50.876 [tw] INFO:     188.120.129.32:1910 - "POST /mcp HTTP/1.1" 200 OK
+22:01:50.879 [tw] [wire<-] turn step=6 sender='police' commit=078b7128 ts='2026-08-14T19:01:50.848' cells=35 barrier=None claim=None answer=None win=None
+22:01:51.505 [tw] INFO:     188.120.129.32:1918 - "POST /mcp HTTP/1.1" 200 OK
+22:01:51.506 [tw] [wire<-] turn step=7 sender='police' commit=2eac795b ts='2026-08-14T19:01:51.478' cells=33 barrier=[4, 3] claim=None answer=None win=None
+22:01:51.925 [tw] INFO:     188.120.129.32:1870 - "POST /mcp HTTP/1.1" 200 OK
+22:01:51.927 [tw] [wire<-] turn step=8 sender='police' commit=c7adfc1b ts='2026-08-14T19:01:51.896' cells=33 barrier=None claim=None answer=None win=None
+22:01:52.536 [tw] INFO:     188.120.129.32:1575 - "POST /mcp HTTP/1.1" 200 OK
+22:01:52.540 [tw] [wire<-] turn step=9 sender='police' commit=9fcea4b7 ts='2026-08-14T19:01:52.505' cells=36 barrier=None claim=None answer=None win=None
+22:01:53.042 [tw] INFO:     188.120.129.32:1576 - "POST /mcp HTTP/1.1" 200 OK
+22:01:53.046 [tw] [wire<-] turn step=10 sender='police' commit=2ae329c1 ts='2026-08-14T19:01:53.016' cells=34 barrier=None claim=None answer=None win=None
+22:01:53.528 [tw] INFO:     188.120.129.32:1876 - "POST /mcp HTTP/1.1" 200 OK
+22:01:53.533 [tw] [wire<-] turn step=11 sender='police' commit=b0763d07 ts='2026-08-14T19:01:53.508' cells=26 barrier=[5, 3] claim=None answer=None win=None
+22:01:53.992 [tw] INFO:     188.120.129.32:1588 - "POST /mcp HTTP/1.1" 200 OK
+22:01:53.995 [tw] [wire<-] turn step=12 sender='police' commit=bac2a50c ts='2026-08-14T19:01:53.965' cells=24 barrier=None claim=None answer=None win=None
+22:01:54.396 [tw] INFO:     188.120.129.32:1882 - "POST /mcp HTTP/1.1" 200 OK
+22:01:54.397 [tw] [wire<-] turn step=13 sender='police' commit=57ca5e87 ts='2026-08-14T19:01:54.371' cells=26 barrier=None claim=None answer=None win=None
+22:01:54.886 [tw] INFO:     188.120.129.32:1604 - "POST /mcp HTTP/1.1" 200 OK
+22:01:54.887 [tw] [wire<-] turn step=14 sender='police' commit=63966d95 ts='2026-08-14T19:01:54.860' cells=24 barrier=None claim=None answer=None win=None
+22:01:55.317 [tw] INFO:     188.120.129.32:1900 - "POST /mcp HTTP/1.1" 200 OK
+22:01:55.318 [tw] [wire<-] turn step=15 sender='police' commit=1912f4c6 ts='2026-08-14T19:01:55.299' cells=23 barrier=None claim=None answer=None win=None
+22:01:55.734 [tw] INFO:     188.120.129.32:2042 - "POST /mcp HTTP/1.1" 200 OK
+22:01:55.738 [tw] [wire<-] turn step=16 sender='police' commit=fa0118be ts='2026-08-14T19:01:55.703' cells=28 barrier=None claim=None answer=None win=None
+22:01:56.252 [tw] INFO:     188.120.129.32:1577 - "POST /mcp HTTP/1.1" 200 OK
+22:01:56.253 [tw] [wire<-] turn step=17 sender='police' commit=0e971985 ts='2026-08-14T19:01:56.217' cells=32 barrier=None claim=None answer=None win=None
+22:01:56.804 [tw] INFO:     188.120.129.32:2036 - "POST /mcp HTTP/1.1" 200 OK
+22:01:56.808 [tw] [wire<-] turn step=18 sender='police' commit=8baaaa21 ts='2026-08-14T19:01:56.774' cells=35 barrier=None claim=None answer=None win=None
+22:01:57.837 [tw] INFO:     188.120.129.32:1906 - "POST /mcp HTTP/1.1" 200 OK
+22:01:57.841 [tw] [wire<-] turn step=19 sender='police' commit=dbdab9ce ts='2026-08-14T19:01:57.809' cells=34 barrier=[2, 3] claim=None answer=None win=None
+22:01:59.851 [tw] INFO:     188.120.129.32:1902 - "POST /mcp HTTP/1.1" 200 OK
+22:01:59.863 [tw] [wire<-] turn step=20 sender='police' commit=18fb1be0 ts='2026-08-14T19:01:59.820' cells=34 barrier=None claim=None answer=None win=None
+22:02:01.846 [tw] INFO:     188.120.129.32:1912 - "POST /mcp HTTP/1.1" 200 OK
+22:02:01.850 [tw] [wire<-] turn step=21 sender='police' commit=64f088a2 ts='2026-08-14T19:02:01.815' cells=37 barrier=None claim=None answer=None win=None
+22:02:03.873 [tw] INFO:     188.120.129.32:1926 - "POST /mcp HTTP/1.1" 200 OK
+22:02:03.874 [tw] [wire<-] turn step=22 sender='police' commit=d83af0fd ts='2026-08-14T19:02:03.848' cells=34 barrier=None claim=None answer=None win=None
+22:02:05.842 [tw] INFO:     188.120.129.32:1932 - "POST /mcp HTTP/1.1" 200 OK
+22:02:05.845 [tw] [wire<-] turn step=23 sender='police' commit=f1b7c84d ts='2026-08-14T19:02:05.817' cells=30 barrier=None claim=None answer=None win=None
+22:02:07.833 [tw] INFO:     188.120.129.32:1878 - "POST /mcp HTTP/1.1" 200 OK
+22:02:07.837 [tw] [wire<-] turn step=24 sender='police' commit=214315c5 ts='2026-08-14T19:02:07.804' cells=32 barrier=None claim=None answer=None win=None
+22:02:09.829 [tw] INFO:     188.120.129.32:1884 - "POST /mcp HTTP/1.1" 200 OK
+22:02:09.833 [tw] [wire<-] turn step=25 sender='police' commit=9b6d5d8a ts='2026-08-14T19:02:09.801' cells=30 barrier=None claim=None answer=None win=None
+22:02:11.903 [tw] INFO:     188.120.129.32:1888 - "POST /mcp HTTP/1.1" 200 OK
+22:02:11.904 [tw] [wire<-] turn step=26 sender='police' commit=8dff318f ts='2026-08-14T19:02:11.847' cells=34 barrier=None claim=None answer=None win=None
+22:02:13.897 [tw] INFO:     188.120.129.32:1904 - "POST /mcp HTTP/1.1" 200 OK
+22:02:13.900 [tw] [wire<-] turn step=27 sender='police' commit=941a491a ts='2026-08-14T19:02:13.868' cells=36 barrier=None claim=None answer=None win=None
+22:02:15.920 [tw] INFO:     188.120.129.32:1914 - "POST /mcp HTTP/1.1" 200 OK
+22:02:15.921 [tw] [wire<-] turn step=28 sender='police' commit=82922d7d ts='2026-08-14T19:02:15.822' cells=39 barrier=None claim=None answer=None win=None
+22:02:17.846 [tw] INFO:     188.120.129.32:1886 - "POST /mcp HTTP/1.1" 200 OK
+22:02:17.850 [tw] [wire<-] turn step=29 sender='police' commit=338a2a50 ts='2026-08-14T19:02:17.819' cells=36 barrier=None claim=None answer=None win=None
+22:02:19.841 [tw] INFO:     188.120.129.32:1890 - "POST /mcp HTTP/1.1" 200 OK
+22:02:19.842 [tw] [wire<-] turn step=30 sender='police' commit=554f2a50 ts='2026-08-14T19:02:19.814' cells=34 barrier=None claim=None answer=None win=None
+22:02:21.893 [tw] INFO:     188.120.129.32:1916 - "POST /mcp HTTP/1.1" 200 OK
+22:02:21.896 [tw] [wire<-] turn step=31 sender='police' commit=4d7861ca ts='2026-08-14T19:02:21.865' cells=30 barrier=None claim=None answer=None win=None
+22:02:23.853 [tw] INFO:     188.120.129.32:1920 - "POST /mcp HTTP/1.1" 200 OK
+22:02:23.856 [tw] [wire<-] turn step=32 sender='police' commit=6f5a13a6 ts='2026-08-14T19:02:23.831' cells=32 barrier=None claim=None answer=None win=None
+22:02:25.903 [tw] INFO:     188.120.129.32:1922 - "POST /mcp HTTP/1.1" 200 OK
+22:02:25.906 [tw] [wire<-] turn step=33 sender='police' commit=12d09ecd ts='2026-08-14T19:02:25.847' cells=30 barrier=None claim=None answer=None win=None
+22:02:27.846 [tw] INFO:     188.120.129.32:1893 - "POST /mcp HTTP/1.1" 200 OK
+22:02:27.848 [tw] [wire<-] turn step=34 sender='police' commit=e6a34934 ts='2026-08-14T19:02:27.818' cells=34 barrier=None claim=None answer=None win=None
+22:02:30.062 [tw] INFO:     188.120.129.32:1895 - "POST /mcp HTTP/1.1" 200 OK
+22:02:30.066 [tw] [wire<-] audit sender='police' records=35 claim='survival'
+22:02:31.857 [tw] INFO:     188.120.129.32:1924 - "DELETE /mcp HTTP/1.1" 200 OK
+22:02:32.134 [pw] INFO:     188.120.129.32:1928 - "POST /mcp HTTP/1.1" 200 OK
+22:02:32.228 [pw] INFO:     188.120.129.32:1940 - "GET /mcp HTTP/1.1" 200 OK
+22:02:32.230 [pw] INFO:     188.120.129.32:1934 - "POST /mcp HTTP/1.1" 202 Accepted
+22:02:32.307 [pw] INFO:     188.120.129.32:1946 - "POST /mcp HTTP/1.1" 200 OK
+22:02:32.311 [pw] [wire<-] negotiate keys=['game_uid', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms'] group=None role='thief' sub_game=6 uid='eb6ddfa3-6dde' scent=81ebee59 wire=None
+22:02:32.390 [pw] INFO:     188.120.129.32:1930 - "POST /mcp HTTP/1.1" 200 OK
+22:02:33.921 [tw] [match] sg5 audit ok=True errors=[] outcome=survival rl_moves=35 distinct=5 sample=['S', 'S', 'N', 'S', 'E', 'N', 'STAY', 'S']
+22:02:34.262 [match] sg5 complete
+22:02:34.262 [match] sg6 (police) — dispatching to police worker
+22:02:34.420 [pw] INFO:     127.0.0.1:59473 - "POST /mcp HTTP/1.1" 400 Bad Request
+22:02:35.955 [pw] [match] peer endpoint UP: https://cop.4laboratory.com/mcp
+22:02:39.450 [pw] INFO:     188.120.129.32:1936 - "POST /mcp HTTP/1.1" 200 OK
+22:02:39.453 [pw] [wire<-] turn step=1 sender='thief' commit=0b423ecb ts='2026-08-14T19:02:39.428' cells=25 barrier=None claim=None answer=None win=None
+22:02:39.775 [pw] [match] sg6 peer greeting sub_game=6 role=thief
+22:02:39.775 [pw] [match] sg6 role=police handshake OK vs najamjad uid=eb6ddfa3-6dd
+22:02:39.780 [pw] [scent] sg6 step1: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+22:02:40.606 [pw] INFO:     188.120.129.32:1938 - "POST /mcp HTTP/1.1" 200 OK
+22:02:40.607 [pw] [wire<-] turn step=2 sender='thief' commit=2e926e76 ts='2026-08-14T19:02:40.580' cells=25 barrier=None claim=None answer=False win=None
+22:02:41.632 [pw] INFO:     188.120.129.32:1867 - "POST /mcp HTTP/1.1" 200 OK
+22:02:41.633 [pw] [wire<-] turn step=3 sender='thief' commit=f1fb0f16 ts='2026-08-14T19:02:41.605' cells=25 barrier=None claim=None answer=False win=None
+22:02:42.510 [pw] INFO:     188.120.129.32:1869 - "POST /mcp HTTP/1.1" 200 OK
+22:02:42.512 [pw] [wire<-] turn step=4 sender='thief' commit=62c9435e ts='2026-08-14T19:02:42.481' cells=23 barrier=None claim=None answer=False win=None
+22:02:43.369 [pw] INFO:     188.120.129.32:1871 - "POST /mcp HTTP/1.1" 200 OK
+22:02:43.370 [pw] [wire<-] turn step=5 sender='thief' commit=448c5bfb ts='2026-08-14T19:02:43.351' cells=21 barrier=None claim=None answer=False win=None
+22:02:44.962 [pw] INFO:     188.120.129.32:1954 - "POST /mcp HTTP/1.1" 200 OK
+22:02:44.963 [pw] [wire<-] turn step=6 sender='thief' commit=87310017 ts='2026-08-14T19:02:44.933' cells=18 barrier=None claim=None answer=False win=None
+22:02:46.857 [pw] INFO:     188.120.129.32:1873 - "POST /mcp HTTP/1.1" 200 OK
+22:02:46.859 [pw] [wire<-] turn step=7 sender='thief' commit=9ac98e6d ts='2026-08-14T19:02:46.830' cells=15 barrier=None claim=None answer=False win=None
+22:02:49.200 [pw] INFO:     188.120.129.32:1875 - "POST /mcp HTTP/1.1" 200 OK
+22:02:49.200 [pw] [wire<-] turn step=8 sender='thief' commit=bb64c0ff ts='2026-08-14T19:02:49.174' cells=14 barrier=None claim=None answer=False win=None
+22:02:51.238 [pw] INFO:     188.120.129.32:1878 - "POST /mcp HTTP/1.1" 200 OK
+22:02:51.240 [pw] [wire<-] turn step=9 sender='thief' commit=e2d6231d ts='2026-08-14T19:02:51.209' cells=12 barrier=None claim=None answer=False win=None
+22:02:53.093 [pw] INFO:     188.120.129.32:1866 - "POST /mcp HTTP/1.1" 200 OK
+22:02:53.095 [pw] [wire<-] turn step=10 sender='thief' commit=aebce85f ts='2026-08-14T19:02:53.072' cells=12 barrier=None claim=None answer=False win=None
+22:02:54.527 [pw] INFO:     188.120.129.32:1879 - "POST /mcp HTTP/1.1" 200 OK
+22:02:54.530 [pw] [wire<-] turn step=11 sender='thief' commit=e90433a3 ts='2026-08-14T19:02:54.494' cells=12 barrier=None claim=None answer=False win=None
+22:02:55.474 [pw] INFO:     188.120.129.32:1881 - "POST /mcp HTTP/1.1" 200 OK
+22:02:55.478 [pw] [wire<-] turn step=12 sender='thief' commit=93bc52a7 ts='2026-08-14T19:02:55.450' cells=12 barrier=None claim=None answer=False win=None
+22:02:56.196 [pw] INFO:     188.120.129.32:1885 - "POST /mcp HTTP/1.1" 200 OK
+22:02:56.200 [pw] [wire<-] turn step=13 sender='thief' commit=c941f251 ts='2026-08-14T19:02:56.170' cells=9 barrier=None claim=None answer=False win=None
+22:02:56.670 [pw] INFO:     188.120.129.32:1887 - "POST /mcp HTTP/1.1" 200 OK
+22:02:56.672 [pw] [wire<-] turn step=14 sender='thief' commit=ead41b1e ts='2026-08-14T19:02:56.647' cells=9 barrier=None claim=None answer=False win=None
+22:02:57.050 [pw] INFO:     188.120.129.32:1889 - "POST /mcp HTTP/1.1" 200 OK
+22:02:57.051 [pw] [wire<-] turn step=15 sender='thief' commit=968d0860 ts='2026-08-14T19:02:57.024' cells=9 barrier=None claim=None answer=True win=None
+22:02:57.113 [pw] [match] sg6 thief conceded capture at step 15 (answer)
+22:02:57.256 [pw] INFO:     188.120.129.32:1893 - "POST /mcp HTTP/1.1" 200 OK
+22:02:57.257 [pw] [wire<-] audit sender='thief' records=16 claim='capture'
+22:02:57.754 [pw] [match] sg6 audit ok=True errors=[] outcome=capture rl_moves=14 distinct=4 sample=['S', 'S', 'S', 'E', 'E', 'E', 'S', 'E']
+22:02:58.068 [match] sg6 complete
+22:02:58.073 [tw] ERROR:    Traceback (most recent call last):
+22:02:58.073 [tw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\starlette\routing.py", line 645, in lifespan
+22:02:58.073 [tw]     await receive()
+22:02:58.073 [tw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+22:02:58.073 [tw]     return await self.receive_queue.get()
+22:02:58.073 [tw]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+22:02:58.073 [tw]   File "C:\Users\kuper\AppData\Local\Programs\Python\Python313\Lib\asyncio\queues.py", line 186, in get
+22:02:58.073 [tw]     await getter
+22:02:58.073 [tw] asyncio.exceptions.CancelledError
+22:02:58.076 [pw] ERROR:    Exception in ASGI application
+22:02:58.076 [pw] Traceback (most recent call last):
+22:02:58.076 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 416, in run_asgi
+22:02:58.076 [pw]     result = await app(  # type: ignore[func-returns-value]
+22:02:58.076 [pw]              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+22:02:58.076 [pw]         self.scope, self.receive, self.send
+22:02:58.076 [pw]         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+22:02:58.076 [pw]     )
+22:02:58.076 [pw]     ^
+22:02:58.076 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 63, in __call__
+22:02:58.076 [pw]     return await self.app(scope, receive, send)
+22:02:58.076 [pw]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+22:02:58.076 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\starlette\applications.py", line 90, in __call__
+22:02:58.076 [pw]     await self.middleware_stack(scope, receive, send)
+22:02:58.076 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+22:02:58.076 [pw]     await self.app(scope, receive, _send)
+22:02:58.076 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\fastmcp\server\http.py", line 378, in __call__
+22:02:58.076 [pw]     await self.app(scope, receive, send)
+22:02:58.076 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+22:02:58.076 [pw]     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+22:02:58.076 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+22:02:58.076 [pw]     await app(scope, receive, sender)
+22:02:58.076 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\starlette\routing.py", line 660, in __call__
+22:02:58.076 [pw]     await self.middleware_stack(scope, receive, send)
+22:02:58.076 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\starlette\routing.py", line 680, in app
+22:02:58.076 [pw]     await route.handle(scope, receive, send)
+22:02:58.076 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\starlette\routing.py", line 276, in handle
+22:02:58.076 [pw]     await self.app(scope, receive, send)
+22:02:58.076 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\fastmcp\server\http.py", line 90, in __call__
+22:02:58.076 [pw]     await self.session_manager.handle_request(scope, receive, send)
+22:02:58.076 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\mcp\server\streamable_http_manager.py", line 166, in handle_request
+22:02:58.076 [pw]     await self._handle_stateful_request(scope, receive, send)
+22:02:58.076 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\mcp\server\streamable_http_manager.py", line 261, in _handle_stateful_request
+22:02:58.076 [pw]     await transport.handle_request(scope, receive, send)
+22:02:58.077 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\mcp\server\streamable_http.py", line 426, in handle_request
+22:02:58.077 [pw]     await self._handle_get_request(request, send)
+22:02:58.077 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\mcp\server\streamable_http.py", line 747, in _handle_get_request
+22:02:58.077 [pw]     await response(request.scope, request.receive, send)
+22:02:58.077 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\sse_starlette\sse.py", line 479, in __call__
+22:02:58.077 [pw]     async with anyio.create_task_group() as task_group:
+22:02:58.077 [pw]                ~~~~~~~~~~~~~~~~~~~~~~~^^
+22:02:58.077 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 819, in __aexit__
+22:02:58.077 [pw]     raise exc_val
+22:02:58.077 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\anyio\_backends\_asyncio.py", line 788, in __aexit__
+22:02:58.077 [pw]     await self._on_completed_fut
+22:02:58.077 [pw] asyncio.exceptions.CancelledError
+22:02:58.077 [pw] ERROR:    Traceback (most recent call last):
+22:02:58.077 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\starlette\routing.py", line 645, in lifespan
+22:02:58.077 [pw]     await receive()
+22:02:58.077 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+22:02:58.077 [pw]     return await self.receive_queue.get()
+22:02:58.077 [pw]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+22:02:58.077 [pw]   File "C:\Users\kuper\AppData\Local\Programs\Python\Python313\Lib\asyncio\queues.py", line 186, in get
+22:02:58.077 [pw]     await getter
+22:02:58.077 [pw] asyncio.exceptions.CancelledError
+
+22:02:58.488 [match] STATUS: audits 6/6 ok
+22:02:58.490 [match] saved config profile used vs najamjad -> config/opponents/najamjad/ (existing profile files preserved)
+22:02:58.587 [match] artifacts: 6x(config+log) + declaration + result under results/ and config/games/
+22:02:58.587 [match] result: {'vibecode': 90, 'najamjad': 30} winner=vibecode
+22:03:00.338 [match] emailed result ONLY to rmisegal+uoh26finalgame@gmail.com (id=1a001a7f77c911c3)
+22:03:00.341 [match] counted ledger updated: counted_games_played=5 (results/counted_series.json)
