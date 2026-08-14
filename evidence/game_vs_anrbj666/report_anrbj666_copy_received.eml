@@ -1,0 +1,840 @@
+Delivered-To: agentsorch@gmail.com
+Received: by 2002:a0c:ed48:0:b0:8ef:cfdb:29a3 with SMTP id v8csp1105072qvq;
+        Sat, 8 Aug 2026 12:18:35 -0700 (PDT)
+X-Forwarded-Encrypted: i=3; AHgh+RosLkrEhOKT7OtwmIpsO6OoiSXMOmzI8ipnveDZfam3gwj1CSADHdLCj2AYvq1KtW1pl7Ad+c8vfLQw@gmail.com
+X-Received: by 2002:a05:690c:6287:b0:7ef:9fd9:db07 with SMTP id 00721157ae682-825ed9d05d7mr46248357b3.12.1786216715726;
+        Sat, 08 Aug 2026 12:18:35 -0700 (PDT)
+ARC-Seal: i=2; a=rsa-sha256; t=1786216715; cv=pass;
+        d=google.com; s=arc-20260327;
+        b=gXwmfQwK+A7NsutBXbNpWV0weRhFbnbBYqQH3qvJJ5GSoTaBMZRghOOSA6Tf2YXmIN
+         uPL+RxV6ESiLl/S2OriBPKErPCfKsbmV7s1SHeGt9ukzn/5j+YLGNwOAW9xp7sSGlhft
+         xjr/Y9m1Mz9FkNs9kuxR7tqyM+C/Y00o6P2PzkHGgDc6q40WjCsoJv4wPzJgnGilsdZ2
+         PfZgw5tffvv57uOZ+PZ3l4mVDnEKtz5cs7AVKcnQpBIoBaI2HvOti6BdmMoygdKqNpNX
+         P0M4+YIsHcRWRhbhkH1xOdsQdvfxyeiEFdmGpVDogwWB1CLljSseQJDWVV6GoIttWwxD
+         ySbQ==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :dkim-signature;
+        bh=mc7tYRIK2+foLOnviucjvfWC15hrsfvlovxsFHJYd28=;
+        fh=HyTL9I6vMobVGILLrlFggukDoiz3TExa0AnlbRtwKhQ=;
+        b=mcBBy444aAH6nXYvCrOpvjG/RLC8Yr2UdfVpJulR1SB14YclsBgWuLb3LJ7YhtMOfz
+         y8WYJlhnas7iS/u1v/p7MCacfyfiu6rZzYPIsw8hCj+YxfQzc4MUrYj+no5lMVk0j/fj
+         cFCaQG9dD+gUKRz5cQTHhD7en/CcAeE65LPZyjMhAjgiAEJY0L4kP4W0SmMm7iqZ6sIf
+         u4kJAjhd6uqUzMJpQTB8pYoALoE//tbBiwD9LnjGqeOoKx9uiKWkpLYp3fbssIsoeWUW
+         KUktHukD6AH97O0wgrQvw79dPLpAOwRBdKx0raeH9LDYADHOr09+KjaVv3meGO9M0Gds
+         5/Ig==;
+        dara=google.com
+ARC-Authentication-Results: i=2; mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20251104 header.b=VJ8DgRAp;
+       arc=pass (i=1);
+       spf=pass (google.com: domain of alonisrael.engel@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=alonisrael.engel@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;
+       dara=pass header.i=@gmail.com
+Return-Path: <alonisrael.engel@gmail.com>
+Received: from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])
+        by mx.google.com with SMTPS id 00721157ae682-82113d09975sor65251557b3.5.2026.08.08.12.18.35
+        for <agentsorch@gmail.com>
+        (Google Transport Security);
+        Sat, 08 Aug 2026 12:18:35 -0700 (PDT)
+Received-SPF: pass (google.com: domain of alonisrael.engel@gmail.com designates 209.85.220.41 as permitted sender) client-ip=209.85.220.41;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20251104 header.b=VJ8DgRAp;
+       arc=pass (i=1);
+       spf=pass (google.com: domain of alonisrael.engel@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=alonisrael.engel@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;
+       dara=pass header.i=@gmail.com
+ARC-Seal: i=1; a=rsa-sha256; t=1786216715; cv=none;
+        d=google.com; s=arc-20260327;
+        b=cUI5IwTfWIFC8wxvT75lOGSBPcattx4nGH8I03M8nU0cnoNqHzdiSleo87T2JgFs8h
+         CxFoPB5ZpISNzivVT1QDc+XLUCegfZuEydHsvzJCOLGyZhz8h4VYbcdazQ+ggyRAeVgM
+         LKNatuYJjib3GxkiZ21iZEkCtRvZU7LI+ibm+2W6gtTBmoCh6c/IXyIicXKs09hm5qBh
+         cf7TQGsAR38xHcUvW+dTPZk5+rjtMOFOmt54bsYBYNRcp49s48cgADKdmks7L+r+3vNh
+         VQt2+MqSFzNDiOxaD1XlCaG4+Dw/adb8uu8Y3rFANonwAr3JVEd/MzsErTuHlY0s00DZ
+         I5mw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :dkim-signature;
+        bh=mc7tYRIK2+foLOnviucjvfWC15hrsfvlovxsFHJYd28=;
+        fh=HyTL9I6vMobVGILLrlFggukDoiz3TExa0AnlbRtwKhQ=;
+        b=VDL8s/smbLtTm4pcFeuUItPLWBacmvAlHNAcq7H6AKQMgHqtrBnvRA3ZD7brbL9olC
+         N4GMfJ9J55XleClMZ2oqtHht5DMUtWQFn1Vceud/e/Kj/9TNpWkzIs3IOsxBVWpJalzz
+         D6vyTcuCljHUipVlHwHG2DXpinNoDoPj47Old4pkvvIRPMpy/WsCwG4bRm4GNxxAwJLD
+         ODDpV7NUsf6lRxkD69+Q42EYkAtU2OPQ/YAODHZIJZweOcSNnJRifJuwjP9RN6O5di91
+         xhwz4/xvLHYlei+/D3g75LA51jQlfE7TaHI6geBNxxyUM0IVbmB2Ed3BpBaK5uCwiFLP
+         6IUg==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786216715; x=1786821515; dara=google.com;
+        h=content-type:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=mc7tYRIK2+foLOnviucjvfWC15hrsfvlovxsFHJYd28=;
+        b=VJ8DgRApou2vDJjX9BuazD10FZylu91BBwfd/mhEcmkdn4zb8RQCCYNmMXQK+vrM9c
+         VTQ/BGNb5VT9fsv99nRnBvN+fT0x91XWufj2wN84k8ovNECBHromwm9j2CWDEI3CfhEP
+         UI711nzgQ/LA9XfHvYkTByFSCX37lAeib6wOjtFenxDDIwOaSMiI5Nj3DR7Qz0LI+vTI
+         Ilbto+ATiXGsaSOoXmLqjvWhqBXCporTkvRh27XTNJsYJfkosb5bHV5lUATobDXUFghH
+         BveaBgbxAIKKrtLaWD8D8zxuzFhT1nbg7hkxl5NDMf2MeXV8VMI+ZVvsPG77xCGg8WuN
+         ILmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786216715; x=1786821515;
+        h=content-type:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=mc7tYRIK2+foLOnviucjvfWC15hrsfvlovxsFHJYd28=;
+        b=VWXfnB7+fbiRwj+m+9q6cvpK1+P17ZYctKBnAMmfQBpuJS7wmwd0xMatFkIH3XVExe
+         fEXLgtUlgkzjbZYwrY1uoG03X8df9HK1IYNUQz8jqUThbX0Yk7G7NtMgpc1TF6UqSzUn
+         CU615Y0YwZgm6d8y39OGPSS78h+w8i42olRAKtE+02ZGZdYilwG2FHdpvkE/53OCffYA
+         pxMGJu58H7G8YcrDA6QZdgh+6I9v8ujfWv2mCZoTOqMlsFJwmCrZU03iXSE1Z84FNR30
+         hlEERynazr5KNXfMb7Njjg+OrtyTmqeuY7+au9xDYz+Ulkkc1DgjEizWKuTq78lf/7eU
+         xdag==
+X-Forwarded-Encrypted: i=1; AHgh+RqGSJ1WQtcGCZFaR49aeBuuJGFkCphSrWtFjHsEVBpQzCfwefVRPjz1hsXmqHsA6HfTe7ExLVKgfMC6@gmail.com
+X-Gm-Message-State: AOJu0YxYxvfEoOiFB8srC3bnqdJfqWxgHa0sFB/m/HEoavQRhdNHudxq
+	LPE0yQp+cbXmQ5M+5R3Kz7/fM+Pg5jYAMkgpQhFBQCNAI4W9vSymXmWmqYbr+7TauMnZIS2wps3
+	08IsAk2sfjwSzRJ/sXMJJd0IqsLAUgC0=
+X-Gm-Gg: AR+sD11N6dYkVOtHmZoHQ0zuN87wUEOsO+G+pExUzYRknaN5N5BfBjZ8tq9sqLwAJLB
+	t5Rx5zwVSQRwi2XMR9TSxvThgiAa72c7Z0XV82TFAmf5gWZ21U6jL4WdJvf51fQE/aRhvmkajf0
+	JiJgsO1aWdqg4RJtzFn5rw2fQ80VKcU7T3aFEKpURTGpneFFEhWp78nYQbVddnSvRtzYlG2nk9t
+	6dFPdydUy2NzixDrZyBhiqT5HzTFx9z3vrC1dfStC6pE+rHy6h79CilfHz7d6glusjCZ9xTL1d5
+	ECWKhJ6O4K85XdIOMWNdeyJa7nZTeujPp6u2P2SH9xrx
+X-Received: by 2002:a05:690c:c149:b0:81e:a373:47ad with SMTP id
+ 00721157ae682-825eab48d46mr42913297b3.2.1786216715124; Sat, 08 Aug 2026
+ 12:18:35 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAJ_E6UDD7RvpDtOtbZQVO1Tt0ajjm93qT0Aa-c9f-142oAsSmA@mail.gmail.com>
+In-Reply-To: <CAJ_E6UDD7RvpDtOtbZQVO1Tt0ajjm93qT0Aa-c9f-142oAsSmA@mail.gmail.com>
+From: =?UTF-8?B?15DXnNeV158g15DXoNeS15w=?= <alonisrael.engel@gmail.com>
+Date: Sat, 8 Aug 2026 22:18:23 +0300
+X-Gm-Features: AUfX_mwwltI1O8kuCe7OEGHU4pCUlDdP3cUjkQiyU5t0z92FaOoofkWZhJnszAo
+Message-ID: <CAJ_E6UA7dugNx-vWCt1BOfV0sn69ES1CH=Jr9t7ahE7V_xaOwA@mail.gmail.com>
+Subject: Fwd: P2P league SERIES result - anrbj666-vs-vibecode -
+ winner=anrbj666 - anrbj666:75 vibecode:35
+To: kuper.amit@gmail.com, ron.marom12@gmail.com, agentsorch@gmail.com
+Content-Type: multipart/mixed; boundary="000000000000cc3f2206588dfc40"
+
+--000000000000cc3f2206588dfc40
+Content-Type: multipart/alternative; boundary="000000000000cc3f1b06588dfc3e"
+
+--000000000000cc3f1b06588dfc3e
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+---------- Forwarded message ---------
+From: =D7=90=D7=9C=D7=95=D7=9F =D7=90=D7=A0=D7=92=D7=9C <alonisrael.engel@g=
+mail.com>
+Date: Sat, 8 Aug 2026 at 22:16
+Subject: P2P league SERIES result - anrbj666-vs-vibecode - winner=3Danrbj66=
+6
+- anrbj666:75 vibecode:35
+To: <alonisrael.engel@gmail.com>, <rmisegal+uoh26finalgame@gmail.com>
+
+
+{
+  "_schema": "Summary and final result for the WHOLE series between two
+teams: per-sub-game scores + aggregate; identity lives in the declaration."=
+,
+  "schema_version": "1.1",
+  "report_type": "final_game_result",
+  "game_id": "anrbj666-vs-vibecode",
+  "game_uid": "b2a16946-2cad-909f-60aa-b0cc8a8b7c4f",
+  "links": {
+    "declaration": "declaration_anrbj666-vs-vibecode.json",
+    "config": "config_anrbj666-vs-vibecode_g<NN>.json",
+    "log": "log_anrbj666-vs-vibecode_g<NN>.json",
+    "result": "result_anrbj666-vs-vibecode.json",
+    "github": {
+      "anrbj666": {
+        "cop": "https://github.com/alonengel/P2P-Police",
+        "thief": "https://github.com/alonengel/P2P-Thief"
+      },
+      "vibecode": {
+        "cop": "https://github.com/AmitKuper/vibecode-cop",
+        "thief": "https://github.com/AmitKuper/vibecode-thief"
+      }
+    }
+  },
+  "timezone": "Asia/Jerusalem",
+  "groups": [
+    "anrbj666",
+    "vibecode"
+  ],
+  "num_sub_games": 6,
+  "sub_games": [
+    {
+      "sub_game_number": 1,
+      "roles": {
+        "anrbj666": "police",
+        "vibecode": "thief"
+      },
+      "started_at": "2026-08-08T19:13:46+00:00",
+      "ended_at": "2026-08-08T19:14:11+00:00",
+      "result": "capture",
+      "winner_group": "anrbj666",
+      "tie": false,
+      "github_commit": {
+        "anrbj666": "630ea874c6e648f4f95248dadd82033b645d4eca",
+        "vibecode": "89a314a83c91f945dc3d8c0aed623dc8749b3e35"
+      },
+      "tokens": {
+        "anrbj666": 0,
+        "vibecode": 0
+      },
+      "score": {
+        "anrbj666": 20,
+        "vibecode": 5
+      },
+      "log_files": {
+        "anrbj666": "log_anrbj666-vs-vibecode_g01.json",
+        "vibecode": "log_anrbj666-vs-vibecode_g01.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 2,
+      "roles": {
+        "anrbj666": "thief",
+        "vibecode": "police"
+      },
+      "started_at": "2026-08-08T19:14:15+00:00",
+      "ended_at": "2026-08-08T19:14:38+00:00",
+      "result": "survival",
+      "winner_group": "anrbj666",
+      "tie": false,
+      "github_commit": {
+        "anrbj666": "623a71d5925e1c8a943fe44a0fbab0e13096031e",
+        "vibecode": "23c8711e235bf66f0be59173024483149584db1d"
+      },
+      "tokens": {
+        "anrbj666": 0,
+        "vibecode": 0
+      },
+      "score": {
+        "anrbj666": 10,
+        "vibecode": 5
+      },
+      "log_files": {
+        "anrbj666": "log_anrbj666-vs-vibecode_g02.json",
+        "vibecode": "log_anrbj666-vs-vibecode_g02.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 3,
+      "roles": {
+        "anrbj666": "police",
+        "vibecode": "thief"
+      },
+      "started_at": "2026-08-08T19:14:42+00:00",
+      "ended_at": "2026-08-08T19:14:56+00:00",
+      "result": "capture",
+      "winner_group": "anrbj666",
+      "tie": false,
+      "github_commit": {
+        "anrbj666": "630ea874c6e648f4f95248dadd82033b645d4eca",
+        "vibecode": "89a314a83c91f945dc3d8c0aed623dc8749b3e35"
+      },
+      "tokens": {
+        "anrbj666": 0,
+        "vibecode": 0
+      },
+      "score": {
+        "anrbj666": 20,
+        "vibecode": 5
+      },
+      "log_files": {
+        "anrbj666": "log_anrbj666-vs-vibecode_g03.json",
+        "vibecode": "log_anrbj666-vs-vibecode_g03.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 4,
+      "roles": {
+        "anrbj666": "thief",
+        "vibecode": "police"
+      },
+      "started_at": "2026-08-08T19:14:59+00:00",
+      "ended_at": "2026-08-08T19:15:21+00:00",
+      "result": "survival",
+      "winner_group": "anrbj666",
+      "tie": false,
+      "github_commit": {
+        "anrbj666": "623a71d5925e1c8a943fe44a0fbab0e13096031e",
+        "vibecode": "23c8711e235bf66f0be59173024483149584db1d"
+      },
+      "tokens": {
+        "anrbj666": 0,
+        "vibecode": 0
+      },
+      "score": {
+        "anrbj666": 10,
+        "vibecode": 5
+      },
+      "log_files": {
+        "anrbj666": "log_anrbj666-vs-vibecode_g04.json",
+        "vibecode": "log_anrbj666-vs-vibecode_g04.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 5,
+      "roles": {
+        "anrbj666": "police",
+        "vibecode": "thief"
+      },
+      "started_at": "2026-08-08T19:15:24+00:00",
+      "ended_at": "2026-08-08T19:15:46+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "anrbj666": "630ea874c6e648f4f95248dadd82033b645d4eca",
+        "vibecode": "89a314a83c91f945dc3d8c0aed623dc8749b3e35"
+      },
+      "tokens": {
+        "anrbj666": 0,
+        "vibecode": 0
+      },
+      "score": {
+        "anrbj666": 5,
+        "vibecode": 10
+      },
+      "log_files": {
+        "anrbj666": "log_anrbj666-vs-vibecode_g05.json",
+        "vibecode": "log_anrbj666-vs-vibecode_g05.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 6,
+      "roles": {
+        "anrbj666": "thief",
+        "vibecode": "police"
+      },
+      "started_at": "2026-08-08T19:15:49+00:00",
+      "ended_at": "2026-08-08T19:16:11+00:00",
+      "result": "survival",
+      "winner_group": "anrbj666",
+      "tie": false,
+      "github_commit": {
+        "anrbj666": "623a71d5925e1c8a943fe44a0fbab0e13096031e",
+        "vibecode": "23c8711e235bf66f0be59173024483149584db1d"
+      },
+      "tokens": {
+        "anrbj666": 0,
+        "vibecode": 0
+      },
+      "score": {
+        "anrbj666": 10,
+        "vibecode": 5
+      },
+      "log_files": {
+        "anrbj666": "log_anrbj666-vs-vibecode_g06.json",
+        "vibecode": "log_anrbj666-vs-vibecode_g06.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    }
+  ],
+  "final_result": {
+    "total_score": {
+      "anrbj666": 75,
+      "vibecode": 35
+    },
+    "sub_games_won": {
+      "anrbj666": 5,
+      "vibecode": 1
+    },
+    "ties": 0,
+    "winner_group": "anrbj666",
+    "series_tie": false,
+    "tokens_total_series": {
+      "anrbj666": 0,
+      "vibecode": 0
+    },
+    "games_played_including_this": {
+      "anrbj666": 2,
+      "vibecode": 1
+    },
+    "first_meeting_between_groups": true,
+    "diversity_reward_applied": {
+      "anrbj666": true,
+      "vibecode": false
+    }
+  },
+  "mutual_agreement": {
+    "sha256":
+"b4db10c24e330682393c6d3dea432de040f93116710851bf8e41f6ac5c3ae67d",
+    "confirmed": true
+  }
+}
+
+--000000000000cc3f1b06588dfc3e
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div dir=3D"ltr"><br><br><div class=3D"gmail_quote"><div d=
+ir=3D"ltr" class=3D"gmail_attr">---------- Forwarded message ---------<br>F=
+rom: <strong class=3D"gmail_sendername" dir=3D"auto">=D7=90=D7=9C=D7=95=D7=
+=9F =D7=90=D7=A0=D7=92=D7=9C</strong> <span dir=3D"auto">&lt;<a href=3D"mai=
+lto:alonisrael.engel@gmail.com" target=3D"_blank">alonisrael.engel@gmail.co=
+m</a>&gt;</span><br>Date: Sat, 8 Aug 2026 at 22:16<br>Subject: P2P league S=
+ERIES result - anrbj666-vs-vibecode - winner=3Danrbj666 - anrbj666:75 vibec=
+ode:35<br>To:  &lt;<a href=3D"mailto:alonisrael.engel@gmail.com" target=3D"=
+_blank">alonisrael.engel@gmail.com</a>&gt;,  &lt;<a href=3D"mailto:rmisegal=
+%2Buoh26finalgame@gmail.com" target=3D"_blank">rmisegal+uoh26finalgame@gmai=
+l.com</a>&gt;<br></div><br><br>{<br>
+=C2=A0 &quot;_schema&quot;: &quot;Summary and final result for the WHOLE se=
+ries between two teams: per-sub-game scores + aggregate; identity lives in =
+the declaration.&quot;,<br>
+=C2=A0 &quot;schema_version&quot;: &quot;1.1&quot;,<br>
+=C2=A0 &quot;report_type&quot;: &quot;final_game_result&quot;,<br>
+=C2=A0 &quot;game_id&quot;: &quot;anrbj666-vs-vibecode&quot;,<br>
+=C2=A0 &quot;game_uid&quot;: &quot;b2a16946-2cad-909f-60aa-b0cc8a8b7c4f&quo=
+t;,<br>
+=C2=A0 &quot;links&quot;: {<br>
+=C2=A0 =C2=A0 &quot;declaration&quot;: &quot;declaration_anrbj666-vs-vibeco=
+de.json&quot;,<br>
+=C2=A0 =C2=A0 &quot;config&quot;: &quot;config_anrbj666-vs-vibecode_g&lt;NN=
+&gt;.json&quot;,<br>
+=C2=A0 =C2=A0 &quot;log&quot;: &quot;log_anrbj666-vs-vibecode_g&lt;NN&gt;.j=
+son&quot;,<br>
+=C2=A0 =C2=A0 &quot;result&quot;: &quot;result_anrbj666-vs-vibecode.json&qu=
+ot;,<br>
+=C2=A0 =C2=A0 &quot;github&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;cop&quot;: &quot;<a href=3D"https://githu=
+b.com/alonengel/P2P-Police" rel=3D"noreferrer" target=3D"_blank">https://gi=
+thub.com/alonengel/P2P-Police</a>&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;thief&quot;: &quot;<a href=3D"https://git=
+hub.com/alonengel/P2P-Thief" rel=3D"noreferrer" target=3D"_blank">https://g=
+ithub.com/alonengel/P2P-Thief</a>&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;cop&quot;: &quot;<a href=3D"https://githu=
+b.com/AmitKuper/vibecode-cop" rel=3D"noreferrer" target=3D"_blank">https://=
+github.com/AmitKuper/vibecode-cop</a>&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;thief&quot;: &quot;<a href=3D"https://git=
+hub.com/AmitKuper/vibecode-thief" rel=3D"noreferrer" target=3D"_blank">http=
+s://github.com/AmitKuper/vibecode-thief</a>&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 }<br>
+=C2=A0 =C2=A0 }<br>
+=C2=A0 },<br>
+=C2=A0 &quot;timezone&quot;: &quot;Asia/Jerusalem&quot;,<br>
+=C2=A0 &quot;groups&quot;: [<br>
+=C2=A0 =C2=A0 &quot;anrbj666&quot;,<br>
+=C2=A0 =C2=A0 &quot;vibecode&quot;<br>
+=C2=A0 ],<br>
+=C2=A0 &quot;num_sub_games&quot;: 6,<br>
+=C2=A0 &quot;sub_games&quot;: [<br>
+=C2=A0 =C2=A0 {<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;sub_game_number&quot;: 1,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;roles&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: &quot;police&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: &quot;thief&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;started_at&quot;: &quot;2026-08-08T19:13:46+00:0=
+0&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;ended_at&quot;: &quot;2026-08-08T19:14:11+00:00&=
+quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;result&quot;: &quot;capture&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;winner_group&quot;: &quot;anrbj666&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;tie&quot;: false,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;github_commit&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: &quot;630ea874c6e648f4f95=
+248dadd82033b645d4eca&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: &quot;89a314a83c91f945dc3=
+d8c0aed623dc8749b3e35&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;tokens&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: 0,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: 0<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;score&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: 20,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: 5<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;log_files&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: &quot;log_anrbj666-vs-vib=
+ecode_g01.json&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: &quot;log_anrbj666-vs-vib=
+ecode_g01.json&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;audit&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;log_verified&quot;: true,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;tampered&quot;: false<br>
+=C2=A0 =C2=A0 =C2=A0 }<br>
+=C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 {<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;sub_game_number&quot;: 2,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;roles&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: &quot;thief&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: &quot;police&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;started_at&quot;: &quot;2026-08-08T19:14:15+00:0=
+0&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;ended_at&quot;: &quot;2026-08-08T19:14:38+00:00&=
+quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;result&quot;: &quot;survival&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;winner_group&quot;: &quot;anrbj666&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;tie&quot;: false,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;github_commit&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: &quot;623a71d5925e1c8a943=
+fe44a0fbab0e13096031e&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: &quot;23c8711e235bf66f0be=
+59173024483149584db1d&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;tokens&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: 0,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: 0<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;score&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: 10,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: 5<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;log_files&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: &quot;log_anrbj666-vs-vib=
+ecode_g02.json&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: &quot;log_anrbj666-vs-vib=
+ecode_g02.json&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;audit&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;log_verified&quot;: true,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;tampered&quot;: false<br>
+=C2=A0 =C2=A0 =C2=A0 }<br>
+=C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 {<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;sub_game_number&quot;: 3,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;roles&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: &quot;police&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: &quot;thief&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;started_at&quot;: &quot;2026-08-08T19:14:42+00:0=
+0&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;ended_at&quot;: &quot;2026-08-08T19:14:56+00:00&=
+quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;result&quot;: &quot;capture&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;winner_group&quot;: &quot;anrbj666&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;tie&quot;: false,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;github_commit&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: &quot;630ea874c6e648f4f95=
+248dadd82033b645d4eca&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: &quot;89a314a83c91f945dc3=
+d8c0aed623dc8749b3e35&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;tokens&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: 0,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: 0<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;score&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: 20,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: 5<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;log_files&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: &quot;log_anrbj666-vs-vib=
+ecode_g03.json&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: &quot;log_anrbj666-vs-vib=
+ecode_g03.json&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;audit&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;log_verified&quot;: true,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;tampered&quot;: false<br>
+=C2=A0 =C2=A0 =C2=A0 }<br>
+=C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 {<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;sub_game_number&quot;: 4,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;roles&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: &quot;thief&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: &quot;police&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;started_at&quot;: &quot;2026-08-08T19:14:59+00:0=
+0&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;ended_at&quot;: &quot;2026-08-08T19:15:21+00:00&=
+quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;result&quot;: &quot;survival&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;winner_group&quot;: &quot;anrbj666&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;tie&quot;: false,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;github_commit&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: &quot;623a71d5925e1c8a943=
+fe44a0fbab0e13096031e&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: &quot;23c8711e235bf66f0be=
+59173024483149584db1d&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;tokens&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: 0,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: 0<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;score&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: 10,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: 5<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;log_files&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: &quot;log_anrbj666-vs-vib=
+ecode_g04.json&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: &quot;log_anrbj666-vs-vib=
+ecode_g04.json&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;audit&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;log_verified&quot;: true,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;tampered&quot;: false<br>
+=C2=A0 =C2=A0 =C2=A0 }<br>
+=C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 {<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;sub_game_number&quot;: 5,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;roles&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: &quot;police&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: &quot;thief&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;started_at&quot;: &quot;2026-08-08T19:15:24+00:0=
+0&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;ended_at&quot;: &quot;2026-08-08T19:15:46+00:00&=
+quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;result&quot;: &quot;survival&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;winner_group&quot;: &quot;vibecode&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;tie&quot;: false,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;github_commit&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: &quot;630ea874c6e648f4f95=
+248dadd82033b645d4eca&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: &quot;89a314a83c91f945dc3=
+d8c0aed623dc8749b3e35&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;tokens&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: 0,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: 0<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;score&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: 5,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: 10<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;log_files&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: &quot;log_anrbj666-vs-vib=
+ecode_g05.json&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: &quot;log_anrbj666-vs-vib=
+ecode_g05.json&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;audit&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;log_verified&quot;: true,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;tampered&quot;: false<br>
+=C2=A0 =C2=A0 =C2=A0 }<br>
+=C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 {<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;sub_game_number&quot;: 6,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;roles&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: &quot;thief&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: &quot;police&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;started_at&quot;: &quot;2026-08-08T19:15:49+00:0=
+0&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;ended_at&quot;: &quot;2026-08-08T19:16:11+00:00&=
+quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;result&quot;: &quot;survival&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;winner_group&quot;: &quot;anrbj666&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;tie&quot;: false,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;github_commit&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: &quot;623a71d5925e1c8a943=
+fe44a0fbab0e13096031e&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: &quot;23c8711e235bf66f0be=
+59173024483149584db1d&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;tokens&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: 0,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: 0<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;score&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: 10,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: 5<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;log_files&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: &quot;log_anrbj666-vs-vib=
+ecode_g06.json&quot;,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: &quot;log_anrbj666-vs-vib=
+ecode_g06.json&quot;<br>
+=C2=A0 =C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;audit&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;log_verified&quot;: true,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 &quot;tampered&quot;: false<br>
+=C2=A0 =C2=A0 =C2=A0 }<br>
+=C2=A0 =C2=A0 }<br>
+=C2=A0 ],<br>
+=C2=A0 &quot;final_result&quot;: {<br>
+=C2=A0 =C2=A0 &quot;total_score&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: 75,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: 35<br>
+=C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 &quot;sub_games_won&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: 5,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: 1<br>
+=C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 &quot;ties&quot;: 0,<br>
+=C2=A0 =C2=A0 &quot;winner_group&quot;: &quot;anrbj666&quot;,<br>
+=C2=A0 =C2=A0 &quot;series_tie&quot;: false,<br>
+=C2=A0 =C2=A0 &quot;tokens_total_series&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: 0,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: 0<br>
+=C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 &quot;games_played_including_this&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: 2,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: 1<br>
+=C2=A0 =C2=A0 },<br>
+=C2=A0 =C2=A0 &quot;first_meeting_between_groups&quot;: true,<br>
+=C2=A0 =C2=A0 &quot;diversity_reward_applied&quot;: {<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;anrbj666&quot;: true,<br>
+=C2=A0 =C2=A0 =C2=A0 &quot;vibecode&quot;: false<br>
+=C2=A0 =C2=A0 }<br>
+=C2=A0 },<br>
+=C2=A0 &quot;mutual_agreement&quot;: {<br>
+=C2=A0 =C2=A0 &quot;sha256&quot;: &quot;b4db10c24e330682393c6d3dea432de040f=
+93116710851bf8e41f6ac5c3ae67d&quot;,<br>
+=C2=A0 =C2=A0 &quot;confirmed&quot;: true<br>
+=C2=A0 }<br>
+}<br>
+</div></div>
+</div>
+
+--000000000000cc3f1b06588dfc3e--
+--000000000000cc3f2206588dfc40
+Content-Type: application/json; name="result_anrbj666-vs-vibecode.json"
+Content-Disposition: attachment; filename="result_anrbj666-vs-vibecode.json"
+Content-Transfer-Encoding: base64
+Content-ID: <19fe2cea36594f176051>
+X-Attachment-Id: 19fe2cea36594f176051
+
+ew0KICAiX3NjaGVtYSI6ICJTdW1tYXJ5IGFuZCBmaW5hbCByZXN1bHQgZm9yIHRoZSBXSE9MRSBz
+ZXJpZXMgYmV0d2VlbiB0d28gdGVhbXM6IHBlci1zdWItZ2FtZSBzY29yZXMgKyBhZ2dyZWdhdGU7
+IGlkZW50aXR5IGxpdmVzIGluIHRoZSBkZWNsYXJhdGlvbi4iLA0KICAiZmluYWxfcmVzdWx0Ijog
+ew0KICAgICJkaXZlcnNpdHlfcmV3YXJkX2FwcGxpZWQiOiB7DQogICAgICAiYW5yYmo2NjYiOiB0
+cnVlLA0KICAgICAgInZpYmVjb2RlIjogZmFsc2UNCiAgICB9LA0KICAgICJmaXJzdF9tZWV0aW5n
+X2JldHdlZW5fZ3JvdXBzIjogdHJ1ZSwNCiAgICAiZ2FtZXNfcGxheWVkX2luY2x1ZGluZ190aGlz
+Ijogew0KICAgICAgImFucmJqNjY2IjogMiwNCiAgICAgICJ2aWJlY29kZSI6IDENCiAgICB9LA0K
+ICAgICJzZXJpZXNfdGllIjogZmFsc2UsDQogICAgInN1Yl9nYW1lc193b24iOiB7DQogICAgICAi
+YW5yYmo2NjYiOiA1LA0KICAgICAgInZpYmVjb2RlIjogMQ0KICAgIH0sDQogICAgInRpZXMiOiAw
+LA0KICAgICJ0b2tlbnNfdG90YWxfc2VyaWVzIjogew0KICAgICAgImFucmJqNjY2IjogMCwNCiAg
+ICAgICJ2aWJlY29kZSI6IDANCiAgICB9LA0KICAgICJ0b3RhbF9zY29yZSI6IHsNCiAgICAgICJh
+bnJiajY2NiI6IDc1LA0KICAgICAgInZpYmVjb2RlIjogMzUNCiAgICB9LA0KICAgICJ3aW5uZXJf
+Z3JvdXAiOiAiYW5yYmo2NjYiDQogIH0sDQogICJnYW1lX2lkIjogImFucmJqNjY2LXZzLXZpYmVj
+b2RlIiwNCiAgImdhbWVfdWlkIjogImIyYTE2OTQ2LTJjYWQtOTA5Zi02MGFhLWIwY2M4YThiN2M0
+ZiIsDQogICJncm91cHMiOiBbDQogICAgImFucmJqNjY2IiwNCiAgICAidmliZWNvZGUiDQogIF0s
+DQogICJsaW5rcyI6IHsNCiAgICAiY29uZmlnIjogImNvbmZpZ19hbnJiajY2Ni12cy12aWJlY29k
+ZV9nPE5OPi5qc29uIiwNCiAgICAiZGVjbGFyYXRpb24iOiAiZGVjbGFyYXRpb25fYW5yYmo2NjYt
+dnMtdmliZWNvZGUuanNvbiIsDQogICAgImdpdGh1YiI6IHsNCiAgICAgICJhbnJiajY2NiI6IHsN
+CiAgICAgICAgImNvcCI6ICJodHRwczovL2dpdGh1Yi5jb20vYWxvbmVuZ2VsL1AyUC1Qb2xpY2Ui
+LA0KICAgICAgICAidGhpZWYiOiAiaHR0cHM6Ly9naXRodWIuY29tL2Fsb25lbmdlbC9QMlAtVGhp
+ZWYiDQogICAgICB9LA0KICAgICAgInZpYmVjb2RlIjogew0KICAgICAgICAiY29wIjogImh0dHBz
+Oi8vZ2l0aHViLmNvbS9BbWl0S3VwZXIvdmliZWNvZGUtY29wIiwNCiAgICAgICAgInRoaWVmIjog
+Imh0dHBzOi8vZ2l0aHViLmNvbS9BbWl0S3VwZXIvdmliZWNvZGUtdGhpZWYiDQogICAgICB9DQog
+ICAgfSwNCiAgICAibG9nIjogImxvZ19hbnJiajY2Ni12cy12aWJlY29kZV9nPE5OPi5qc29uIiwN
+CiAgICAicmVzdWx0IjogInJlc3VsdF9hbnJiajY2Ni12cy12aWJlY29kZS5qc29uIg0KICB9LA0K
+ICAibXV0dWFsX2FncmVlbWVudCI6IHsNCiAgICAiY29uZmlybWVkIjogdHJ1ZSwNCiAgICAic2hh
+MjU2IjogImI0ZGIxMGMyNGUzMzA2ODIzOTNjNmQzZGVhNDMyZGUwNDBmOTMxMTY3MTA4NTFiZjhl
+NDFmNmFjNWMzYWU2N2QiDQogIH0sDQogICJudW1fc3ViX2dhbWVzIjogNiwNCiAgInJlcG9ydF90
+eXBlIjogImZpbmFsX2dhbWVfcmVzdWx0IiwNCiAgInNjaGVtYV92ZXJzaW9uIjogIjEuMSIsDQog
+ICJzdWJfZ2FtZXMiOiBbDQogICAgew0KICAgICAgImF1ZGl0Ijogew0KICAgICAgICAibG9nX3Zl
+cmlmaWVkIjogdHJ1ZSwNCiAgICAgICAgInRhbXBlcmVkIjogZmFsc2UNCiAgICAgIH0sDQogICAg
+ICAiZW5kZWRfYXQiOiAiMjAyNi0wOC0wOFQxOToxNDoxMSswMDowMCIsDQogICAgICAiZ2l0aHVi
+X2NvbW1pdCI6IHsNCiAgICAgICAgImFucmJqNjY2IjogIjYzMGVhODc0YzZlNjQ4ZjRmOTUyNDhk
+YWRkODIwMzNiNjQ1ZDRlY2EiLA0KICAgICAgICAidmliZWNvZGUiOiAiODlhMzE0YTgzYzkxZjk0
+NWRjM2Q4YzBhZWQ2MjNkYzg3NDliM2UzNSINCiAgICAgIH0sDQogICAgICAibG9nX2ZpbGVzIjog
+ew0KICAgICAgICAiYW5yYmo2NjYiOiAibG9nX2FucmJqNjY2LXZzLXZpYmVjb2RlX2cwMS5qc29u
+IiwNCiAgICAgICAgInZpYmVjb2RlIjogImxvZ19hbnJiajY2Ni12cy12aWJlY29kZV9nMDEuanNv
+biINCiAgICAgIH0sDQogICAgICAicmVzdWx0IjogImNhcHR1cmUiLA0KICAgICAgInJvbGVzIjog
+ew0KICAgICAgICAiYW5yYmo2NjYiOiAicG9saWNlIiwNCiAgICAgICAgInZpYmVjb2RlIjogInRo
+aWVmIg0KICAgICAgfSwNCiAgICAgICJzY29yZSI6IHsNCiAgICAgICAgImFucmJqNjY2IjogMjAs
+DQogICAgICAgICJ2aWJlY29kZSI6IDUNCiAgICAgIH0sDQogICAgICAic3RhcnRlZF9hdCI6ICIy
+MDI2LTA4LTA4VDE5OjEzOjQ2KzAwOjAwIiwNCiAgICAgICJzdWJfZ2FtZV9udW1iZXIiOiAxLA0K
+ICAgICAgInRpZSI6IGZhbHNlLA0KICAgICAgInRva2VucyI6IHsNCiAgICAgICAgImFucmJqNjY2
+IjogMCwNCiAgICAgICAgInZpYmVjb2RlIjogMA0KICAgICAgfSwNCiAgICAgICJ3aW5uZXJfZ3Jv
+dXAiOiAiYW5yYmo2NjYiDQogICAgfSwNCiAgICB7DQogICAgICAiYXVkaXQiOiB7DQogICAgICAg
+ICJsb2dfdmVyaWZpZWQiOiB0cnVlLA0KICAgICAgICAidGFtcGVyZWQiOiBmYWxzZQ0KICAgICAg
+fSwNCiAgICAgICJlbmRlZF9hdCI6ICIyMDI2LTA4LTA4VDE5OjE0OjM4KzAwOjAwIiwNCiAgICAg
+ICJnaXRodWJfY29tbWl0Ijogew0KICAgICAgICAiYW5yYmo2NjYiOiAiNjIzYTcxZDU5MjVlMWM4
+YTk0M2ZlNDRhMGZiYWIwZTEzMDk2MDMxZSIsDQogICAgICAgICJ2aWJlY29kZSI6ICIyM2M4NzEx
+ZTIzNWJmNjZmMGJlNTkxNzMwMjQ0ODMxNDk1ODRkYjFkIg0KICAgICAgfSwNCiAgICAgICJsb2df
+ZmlsZXMiOiB7DQogICAgICAgICJhbnJiajY2NiI6ICJsb2dfYW5yYmo2NjYtdnMtdmliZWNvZGVf
+ZzAyLmpzb24iLA0KICAgICAgICAidmliZWNvZGUiOiAibG9nX2FucmJqNjY2LXZzLXZpYmVjb2Rl
+X2cwMi5qc29uIg0KICAgICAgfSwNCiAgICAgICJyZXN1bHQiOiAic3Vydml2YWwiLA0KICAgICAg
+InJvbGVzIjogew0KICAgICAgICAiYW5yYmo2NjYiOiAidGhpZWYiLA0KICAgICAgICAidmliZWNv
+ZGUiOiAicG9saWNlIg0KICAgICAgfSwNCiAgICAgICJzY29yZSI6IHsNCiAgICAgICAgImFucmJq
+NjY2IjogMTAsDQogICAgICAgICJ2aWJlY29kZSI6IDUNCiAgICAgIH0sDQogICAgICAic3RhcnRl
+ZF9hdCI6ICIyMDI2LTA4LTA4VDE5OjE0OjE1KzAwOjAwIiwNCiAgICAgICJzdWJfZ2FtZV9udW1i
+ZXIiOiAyLA0KICAgICAgInRpZSI6IGZhbHNlLA0KICAgICAgInRva2VucyI6IHsNCiAgICAgICAg
+ImFucmJqNjY2IjogMCwNCiAgICAgICAgInZpYmVjb2RlIjogMA0KICAgICAgfSwNCiAgICAgICJ3
+aW5uZXJfZ3JvdXAiOiAiYW5yYmo2NjYiDQogICAgfSwNCiAgICB7DQogICAgICAiYXVkaXQiOiB7
+DQogICAgICAgICJsb2dfdmVyaWZpZWQiOiB0cnVlLA0KICAgICAgICAidGFtcGVyZWQiOiBmYWxz
+ZQ0KICAgICAgfSwNCiAgICAgICJlbmRlZF9hdCI6ICIyMDI2LTA4LTA4VDE5OjE0OjU2KzAwOjAw
+IiwNCiAgICAgICJnaXRodWJfY29tbWl0Ijogew0KICAgICAgICAiYW5yYmo2NjYiOiAiNjMwZWE4
+NzRjNmU2NDhmNGY5NTI0OGRhZGQ4MjAzM2I2NDVkNGVjYSIsDQogICAgICAgICJ2aWJlY29kZSI6
+ICI4OWEzMTRhODNjOTFmOTQ1ZGMzZDhjMGFlZDYyM2RjODc0OWIzZTM1Ig0KICAgICAgfSwNCiAg
+ICAgICJsb2dfZmlsZXMiOiB7DQogICAgICAgICJhbnJiajY2NiI6ICJsb2dfYW5yYmo2NjYtdnMt
+dmliZWNvZGVfZzAzLmpzb24iLA0KICAgICAgICAidmliZWNvZGUiOiAibG9nX2FucmJqNjY2LXZz
+LXZpYmVjb2RlX2cwMy5qc29uIg0KICAgICAgfSwNCiAgICAgICJyZXN1bHQiOiAiY2FwdHVyZSIs
+DQogICAgICAicm9sZXMiOiB7DQogICAgICAgICJhbnJiajY2NiI6ICJwb2xpY2UiLA0KICAgICAg
+ICAidmliZWNvZGUiOiAidGhpZWYiDQogICAgICB9LA0KICAgICAgInNjb3JlIjogew0KICAgICAg
+ICAiYW5yYmo2NjYiOiAyMCwNCiAgICAgICAgInZpYmVjb2RlIjogNQ0KICAgICAgfSwNCiAgICAg
+ICJzdGFydGVkX2F0IjogIjIwMjYtMDgtMDhUMTk6MTQ6NDIrMDA6MDAiLA0KICAgICAgInN1Yl9n
+YW1lX251bWJlciI6IDMsDQogICAgICAidGllIjogZmFsc2UsDQogICAgICAidG9rZW5zIjogew0K
+ICAgICAgICAiYW5yYmo2NjYiOiAwLA0KICAgICAgICAidmliZWNvZGUiOiAwDQogICAgICB9LA0K
+ICAgICAgIndpbm5lcl9ncm91cCI6ICJhbnJiajY2NiINCiAgICB9LA0KICAgIHsNCiAgICAgICJh
+dWRpdCI6IHsNCiAgICAgICAgImxvZ192ZXJpZmllZCI6IHRydWUsDQogICAgICAgICJ0YW1wZXJl
+ZCI6IGZhbHNlDQogICAgICB9LA0KICAgICAgImVuZGVkX2F0IjogIjIwMjYtMDgtMDhUMTk6MTU6
+MjErMDA6MDAiLA0KICAgICAgImdpdGh1Yl9jb21taXQiOiB7DQogICAgICAgICJhbnJiajY2NiI6
+ICI2MjNhNzFkNTkyNWUxYzhhOTQzZmU0NGEwZmJhYjBlMTMwOTYwMzFlIiwNCiAgICAgICAgInZp
+YmVjb2RlIjogIjIzYzg3MTFlMjM1YmY2NmYwYmU1OTE3MzAyNDQ4MzE0OTU4NGRiMWQiDQogICAg
+ICB9LA0KICAgICAgImxvZ19maWxlcyI6IHsNCiAgICAgICAgImFucmJqNjY2IjogImxvZ19hbnJi
+ajY2Ni12cy12aWJlY29kZV9nMDQuanNvbiIsDQogICAgICAgICJ2aWJlY29kZSI6ICJsb2dfYW5y
+Ymo2NjYtdnMtdmliZWNvZGVfZzA0Lmpzb24iDQogICAgICB9LA0KICAgICAgInJlc3VsdCI6ICJz
+dXJ2aXZhbCIsDQogICAgICAicm9sZXMiOiB7DQogICAgICAgICJhbnJiajY2NiI6ICJ0aGllZiIs
+DQogICAgICAgICJ2aWJlY29kZSI6ICJwb2xpY2UiDQogICAgICB9LA0KICAgICAgInNjb3JlIjog
+ew0KICAgICAgICAiYW5yYmo2NjYiOiAxMCwNCiAgICAgICAgInZpYmVjb2RlIjogNQ0KICAgICAg
+fSwNCiAgICAgICJzdGFydGVkX2F0IjogIjIwMjYtMDgtMDhUMTk6MTQ6NTkrMDA6MDAiLA0KICAg
+ICAgInN1Yl9nYW1lX251bWJlciI6IDQsDQogICAgICAidGllIjogZmFsc2UsDQogICAgICAidG9r
+ZW5zIjogew0KICAgICAgICAiYW5yYmo2NjYiOiAwLA0KICAgICAgICAidmliZWNvZGUiOiAwDQog
+ICAgICB9LA0KICAgICAgIndpbm5lcl9ncm91cCI6ICJhbnJiajY2NiINCiAgICB9LA0KICAgIHsN
+CiAgICAgICJhdWRpdCI6IHsNCiAgICAgICAgImxvZ192ZXJpZmllZCI6IHRydWUsDQogICAgICAg
+ICJ0YW1wZXJlZCI6IGZhbHNlDQogICAgICB9LA0KICAgICAgImVuZGVkX2F0IjogIjIwMjYtMDgt
+MDhUMTk6MTU6NDYrMDA6MDAiLA0KICAgICAgImdpdGh1Yl9jb21taXQiOiB7DQogICAgICAgICJh
+bnJiajY2NiI6ICI2MzBlYTg3NGM2ZTY0OGY0Zjk1MjQ4ZGFkZDgyMDMzYjY0NWQ0ZWNhIiwNCiAg
+ICAgICAgInZpYmVjb2RlIjogIjg5YTMxNGE4M2M5MWY5NDVkYzNkOGMwYWVkNjIzZGM4NzQ5YjNl
+MzUiDQogICAgICB9LA0KICAgICAgImxvZ19maWxlcyI6IHsNCiAgICAgICAgImFucmJqNjY2Ijog
+ImxvZ19hbnJiajY2Ni12cy12aWJlY29kZV9nMDUuanNvbiIsDQogICAgICAgICJ2aWJlY29kZSI6
+ICJsb2dfYW5yYmo2NjYtdnMtdmliZWNvZGVfZzA1Lmpzb24iDQogICAgICB9LA0KICAgICAgInJl
+c3VsdCI6ICJzdXJ2aXZhbCIsDQogICAgICAicm9sZXMiOiB7DQogICAgICAgICJhbnJiajY2NiI6
+ICJwb2xpY2UiLA0KICAgICAgICAidmliZWNvZGUiOiAidGhpZWYiDQogICAgICB9LA0KICAgICAg
+InNjb3JlIjogew0KICAgICAgICAiYW5yYmo2NjYiOiA1LA0KICAgICAgICAidmliZWNvZGUiOiAx
+MA0KICAgICAgfSwNCiAgICAgICJzdGFydGVkX2F0IjogIjIwMjYtMDgtMDhUMTk6MTU6MjQrMDA6
+MDAiLA0KICAgICAgInN1Yl9nYW1lX251bWJlciI6IDUsDQogICAgICAidGllIjogZmFsc2UsDQog
+ICAgICAidG9rZW5zIjogew0KICAgICAgICAiYW5yYmo2NjYiOiAwLA0KICAgICAgICAidmliZWNv
+ZGUiOiAwDQogICAgICB9LA0KICAgICAgIndpbm5lcl9ncm91cCI6ICJ2aWJlY29kZSINCiAgICB9
+LA0KICAgIHsNCiAgICAgICJhdWRpdCI6IHsNCiAgICAgICAgImxvZ192ZXJpZmllZCI6IHRydWUs
+DQogICAgICAgICJ0YW1wZXJlZCI6IGZhbHNlDQogICAgICB9LA0KICAgICAgImVuZGVkX2F0Ijog
+IjIwMjYtMDgtMDhUMTk6MTY6MTErMDA6MDAiLA0KICAgICAgImdpdGh1Yl9jb21taXQiOiB7DQog
+ICAgICAgICJhbnJiajY2NiI6ICI2MjNhNzFkNTkyNWUxYzhhOTQzZmU0NGEwZmJhYjBlMTMwOTYw
+MzFlIiwNCiAgICAgICAgInZpYmVjb2RlIjogIjIzYzg3MTFlMjM1YmY2NmYwYmU1OTE3MzAyNDQ4
+MzE0OTU4NGRiMWQiDQogICAgICB9LA0KICAgICAgImxvZ19maWxlcyI6IHsNCiAgICAgICAgImFu
+cmJqNjY2IjogImxvZ19hbnJiajY2Ni12cy12aWJlY29kZV9nMDYuanNvbiIsDQogICAgICAgICJ2
+aWJlY29kZSI6ICJsb2dfYW5yYmo2NjYtdnMtdmliZWNvZGVfZzA2Lmpzb24iDQogICAgICB9LA0K
+ICAgICAgInJlc3VsdCI6ICJzdXJ2aXZhbCIsDQogICAgICAicm9sZXMiOiB7DQogICAgICAgICJh
+bnJiajY2NiI6ICJ0aGllZiIsDQogICAgICAgICJ2aWJlY29kZSI6ICJwb2xpY2UiDQogICAgICB9
+LA0KICAgICAgInNjb3JlIjogew0KICAgICAgICAiYW5yYmo2NjYiOiAxMCwNCiAgICAgICAgInZp
+YmVjb2RlIjogNQ0KICAgICAgfSwNCiAgICAgICJzdGFydGVkX2F0IjogIjIwMjYtMDgtMDhUMTk6
+MTU6NDkrMDA6MDAiLA0KICAgICAgInN1Yl9nYW1lX251bWJlciI6IDYsDQogICAgICAidGllIjog
+ZmFsc2UsDQogICAgICAidG9rZW5zIjogew0KICAgICAgICAiYW5yYmo2NjYiOiAwLA0KICAgICAg
+ICAidmliZWNvZGUiOiAwDQogICAgICB9LA0KICAgICAgIndpbm5lcl9ncm91cCI6ICJhbnJiajY2
+NiINCiAgICB9DQogIF0sDQogICJ0aW1lem9uZSI6ICJBc2lhL0plcnVzYWxlbSINCn0NCg==
+--000000000000cc3f2206588dfc40--
