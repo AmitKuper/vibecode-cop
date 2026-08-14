@@ -21,6 +21,18 @@ from ref3_match.subgame_moves import (
 from ref3_match.wire import _from_wire_cell, _to_wire_cell
 
 
+def result_claim(captured: bool) -> str:
+    """How the GAME ended, not how the exchange ended.
+
+    With no capture the thief survived the step limit, so BOTH roles claim
+    "survival" — which is what our own result rows and filed report already say.
+    We used to claim "timeout" here (true of the wire, false of the game): it
+    contradicted our own result and made peers who dispute contradicted endings
+    record mutual_agreement=false while ours said true (najamjad, 2026-08-14).
+    """
+    return "capture" if captured else "survival"
+
+
 async def _run_turns(
     out_session,
     in_session,
@@ -150,6 +162,6 @@ async def _run_turns(
                 captured = True
                 break
 
-    await out_session.send_audit(role, "capture" if captured else "timeout")
+    await out_session.send_audit(role, result_claim(captured))
     await _send_done_control(out_session, role, sub_game, max_steps)
     return mover, rl_moves, captured, disputed_capture, settled_caught_cell
