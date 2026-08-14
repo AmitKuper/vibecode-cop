@@ -22,9 +22,16 @@ from cop_worker.rl.pursuit_eval import (  # noqa: F401  (public re-exports)
 
 
 def _round_value(
-    cop, thief, barriers, barriers_left, steps_left, depth, n, alpha, beta
+    cop, thief, barriers, barriers_left, steps_left, depth, n, alpha, beta, reorder=False
 ) -> tuple[float, str]:
-    """Value of a round boundary (thief to move, cop replies). Returns (value, thief action)."""
+    """Value of a round boundary (thief to move, cop replies). Returns (value, thief action).
+
+    ``reorder=True`` (interior calls only) explores promising thief moves first for
+    earlier alpha-beta cutoffs. The thief ROOT keeps the original order so its
+    action tie-breaking is bit-identical; interior callers consume only the VALUE,
+    which alpha-beta returns exactly under any child order (root children run full
+    windows). Pinned by the golden corpus.
+    """
     thief_moves = _legal_moves(thief, barriers, n)
     # Rule 47: STAY does not rescue — enclosed means no NON-STAY move. (_legal_moves
     # always contains STAY, so `not thief_moves` never fired; found live 2026-08-10:
@@ -34,6 +41,10 @@ def _round_value(
         return CAPTURE + steps_left, "STAY"
     if steps_left <= 0:
         return SURVIVAL, "STAY"
+    if reorder and len(thief_moves) > 1:
+        from cop_worker.rl.pursuit_cache import evaluate_cached
+
+        thief_moves.sort(key=lambda ap: evaluate_cached(cop, ap[1], barriers, n, steps_left))
     best_value, best_action = float("inf"), thief_moves[0][0]
     for t_action, t_pos in thief_moves:
         if t_pos == cop:
@@ -66,6 +77,9 @@ def best_cop_action(
     """
     import time as _time
 
+    from cop_worker.rl import pursuit_cache
+
+    pursuit_cache.reset()  # fresh per root: bounded memory, no staleness
     barriers = set(map(tuple, barriers))
     cop, thief = tuple(cop), tuple(thief)
     deadline = _time.monotonic() + max(0.5, time_budget_s)
@@ -99,6 +113,9 @@ def best_thief_action(
     """
     import time as _time
 
+    from cop_worker.rl import pursuit_cache
+
+    pursuit_cache.reset()  # fresh per root: bounded memory, no staleness
     barriers = set(map(tuple, barriers))
     deadline = _time.monotonic() + max(0.5, time_budget_s)
     action = "STAY"

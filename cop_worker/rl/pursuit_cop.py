@@ -5,22 +5,32 @@ Split verbatim from pursuit_search.py; behavior pinned by tests.
 
 from __future__ import annotations
 
+from cop_worker.rl import pursuit_cache
 from cop_worker.rl.action_space import PLACE_DIRS
-from cop_worker.rl.pursuit_eval import CAPTURE, _legal_moves, evaluate
+from cop_worker.rl.pursuit_eval import CAPTURE, _legal_moves
 from cop_worker.rl.pursuit_search import _round_value
 
 
 def _cop_reply(cop, thief, barriers, barriers_left, steps_left, depth, n, alpha, beta) -> float:
+    evaluate = pursuit_cache.evaluate_cached
+
     def _descend(c_pos, walls, b_left) -> float:
         if depth <= 1:
             return evaluate(c_pos, thief, walls, n, steps_left - 1)
         value, _ = _round_value(
-            c_pos, thief, walls, b_left, steps_left - 1, depth - 1, n, alpha, beta
+            c_pos, thief, walls, b_left, steps_left - 1, depth - 1, n, alpha, beta, reorder=True
         )
         return value
 
     best = float("-inf")
-    for _a, c_pos in _legal_moves(cop, barriers, n):
+    # Interior-only ordering: explore likely-best cop moves first for earlier
+    # alpha-beta cutoffs. This function returns a VALUE (never an action), and
+    # every root child runs under a full window, so the root argmax is provably
+    # unchanged — ordering here affects speed only. Cached evals make it cheap.
+    moves = _legal_moves(cop, barriers, n)
+    if len(moves) > 1:
+        moves.sort(key=lambda ap: evaluate(ap[1], thief, barriers, n, steps_left - 1), reverse=True)
+    for _a, c_pos in moves:
         if c_pos == thief:
             return CAPTURE + steps_left
         best = max(best, _descend(c_pos, barriers, barriers_left))
@@ -58,6 +68,7 @@ def _cop_root(cop, thief, barriers, barriers_left, steps_left, depth, n) -> str:
             n,
             float("-inf"),
             float("inf"),
+            reorder=True,  # interior ordering only; this root child's VALUE stays exact
         )
         if value > best_value:
             best_value, best_action = value, action
@@ -78,6 +89,7 @@ def _cop_root(cop, thief, barriers, barriers_left, steps_left, depth, n) -> str:
                 n,
                 float("-inf"),
                 float("inf"),
+                reorder=True,
             )
             if value > best_value:
                 best_value, best_action = value, action
