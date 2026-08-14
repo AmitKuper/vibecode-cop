@@ -8,30 +8,28 @@ from datetime import UTC
 from pathlib import Path
 
 from cop_worker.protocol.reference_v3 import canonical_json
+from league_artifacts.ingress import STATIC_MCP, resolve_mcp_urls
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 OUR_REPOS = {
     "cop": "https://github.com/AmitKuper/vibecode-cop",
     "thief": "https://github.com/AmitKuper/vibecode-thief",
 }
-# Default declared endpoints (static public IP, router-forwarded). A pairing may
-# instead declare tunnel URLs (ngrok/cloudflared) via its profile's [network]
-# our_cop_mcp_url / our_thief_mcp_url — our_mcp() prefers those when applied.
-# Both ingress paths hit the same local listeners; only the DECLARED URL changes.
-OUR_MCP = {"cop": "http://62.56.220.143:61224/mcp", "thief": "http://62.56.220.143:61223/mcp"}
+# Router-forwarded fallback endpoints. The DEFAULT ingress is ngrok — see
+# league_artifacts.ingress for the resolution order (profile URL > live tunnel >
+# static IP). Every path reaches the same local listeners; only the DECLARED
+# URL changes, so play is byte-identical whichever one is used.
+OUR_MCP = dict(STATIC_MCP)
 
 
 def our_mcp() -> dict:
-    """The MCP URLs we declare for THIS pairing: profile override, else the static IP."""
+    """The MCP URLs we declare for THIS pairing (ngrok by default)."""
     try:
         from ref3_match.runtime_cfg import runtime_snapshot
 
-        net = runtime_snapshot().get("network", {})
-        cop = net.get("our_cop_mcp_url") or OUR_MCP["cop"]
-        thief = net.get("our_thief_mcp_url") or OUR_MCP["thief"]
-        return {"cop": str(cop), "thief": str(thief)}
+        return resolve_mcp_urls(runtime_snapshot().get("network", {}))
     except Exception:
-        return dict(OUR_MCP)
+        return resolve_mcp_urls({})
 
 
 # The shared constitution (rule 11): both repos load byte-identical config/game.json.

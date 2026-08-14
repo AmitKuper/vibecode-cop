@@ -17,11 +17,12 @@
 # ================================================================
 
 [network]
+# Declared URLs come from the default ingress (ngrok, resolved live);
+# set ingress = "static" here to declare the router-forwarded IP instead.
+ingress           = "ngrok"
 # Our two MCP servers (static public IP, router-forwarded — no tunnel).
 our_cop_port      = 61224
 our_thief_port    = 61223
-our_cop_mcp_url   = "http://62.56.220.143:61224/mcp"
-our_thief_mcp_url = "http://62.56.220.143:61223/mcp"
 
 # Default opponent (override per game with --opponent-group / --opp-*-url
 # or a saved config/opponents/<group>/runtime.toml).
