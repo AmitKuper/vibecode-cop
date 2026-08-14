@@ -1,0 +1,30 @@
+# rstabcde pairing — two separate peer processes, two STATIC ngrok domains
+# (stable across restarts, live pre-T). FRIENDLY profile.
+[network]
+our_cop_port      = 61224
+our_thief_port    = 61223
+our_cop_mcp_url   = "http://62.56.220.143:61224/mcp"
+our_thief_mcp_url = "http://62.56.220.143:61223/mcp"
+
+opponent_group = "rstabcde"
+opp_cop_url    = "https://anyone-paragraph-spruce.ngrok-free.dev/mcp"
+opp_thief_url  = "https://explode-refutable-policy.ngrok-free.dev/mcp"
+
+[protocol]
+scent_model  = "subtractive_chebyshev_v1"
+move_policy  = "hybrid_search"
+mcp_call_sec = 10.0
+
+[timeouts]
+# Greeting poll shorter than the 300s index-hold so a quiet window gets retries
+# with re-drains instead of one long wait (najamjad lesson).
+agreement_poll_sec = 120.0
+
+[report]
+# FRIENDLY: to each other only. FILL their report address when they send it.
+recipient  = "FILL-their-email"
+mode       = "send"
+token_path = "secrets/gmail/token.json"
+
+[counted]
+counted_played = 3
