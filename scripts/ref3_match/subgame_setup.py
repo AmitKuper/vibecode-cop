@@ -5,6 +5,8 @@ from __future__ import annotations
 import secrets
 from datetime import UTC, datetime
 
+from league_artifacts.declaration import _hardware_spec, counted_opponents
+
 from ref3_match.net import _poll_agreement
 from ref3_match.runtime_cfg import REPO_ROOT, _git_head, _t
 
@@ -76,7 +78,11 @@ async def _handshake(
         "repos": OUR_REPOS,
         "members": members or [],
         "github_commit": our_commit,
+        "hardware_spec": _hardware_spec(),
         "counted_games_played": our_counted,
+        # Both spellings, same integer, plus the list rule 38 consistency-checks against.
+        "counted_matches_played": our_counted,
+        "opponents_already_counted": counted_opponents(),
     }
     # Fresh per-sub-game state: sealed records and the inbox must never leak across
     # sub-games (else step 1 of the next sub-game equivocates against the last one).
@@ -131,6 +137,9 @@ async def _handshake(
         "github_commit": our_commit,
         "group_id": group_id,
         "role": role,
+        # The book wants a system spec in Step-0; peers read it off the sealed record
+        # rather than the declaration file (najamjad flagged its absence 2026-08-14).
+        "spec": _hardware_spec(),
         "step": 0,
         "sub_game_number": sub_game,
         "type": "step_zero",

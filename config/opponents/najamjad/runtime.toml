@@ -28,4 +28,4 @@ mode       = "send"
 token_path = "secrets/gmail/token.json"
 
 [counted]
-counted_played = 3
+counted_played = 4

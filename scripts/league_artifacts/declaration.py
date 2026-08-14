@@ -5,21 +5,67 @@ from __future__ import annotations
 from league_artifacts.core import OUR_REPOS, _sha, our_mcp
 
 
-def _hardware_spec() -> dict:
+def _ram_gb() -> int | None:
+    """Total RAM without psutil (it is not in the runtime venv — an ImportError here
+    used to blank the whole spec, which najamjad flagged 2026-08-14)."""
     try:
-        import platform
+        import ctypes
+        import os
 
-        import psutil
+        if hasattr(os, "sysconf") and "SC_PAGE_SIZE" in os.sysconf_names:
+            return round(os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES") / 1e9)
 
-        return {
-            "cpu_cores": psutil.cpu_count(logical=True),
-            "cpu_type": platform.processor() or "unknown",
-            "os": f"{platform.system()} {platform.release()}",
-            "python": platform.python_version(),
-            "ram_gb": round(psutil.virtual_memory().total / 1e9),
-        }
+        class _MemStatus(ctypes.Structure):
+            _fields_ = [
+                ("dwLength", ctypes.c_ulong),
+                ("dwMemoryLoad", ctypes.c_ulong),
+                ("ullTotalPhys", ctypes.c_ulonglong),
+                ("ullAvailPhys", ctypes.c_ulonglong),
+                ("ullTotalPageFile", ctypes.c_ulonglong),
+                ("ullAvailPageFile", ctypes.c_ulonglong),
+                ("ullTotalVirtual", ctypes.c_ulonglong),
+                ("ullAvailVirtual", ctypes.c_ulonglong),
+                ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
+            ]
+
+        st = _MemStatus()
+        st.dwLength = ctypes.sizeof(_MemStatus)
+        ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(st))
+        return round(st.ullTotalPhys / 1e9)
     except Exception:
-        return {}
+        return None
+
+
+def _hardware_spec() -> dict:
+    """Stdlib-only system spec (rule: Step-0 must carry one; never emit an empty dict)."""
+    import os
+    import platform
+
+    spec = {
+        "cpu_cores": os.cpu_count(),
+        "cpu_type": platform.processor() or platform.machine() or "unknown",
+        "machine": platform.machine(),
+        "os": f"{platform.system()} {platform.release()}",
+        "python": platform.python_version(),
+    }
+    ram = _ram_gb()
+    if ram:
+        spec["ram_gb"] = ram
+    return spec
+
+
+def counted_opponents() -> list:
+    """Group ids of our already-counted series, from the league ledger (rule 38:
+    the two teams' declarations are judged for consistency, so this must be live)."""
+    import json
+    from pathlib import Path
+
+    ledger = Path(__file__).resolve().parents[2] / "results" / "counted_series.json"
+    try:
+        rows = json.loads(ledger.read_text(encoding="utf-8")).get("series", [])
+        return sorted({r["opponent"] for r in rows if r.get("opponent")})
+    except Exception:
+        return []
 
 
 def build_declaration(
@@ -41,6 +87,10 @@ def build_declaration(
     ours = {
         "code_version": "1.00",
         "counted_games_played": our_counted,
+        # Same integer under both spellings peers use (najamjad 2026-08-14): a reader
+        # keying on either name gets the same number and they cannot disagree.
+        "counted_matches_played": our_counted,
+        "opponents_already_counted": counted_opponents(),
         "group_id": "vibecode",
         "group_name": "vibecode",
         "hardware_spec": hw,
