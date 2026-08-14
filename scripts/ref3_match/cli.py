@@ -9,6 +9,7 @@ from pathlib import Path
 
 from ref3_match.artifacts_io import _write_result
 from ref3_match.cli_config import _resolve_args
+from ref3_match.ingress_boot import ensure_ingress
 from ref3_match.match_log import _install_match_log
 from ref3_match.report_guard import _emit_artifacts
 from ref3_match.runtime_cfg import KIT_ROOT
@@ -84,6 +85,7 @@ def main() -> int:
             print("ERROR: --match requires --opp-cop-url and --opp-thief-url (CLI or runtime.toml)")
             return 2
         _install_match_log(args.opponent_group or "unknown")
+        ensure_ingress()
         members = [m.strip() for m in args.members.split(",") if m.strip()]
         play = _play_match_split if args.arch == "split" else _play_match
         result = asyncio.run(
