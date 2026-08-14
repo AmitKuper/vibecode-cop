@@ -36,11 +36,19 @@ from league_artifacts.core import our_mcp; print(our_mcp())"
 
 ## Start ONE tunnel, not two
 
-The free tier grants **one static domain**, and ngrok injects it into every
-tunnel that does not name its own URL. `ngrok start --all` therefore makes the
-cop *and* thief tunnels advertise the same hostname while only the last
-registration actually routes — an opponent dialling our "cop" URL would land on
-the thief door and the series would fail in a way that looks like a protocol bug.
+The free plan grants **one dev domain**, and ngrok assigns it to every endpoint
+we start — even one whose config names no domain at all (verified 2026-08-14).
+The plan's "up to 3 online endpoints" all point at that single domain, which
+makes them an **endpoint pool**: ngrok load-balances traffic across them at
+*random*. So `ngrok start --all` does not give us two doors; it gives one URL
+that lands on the cop door about half the time and the thief door the rest, mid
+series, silently. That is worse than a deterministic mix-up and far harder to
+diagnose from the opponent's side.
+
+Separating the two roles by path (`/cop`, `/thief`) needs Cloud Endpoints with a
+Traffic Policy — a paid feature. The agent rejects a path in an endpoint URL
+outright on this plan (`ERR_NGROK_9038`). A second HTTPS door therefore means
+paid ngrok or cloudflared (free, stable hostname, needs a domain you control).
 
 The resolver refuses to guess: **any URL claimed by more than one local port is
 discarded** and that role falls back to the static IP

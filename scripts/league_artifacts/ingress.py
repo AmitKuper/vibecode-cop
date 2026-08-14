@@ -2,10 +2,11 @@
 
 Two ingress paths reach the SAME local listeners (61224 cop / 61223 thief):
 
-* ``ngrok``  — the default. Public HTTPS via the ngrok agent. The cop rides the
-  account's free static domain; the thief gets an EPHEMERAL URL each start
-  (free tier grants one static domain), so tunnel URLs are resolved LIVE from
-  the agent's local API rather than hardcoded.
+* ``ngrok``  — the default. Public HTTPS via the ngrok agent. The free plan has
+  exactly ONE dev domain, so only one door can be tunnelled (the cop, by
+  convention) and the other declares the static IP. URLs are read LIVE from the
+  agent's local API rather than hardcoded, so a plan change or a different
+  tunnel needs no code edit.
 * ``static`` — the router-forwarded public IP. No tunnel needed.
 
 Resolution order, per role: an explicit profile ``our_<role>_mcp_url`` always
@@ -52,11 +53,11 @@ def _tunnel_map(api_url: str = NGROK_API, timeout: float = 2.0) -> dict:
 def _drop_collisions(found: dict) -> dict:
     """Discard any URL claimed by more than one local port.
 
-    The free tier grants ONE static domain and INJECTS it into every tunnel that
-    does not name its own URL, so two tunnels can advertise the same hostname
-    while only the last registration actually routes (observed 2026-08-14).
-    Declaring that URL for both roles would send the opponent's cop traffic to
-    our thief door. Ambiguous is worse than absent: drop it and fall back.
+    The free plan has ONE dev domain and assigns it to every endpoint, even one
+    whose config names no domain. Endpoints sharing a URL form an ngrok endpoint
+    POOL, which load-balances at random - so two tunnels do not give two doors,
+    they give one URL that reaches the wrong role about half the time, silently,
+    mid-series (verified 2026-08-14/15). Ambiguous is worse than absent.
     """
     seen: dict[str, int] = {}
     for port, url in found.items():
@@ -91,8 +92,8 @@ def resolve_mcp_urls(net: dict | None = None, *, announce=print) -> dict:
             announce(
                 f"[ingress] ngrok requested but no usable tunnel for {', '.join(missing)} "
                 f"- declaring the static IP for those roles. Start one with "
-                f"`ngrok start cop` (free tier: run ONE tunnel; two share the single "
-                f"static domain and only the last one routes)."
+                f"`ngrok start cop` (free plan has ONE domain: a second tunnel joins "
+                f"it as a random-balanced endpoint pool, not a second door)."
             )
         for role in ("cop", "thief"):
             if sources[role] == "ngrok":
