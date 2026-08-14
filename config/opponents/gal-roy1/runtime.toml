@@ -1,0 +1,32 @@
+# gal-roy1 pairing (Gal Bareket Bercovici & Roy Vazana).
+# Two role URLs on one host/port, path-routed. Permanent reverse tunnel (not
+# free ngrok), so the address is stable and probeable before T. FRIENDLY.
+[network]
+# Declared URLs come from the default ingress (ngrok, resolved live);
+# set ingress = "static" here to declare the router-forwarded IP instead.
+ingress           = "ngrok"
+our_cop_port      = 61224
+our_thief_port    = 61223
+
+opponent_group = "gal-roy1"
+opp_cop_url    = "http://galbb.freeddns.org:6000/cop/mcp"
+opp_thief_url  = "http://galbb.freeddns.org:6000/thief/mcp"
+
+[protocol]
+scent_model  = "subtractive_chebyshev_v1"
+move_policy  = "hybrid_search"
+mcp_call_sec = 10.0
+
+[timeouts]
+# Greeting poll shorter than the 300s index-hold so a quiet window retries with
+# a fresh drain instead of one long wait (najamjad lesson).
+agreement_poll_sec = 120.0
+
+[report]
+# FRIENDLY: to each other only. FILL their report address when they send it.
+recipient  = "<FILL: their report inbox>"
+mode       = "send"
+token_path = "secrets/gmail/token.json"
+
+[counted]
+counted_played = 5
