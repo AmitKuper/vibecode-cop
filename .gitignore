@@ -58,7 +58,13 @@ coverage.json
 # Run scratch (never evidence): debug snapshots and rehearsal outputs
 tmp/
 artifacts/
-reports/
+/reports/
+# league_manager/reports is a SOURCE package, not run scratch. The rule above is
+# anchored to the repo root for that reason: an unanchored "reports/" also
+# matched it and silently swallowed gmail_delivery.py, which then existed only
+# on dev machines and broke CI on a fresh clone (2026-08-15).
+!league_manager/reports/
+!league_manager/reports/*.py
 .coverage
 coverage.json
 
