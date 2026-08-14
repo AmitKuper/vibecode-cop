@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from league_artifacts.core import OUR_MCP, OUR_REPOS, _sha
+from league_artifacts.core import OUR_REPOS, _sha, our_mcp
 
 
 def _hardware_spec() -> dict:
@@ -46,7 +46,7 @@ def build_declaration(
         "hardware_spec": hw,
         "hardware_spec_sha256": _sha(hw) if hw else "",
         "llm_model": "none (template hints; pure-Python algorithmic movement)",
-        "mcp_servers": OUR_MCP,
+        "mcp_servers": our_mcp(),
         "members": members,
         "repos": OUR_REPOS,
         "signature": f"sha256:{_sha({'group_id': 'vibecode', 'game_uid': game_uid})}",

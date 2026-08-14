@@ -50,7 +50,7 @@ async def _handshake(
     declared_opponent_group: str | None,
 ):
     """Exchange + verify greetings; seal step-0. Returns the handshake context dict."""
-    from ref3_artifacts import OUR_MCP, OUR_REPOS
+    from ref3_artifacts import OUR_REPOS, our_mcp
 
     from cop_worker.protocol.reference_v3 import (
         ReferenceV3Inbox,
@@ -72,7 +72,7 @@ async def _handshake(
         # the movement strategy, and hints provably cannot affect ours (local_obs_to_tensor
         # never reads last_hint).
         "llm_model": "none (template hints; pure-Python algorithmic movement)",
-        "mcp_servers": OUR_MCP,
+        "mcp_servers": our_mcp(),
         "repos": OUR_REPOS,
         "members": members or [],
         "github_commit": our_commit,

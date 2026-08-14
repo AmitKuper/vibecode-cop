@@ -39,6 +39,7 @@ from league_artifacts.core import (
     config_sha256,
     load_constitution,
     now_iso,
+    our_mcp,
     write_artifact,
 )
 from league_artifacts.declaration import _hardware_spec, build_declaration
@@ -49,6 +50,7 @@ from league_artifacts.scoring import score_series
 __all__ = [
     "GAME_JSON_PATH",
     "OUR_MCP",
+    "our_mcp",
     "OUR_REPOS",
     "REPO_ROOT",
     "_hardware_spec",

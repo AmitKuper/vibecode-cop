@@ -14,7 +14,25 @@ OUR_REPOS = {
     "cop": "https://github.com/AmitKuper/vibecode-cop",
     "thief": "https://github.com/AmitKuper/vibecode-thief",
 }
+# Default declared endpoints (static public IP, router-forwarded). A pairing may
+# instead declare tunnel URLs (ngrok/cloudflared) via its profile's [network]
+# our_cop_mcp_url / our_thief_mcp_url — our_mcp() prefers those when applied.
+# Both ingress paths hit the same local listeners; only the DECLARED URL changes.
 OUR_MCP = {"cop": "http://62.56.220.143:61224/mcp", "thief": "http://62.56.220.143:61223/mcp"}
+
+
+def our_mcp() -> dict:
+    """The MCP URLs we declare for THIS pairing: profile override, else the static IP."""
+    try:
+        from ref3_match.runtime_cfg import runtime_snapshot
+
+        net = runtime_snapshot().get("network", {})
+        cop = net.get("our_cop_mcp_url") or OUR_MCP["cop"]
+        thief = net.get("our_thief_mcp_url") or OUR_MCP["thief"]
+        return {"cop": str(cop), "thief": str(thief)}
+    except Exception:
+        return dict(OUR_MCP)
+
 
 # The shared constitution (rule 11): both repos load byte-identical config/game.json.
 # config_sha256 is sha256(canonical(WHOLE game.json)) — a field subset would defeat the
