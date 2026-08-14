@@ -1,0 +1,411 @@
+Delivered-To: agentsorch@gmail.com
+Received: by 2002:a05:6214:4948:b0:8ef:cfdb:29a3 with SMTP id pe8csp2133087qvb;
+        Fri, 14 Aug 2026 08:37:46 -0700 (PDT)
+X-Received: by 2002:a05:600c:19c8:b0:495:69eb:27d3 with SMTP id 5b1f17b1804b1-49987ad94c3mr74398395e9.8.1786721866223;
+        Fri, 14 Aug 2026 08:37:46 -0700 (PDT)
+ARC-Seal: i=2; a=rsa-sha256; t=1786721866; cv=pass;
+        d=google.com; s=arc-20260327;
+        b=BDgpXdmQxmK+lXuwx+KV07qmK7t8XAIQ6H3l0gVNvdwPed1nRMcdvDG61AaSgSk1GV
+         wLgp/HljXTks6z5jclppdj6OhoUeQcVNgKPTYxsX9o6dmKemkFXI323DDX+gJ6QaaXvu
+         vafAaQDhdMt2YaG1AiqeGSyaYV9KuUHd14/URrRgix/0wptDX86GfudUB9TKd073qZ/b
+         wuQ5vPNBHzrOL9kbEM3mKbYIgIOjGxDeFaQbV4RWNYKomhcZMA8YaE/EQ1N6mgMrePsq
+         lqXAdviDi/lLB6VkWgRdYeI/n8PQgWZ1+5eS+9cKuSKKdRPMZYQ+FdJxIwUAyeyxu9vi
+         Fj9Q==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :dkim-signature;
+        bh=ddy77TwdxtHyedIaW+qcL3XMRrUtmdV85QSz8C4avrM=;
+        fh=ZBENhEVGQSFS05X5kEbRDqMIDmFyAa5PBLYf7d2ny1E=;
+        b=N7wAj7+x//012esUJgaepn37v6F1KwtgEXBgSzj2MGULLqw0tBraRo+JTepvAceIEz
+         JS9PvIQaj3QD+uetesrCzSV/Jltq1B7IphpF0W1Yh2XQVz6IuXmMfUQxM+IaTxVShjt6
+         AJ1rtf9V9vG6XTZU5M0YvXWhbkGMSuVocTV2g9j9BCN96AcG0Q2LsJWfVNPyWYfn3HHG
+         NMPamx1+xrMNfvYfROZOF9wvgux/lfFH/XNTNSjyfviXqsYBZFEKlrFIf99ohNmKlIfK
+         JHpx+mR76Bz/VMSAVsAbT23mHyuVGYwy9GhaU8l5i4XVo3QD/HKJfgwU6zToSl+/GJBK
+         +2ow==;
+        dara=google.com
+ARC-Authentication-Results: i=2; mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20251104 header.b=mL6fky9r;
+       arc=pass (i=1);
+       spf=pass (google.com: domain of rosakhell28@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=rosakhell28@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;
+       dara=pass header.i=@gmail.com
+Return-Path: <rosakhell28@gmail.com>
+Received: from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])
+        by mx.google.com with SMTPS id ffacd0b85a97d-481622bd0d5sor185060f8f.9.2026.08.14.08.37.45
+        for <agentsorch@gmail.com>
+        (Google Transport Security);
+        Fri, 14 Aug 2026 08:37:46 -0700 (PDT)
+Received-SPF: pass (google.com: domain of rosakhell28@gmail.com designates 209.85.220.41 as permitted sender) client-ip=209.85.220.41;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20251104 header.b=mL6fky9r;
+       arc=pass (i=1);
+       spf=pass (google.com: domain of rosakhell28@gmail.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=rosakhell28@gmail.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com;
+       dara=pass header.i=@gmail.com
+ARC-Seal: i=1; a=rsa-sha256; t=1786721865; cv=none;
+        d=google.com; s=arc-20260327;
+        b=sCLYen/lYVDwd/2ZtqannI/sOQcQt4vcWeW8gJDM3gsCnpagCbQiwvc1R3Kj4OC6+7
+         LAXpjbNvXqeB9Ew4jxzDCwvyk6kyg4QQymb10OcDdKwLkH5moS3psMbKwzdXvGm8Ttgp
+         SFguEFVDZgj2Hsk3v7XiB9+sRWYVMCm5ReNpkpqfKMTP0lh3gbR2c/QOKv+UBghp288u
+         3hxVRhIzxHAs2NTb5o0AveJdtqMh23VNJOBQop9yK5M2QRRe+DrTIzgLlzR9ZeeMNrz3
+         LaL0BPPWBJXmUnSz+bRY1fcJJrNgJpg6ZvAIVchG+24KDHWSc2Z4mVF1t+MeHCa0TxoA
+         rM9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :dkim-signature;
+        bh=ddy77TwdxtHyedIaW+qcL3XMRrUtmdV85QSz8C4avrM=;
+        fh=ZBENhEVGQSFS05X5kEbRDqMIDmFyAa5PBLYf7d2ny1E=;
+        b=iEi0bo1XPSnk3eOS7Fec+PMdygmmKeYuKaM+UzEfB6dVCW5j90H5HO3cS2BvTIq9R9
+         y5EAkhoowlooCZogkwnlW5+g3x8zvKuXVCa9ziOkMgHIl/bsVEHyb3ak0AzKWWMFNdej
+         QeVj487DOFdGoRTtRmLO5xZVHphZHjynBDAn0+n+6Z4x+LbAAeZ45sJLDF168tX5WNOT
+         DIVhukCA/GnXeJOfrCREjcdMRpISP/JjHDyhHUi9NxqIBEVHUJzSFEZ/Q6yY34vKGV25
+         78p4RDOIyi9sNd+FEgf5708sPjSrd+9Qef4vnDlfBJ8QAyNaIIz4VWgai2Wail7HaoEG
+         KK4A==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1786721865; x=1787326665; dara=google.com;
+        h=content-type:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ddy77TwdxtHyedIaW+qcL3XMRrUtmdV85QSz8C4avrM=;
+        b=mL6fky9rkQHQnff1rWByIG0GG0fGb0OcIoSJ0zrDjZmf7tWFaCAb4H4c+W76pVHoA0
+         Qx76AruQiJAYPSeWeB47mGakLr5f10NayJ4/K/ERQnvQtflA02GkXjwPmX4KXRO8Dequ
+         XNF8u63N7SSP2VYkW7U3kB34UiHFKpcjvEcXO5jctPAv7xOO/GqQuW1dhvEcyN1goAPi
+         UPo3fR7v+nwOL+FToF9WCCF1HWUN4ZiNQnk0IDTh17irjB1Z5mBeQbSeVkKlecUzFo6G
+         qvsedUOuY2qApGZtS62cphXUvVvTa+Ap2oGu9T/GZEUVA/nO/I/RV7l+wzk27PkylufA
+         phMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786721865; x=1787326665;
+        h=content-type:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=ddy77TwdxtHyedIaW+qcL3XMRrUtmdV85QSz8C4avrM=;
+        b=p13stHMO+MITUC4KXbPfAF/hsiG32FV3sLd9iyik0xhOyaqD1JabE8b8wTtLXTabld
+         Nzt79ogGvJnnrZlbItRrqHe4vMuoNjdawW4b4o7r7vdZzGBEHbsreG6ThA5IV/Atw8AZ
+         ACLo4yKo3/zN6XIDT86CUXF6qgYpfXkeoWQ6rNcp47ok0RuO356s/Dpajqn0eaArM6hu
+         +OQX2bJhrlCyA6v1QmTs1OhfJmUlTw6hnTwnxIJ6k8W0kcCkEtxNW1U5o7MiIAT5Cp4z
+         Q2XaydN3r1MLkyjJz2VBdPlaqE6SbbsXlR6qOIzHhcy2N/9sT88OCxmRZcH6bExCDORA
+         Jx+g==
+X-Gm-Message-State: AOJu0YxC3NzvTdETVpDTPI5eDhp/iNPZCWs0u+rLRhimQphdbEnuUwSw
+	xOxMaAvwWgWIAgkyoMj2usRFeTWYNBqXV/wkM7dL+c7BdFb337SJEImARgDhtCwzIwMm0CHFnWU
+	osrnHswQjHaHlT1KBcOPh12H+BZ6bQcjpng==
+X-Gm-Gg: AR+sD12CdlrVOYnruQ1M4n/NS8V89SsmWZM3OuyMQhjF8mpRiplgC5Fak1WSHk6HDoc
+	yTAa+0kYK3MmLMjzkUaNOuyZPpfJN45aj1ZFEqAHD9oVWJDaUhzMpGrkV5q9eUE2dw///cbBcml
+	IimEzoa4R24U6N93lL1KQAHGkY8HXS37k3bLwCBeFt//BeVqmKmwi901R8XWq1Xn+kz+BjWej5J
+	lj7CiK2WAl43O+rBxxdFtJe+QR5xqh0iPJ3Xx6LByJd/i+kHo6CiR30Cu9iEz04Xh0Vlf7PqXgc
+	iuO6bl0rOfCm+ZJ6K6ZljyeL1w56KH4i7WqWT6xfuT5hGgHjEH1KpHZOjXhuEhilRDZIqNwCXcV
+	K4ZjHNSw9L3A81wnlARs9UGz//5LeiI6/Ol0jGM36maAcLg==
+X-Received: by 2002:a5d:5f04:0:b0:47f:8554:a341 with SMTP id
+ ffacd0b85a97d-4815a53cb5emr22224727f8f.13.1786721865377; Fri, 14 Aug 2026
+ 08:37:45 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAGdyEpTs685UFgqb8jTFj0QNWAn8p79veX93qR0DCJyBN8Y3rA@mail.gmail.com>
+In-Reply-To: <CAGdyEpTs685UFgqb8jTFj0QNWAn8p79veX93qR0DCJyBN8Y3rA@mail.gmail.com>
+From: rosa 28 <rosakhell28@gmail.com>
+Date: Fri, 14 Aug 2026 18:37:32 +0300
+X-Gm-Features: AcwNN1Ufi6qojQ8S3QZqZNKn1MWnEE8UnvVZcCaoPXuDneJoAYb6V7VOLPQeoH4
+Message-ID: <CAGdyEpR5WOO=K2nTAWbhTf=CP4V0GhobPCKErQdXfbDuwoi7_A@mail.gmail.com>
+Subject: Fwd: [Police-Thief League] series result rstabcde-vs-vibecode
+To: agentsorch@gmail.com
+Content-Type: multipart/mixed; boundary="00000000000019499d0659039aa8"
+
+--00000000000019499d0659039aa8
+Content-Type: multipart/alternative; boundary="00000000000019499c0659039aa6"
+
+--00000000000019499c0659039aa6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+---------- Forwarded message ---------
+From: rosa 28 <rosakhell28@gmail.com>
+Date: Fri, Aug 14, 2026 at 6:34=E2=80=AFPM
+Subject: [Police-Thief League] series result rstabcde-vs-vibecode
+To: <rmisegal+uoh26finalgame@gmail.com>
+
+
+{"_schema":"Summary and final result for the WHOLE game (all sub-games).
+Condenses the per-sub-game logs into a per-group score plus the aggregate
+outcome. Both teams must agree and each sends its own copy to the lecturer
+(book ch.
+9).","final_result":{"series_tie":false,"sub_games_won":{"rstabcde":0,"vibe=
+code":6},"ties":0,"tokens_total_series":{"rstabcde":0,"vibecode":0},"total_=
+score":{"rstabcde":30,"vibecode":90},"winner_group":"vibecode"},"game_id":"=
+rstabcde-vs-vibecode","game_uid":"2ea82ca8-0249-e839-d19a-c749f9408652","gr=
+oups":["rstabcde","vibecode"],"links":{"_remark":"Logical
+roles, not fixed filenames. Match-level files (declaration, result) are
+named <role>_<game_id>.json; per-sub-game files (config, log) are named
+<role>_<game_id>_g<NN>.json.","config":"config_rstabcde-vs-vibecode_g<NN>.j=
+son","declaration":"declaration_rstabcde-vs-vibecode.json","log":"log_rstab=
+cde-vs-vibecode_g<NN>.json","result":"result_rstabcde-vs-vibecode.json"},"m=
+utual_agreement":{"confirmed":true,"sha256":"b220c6364f1677c7a46b9df3bece47=
+ebb6ea494d03fae31360ab9504fa4ab6d4"},"num_sub_games":6,"report_type":"final=
+_game_result","schema_version":"1.1","sub_games":[{"audit":{"log_verified":=
+true,"tampered":false},"ended_at":null,"github_commit":{"rstabcde":"d10d845=
+2b210e04d7983a1d7edd786184d3ed986","vibecode":"unknown"},"log_files":{"rsta=
+bcde":"log_rstabcde-vs-vibecode_g01.json","vibecode":"log_rstabcde-vs-vibec=
+ode_g01.json"},"result":"survival","roles":{"rstabcde":"police","vibecode":=
+"thief"},"score":{"rstabcde":5,"vibecode":10},"started_at":"2026-08-14T15:2=
+6:03.726825+00:00","sub_game_number":1,"tie":false,"tokens":{"rstabcde":0,"=
+vibecode":0},"winner_group":"vibecode"},{"audit":{"log_verified":true,"tamp=
+ered":false},"ended_at":null,"github_commit":{"rstabcde":"13d8998cc93b5d28b=
+dd70a4b289cf22b7187248b","vibecode":"unknown"},"log_files":{"rstabcde":"log=
+_rstabcde-vs-vibecode_g02.json","vibecode":"log_rstabcde-vs-vibecode_g02.js=
+on"},"result":"capture","roles":{"rstabcde":"thief","vibecode":"police"},"s=
+core":{"rstabcde":5,"vibecode":20},"started_at":"2026-08-14T15:27:44.882547=
++00:00","sub_game_number":2,"tie":false,"tokens":{"rstabcde":0,"vibecode":0=
+},"winner_group":"vibecode"},{"audit":{"log_verified":true,"tampered":false=
+},"ended_at":null,"github_commit":{"rstabcde":"d10d8452b210e04d7983a1d7edd7=
+86184d3ed986","vibecode":"unknown"},"log_files":{"rstabcde":"log_rstabcde-v=
+s-vibecode_g03.json","vibecode":"log_rstabcde-vs-vibecode_g03.json"},"resul=
+t":"survival","roles":{"rstabcde":"police","vibecode":"thief"},"score":{"rs=
+tabcde":5,"vibecode":10},"started_at":"2026-08-14T15:28:28.457852+00:00","s=
+ub_game_number":3,"tie":false,"tokens":{"rstabcde":0,"vibecode":0},"winner_=
+group":"vibecode"},{"audit":{"log_verified":true,"tampered":false},"ended_a=
+t":null,"github_commit":{"rstabcde":"13d8998cc93b5d28bdd70a4b289cf22b718724=
+8b","vibecode":"unknown"},"log_files":{"rstabcde":"log_rstabcde-vs-vibecode=
+_g04.json","vibecode":"log_rstabcde-vs-vibecode_g04.json"},"result":"captur=
+e","roles":{"rstabcde":"thief","vibecode":"police"},"score":{"rstabcde":5,"=
+vibecode":20},"started_at":"2026-08-14T15:29:51.100457+00:00","sub_game_num=
+ber":4,"tie":false,"tokens":{"rstabcde":0,"vibecode":0},"winner_group":"vib=
+ecode"},{"audit":{"log_verified":true,"tampered":false},"ended_at":null,"gi=
+thub_commit":{"rstabcde":"d10d8452b210e04d7983a1d7edd786184d3ed986","vibeco=
+de":"unknown"},"log_files":{"rstabcde":"log_rstabcde-vs-vibecode_g05.json",=
+"vibecode":"log_rstabcde-vs-vibecode_g05.json"},"result":"survival","roles"=
+:{"rstabcde":"police","vibecode":"thief"},"score":{"rstabcde":5,"vibecode":=
+10},"started_at":"2026-08-14T15:30:31.549428+00:00","sub_game_number":5,"ti=
+e":false,"tokens":{"rstabcde":0,"vibecode":0},"winner_group":"vibecode"},{"=
+audit":{"log_verified":true,"tampered":false},"ended_at":null,"github_commi=
+t":{"rstabcde":"13d8998cc93b5d28bdd70a4b289cf22b7187248b","vibecode":"unkno=
+wn"},"log_files":{"rstabcde":"log_rstabcde-vs-vibecode_g06.json","vibecode"=
+:"log_rstabcde-vs-vibecode_g06.json"},"result":"capture","roles":{"rstabcde=
+":"thief","vibecode":"police"},"score":{"rstabcde":5,"vibecode":20},"starte=
+d_at":"2026-08-14T15:32:04.112546+00:00","sub_game_number":6,"tie":false,"t=
+okens":{"rstabcde":0,"vibecode":0},"winner_group":"vibecode"}],"timezone":"=
+Asia/Jerusalem"}
+
+--00000000000019499c0659039aa6
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><br><br><div class=3D"gmail_quote gmail_quote_container"><=
+div dir=3D"ltr" class=3D"gmail_attr">---------- Forwarded message ---------=
+<br>From: <strong class=3D"gmail_sendername" dir=3D"auto">rosa 28</strong> =
+<span dir=3D"auto">&lt;<a href=3D"mailto:rosakhell28@gmail.com">rosakhell28=
+@gmail.com</a>&gt;</span><br>Date: Fri, Aug 14, 2026 at 6:34=E2=80=AFPM<br>=
+Subject: [Police-Thief League] series result rstabcde-vs-vibecode<br>To:  &=
+lt;<a href=3D"mailto:rmisegal%2Buoh26finalgame@gmail.com">rmisegal+uoh26fin=
+algame@gmail.com</a>&gt;<br></div><br><br>{&quot;_schema&quot;:&quot;Summar=
+y and final result for the WHOLE game (all sub-games). Condenses the per-su=
+b-game logs into a per-group score plus the aggregate outcome. Both teams m=
+ust agree and each sends its own copy to the lecturer (book ch. 9).&quot;,&=
+quot;final_result&quot;:{&quot;series_tie&quot;:false,&quot;sub_games_won&q=
+uot;:{&quot;rstabcde&quot;:0,&quot;vibecode&quot;:6},&quot;ties&quot;:0,&qu=
+ot;tokens_total_series&quot;:{&quot;rstabcde&quot;:0,&quot;vibecode&quot;:0=
+},&quot;total_score&quot;:{&quot;rstabcde&quot;:30,&quot;vibecode&quot;:90}=
+,&quot;winner_group&quot;:&quot;vibecode&quot;},&quot;game_id&quot;:&quot;r=
+stabcde-vs-vibecode&quot;,&quot;game_uid&quot;:&quot;2ea82ca8-0249-e839-d19=
+a-c749f9408652&quot;,&quot;groups&quot;:[&quot;rstabcde&quot;,&quot;vibecod=
+e&quot;],&quot;links&quot;:{&quot;_remark&quot;:&quot;Logical roles, not fi=
+xed filenames. Match-level files (declaration, result) are named &lt;role&g=
+t;_&lt;game_id&gt;.json; per-sub-game files (config, log) are named &lt;rol=
+e&gt;_&lt;game_id&gt;_g&lt;NN&gt;.json.&quot;,&quot;config&quot;:&quot;conf=
+ig_rstabcde-vs-vibecode_g&lt;NN&gt;.json&quot;,&quot;declaration&quot;:&quo=
+t;declaration_rstabcde-vs-vibecode.json&quot;,&quot;log&quot;:&quot;log_rst=
+abcde-vs-vibecode_g&lt;NN&gt;.json&quot;,&quot;result&quot;:&quot;result_rs=
+tabcde-vs-vibecode.json&quot;},&quot;mutual_agreement&quot;:{&quot;confirme=
+d&quot;:true,&quot;sha256&quot;:&quot;b220c6364f1677c7a46b9df3bece47ebb6ea4=
+94d03fae31360ab9504fa4ab6d4&quot;},&quot;num_sub_games&quot;:6,&quot;report=
+_type&quot;:&quot;final_game_result&quot;,&quot;schema_version&quot;:&quot;=
+1.1&quot;,&quot;sub_games&quot;:[{&quot;audit&quot;:{&quot;log_verified&quo=
+t;:true,&quot;tampered&quot;:false},&quot;ended_at&quot;:null,&quot;github_=
+commit&quot;:{&quot;rstabcde&quot;:&quot;d10d8452b210e04d7983a1d7edd786184d=
+3ed986&quot;,&quot;vibecode&quot;:&quot;unknown&quot;},&quot;log_files&quot=
+;:{&quot;rstabcde&quot;:&quot;log_rstabcde-vs-vibecode_g01.json&quot;,&quot=
+;vibecode&quot;:&quot;log_rstabcde-vs-vibecode_g01.json&quot;},&quot;result=
+&quot;:&quot;survival&quot;,&quot;roles&quot;:{&quot;rstabcde&quot;:&quot;p=
+olice&quot;,&quot;vibecode&quot;:&quot;thief&quot;},&quot;score&quot;:{&quo=
+t;rstabcde&quot;:5,&quot;vibecode&quot;:10},&quot;started_at&quot;:&quot;20=
+26-08-14T15:26:03.726825+00:00&quot;,&quot;sub_game_number&quot;:1,&quot;ti=
+e&quot;:false,&quot;tokens&quot;:{&quot;rstabcde&quot;:0,&quot;vibecode&quo=
+t;:0},&quot;winner_group&quot;:&quot;vibecode&quot;},{&quot;audit&quot;:{&q=
+uot;log_verified&quot;:true,&quot;tampered&quot;:false},&quot;ended_at&quot=
+;:null,&quot;github_commit&quot;:{&quot;rstabcde&quot;:&quot;13d8998cc93b5d=
+28bdd70a4b289cf22b7187248b&quot;,&quot;vibecode&quot;:&quot;unknown&quot;},=
+&quot;log_files&quot;:{&quot;rstabcde&quot;:&quot;log_rstabcde-vs-vibecode_=
+g02.json&quot;,&quot;vibecode&quot;:&quot;log_rstabcde-vs-vibecode_g02.json=
+&quot;},&quot;result&quot;:&quot;capture&quot;,&quot;roles&quot;:{&quot;rst=
+abcde&quot;:&quot;thief&quot;,&quot;vibecode&quot;:&quot;police&quot;},&quo=
+t;score&quot;:{&quot;rstabcde&quot;:5,&quot;vibecode&quot;:20},&quot;starte=
+d_at&quot;:&quot;2026-08-14T15:27:44.882547+00:00&quot;,&quot;sub_game_numb=
+er&quot;:2,&quot;tie&quot;:false,&quot;tokens&quot;:{&quot;rstabcde&quot;:0=
+,&quot;vibecode&quot;:0},&quot;winner_group&quot;:&quot;vibecode&quot;},{&q=
+uot;audit&quot;:{&quot;log_verified&quot;:true,&quot;tampered&quot;:false},=
+&quot;ended_at&quot;:null,&quot;github_commit&quot;:{&quot;rstabcde&quot;:&=
+quot;d10d8452b210e04d7983a1d7edd786184d3ed986&quot;,&quot;vibecode&quot;:&q=
+uot;unknown&quot;},&quot;log_files&quot;:{&quot;rstabcde&quot;:&quot;log_rs=
+tabcde-vs-vibecode_g03.json&quot;,&quot;vibecode&quot;:&quot;log_rstabcde-v=
+s-vibecode_g03.json&quot;},&quot;result&quot;:&quot;survival&quot;,&quot;ro=
+les&quot;:{&quot;rstabcde&quot;:&quot;police&quot;,&quot;vibecode&quot;:&qu=
+ot;thief&quot;},&quot;score&quot;:{&quot;rstabcde&quot;:5,&quot;vibecode&qu=
+ot;:10},&quot;started_at&quot;:&quot;2026-08-14T15:28:28.457852+00:00&quot;=
+,&quot;sub_game_number&quot;:3,&quot;tie&quot;:false,&quot;tokens&quot;:{&q=
+uot;rstabcde&quot;:0,&quot;vibecode&quot;:0},&quot;winner_group&quot;:&quot=
+;vibecode&quot;},{&quot;audit&quot;:{&quot;log_verified&quot;:true,&quot;ta=
+mpered&quot;:false},&quot;ended_at&quot;:null,&quot;github_commit&quot;:{&q=
+uot;rstabcde&quot;:&quot;13d8998cc93b5d28bdd70a4b289cf22b7187248b&quot;,&qu=
+ot;vibecode&quot;:&quot;unknown&quot;},&quot;log_files&quot;:{&quot;rstabcd=
+e&quot;:&quot;log_rstabcde-vs-vibecode_g04.json&quot;,&quot;vibecode&quot;:=
+&quot;log_rstabcde-vs-vibecode_g04.json&quot;},&quot;result&quot;:&quot;cap=
+ture&quot;,&quot;roles&quot;:{&quot;rstabcde&quot;:&quot;thief&quot;,&quot;=
+vibecode&quot;:&quot;police&quot;},&quot;score&quot;:{&quot;rstabcde&quot;:=
+5,&quot;vibecode&quot;:20},&quot;started_at&quot;:&quot;2026-08-14T15:29:51=
+.100457+00:00&quot;,&quot;sub_game_number&quot;:4,&quot;tie&quot;:false,&qu=
+ot;tokens&quot;:{&quot;rstabcde&quot;:0,&quot;vibecode&quot;:0},&quot;winne=
+r_group&quot;:&quot;vibecode&quot;},{&quot;audit&quot;:{&quot;log_verified&=
+quot;:true,&quot;tampered&quot;:false},&quot;ended_at&quot;:null,&quot;gith=
+ub_commit&quot;:{&quot;rstabcde&quot;:&quot;d10d8452b210e04d7983a1d7edd7861=
+84d3ed986&quot;,&quot;vibecode&quot;:&quot;unknown&quot;},&quot;log_files&q=
+uot;:{&quot;rstabcde&quot;:&quot;log_rstabcde-vs-vibecode_g05.json&quot;,&q=
+uot;vibecode&quot;:&quot;log_rstabcde-vs-vibecode_g05.json&quot;},&quot;res=
+ult&quot;:&quot;survival&quot;,&quot;roles&quot;:{&quot;rstabcde&quot;:&quo=
+t;police&quot;,&quot;vibecode&quot;:&quot;thief&quot;},&quot;score&quot;:{&=
+quot;rstabcde&quot;:5,&quot;vibecode&quot;:10},&quot;started_at&quot;:&quot=
+;2026-08-14T15:30:31.549428+00:00&quot;,&quot;sub_game_number&quot;:5,&quot=
+;tie&quot;:false,&quot;tokens&quot;:{&quot;rstabcde&quot;:0,&quot;vibecode&=
+quot;:0},&quot;winner_group&quot;:&quot;vibecode&quot;},{&quot;audit&quot;:=
+{&quot;log_verified&quot;:true,&quot;tampered&quot;:false},&quot;ended_at&q=
+uot;:null,&quot;github_commit&quot;:{&quot;rstabcde&quot;:&quot;13d8998cc93=
+b5d28bdd70a4b289cf22b7187248b&quot;,&quot;vibecode&quot;:&quot;unknown&quot=
+;},&quot;log_files&quot;:{&quot;rstabcde&quot;:&quot;log_rstabcde-vs-vibeco=
+de_g06.json&quot;,&quot;vibecode&quot;:&quot;log_rstabcde-vs-vibecode_g06.j=
+son&quot;},&quot;result&quot;:&quot;capture&quot;,&quot;roles&quot;:{&quot;=
+rstabcde&quot;:&quot;thief&quot;,&quot;vibecode&quot;:&quot;police&quot;},&=
+quot;score&quot;:{&quot;rstabcde&quot;:5,&quot;vibecode&quot;:20},&quot;sta=
+rted_at&quot;:&quot;2026-08-14T15:32:04.112546+00:00&quot;,&quot;sub_game_n=
+umber&quot;:6,&quot;tie&quot;:false,&quot;tokens&quot;:{&quot;rstabcde&quot=
+;:0,&quot;vibecode&quot;:0},&quot;winner_group&quot;:&quot;vibecode&quot;}]=
+,&quot;timezone&quot;:&quot;Asia/Jerusalem&quot;}<br>
+</div></div>
+
+--00000000000019499c0659039aa6--
+--00000000000019499d0659039aa8
+Content-Type: application/json; name="result_rstabcde-vs-vibecode.json"
+Content-Disposition: attachment; filename="result_rstabcde-vs-vibecode.json"
+Content-Transfer-Encoding: base64
+Content-ID: <1a000eba9c5b41cec5e1>
+X-Attachment-Id: 1a000eba9c5b41cec5e1
+
+ew0KICAiX3NjaGVtYSI6ICJTdW1tYXJ5IGFuZCBmaW5hbCByZXN1bHQgZm9yIHRoZSBXSE9MRSBn
+YW1lIChhbGwgc3ViLWdhbWVzKS4gQ29uZGVuc2VzIHRoZSBwZXItc3ViLWdhbWUgbG9ncyBpbnRv
+IGEgcGVyLWdyb3VwIHNjb3JlIHBsdXMgdGhlIGFnZ3JlZ2F0ZSBvdXRjb21lLiBCb3RoIHRlYW1z
+IG11c3QgYWdyZWUgYW5kIGVhY2ggc2VuZHMgaXRzIG93biBjb3B5IHRvIHRoZSBsZWN0dXJlciAo
+Ym9vayBjaC4gOSkuIiwNCiAgImZpbmFsX3Jlc3VsdCI6IHsNCiAgICAic2VyaWVzX3RpZSI6IGZh
+bHNlLA0KICAgICJzdWJfZ2FtZXNfd29uIjogew0KICAgICAgInJzdGFiY2RlIjogMCwNCiAgICAg
+ICJ2aWJlY29kZSI6IDYNCiAgICB9LA0KICAgICJ0aWVzIjogMCwNCiAgICAidG9rZW5zX3RvdGFs
+X3NlcmllcyI6IHsNCiAgICAgICJyc3RhYmNkZSI6IDAsDQogICAgICAidmliZWNvZGUiOiAwDQog
+ICAgfSwNCiAgICAidG90YWxfc2NvcmUiOiB7DQogICAgICAicnN0YWJjZGUiOiAzMCwNCiAgICAg
+ICJ2aWJlY29kZSI6IDkwDQogICAgfSwNCiAgICAid2lubmVyX2dyb3VwIjogInZpYmVjb2RlIg0K
+ICB9LA0KICAiZ2FtZV9pZCI6ICJyc3RhYmNkZS12cy12aWJlY29kZSIsDQogICJnYW1lX3VpZCI6
+ICIyZWE4MmNhOC0wMjQ5LWU4MzktZDE5YS1jNzQ5Zjk0MDg2NTIiLA0KICAiZ3JvdXBzIjogWw0K
+ICAgICJyc3RhYmNkZSIsDQogICAgInZpYmVjb2RlIg0KICBdLA0KICAibGlua3MiOiB7DQogICAg
+Il9yZW1hcmsiOiAiTG9naWNhbCByb2xlcywgbm90IGZpeGVkIGZpbGVuYW1lcy4gTWF0Y2gtbGV2
+ZWwgZmlsZXMgKGRlY2xhcmF0aW9uLCByZXN1bHQpIGFyZSBuYW1lZCA8cm9sZT5fPGdhbWVfaWQ+
+Lmpzb247IHBlci1zdWItZ2FtZSBmaWxlcyAoY29uZmlnLCBsb2cpIGFyZSBuYW1lZCA8cm9sZT5f
+PGdhbWVfaWQ+X2c8Tk4+Lmpzb24uIiwNCiAgICAiY29uZmlnIjogImNvbmZpZ19yc3RhYmNkZS12
+cy12aWJlY29kZV9nPE5OPi5qc29uIiwNCiAgICAiZGVjbGFyYXRpb24iOiAiZGVjbGFyYXRpb25f
+cnN0YWJjZGUtdnMtdmliZWNvZGUuanNvbiIsDQogICAgImxvZyI6ICJsb2dfcnN0YWJjZGUtdnMt
+dmliZWNvZGVfZzxOTj4uanNvbiIsDQogICAgInJlc3VsdCI6ICJyZXN1bHRfcnN0YWJjZGUtdnMt
+dmliZWNvZGUuanNvbiINCiAgfSwNCiAgIm11dHVhbF9hZ3JlZW1lbnQiOiB7DQogICAgImNvbmZp
+cm1lZCI6IHRydWUsDQogICAgInNoYTI1NiI6ICJiMjIwYzYzNjRmMTY3N2M3YTQ2YjlkZjNiZWNl
+NDdlYmI2ZWE0OTRkMDNmYWUzMTM2MGFiOTUwNGZhNGFiNmQ0Ig0KICB9LA0KICAibnVtX3N1Yl9n
+YW1lcyI6IDYsDQogICJyZXBvcnRfdHlwZSI6ICJmaW5hbF9nYW1lX3Jlc3VsdCIsDQogICJzY2hl
+bWFfdmVyc2lvbiI6ICIxLjEiLA0KICAic3ViX2dhbWVzIjogWw0KICAgIHsNCiAgICAgICJhdWRp
+dCI6IHsNCiAgICAgICAgImxvZ192ZXJpZmllZCI6IHRydWUsDQogICAgICAgICJ0YW1wZXJlZCI6
+IGZhbHNlDQogICAgICB9LA0KICAgICAgImVuZGVkX2F0IjogbnVsbCwNCiAgICAgICJnaXRodWJf
+Y29tbWl0Ijogew0KICAgICAgICAicnN0YWJjZGUiOiAiZDEwZDg0NTJiMjEwZTA0ZDc5ODNhMWQ3
+ZWRkNzg2MTg0ZDNlZDk4NiIsDQogICAgICAgICJ2aWJlY29kZSI6ICJ1bmtub3duIg0KICAgICAg
+fSwNCiAgICAgICJsb2dfZmlsZXMiOiB7DQogICAgICAgICJyc3RhYmNkZSI6ICJsb2dfcnN0YWJj
+ZGUtdnMtdmliZWNvZGVfZzAxLmpzb24iLA0KICAgICAgICAidmliZWNvZGUiOiAibG9nX3JzdGFi
+Y2RlLXZzLXZpYmVjb2RlX2cwMS5qc29uIg0KICAgICAgfSwNCiAgICAgICJyZXN1bHQiOiAic3Vy
+dml2YWwiLA0KICAgICAgInJvbGVzIjogew0KICAgICAgICAicnN0YWJjZGUiOiAicG9saWNlIiwN
+CiAgICAgICAgInZpYmVjb2RlIjogInRoaWVmIg0KICAgICAgfSwNCiAgICAgICJzY29yZSI6IHsN
+CiAgICAgICAgInJzdGFiY2RlIjogNSwNCiAgICAgICAgInZpYmVjb2RlIjogMTANCiAgICAgIH0s
+DQogICAgICAic3RhcnRlZF9hdCI6ICIyMDI2LTA4LTE0VDE1OjI2OjAzLjcyNjgyNSswMDowMCIs
+DQogICAgICAic3ViX2dhbWVfbnVtYmVyIjogMSwNCiAgICAgICJ0aWUiOiBmYWxzZSwNCiAgICAg
+ICJ0b2tlbnMiOiB7DQogICAgICAgICJyc3RhYmNkZSI6IDAsDQogICAgICAgICJ2aWJlY29kZSI6
+IDANCiAgICAgIH0sDQogICAgICAid2lubmVyX2dyb3VwIjogInZpYmVjb2RlIg0KICAgIH0sDQog
+ICAgew0KICAgICAgImF1ZGl0Ijogew0KICAgICAgICAibG9nX3ZlcmlmaWVkIjogdHJ1ZSwNCiAg
+ICAgICAgInRhbXBlcmVkIjogZmFsc2UNCiAgICAgIH0sDQogICAgICAiZW5kZWRfYXQiOiBudWxs
+LA0KICAgICAgImdpdGh1Yl9jb21taXQiOiB7DQogICAgICAgICJyc3RhYmNkZSI6ICIxM2Q4OTk4
+Y2M5M2I1ZDI4YmRkNzBhNGIyODljZjIyYjcxODcyNDhiIiwNCiAgICAgICAgInZpYmVjb2RlIjog
+InVua25vd24iDQogICAgICB9LA0KICAgICAgImxvZ19maWxlcyI6IHsNCiAgICAgICAgInJzdGFi
+Y2RlIjogImxvZ19yc3RhYmNkZS12cy12aWJlY29kZV9nMDIuanNvbiIsDQogICAgICAgICJ2aWJl
+Y29kZSI6ICJsb2dfcnN0YWJjZGUtdnMtdmliZWNvZGVfZzAyLmpzb24iDQogICAgICB9LA0KICAg
+ICAgInJlc3VsdCI6ICJjYXB0dXJlIiwNCiAgICAgICJyb2xlcyI6IHsNCiAgICAgICAgInJzdGFi
+Y2RlIjogInRoaWVmIiwNCiAgICAgICAgInZpYmVjb2RlIjogInBvbGljZSINCiAgICAgIH0sDQog
+ICAgICAic2NvcmUiOiB7DQogICAgICAgICJyc3RhYmNkZSI6IDUsDQogICAgICAgICJ2aWJlY29k
+ZSI6IDIwDQogICAgICB9LA0KICAgICAgInN0YXJ0ZWRfYXQiOiAiMjAyNi0wOC0xNFQxNToyNzo0
+NC44ODI1NDcrMDA6MDAiLA0KICAgICAgInN1Yl9nYW1lX251bWJlciI6IDIsDQogICAgICAidGll
+IjogZmFsc2UsDQogICAgICAidG9rZW5zIjogew0KICAgICAgICAicnN0YWJjZGUiOiAwLA0KICAg
+ICAgICAidmliZWNvZGUiOiAwDQogICAgICB9LA0KICAgICAgIndpbm5lcl9ncm91cCI6ICJ2aWJl
+Y29kZSINCiAgICB9LA0KICAgIHsNCiAgICAgICJhdWRpdCI6IHsNCiAgICAgICAgImxvZ192ZXJp
+ZmllZCI6IHRydWUsDQogICAgICAgICJ0YW1wZXJlZCI6IGZhbHNlDQogICAgICB9LA0KICAgICAg
+ImVuZGVkX2F0IjogbnVsbCwNCiAgICAgICJnaXRodWJfY29tbWl0Ijogew0KICAgICAgICAicnN0
+YWJjZGUiOiAiZDEwZDg0NTJiMjEwZTA0ZDc5ODNhMWQ3ZWRkNzg2MTg0ZDNlZDk4NiIsDQogICAg
+ICAgICJ2aWJlY29kZSI6ICJ1bmtub3duIg0KICAgICAgfSwNCiAgICAgICJsb2dfZmlsZXMiOiB7
+DQogICAgICAgICJyc3RhYmNkZSI6ICJsb2dfcnN0YWJjZGUtdnMtdmliZWNvZGVfZzAzLmpzb24i
+LA0KICAgICAgICAidmliZWNvZGUiOiAibG9nX3JzdGFiY2RlLXZzLXZpYmVjb2RlX2cwMy5qc29u
+Ig0KICAgICAgfSwNCiAgICAgICJyZXN1bHQiOiAic3Vydml2YWwiLA0KICAgICAgInJvbGVzIjog
+ew0KICAgICAgICAicnN0YWJjZGUiOiAicG9saWNlIiwNCiAgICAgICAgInZpYmVjb2RlIjogInRo
+aWVmIg0KICAgICAgfSwNCiAgICAgICJzY29yZSI6IHsNCiAgICAgICAgInJzdGFiY2RlIjogNSwN
+CiAgICAgICAgInZpYmVjb2RlIjogMTANCiAgICAgIH0sDQogICAgICAic3RhcnRlZF9hdCI6ICIy
+MDI2LTA4LTE0VDE1OjI4OjI4LjQ1Nzg1MiswMDowMCIsDQogICAgICAic3ViX2dhbWVfbnVtYmVy
+IjogMywNCiAgICAgICJ0aWUiOiBmYWxzZSwNCiAgICAgICJ0b2tlbnMiOiB7DQogICAgICAgICJy
+c3RhYmNkZSI6IDAsDQogICAgICAgICJ2aWJlY29kZSI6IDANCiAgICAgIH0sDQogICAgICAid2lu
+bmVyX2dyb3VwIjogInZpYmVjb2RlIg0KICAgIH0sDQogICAgew0KICAgICAgImF1ZGl0Ijogew0K
+ICAgICAgICAibG9nX3ZlcmlmaWVkIjogdHJ1ZSwNCiAgICAgICAgInRhbXBlcmVkIjogZmFsc2UN
+CiAgICAgIH0sDQogICAgICAiZW5kZWRfYXQiOiBudWxsLA0KICAgICAgImdpdGh1Yl9jb21taXQi
+OiB7DQogICAgICAgICJyc3RhYmNkZSI6ICIxM2Q4OTk4Y2M5M2I1ZDI4YmRkNzBhNGIyODljZjIy
+YjcxODcyNDhiIiwNCiAgICAgICAgInZpYmVjb2RlIjogInVua25vd24iDQogICAgICB9LA0KICAg
+ICAgImxvZ19maWxlcyI6IHsNCiAgICAgICAgInJzdGFiY2RlIjogImxvZ19yc3RhYmNkZS12cy12
+aWJlY29kZV9nMDQuanNvbiIsDQogICAgICAgICJ2aWJlY29kZSI6ICJsb2dfcnN0YWJjZGUtdnMt
+dmliZWNvZGVfZzA0Lmpzb24iDQogICAgICB9LA0KICAgICAgInJlc3VsdCI6ICJjYXB0dXJlIiwN
+CiAgICAgICJyb2xlcyI6IHsNCiAgICAgICAgInJzdGFiY2RlIjogInRoaWVmIiwNCiAgICAgICAg
+InZpYmVjb2RlIjogInBvbGljZSINCiAgICAgIH0sDQogICAgICAic2NvcmUiOiB7DQogICAgICAg
+ICJyc3RhYmNkZSI6IDUsDQogICAgICAgICJ2aWJlY29kZSI6IDIwDQogICAgICB9LA0KICAgICAg
+InN0YXJ0ZWRfYXQiOiAiMjAyNi0wOC0xNFQxNToyOTo1MS4xMDA0NTcrMDA6MDAiLA0KICAgICAg
+InN1Yl9nYW1lX251bWJlciI6IDQsDQogICAgICAidGllIjogZmFsc2UsDQogICAgICAidG9rZW5z
+Ijogew0KICAgICAgICAicnN0YWJjZGUiOiAwLA0KICAgICAgICAidmliZWNvZGUiOiAwDQogICAg
+ICB9LA0KICAgICAgIndpbm5lcl9ncm91cCI6ICJ2aWJlY29kZSINCiAgICB9LA0KICAgIHsNCiAg
+ICAgICJhdWRpdCI6IHsNCiAgICAgICAgImxvZ192ZXJpZmllZCI6IHRydWUsDQogICAgICAgICJ0
+YW1wZXJlZCI6IGZhbHNlDQogICAgICB9LA0KICAgICAgImVuZGVkX2F0IjogbnVsbCwNCiAgICAg
+ICJnaXRodWJfY29tbWl0Ijogew0KICAgICAgICAicnN0YWJjZGUiOiAiZDEwZDg0NTJiMjEwZTA0
+ZDc5ODNhMWQ3ZWRkNzg2MTg0ZDNlZDk4NiIsDQogICAgICAgICJ2aWJlY29kZSI6ICJ1bmtub3du
+Ig0KICAgICAgfSwNCiAgICAgICJsb2dfZmlsZXMiOiB7DQogICAgICAgICJyc3RhYmNkZSI6ICJs
+b2dfcnN0YWJjZGUtdnMtdmliZWNvZGVfZzA1Lmpzb24iLA0KICAgICAgICAidmliZWNvZGUiOiAi
+bG9nX3JzdGFiY2RlLXZzLXZpYmVjb2RlX2cwNS5qc29uIg0KICAgICAgfSwNCiAgICAgICJyZXN1
+bHQiOiAic3Vydml2YWwiLA0KICAgICAgInJvbGVzIjogew0KICAgICAgICAicnN0YWJjZGUiOiAi
+cG9saWNlIiwNCiAgICAgICAgInZpYmVjb2RlIjogInRoaWVmIg0KICAgICAgfSwNCiAgICAgICJz
+Y29yZSI6IHsNCiAgICAgICAgInJzdGFiY2RlIjogNSwNCiAgICAgICAgInZpYmVjb2RlIjogMTAN
+CiAgICAgIH0sDQogICAgICAic3RhcnRlZF9hdCI6ICIyMDI2LTA4LTE0VDE1OjMwOjMxLjU0OTQy
+OCswMDowMCIsDQogICAgICAic3ViX2dhbWVfbnVtYmVyIjogNSwNCiAgICAgICJ0aWUiOiBmYWxz
+ZSwNCiAgICAgICJ0b2tlbnMiOiB7DQogICAgICAgICJyc3RhYmNkZSI6IDAsDQogICAgICAgICJ2
+aWJlY29kZSI6IDANCiAgICAgIH0sDQogICAgICAid2lubmVyX2dyb3VwIjogInZpYmVjb2RlIg0K
+ICAgIH0sDQogICAgew0KICAgICAgImF1ZGl0Ijogew0KICAgICAgICAibG9nX3ZlcmlmaWVkIjog
+dHJ1ZSwNCiAgICAgICAgInRhbXBlcmVkIjogZmFsc2UNCiAgICAgIH0sDQogICAgICAiZW5kZWRf
+YXQiOiBudWxsLA0KICAgICAgImdpdGh1Yl9jb21taXQiOiB7DQogICAgICAgICJyc3RhYmNkZSI6
+ICIxM2Q4OTk4Y2M5M2I1ZDI4YmRkNzBhNGIyODljZjIyYjcxODcyNDhiIiwNCiAgICAgICAgInZp
+YmVjb2RlIjogInVua25vd24iDQogICAgICB9LA0KICAgICAgImxvZ19maWxlcyI6IHsNCiAgICAg
+ICAgInJzdGFiY2RlIjogImxvZ19yc3RhYmNkZS12cy12aWJlY29kZV9nMDYuanNvbiIsDQogICAg
+ICAgICJ2aWJlY29kZSI6ICJsb2dfcnN0YWJjZGUtdnMtdmliZWNvZGVfZzA2Lmpzb24iDQogICAg
+ICB9LA0KICAgICAgInJlc3VsdCI6ICJjYXB0dXJlIiwNCiAgICAgICJyb2xlcyI6IHsNCiAgICAg
+ICAgInJzdGFiY2RlIjogInRoaWVmIiwNCiAgICAgICAgInZpYmVjb2RlIjogInBvbGljZSINCiAg
+ICAgIH0sDQogICAgICAic2NvcmUiOiB7DQogICAgICAgICJyc3RhYmNkZSI6IDUsDQogICAgICAg
+ICJ2aWJlY29kZSI6IDIwDQogICAgICB9LA0KICAgICAgInN0YXJ0ZWRfYXQiOiAiMjAyNi0wOC0x
+NFQxNTozMjowNC4xMTI1NDYrMDA6MDAiLA0KICAgICAgInN1Yl9nYW1lX251bWJlciI6IDYsDQog
+ICAgICAidGllIjogZmFsc2UsDQogICAgICAidG9rZW5zIjogew0KICAgICAgICAicnN0YWJjZGUi
+OiAwLA0KICAgICAgICAidmliZWNvZGUiOiAwDQogICAgICB9LA0KICAgICAgIndpbm5lcl9ncm91
+cCI6ICJ2aWJlY29kZSINCiAgICB9DQogIF0sDQogICJ0aW1lem9uZSI6ICJBc2lhL0plcnVzYWxl
+bSINCn0=
+--00000000000019499d0659039aa8--

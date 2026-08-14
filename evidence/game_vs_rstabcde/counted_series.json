@@ -1,0 +1,107 @@
+{
+  "group_id": "vibecode",
+  "counted_games_played": 4,
+  "series": [
+    {
+      "game_id": "anrbj666-vs-vibecode",
+      "game_uid": "b2a16946-2cad-909f-60aa-b0cc8a8b7c4f",
+      "opponent": "anrbj666",
+      "winner_group": "anrbj666",
+      "total_score": {
+        "vibecode": 35,
+        "anrbj666": 75
+      },
+      "sub_games_won": {
+        "vibecode": 1,
+        "anrbj666": 5
+      },
+      "diversity_reward_applied": {
+        "vibecode": false,
+        "anrbj666": true
+      },
+      "mutual_agreement": {
+        "sha256": "b4db10c24e330682393c6d3dea432de040f93116710851bf8e41f6ac5c3ae67d",
+        "confirmed": true
+      },
+      "report_message_id": "19fe2cdea7a51125",
+      "reported_at": "2026-08-08T19:16:15.045328+00:00",
+      "result_file": "result_anrbj666-vs-vibecode.json"
+    },
+    {
+      "game_id": "imreeyal-vs-vibecode",
+      "game_uid": "2e167349-f579-0201-e3f1-5ea0d75710c0",
+      "opponent": "imreeyal",
+      "winner_group": "vibecode",
+      "total_score": {
+        "vibecode": 90,
+        "imreeyal": 30
+      },
+      "sub_games_won": {
+        "vibecode": 6,
+        "imreeyal": 0
+      },
+      "diversity_reward_applied": {
+        "vibecode": true,
+        "imreeyal": false
+      },
+      "mutual_agreement": {
+        "sha256": "ad403f448f157c82828f04cbc514a85b87f72764e311d8d2b18abeb50b80d01e",
+        "confirmed": true
+      },
+      "report_message_id": "19fecf55c1b5eea0",
+      "reported_at": "2026-08-10T18:35:31.190081+00:00",
+      "result_file": "result_imreeyal-vs-vibecode.json"
+    },
+    {
+      "game_id": "uoh-sqak-vs-vibecode",
+      "game_uid": "e294ea6e-31c6-e5bf-0a27-1bc8e6dad89f",
+      "opponent": "uoh-sqak",
+      "winner_group": "vibecode",
+      "total_score": {
+        "vibecode": 90,
+        "uoh-sqak": 30
+      },
+      "sub_games_won": {
+        "vibecode": 6,
+        "uoh-sqak": 0
+      },
+      "diversity_reward_applied": {
+        "vibecode": true,
+        "uoh-sqak": false
+      },
+      "mutual_agreement": {
+        "sha256": "dfb41c7da5efc0b66d668f4a935ea04a403359ea697e21a9d2e5cad934645834",
+        "confirmed": true
+      },
+      "report_message_id": "19ff3140bfdfea7c",
+      "reported_at": "2026-08-11T23:06:45.774554+00:00",
+      "result_file": "result_uoh-sqak-vs-vibecode.json"
+    },
+    {
+      "game_id": "rstabcde-vs-vibecode",
+      "game_uid": "2ea82ca8-0249-e839-d19a-c749f9408652",
+      "opponent": "rstabcde",
+      "winner_group": "vibecode",
+      "total_score": {
+        "vibecode": 90,
+        "rstabcde": 30
+      },
+      "sub_games_won": {
+        "vibecode": 6,
+        "rstabcde": 0
+      },
+      "diversity_reward_applied": {
+        "vibecode": true,
+        "rstabcde": false
+      },
+      "mutual_agreement": {
+        "sha256": "b220c6364f1677c7a46b9df3bece47ebb6ea494d03fae31360ab9504fa4ab6d4",
+        "confirmed": true
+      },
+      "report_message_id": "1a000e76ccd62963",
+      "reported_at": "2026-08-14T15:32:43.681117+00:00",
+      "result_file": "result_rstabcde-vs-vibecode.json"
+    }
+  ],
+  "updated_at": "2026-08-14T15:32:43.681133+00:00"
+}

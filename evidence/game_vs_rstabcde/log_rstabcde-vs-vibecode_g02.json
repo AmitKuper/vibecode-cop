@@ -1,0 +1,581 @@
+{
+  "_schema": "p2p-police-artifacts",
+  "game_id": "rstabcde-vs-vibecode",
+  "game_uid": "2ea82ca8-0249-e839-d19a-c749f9408652",
+  "links": {
+    "config": "config_rstabcde-vs-vibecode_g02.json",
+    "declaration": "declaration_rstabcde-vs-vibecode.json",
+    "log": "log_rstabcde-vs-vibecode_g02.json",
+    "result": "result_rstabcde-vs-vibecode.json"
+  },
+  "opponent_records": [
+    {
+      "commit": "2561da33e62f09fc3231c7ecd6038a5b0320cf742cbd45a5a441f52677536f0f",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Heading north, Times Square at my back."
+      },
+      "nonce": "06d661fb426e1536797616d68a788bac",
+      "payload": {
+        "role": "thief",
+        "step": 1,
+        "sub_game_number": 2,
+        "state": [
+          3,
+          3
+        ],
+        "move": "E",
+        "intent": "lie",
+        "hint": "Heading north, Times Square at my back.",
+        "capture_claim": null,
+        "capture_response": null
+      }
+    },
+    {
+      "commit": "0d36c1e39171de9f1e4065f35b0e96f4c998efeb719887f12daa2200a927eb0b",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Pushed south, Central Park fading behind."
+      },
+      "nonce": "d1543f26033fd8d659e694641c47ffe5",
+      "payload": {
+        "role": "thief",
+        "step": 2,
+        "sub_game_number": 2,
+        "state": [
+          3,
+          4
+        ],
+        "move": "S",
+        "intent": "lie",
+        "hint": "Pushed south, Central Park fading behind.",
+        "capture_claim": null,
+        "capture_response": false
+      }
+    },
+    {
+      "commit": "5e8a44ff6e37f63c919d82c202888ec9198f57a0a1af7d792ccdb627e90c24b0",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Angling east toward the Brooklyn Bridge."
+      },
+      "nonce": "2c85a2a53686703b34107b879e0831ea",
+      "payload": {
+        "role": "thief",
+        "step": 3,
+        "sub_game_number": 2,
+        "state": [
+          4,
+          4
+        ],
+        "move": "E",
+        "intent": "lie",
+        "hint": "Angling east toward the Brooklyn Bridge.",
+        "capture_claim": null,
+        "capture_response": false
+      }
+    },
+    {
+      "commit": "ddf42e635e8542f936186c32550d625ecfffb6804cf7fcbfe09ba07d5641c79f",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Eased west, Wall Street just ahead."
+      },
+      "nonce": "364f5ca27e7bdce4eaa47e042434084c",
+      "payload": {
+        "role": "thief",
+        "step": 4,
+        "sub_game_number": 2,
+        "state": [
+          4,
+          5
+        ],
+        "move": "S",
+        "intent": "lie",
+        "hint": "Eased west, Wall Street just ahead.",
+        "capture_claim": null,
+        "capture_response": false
+      }
+    },
+    {
+      "commit": "0aa73f4df210ed985ef81d8b0204080fe2c6caedd8639b08f8e77042a914fbc8",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Lying low near Times Square."
+      },
+      "nonce": "35499e5eb8bfe41fd477357e561e03f5",
+      "payload": {
+        "role": "thief",
+        "step": 5,
+        "sub_game_number": 2,
+        "state": [
+          5,
+          5
+        ],
+        "move": "E",
+        "intent": "lie",
+        "hint": "Lying low near Times Square.",
+        "capture_claim": null,
+        "capture_response": false
+      }
+    },
+    {
+      "commit": "04fab19d94418cb7be4c09ad745cd5b2ff0fb59b727b63f7bf04ea9851419a2c",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Slipped north past Central Park."
+      },
+      "nonce": "b4f717ce4f58c519ed55a59260c6f954",
+      "payload": {
+        "role": "thief",
+        "step": 6,
+        "sub_game_number": 2,
+        "state": [
+          5,
+          6
+        ],
+        "move": "S",
+        "intent": "lie",
+        "hint": "Slipped north past Central Park.",
+        "capture_claim": null,
+        "capture_response": false
+      }
+    },
+    {
+      "commit": "97281a9c5e427910ede889b7f4c7b331004e9747d97f995e519d786e70381dc7",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Cutting south beyond the Brooklyn Bridge."
+      },
+      "nonce": "3e6af9f3dbb6e2f27a396e1192d1ad55",
+      "payload": {
+        "role": "thief",
+        "step": 7,
+        "sub_game_number": 2,
+        "state": [
+          6,
+          6
+        ],
+        "move": "STAY",
+        "intent": "lie",
+        "hint": "Cutting south beyond the Brooklyn Bridge.",
+        "capture_claim": null,
+        "capture_response": false
+      }
+    },
+    {
+      "commit": "2756ed57a26788c6d24afef50181b558af30f0d6582f0ea1f8808b6cfe33037e",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Drifted east past Wall Street."
+      },
+      "nonce": "e5deb6de7a54c5a0090071d8d8d90e60",
+      "payload": {
+        "role": "thief",
+        "step": 8,
+        "sub_game_number": 2,
+        "state": [
+          6,
+          6
+        ],
+        "move": "STAY",
+        "intent": "lie",
+        "hint": "Drifted east past Wall Street.",
+        "capture_claim": null,
+        "capture_response": false
+      }
+    },
+    {
+      "commit": "882cf9a6c73ebba7ee6e7ee9b14e0138dc5e4bfbdd0d59d9e1ca7ff55b9c2d9b",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Circling west near Times Square."
+      },
+      "nonce": "05e81b239f9b2e3c30e0ce037bcd8f89",
+      "payload": {
+        "role": "thief",
+        "step": 9,
+        "sub_game_number": 2,
+        "state": [
+          6,
+          6
+        ],
+        "move": "STAY",
+        "intent": "lie",
+        "hint": "Circling west near Times Square.",
+        "capture_claim": null,
+        "capture_response": false
+      }
+    },
+    {
+      "commit": "25754b0b6baf62d7a750c47eedb1ba840b9d7415bfeb990ad652283d2d9f1d52",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Holding position by Central Park."
+      },
+      "nonce": "937f3aa5620d74f8560fd2876aba9062",
+      "payload": {
+        "role": "thief",
+        "step": 10,
+        "sub_game_number": 2,
+        "state": [
+          6,
+          6
+        ],
+        "move": "STAY",
+        "intent": "lie",
+        "hint": "Holding position by Central Park.",
+        "capture_claim": null,
+        "capture_response": false
+      }
+    },
+    {
+      "commit": "3c4134f188cfe892c40048706323f30b9faa5f122d1aa2bd82e4181ba98538b4",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Heading north, the Brooklyn Bridge at my back."
+      },
+      "nonce": "b6a7826a19569981fa7d81d8fffcafca",
+      "payload": {
+        "role": "thief",
+        "step": 11,
+        "sub_game_number": 2,
+        "state": [
+          6,
+          6
+        ],
+        "move": "STAY",
+        "intent": "lie",
+        "hint": "Heading north, the Brooklyn Bridge at my back.",
+        "capture_claim": null,
+        "capture_response": false
+      }
+    },
+    {
+      "commit": "4f8d37bd23b83581a9218b298b6d02f94af2ac7e1b67983e06bd20d88816b9d9",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Pushed south, Wall Street fading behind."
+      },
+      "nonce": "446c0df05f6f11d33dbb7e6ebf4f9a19",
+      "payload": {
+        "role": "thief",
+        "step": 12,
+        "sub_game_number": 2,
+        "state": [
+          6,
+          6
+        ],
+        "move": "STAY",
+        "intent": "lie",
+        "hint": "Pushed south, Wall Street fading behind.",
+        "capture_claim": null,
+        "capture_response": false
+      }
+    },
+    {
+      "commit": "5f5fd1da5983a5775ebaff50ece5e199b4cb8a7f0c4fc8a001a1956ea9f5d5d7",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Angling east toward Times Square."
+      },
+      "nonce": "0a53edc3c8f10cd4c8f716c1c09405bd",
+      "payload": {
+        "role": "thief",
+        "step": 13,
+        "sub_game_number": 2,
+        "state": [
+          6,
+          6
+        ],
+        "move": "STAY",
+        "intent": "lie",
+        "hint": "Angling east toward Times Square.",
+        "capture_claim": null,
+        "capture_response": false
+      }
+    },
+    {
+      "commit": "920e23e2d90f7088cfc0f925d5f1859d842f612a574889fe4218ee55ac38829f",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": ""
+      },
+      "nonce": "97870ce5d063f1a35da3ed5fb521f1da",
+      "payload": {
+        "role": "thief",
+        "step": 14,
+        "sub_game_number": 2,
+        "state": [
+          6,
+          6
+        ],
+        "move": "confirm_capture",
+        "intent": "truth",
+        "hint": "",
+        "capture_claim": null,
+        "capture_response": true
+      }
+    }
+  ],
+  "records": [
+    {
+      "commit": "345590896550b8b538d15ce1a35b944075ebd216307c661c345244f6a2d2d630",
+      "nonce": "c75ff92005e761272837d322c307a317",
+      "payload": {
+        "declaration_ref": "declaration_rstabcde-vs-vibecode.json",
+        "github_commit": "76bf6d78b646b7b68171024e809c5de7a600c6de",
+        "group_id": "vibecode",
+        "role": "police",
+        "step": 0,
+        "sub_game_number": 2,
+        "type": "step_zero"
+      }
+    },
+    {
+      "commit": "5af73a0276a354bb7ee23d308f57ac73586027899e95c67028ed74d41dd0f704",
+      "nonce": "5f1823b048e902dd50b5eb0dd2159bf3",
+      "payload": {
+        "step": 1,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          1,
+          0
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "38987c9605a6467ecb7360be58ff9ddecf60060755294378a390336bdeeb126e",
+      "nonce": "130a3dc9a3e495441b0209173ad68b4e",
+      "payload": {
+        "step": 2,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          2,
+          0
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "6d8cf1876fc6a43c5759c67bf112870a6d52c4dd7f86c22c62d0577b79f26da9",
+      "nonce": "5c815132a6604ad3a657bad49b27628b",
+      "payload": {
+        "step": 3,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          3,
+          0
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "8899b421da2be2f3188b132c62a852a79b1761ed5464a134c6c352afd11449ce",
+      "nonce": "3fc525d5609d7679d1904bee2c974a1e",
+      "payload": {
+        "step": 4,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          3,
+          1
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "5e0d01ed50c0f80d575d65a185e6eccb3e7f777d4ae55f797808bacfe810a728",
+      "nonce": "388c0f5f0c6d0c3c07b83ba30d0ce633",
+      "payload": {
+        "step": 5,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          3,
+          2
+        ],
+        "move": "E",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "120b907e30a19273f6be82f5ab3f216891e813d8f9c857a8097b052e9fdfaabf",
+      "nonce": "046346d4b2ec3609c34fbf38a368cba7",
+      "payload": {
+        "step": 6,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          4,
+          2
+        ],
+        "move": "S",
+        "intent": "ambiguous"
+      }
+    },
+    {
+      "commit": "1bc70d5e8f0f3776c382a82aa89685c7c37c5d7213b871408249049c753f0f66",
+      "nonce": "e451e2a08e4a06bd72b0d80f5786b9d9",
+      "payload": {
+        "step": 7,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          4,
+          3
+        ],
+        "move": "E",
+        "intent": "ambiguous"
+      }
+    },
+    {
+      "commit": "224904c4422d8b00c80b771739da8e330405ac376ddabced505cd688272509a8",
+      "nonce": "8b5fcdb7ff874d8c09f27aaa7939903b",
+      "payload": {
+        "step": 8,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          5,
+          3
+        ],
+        "move": "S",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "fdc2c1f1359c28c82851afaa872e2eea44ee03b8903167200a0908dbaec8639b",
+      "nonce": "fc1cb91be9a28d793cae46a9b2705262",
+      "payload": {
+        "step": 9,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          5,
+          4
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "208a15a595e43dd29b9882f7114bd7be48329bbfd2c3630407ee057a8d858e82",
+      "nonce": "67448a6e29c946d3ae0ca47bb8d9e001",
+      "payload": {
+        "step": 10,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          5,
+          5
+        ],
+        "move": "E",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "562e0f4be13623efdd8133548b71441d0d11a4649509e31f1d433704cb1e0235",
+      "nonce": "e3d6268d487c28fe72e07deba293b88c",
+      "payload": {
+        "step": 11,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          5,
+          5
+        ],
+        "move": "PLACE_S",
+        "intent": "truth",
+        "barrier_placed": [
+          6,
+          5
+        ]
+      }
+    },
+    {
+      "commit": "533bc611afae2ec7b74e6c2b60cfc21ace3b1041716e916e2b0c3273a03491e8",
+      "nonce": "37cb96228f4dc3e1cbeec5235ba552ef",
+      "payload": {
+        "step": 12,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          5,
+          6
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "e675d0f5eeb35d50de45e5475c8f8b2cef5978c37cb73d45845fea3afbb8327d",
+      "nonce": "30aaace2ee3dc250b1767cb3a5822c04",
+      "payload": {
+        "step": 13,
+        "role": "police",
+        "sub_game": 2,
+        "position": [
+          6,
+          6
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    }
+  ],
+  "report_type": "log",
+  "schema_version": "1.3",
+  "sub_game_number": 2,
+  "summary": {
+    "audit": "Verified OK",
+    "outcome": "capture",
+    "digest_match": null,
+    "disputed_capture": {
+      "cell": null,
+      "kind": "malformed",
+      "our_claim": [
+        6,
+        6
+      ],
+      "our_barriers": [
+        [
+          5,
+          6
+        ]
+      ]
+    },
+    "turns_completed": 13,
+    "steps_sealed": 14,
+    "opponent_step_zero": null,
+    "step_zero_mismatch": null,
+    "started_at": "2026-08-14T15:27:56.100779+00:00",
+    "ended_at": "2026-08-14T15:28:26.885261+00:00",
+    "role": "police",
+    "group_id": "vibecode",
+    "opponent_group_id": "rstabcde"
+  },
+  "wire_shape": "reference"
+}

@@ -1,0 +1,250 @@
+{
+  "_schema": "Summary and final result for the WHOLE series between two teams: per-sub-game scores + aggregate; identity lives in the declaration.",
+  "schema_version": "1.1",
+  "report_type": "final_game_result",
+  "game_id": "rstabcde-vs-vibecode",
+  "game_uid": "2ea82ca8-0249-e839-d19a-c749f9408652",
+  "links": {
+    "declaration": "declaration_rstabcde-vs-vibecode.json",
+    "config": "config_rstabcde-vs-vibecode_g<NN>.json",
+    "log": "log_rstabcde-vs-vibecode_g<NN>.json",
+    "result": "result_rstabcde-vs-vibecode.json",
+    "github": {
+      "vibecode": {
+        "cop": "https://github.com/AmitKuper/vibecode-cop",
+        "thief": "https://github.com/AmitKuper/vibecode-thief"
+      },
+      "rstabcde": {}
+    }
+  },
+  "timezone": "Asia/Jerusalem",
+  "groups": [
+    "rstabcde",
+    "vibecode"
+  ],
+  "num_sub_games": 6,
+  "sub_games": [
+    {
+      "sub_game_number": 1,
+      "roles": {
+        "vibecode": "thief",
+        "rstabcde": "police"
+      },
+      "started_at": "2026-08-14T15:26:31.939025+00:00",
+      "ended_at": "2026-08-14T15:27:42.598630+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "242fc00ff1df19d8ce670a764b31831fe23c59a8",
+        "rstabcde": "unknown"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "rstabcde": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "rstabcde": 5
+      },
+      "log_files": {
+        "vibecode": "log_rstabcde-vs-vibecode_g01.json",
+        "rstabcde": "log_rstabcde-vs-vibecode_g01.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 2,
+      "roles": {
+        "vibecode": "police",
+        "rstabcde": "thief"
+      },
+      "started_at": "2026-08-14T15:27:56.100779+00:00",
+      "ended_at": "2026-08-14T15:28:26.885261+00:00",
+      "result": "capture",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "76bf6d78b646b7b68171024e809c5de7a600c6de",
+        "rstabcde": "unknown"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "rstabcde": 0
+      },
+      "score": {
+        "vibecode": 20,
+        "rstabcde": 5
+      },
+      "log_files": {
+        "vibecode": "log_rstabcde-vs-vibecode_g02.json",
+        "rstabcde": "log_rstabcde-vs-vibecode_g02.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 3,
+      "roles": {
+        "vibecode": "thief",
+        "rstabcde": "police"
+      },
+      "started_at": "2026-08-14T15:28:40.423104+00:00",
+      "ended_at": "2026-08-14T15:29:49.650404+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "242fc00ff1df19d8ce670a764b31831fe23c59a8",
+        "rstabcde": "unknown"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "rstabcde": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "rstabcde": 5
+      },
+      "log_files": {
+        "vibecode": "log_rstabcde-vs-vibecode_g03.json",
+        "rstabcde": "log_rstabcde-vs-vibecode_g03.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 4,
+      "roles": {
+        "vibecode": "police",
+        "rstabcde": "thief"
+      },
+      "started_at": "2026-08-14T15:30:02.968423+00:00",
+      "ended_at": "2026-08-14T15:30:30.247863+00:00",
+      "result": "capture",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "76bf6d78b646b7b68171024e809c5de7a600c6de",
+        "rstabcde": "unknown"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "rstabcde": 0
+      },
+      "score": {
+        "vibecode": 20,
+        "rstabcde": 5
+      },
+      "log_files": {
+        "vibecode": "log_rstabcde-vs-vibecode_g04.json",
+        "rstabcde": "log_rstabcde-vs-vibecode_g04.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 5,
+      "roles": {
+        "vibecode": "thief",
+        "rstabcde": "police"
+      },
+      "started_at": "2026-08-14T15:30:43.532064+00:00",
+      "ended_at": "2026-08-14T15:32:00.113964+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "242fc00ff1df19d8ce670a764b31831fe23c59a8",
+        "rstabcde": "unknown"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "rstabcde": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "rstabcde": 5
+      },
+      "log_files": {
+        "vibecode": "log_rstabcde-vs-vibecode_g05.json",
+        "rstabcde": "log_rstabcde-vs-vibecode_g05.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 6,
+      "roles": {
+        "vibecode": "police",
+        "rstabcde": "thief"
+      },
+      "started_at": "2026-08-14T15:32:13.594278+00:00",
+      "ended_at": "2026-08-14T15:32:40.934894+00:00",
+      "result": "capture",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "76bf6d78b646b7b68171024e809c5de7a600c6de",
+        "rstabcde": "unknown"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "rstabcde": 0
+      },
+      "score": {
+        "vibecode": 20,
+        "rstabcde": 5
+      },
+      "log_files": {
+        "vibecode": "log_rstabcde-vs-vibecode_g06.json",
+        "rstabcde": "log_rstabcde-vs-vibecode_g06.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    }
+  ],
+  "final_result": {
+    "total_score": {
+      "vibecode": 90,
+      "rstabcde": 30
+    },
+    "sub_games_won": {
+      "vibecode": 6,
+      "rstabcde": 0
+    },
+    "ties": 0,
+    "winner_group": "vibecode",
+    "series_tie": false,
+    "tokens_total_series": {
+      "vibecode": 0,
+      "rstabcde": 0
+    },
+    "games_played_including_this": {
+      "vibecode": 4,
+      "rstabcde": 1
+    },
+    "first_meeting_between_groups": true,
+    "diversity_reward_applied": {
+      "vibecode": true,
+      "rstabcde": false
+    }
+  },
+  "mutual_agreement": {
+    "sha256": "b220c6364f1677c7a46b9df3bece47ebb6ea494d03fae31360ab9504fa4ab6d4",
+    "confirmed": true
+  }
+}

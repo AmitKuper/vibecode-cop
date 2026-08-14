@@ -1,0 +1,58 @@
+{
+  "_schema": "p2p-police-artifacts",
+  "consensus_signature": "2c5ffc2033a626b1a4223b1a21ad4f8b805debeed6ff061049d9833ddfcd8b6e",
+  "declaration_type": "pre_game_declaration",
+  "declared_at": "2026-08-14T15:32:40.934894+00:00",
+  "game_ended_at": "2026-08-14T15:32:40.934894+00:00",
+  "game_id": "rstabcde-vs-vibecode",
+  "game_started_at": "2026-08-14T15:26:31.939025+00:00",
+  "game_uid": "2ea82ca8-0249-e839-d19a-c749f9408652",
+  "groups": {
+    "group_1": {
+      "code_version": "1.00",
+      "counted_games_played": 3,
+      "group_id": "vibecode",
+      "group_name": "vibecode",
+      "hardware_spec": {},
+      "hardware_spec_sha256": "",
+      "llm_model": "none (template hints; pure-Python algorithmic movement)",
+      "mcp_servers": {
+        "cop": "http://62.56.220.143:61224/mcp",
+        "thief": "http://62.56.220.143:61223/mcp"
+      },
+      "members": [
+        "Ron Marom",
+        "Amit Kuperminz"
+      ],
+      "repos": {
+        "cop": "https://github.com/AmitKuper/vibecode-cop",
+        "thief": "https://github.com/AmitKuper/vibecode-thief"
+      },
+      "signature": "sha256:99d9d799d8b0fbd513bcd75a16c50baaa7136e7134b9582247277cfb407b4b1a"
+    },
+    "group_2": {
+      "group_id": "rstabcde",
+      "group_name": "rstabcde",
+      "counted_games_played": 0,
+      "hardware_spec": {},
+      "hardware_spec_sha256": "",
+      "llm_model": "unknown",
+      "mcp_servers": {},
+      "members": [],
+      "repos": {},
+      "signature": "undeclared"
+    }
+  },
+  "links": {
+    "config": "config_rstabcde-vs-vibecode_g<NN>.json",
+    "declaration": "declaration_rstabcde-vs-vibecode.json",
+    "log": "log_rstabcde-vs-vibecode_g<NN>.json",
+    "result": "result_rstabcde-vs-vibecode.json"
+  },
+  "max_tokens_per_game": 200000,
+  "num_sub_games": 6,
+  "report_type": "declaration",
+  "schema_version": "1.00",
+  "timezone": "Asia/Jerusalem",
+  "token_budget_per_series": 200000
+}
