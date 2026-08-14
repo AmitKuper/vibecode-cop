@@ -1,6 +1,6 @@
 {
   "group_id": "vibecode",
-  "counted_games_played": 3,
+  "counted_games_played": 4,
   "series": [
     {
       "game_id": "anrbj666-vs-vibecode",
@@ -76,7 +76,32 @@
       "report_message_id": "19ff3140bfdfea7c",
       "reported_at": "2026-08-11T23:06:45.774554+00:00",
       "result_file": "result_uoh-sqak-vs-vibecode.json"
+    },
+    {
+      "game_id": "rstabcde-vs-vibecode",
+      "game_uid": "2ea82ca8-0249-e839-d19a-c749f9408652",
+      "opponent": "rstabcde",
+      "winner_group": "vibecode",
+      "total_score": {
+        "vibecode": 90,
+        "rstabcde": 30
+      },
+      "sub_games_won": {
+        "vibecode": 6,
+        "rstabcde": 0
+      },
+      "diversity_reward_applied": {
+        "vibecode": true,
+        "rstabcde": false
+      },
+      "mutual_agreement": {
+        "sha256": "b220c6364f1677c7a46b9df3bece47ebb6ea494d03fae31360ab9504fa4ab6d4",
+        "confirmed": true
+      },
+      "report_message_id": "1a000e76ccd62963",
+      "reported_at": "2026-08-14T15:32:43.681117+00:00",
+      "result_file": "result_rstabcde-vs-vibecode.json"
     }
   ],
-  "updated_at": "2026-08-11T23:06:45.774566+00:00"
+  "updated_at": "2026-08-14T15:32:43.681133+00:00"
 }
