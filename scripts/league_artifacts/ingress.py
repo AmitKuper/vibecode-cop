@@ -2,12 +2,14 @@
 
 Two ingress paths reach the SAME local listeners (61224 cop / 61223 thief):
 
-* ``ngrok``  — the default. Public HTTPS via the ngrok agent. The free plan has
+* ``ngrok``  — opt-in. Public HTTPS via the ngrok agent. The free plan has
   exactly ONE dev domain, so only one door can be tunnelled (the cop, by
   convention) and the other declares the static IP. URLs are read LIVE from the
   agent's local API rather than hardcoded, so a plan change or a different
   tunnel needs no code edit.
-* ``static`` — the router-forwarded public IP. No tunnel needed.
+* ``static`` — the DEFAULT: the router-forwarded public IP. One permanent
+  address per role, no agent to keep alive, and both doors reachable - which is
+  what a league opponent actually needs.
 
 Resolution order, per role: an explicit profile ``our_<role>_mcp_url`` always
 wins; then the live tunnel when ingress is ngrok; then the static IP. A missing
@@ -26,7 +28,7 @@ STATIC_MCP = {
 }
 LOCAL_PORTS = {"cop": 61224, "thief": 61223}
 NGROK_API = "http://127.0.0.1:4040/api/tunnels"
-DEFAULT_INGRESS = "ngrok"
+DEFAULT_INGRESS = "static"
 
 
 def _tunnel_map(api_url: str = NGROK_API, timeout: float = 2.0) -> dict:

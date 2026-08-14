@@ -14,24 +14,31 @@ from league_artifacts.core import OUR_MCP, our_mcp  # noqa: E402
 from ref3_match.runtime_cfg import apply_runtime_config  # noqa: E402
 
 
-def test_default_ingress_is_ngrok_with_static_fallback(monkeypatch):
-    """Default declares live tunnels; with no agent running it falls back to the IP.
+def test_default_is_static_ip_even_with_a_tunnel_running(monkeypatch):
+    """Static is the default, so a tunnel that happens to be up changes nothing.
 
-    Patched rather than probing the real agent: whether a tunnel happens to be up
-    on the dev box must not decide whether the suite passes.
+    Patched rather than probing the real agent: whether ngrok is running on the
+    dev box must not decide what the suite asserts.
     """
     from league_artifacts import ingress
 
     apply_runtime_config({})
-    monkeypatch.setattr(ingress, "_tunnel_map", lambda *a, **k: {})
+    monkeypatch.setattr(
+        ingress, "_tunnel_map", lambda *a, **k: {61224: "https://live.ngrok-free.dev"}
+    )
     assert our_mcp() == OUR_MCP
     assert our_mcp()["cop"].startswith("http://62.56.220.143:61224")
 
+
+def test_ngrok_is_opt_in_per_pairing(monkeypatch):
+    from league_artifacts import ingress
+
+    apply_runtime_config({"network": {"ingress": "ngrok"}})
     monkeypatch.setattr(
         ingress, "_tunnel_map", lambda *a, **k: {61224: "https://live.ngrok-free.dev"}
     )
     assert our_mcp()["cop"] == "https://live.ngrok-free.dev/mcp"
-    assert our_mcp()["thief"] == OUR_MCP["thief"]
+    assert our_mcp()["thief"] == OUR_MCP["thief"]  # free plan: one door only
 
 
 def test_profile_override_declares_tunnel_urls():

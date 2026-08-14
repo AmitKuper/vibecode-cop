@@ -22,18 +22,16 @@ config_version = "1.0.0"
 [network]
 # Our two MCP servers. The local listeners never move; only the PUBLIC URL we
 # declare to the opponent changes with `ingress`:
-#   "ngrok"  (default) — resolve live tunnel URLs from the ngrok agent's local
-#                        API (127.0.0.1:4040). Start it first:
-#                        ngrok start --all --config "%LOCALAPPDATA%\ngrok\ngrok.yml" \
-#                                          --config <workspace>/tools/ngrok_tunnels.yml
-#                        The cop rides the free static domain; the thief gets an
-#                        ephemeral URL each start, which is exactly why these are
-#                        resolved at run time instead of hardcoded here.
-#   "static"           — the router-forwarded public IP below.
+#   "ngrok"            — declare a live tunnel URL instead, read from the
+#                        agent API. The free plan has ONE domain, so only
+#                        ONE door can be tunnelled; the other still falls
+#                        back to the IP. See docs/NGROK_INGRESS.md.
+#   "static" (default) — the router-forwarded public IP below. Both doors
+#                        reachable, permanent, nothing to keep running.
 # If ngrok is selected but no tunnel is up, we fall back to the static IP for
 # that role and print why; a match never fails over ingress.
 # Setting our_cop_mcp_url / our_thief_mcp_url explicitly overrides both modes.
-ingress           = "ngrok"
+ingress           = "static"
 our_cop_port      = 61224
 our_thief_port    = 61223
 

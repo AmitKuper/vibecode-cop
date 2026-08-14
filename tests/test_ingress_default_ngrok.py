@@ -1,4 +1,4 @@
-"""Ingress resolution: ngrok is the default declared path, static is the fallback.
+"""Ingress resolution: the static IP is the default; ngrok is opt-in per pairing.
 
 The declared URL is what the opponent dials, so getting this wrong costs a whole
 series. The free ngrok tier grants ONE static domain, so the thief's tunnel URL
@@ -20,8 +20,10 @@ def _fake_tunnels(monkeypatch, mapping):
     monkeypatch.setattr(ingress, "_tunnel_map", lambda *a, **k: mapping)
 
 
-def test_default_mode_is_ngrok():
-    assert ingress.DEFAULT_INGRESS == "ngrok"
+def test_default_mode_is_static():
+    """Static is the league-facing default: two permanent doors, no agent to babysit."""
+    assert ingress.DEFAULT_INGRESS == "static"
+    assert ingress.resolve_mcp_urls({}, announce=None) == ingress.STATIC_MCP
 
 
 def test_live_tunnels_are_declared(monkeypatch):
@@ -32,7 +34,7 @@ def test_live_tunnels_are_declared(monkeypatch):
             61223: "https://random-1234.ngrok-free.app",
         },
     )
-    urls = ingress.resolve_mcp_urls({}, announce=None)
+    urls = ingress.resolve_mcp_urls({"ingress": "ngrok"}, announce=None)
     assert urls == {
         "cop": "https://static-domain.ngrok-free.dev/mcp",
         "thief": "https://random-1234.ngrok-free.app/mcp",
@@ -43,7 +45,7 @@ def test_missing_tunnel_falls_back_per_role(monkeypatch):
     """One tunnel up, one down: declare the tunnel for one role, static for the other."""
     _fake_tunnels(monkeypatch, {61224: "https://static-domain.ngrok-free.dev"})
     said = []
-    urls = ingress.resolve_mcp_urls({}, announce=said.append)
+    urls = ingress.resolve_mcp_urls({"ingress": "ngrok"}, announce=said.append)
     assert urls["cop"] == "https://static-domain.ngrok-free.dev/mcp"
     assert urls["thief"] == ingress.STATIC_MCP["thief"]
     assert any("no usable tunnel for thief" in m for m in said)
@@ -51,7 +53,7 @@ def test_missing_tunnel_falls_back_per_role(monkeypatch):
 
 def test_no_agent_running_still_returns_static(monkeypatch):
     _fake_tunnels(monkeypatch, {})
-    assert ingress.resolve_mcp_urls({}, announce=None) == ingress.STATIC_MCP
+    assert ingress.resolve_mcp_urls({"ingress": "ngrok"}, announce=None) == ingress.STATIC_MCP
 
 
 def test_static_mode_never_touches_the_agent(monkeypatch):
@@ -65,7 +67,7 @@ def test_static_mode_never_touches_the_agent(monkeypatch):
 def test_explicit_profile_url_wins_over_tunnel(monkeypatch):
     _fake_tunnels(monkeypatch, {61224: "https://static-domain.ngrok-free.dev"})
     urls = ingress.resolve_mcp_urls(
-        {"our_cop_mcp_url": "https://agreed.example/mcp"}, announce=None
+        {"ingress": "ngrok", "our_cop_mcp_url": "https://agreed.example/mcp"}, announce=None
     )
     assert urls["cop"] == "https://agreed.example/mcp"
 

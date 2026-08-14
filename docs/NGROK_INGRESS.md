@@ -6,14 +6,23 @@ byte-identical either way.
 
 | path | declared URL | needs |
 |---|---|---|
-| **ngrok** (default) | `https://<tunnel-host>/mcp` | the ngrok agent running |
-| static | `http://62.56.220.143:<port>/mcp` | the router port-forward |
+| ngrok (opt-in) | `https://<tunnel-host>/mcp` | the ngrok agent running |
+| **static** (default) | `http://62.56.220.143:<port>/mcp` | the router port-forward |
 
-## You do not normally run any command
+## The default is static, and that is deliberate
 
-`scripts/live_match_ref3.py --match` starts the tunnel itself before it declares
-anything (`ref3_match/ingress_boot.py`). If the agent is already running it is
-reused, never restarted mid-session. **If anything about ngrok fails, the match
+Both doors are permanently reachable on the static IP, so an opponent can probe
+us hours before T, nothing has to stay running between games, and a restart
+never changes an address we have already put in writing. The free ngrok plan
+can only ever tunnel **one** of the two doors (see below), so choosing it as the
+default would mean declaring a mixed pair for no gain.
+
+Turn ngrok on per pairing with `ingress = "ngrok"` in that opponent's profile —
+useful when a peer cannot reach a high port and needs HTTPS on 443.
+
+When ngrok *is* selected, `scripts/live_match_ref3.py --match` starts the agent
+itself before declaring anything (`ref3_match/ingress_boot.py`); a running agent
+is reused, never restarted mid-session. **If anything about ngrok fails the match
 still runs** — we declare the static IP and print the reason.
 
 Run it by hand only when you want the tunnel up early (for example so an

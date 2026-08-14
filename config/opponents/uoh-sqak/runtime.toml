@@ -1,8 +1,8 @@
 # uoh-sqak pairing — single-service peer (one URL, both roles), ngrok tunnel.
 [network]
-# Declared URLs come from the default ingress (ngrok, resolved live);
-# set ingress = "static" here to declare the router-forwarded IP instead.
-ingress           = "ngrok"
+# Static IP is the default ingress; set ingress = "ngrok" here to declare
+# a live tunnel URL instead (one door only - see docs/NGROK_INGRESS.md).
+ingress           = "static"
 our_cop_port      = 61224
 our_thief_port    = 61223
 opponent_group = "uoh-sqak"
