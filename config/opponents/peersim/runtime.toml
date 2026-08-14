@@ -6,7 +6,7 @@
 [network]
 our_cop_port      = 61224
 our_thief_port    = 61223
-our_cop_mcp_url   = "http://127.0.0.1:61224/mcp"
+our_cop_mcp_url   = "https://wilt-habitant-reopen.ngrok-free.dev/mcp"
 our_thief_mcp_url = "http://127.0.0.1:61223/mcp"
 
 opponent_group = "peersim01"

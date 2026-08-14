@@ -48,6 +48,16 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--windows", type=int, default=6)
     p.add_argument(
+        "--cop-door-url",
+        default=None,
+        help="dial vibecode's COP door at this URL (e.g. an ngrok tunnel) instead of localhost",
+    )
+    p.add_argument(
+        "--thief-door-url",
+        default=None,
+        help="dial vibecode's THIEF door at this URL (tunnel testing) instead of localhost",
+    )
+    p.add_argument(
         "--greeting-timeout",
         type=float,
         default=900.0,

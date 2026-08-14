@@ -19,18 +19,42 @@ from peer_sim_impl.window import run_window
 _RETRIES_PER_WINDOW = 3
 
 
+async def _door_up(door_url: str, timeout_s: float) -> bool:
+    """Poll a vibecode door until it answers: TCP for localhost, HTTP for tunnels."""
+    import asyncio as _asyncio
+    import time as _time
+
+    from ref3_match.net import _check_port
+
+    local = "127.0.0.1" in door_url or "localhost" in door_url
+    port = int(door_url.rsplit(":", 1)[1].split("/")[0]) if local else 0
+    deadline = _time.monotonic() + timeout_s
+    while _time.monotonic() < deadline:
+        if local:
+            if _check_port("127.0.0.1", port):
+                return True
+        else:
+            import httpx
+
+            try:
+                async with httpx.AsyncClient(timeout=8.0) as client:
+                    await client.get(door_url)
+                return True  # any HTTP status = the tunnel + door answer
+            except Exception:
+                pass
+        await _asyncio.sleep(2.0)
+    return False
+
+
 async def _drive_window(window: int, *, doors, terms, inbox, greetings, flags) -> bool:
-    from ref3_match.net import _wait_port
 
     role = role_for(window)
     # peersim cop dials the vibecode THIEF door; peersim thief dials the COP door.
-    door_port = doors["thief" if role == "police" else "cop"]
-    door_url = f"http://127.0.0.1:{door_port}/mcp"
+    door_url = doors["thief" if role == "police" else "cop"]
     # Real peers poll patiently until the door exists (vibecode may start later).
-    try:
-        await _wait_port("127.0.0.1", door_port, timeout=flags["greeting_timeout"])
-    except TimeoutError:
-        print(f"[peersim] w{window} vibecode door :{door_port} never opened", flush=True)
+    # Local doors: TCP poll. Tunnel doors (ngrok/cloudflared): any HTTP answer = up.
+    if not await _door_up(door_url, flags["greeting_timeout"]):
+        print(f"[peersim] w{window} vibecode door {door_url} never opened", flush=True)
         return False
     opponent_sender = "thief" if role == "police" else "police"
     try:
@@ -68,9 +92,12 @@ async def run_sim(args) -> int:
     from cop_worker.config_loader import load_runtime
 
     net = load_runtime(args.config).get("network", {})
+    # Doors are full URLs: CLI overrides (tunnel testing) beat the profile's local ports.
     doors = {
-        "cop": int(net.get("our_cop_port", 61224)),
-        "thief": int(net.get("our_thief_port", 61223)),
+        "cop": getattr(args, "cop_door_url", None)
+        or f"http://127.0.0.1:{int(net.get('our_cop_port', 61224))}/mcp",
+        "thief": getattr(args, "thief_door_url", None)
+        or f"http://127.0.0.1:{int(net.get('our_thief_port', 61223))}/mcp",
     }
     inbox = PeerInbox()
     server_task = await start_server(inbox, args.host, args.port)
