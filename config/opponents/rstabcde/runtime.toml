@@ -22,7 +22,7 @@ agreement_poll_sec = 120.0
 
 [report]
 # FRIENDLY: to each other only. FILL their report address when they send it.
-recipient  = "FILL-their-email"
+recipient  = "rosakhell28@gmail.com"
 mode       = "send"
 token_path = "secrets/gmail/token.json"
 
