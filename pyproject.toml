@@ -31,6 +31,12 @@ dev = [
     "coverage>=7",
 ]
 
+[project.optional-dependencies]
+# Chart rendering for docs/README figures only - never imported by the agent or
+# by any test, so the runtime install stays lean:
+#   uv sync --extra viz && uv run python scripts/render_match_visuals.py
+viz = ["matplotlib>=3.8"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"

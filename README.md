@@ -195,7 +195,8 @@ sequence, numbered architecture decisions).
 ### Match visuals
 
 Rendered from a real rule-46/47 game between the shipped `hybrid_search` policies
-(`python scripts/render_match_visuals.py` regenerates them):
+(regenerate with `uv sync --extra viz && uv run python scripts/render_match_visuals.py`
+- matplotlib is an optional `viz` extra, not a runtime dependency):
 
 | Trajectory | Chebyshev scent (wire snapshot) | Search territory eval |
 |---|---|---|
