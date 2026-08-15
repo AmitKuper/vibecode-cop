@@ -36,6 +36,12 @@ jobs:
         # (ruff caps line length, not line count) so files drifted over it silently.
         # Ratchet: known-oversize files carry a justified allowance and may not grow.
         run: uv run python scripts/check_file_size.py
+      - name: Shared-module drift
+        # The repos deliberately duplicate a pinned set of modules (each must clone
+        # and run standalone). This makes that decision safe: any byte-difference in
+        # the shared set fails. Skips cleanly when the sibling repo is absent, which
+        # is the case on CI - it is a local/pre-release gate.
+        run: uv run python scripts/check_shared_drift.py
       - name: Secret scan
         run: |
           # Match real credential shapes only (length-bounded) to avoid false
