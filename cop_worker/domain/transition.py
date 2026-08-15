@@ -22,30 +22,18 @@ import logging
 from dataclasses import dataclass
 
 from cop_worker.domain.config_validator import GameConfig
+from cop_worker.domain.transition_geometry import (
+    _MOVE_DELTAS,
+    _PLACE_DELTAS,
+    _has_orthogonal_escape,
+    _is_valid,
+    _normalize,
+)
+from cop_worker.domain.transition_scent import _update_scent
 from cop_worker.domain.types import DomainState, MoveRecord
 from cop_worker.rules_outcomes import GameOutcome
 
 logger = logging.getLogger(__name__)
-
-# Orthogonal deltas (STAY excluded — STAY(0,0) does not change position)
-_MOVE_DELTAS: dict[str, tuple[int, int]] = {
-    "NORTH": (0, -1),
-    "SOUTH": (0, 1),
-    "EAST": (1, 0),
-    "WEST": (-1, 0),
-    "STAY": (0, 0),
-}
-
-# Short-form aliases accepted from peer messages
-_ALIASES: dict[str, str] = {"N": "NORTH", "S": "SOUTH", "E": "EAST", "W": "WEST"}
-
-# PLACE_* actions for cop barrier placement
-_PLACE_DELTAS: dict[str, tuple[int, int]] = {
-    "PLACE_N": (0, -1),
-    "PLACE_S": (0, 1),
-    "PLACE_E": (1, 0),
-    "PLACE_W": (-1, 0),
-}
 
 
 @dataclass(frozen=True)
@@ -63,22 +51,6 @@ class TransitionResult:
     cop_score: int
     thief_score: int
     error: str | None
-
-
-def _normalize(action: str) -> str:
-    return _ALIASES.get(action.upper(), action.upper())
-
-
-def _is_valid(x: int, y: int, g: int, barriers: list[tuple[int, int]]) -> bool:
-    return 0 <= x < g and 0 <= y < g and (x, y) not in barriers
-
-
-def _has_orthogonal_escape(pos: tuple[int, int], g: int, barriers: list[tuple[int, int]]) -> bool:
-    x, y = pos
-    for dx, dy in [(0, -1), (0, 1), (1, 0), (-1, 0)]:
-        if _is_valid(x + dx, y + dy, g, barriers):
-            return True
-    return False
 
 
 def apply_joint_action(
@@ -316,25 +288,3 @@ def apply_joint_action(
         thief_score=thief_score,
         error=error,
     )
-
-
-# Mandatory scent emission kernel (Appendix-F, 5×5 radial).
-# Keyed by squared Euclidean distance from emitter.
-_SCENT_KERNEL: dict[int, float] = {0: 0.90, 1: 0.62, 2: 0.42, 4: 0.20, 5: 0.14, 8: 0.04}
-_SCENT_DECAY = 0.9
-
-
-def _update_scent(
-    prev: list[list[float]],
-    thief_pos: tuple[int, int],
-    g: int,
-) -> list[list[float]]:
-    """Decay and re-emit scent according to the Appendix-F specification."""
-    tx, ty = thief_pos
-    grid = [[0.0] * g for _ in range(g)] if not prev else [row[:] for row in prev]
-    for y in range(g):
-        for x in range(g):
-            dist_sq = (x - tx) ** 2 + (y - ty) ** 2
-            emission = _SCENT_KERNEL.get(dist_sq, 0.0)
-            grid[y][x] = round(_SCENT_DECAY * grid[y][x] + emission, 4)
-    return grid

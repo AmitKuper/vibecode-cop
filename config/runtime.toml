@@ -46,6 +46,17 @@ opp_thief_url  = "https://thief-mcp.alon.website/mcp"
 # gui_cop_port   = 8781
 # gui_thief_port = 8782
 
+[protocol]
+# The pairing defaults. Every opponent profile repeats these explicitly, but the
+# BASE file must carry them too: without a [protocol] section the CLI fell back
+# to multiplicative_book_v1 + move_policy "rl", so a bare --self-test loaded the
+# chebyshev-trained champion under the book field and refused with
+# CountedPolicyLoadError - i.e. the README's own quick-start command failed
+# (found 2026-08-15). These values match what we have played every series on.
+scent_model  = "subtractive_chebyshev_v1"
+move_policy  = "hybrid_search"
+mcp_call_sec = 10.0
+
 [timeouts]
 # All seconds unless noted. Previously hardcoded in scripts/live_match_ref3.py.
 agreement_poll_sec = 300.0   # wait for the peer's negotiation greeting

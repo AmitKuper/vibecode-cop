@@ -1,0 +1,110 @@
+"""Enforce the project's 150-line-per-file rule as a ratchet.
+
+The rule is documented in the README and was previously enforced by nothing, so
+files drifted over it silently. Ruff cannot express it (it caps line *length*,
+not line *count*), hence this gate.
+
+Ratchet, not amnesty: files already over the limit are listed in ALLOWED with a
+reason, and each entry pins the size it was granted at. A listed file that GROWS
+fails, a NEW oversize file fails, and a listed file that has since been split is
+reported so the entry can be deleted. The list only ever shrinks.
+
+    python scripts/check_file_size.py          # gate (exit 1 on violation)
+    python scripts/check_file_size.py --list   # show every file over the limit
+"""
+
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+
+LIMIT = 150
+REPO_ROOT = Path(__file__).resolve().parents[1]
+SKIP_DIRS = {".venv", ".git", "__pycache__", "node_modules", "external", ".claude", "htmlcov"}
+
+#: path -> (max_lines_allowed, why it is exempt). Shrink this list; never grow it.
+ALLOWED: dict[str, tuple[int, str]] = {
+    "cop_worker/domain/transition.py": (
+        295,
+        "apply_joint_action is the single source of truth for game physics and must "
+        "produce byte-identical results to the opponent's engine; splitting the "
+        "sequential rule application across files would fragment that invariant for "
+        "a cosmetic line count. Pure helpers were already extracted to "
+        "transition_geometry.py and transition_scent.py.",
+    ),
+    "cop_worker/net_gateway.py": (
+        170,
+        "Single outbound-call policy surface: pacing, retry, breaker.",
+    ),
+    "cop_worker/protocol/reference_v3/session.py": (
+        160,
+        "One wire session; the four tools are one protocol unit.",
+    ),
+    "scripts/ref3_match/subgame_turns.py": (
+        170,
+        "The turn loop; call-site ordering is pinned by tests.",
+    ),
+    "scripts/ref3_match/subgame_setup.py": (165, "Handshake + step-0 seal, one atomic sequence."),
+    "scripts/ref3_match/subgame_settle.py": (
+        160,
+        "Audit exchange and settlement, one atomic sequence.",
+    ),
+    "scripts/ref3_match/role_worker.py": (155, "Worker entry point: stdio protocol loop."),
+    "tests/test_submission_builder.py": (160, "Table-driven fixtures for the submission form."),
+    "tests/test_split_architecture.py": (160, "End-to-end split-architecture scenario."),
+}
+
+
+def oversize_files() -> dict[str, int]:
+    found: dict[str, int] = {}
+    for path in REPO_ROOT.rglob("*.py"):
+        if any(part in SKIP_DIRS for part in path.parts):
+            continue
+        try:
+            n = sum(1 for _ in path.open("r", encoding="utf-8", errors="replace"))
+        except OSError:
+            continue
+        if n > LIMIT:
+            found[path.relative_to(REPO_ROOT).as_posix()] = n
+    return found
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--list", action="store_true", help="print every file over the limit")
+    args = ap.parse_args()
+
+    found = oversize_files()
+    if args.list:
+        for rel, n in sorted(found.items(), key=lambda kv: -kv[1]):
+            mark = "allowed" if rel in ALLOWED else "VIOLATION"
+            print(f"{n:5}  {mark:9} {rel}")
+        return 0
+
+    violations = [
+        f"{rel} is {n} lines (limit {LIMIT})"
+        for rel, n in sorted(found.items())
+        if rel not in ALLOWED
+    ]
+    violations += [
+        f"{rel} grew to {n} lines (allowance {ALLOWED[rel][0]})"
+        for rel, n in sorted(found.items())
+        if rel in ALLOWED and n > ALLOWED[rel][0]
+    ]
+    stale = [rel for rel in ALLOWED if rel not in found]
+
+    for v in violations:
+        print(f"FAIL  {v}")
+    for rel in sorted(stale):
+        print(f"NOTE  {rel} is now within the limit - delete its ALLOWED entry")
+    if violations:
+        print(f"\n{len(violations)} file(s) break the 150-line rule.")
+        print("Split them, or add a justified ALLOWED entry if the file is genuinely atomic.")
+        return 1
+    print(f"OK  {len(found)} file(s) over {LIMIT} lines, all with a justified allowance.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
