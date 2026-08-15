@@ -79,7 +79,8 @@ omit = [
 ]
 
 [tool.coverage.report]
-# CI floor; local runs enforce the same gate (guideline target: 85 — tracked in docs/TODO.md).
+# CI floor; local runs enforce the same gate. Measured branch coverage: 94.90%,
+# comfortably past the course guideline of 85.
 # Matches the CI gate exactly (.github/workflows/ci.yml) so a local run and a
 # CI run agree. Measured branch coverage at the last audit: 94.91%.
 fail_under = 94

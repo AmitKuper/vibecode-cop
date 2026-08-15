@@ -61,7 +61,7 @@ Architecture context: `docs/DESIGN.md` (containers, AD-1, AD-7, AD-9).
 
 ## 3. Constraints
 
-- Same toolchain gates as the repo (ruff clean, pytest, branch coverage >= 80%).
+- Same toolchain gates as the repo (ruff clean, pytest, branch coverage >= 94%).
 - No LLM calls anywhere in this package; no network in unit tests (Gmail tested
   against mocks — `tests/test_codex_mock_gmail.py`, `test_codex_process_gmail.py`).
 - Duplicated protocol modules with `cop_worker` are accepted debt (AD-9);
@@ -74,7 +74,7 @@ Architecture context: `docs/DESIGN.md` (containers, AD-1, AD-7, AD-9).
 | Counted ledger integrity | 2 counted series, 2 distinct opponents | satisfied (anrbj666, imreeyal) |
 | Report discipline | 0 emails on unsettled series; counted report delivered | counted report id `19fecf55c1b5eea0` |
 | Gatekeeper behaviour | fail-closed under limit/anomaly | pinned by gatekeeper/circuit-breaker/token-bucket tests |
-| Mirrored-suite parity | `*_lm.py` tests green | passing in the 1,478-test suite |
+| Mirrored-suite parity | `*_lm.py` tests green | passing in the 1,891-test suite |
 
 ## 5. Test scenarios
 

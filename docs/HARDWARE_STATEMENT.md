@@ -1,18 +1,25 @@
 # Hardware Statement — CPU-only training and gameplay
 
-The development machine contains an NVIDIA GeForce RTX 3090, and the runtime
-environment metadata that our match artifacts record (`cop_worker/game_runner_env.py`
-probes `nvidia-smi`) will therefore show that GPU as *present*.
+The development machine contains an NVIDIA GeForce RTX 3090. The signed Step-0
+hardware declaration we publish records CPU, RAM, OS and Python only
+(`cop_worker/step0/declaration.py`; see any `results/declaration_*.json`
+`hardware_spec`), so the GPU appears nowhere in our artifacts — but the machine
+does have one, and this note states plainly what was done with it.
 
 **We did not use the GPU at any point** — not for model training, not for
 evaluation, and not during any friendly or counted game:
 
-1. **No CUDA calls anywhere in the code.** The training loops
-   (`cop_worker/rl/train_recurrent*`), the research trainers, and every serving
-   policy contain no `.cuda()`, no `.to(device)`, and no `device=` argument;
-   every tensor is created on the CPU default device. Verify with:
-   `grep -rn "cuda\|\.to(device\|device=" cop_worker/rl/` — the only matches are
-   `map_location="cpu"` checkpoint loads, which force CPU.
+1. **The production paths are CPU-pinned.** The recurrent trainer
+   (`cop_worker/rl/train_recurrent/`) contains no `device`, `.cuda()` or
+   `.to(...)` call at all, so every tensor is created on the CPU default device;
+   the serving loader forces it explicitly —
+   `cop_worker/rl/recurrent_loader.py` sets `device = torch.device("cpu")` and
+   loads the checkpoint with `map_location=device`. The one module that would
+   select CUDA if it were present, `cop_worker/rl/policy_loader.py`
+   (`torch.device("cuda" if torch.cuda.is_available() else "cpu")`), loads the
+   superseded DQN/PPO checkpoints and is not on the counted serving path — the
+   promoted champion in `models/MANIFEST.json` is a recurrent checkpoint loaded
+   through `recurrent_loader.py`.
 2. **The models are deliberately tiny.** The deployed policy is a
    ~200-input GRU actor-critic (hidden size 128) trained for minutes on CPU;
    the counted-game move engine is a pure-Python depth-limited minimax with no

@@ -83,7 +83,7 @@ tunnel's hostname is **random on every start**.
 
 ```toml
 [network]
-ingress = "ngrok"     # or "static"
+ingress = "static"    # or "ngrok"
 ```
 
 Any `config/opponents/<group>/runtime.toml` may override it, or pin exact URLs

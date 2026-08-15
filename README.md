@@ -7,12 +7,22 @@ exact scent tracking** with a trained RL fallback, and reports results by Gmail.
 
 Companion repository: [vibecode-thief](https://github.com/AmitKuper/vibecode-thief)
 (the thief-side model and mirror implementation). The two repos are operated as one
-distributed product; this repo hosts the match runner that serves both endpoints.
+distributed product; this repo hosts the orchestrator, which spawns **one OS process
+per role** (cop and thief) for every series.
 
-**Match record**: counted series vs `imreeyal` **won 90–30** (6/6 mutual audits
-Verified OK; evidence in `evidence/game_vs_imreeyal/`), after a friendly rehearsal
-also won 90–30. An earlier counted series vs `anrbj666` was lost 35–75 with the
-previous pure-RL engine (`evidence/game_vs_anrbj666/`).
+**Match record**: five counted series played (`results/counted_series.json`,
+`counted_games_played: 5`) — **won four, lost one**:
+
+| Opponent | Result | Sub-games | Date |
+|---|---|---|---|
+| `anrbj666` | **lost 35–75** (previous pure-RL engine) | 1–5 | 2026-08-08 |
+| `imreeyal` | **won 90–30** | 6–0 | 2026-08-10 |
+| `uoh-sqak` | **won 90–30** | 6–0 | 2026-08-11 |
+| `rstabcde` | **won 90–30** | 6–0 | 2026-08-14 |
+| `najamjad` | **won 90–30** | 6–0 | 2026-08-14 |
+
+Every series settled 6/6 mutual audits *Verified OK* with a confirmed mutual-agreement
+hash; per-series evidence is in `evidence/game_vs_<opponent>/`.
 
 ## Prerequisites
 
@@ -59,8 +69,8 @@ cd vibecode-cop && uv sync --frozen
 uv run pytest tests/ cop_worker/tests/ league_manager/tests/ -q
 ```
 
-Expected: ~1,680 tests pass (the same suite CI gates, with branch coverage >= 80%;
-the suite currently measures ≈91%).
+Expected: **1,887 passed, 4 skipped** (the same suite CI gates, with branch coverage
+>= 94%).
 
 ## Quick start — self-test against the bundled sparring peer
 
@@ -89,8 +99,11 @@ python scripts/live_match_ref3.py --match --config imreeyal --counted \
 
 What `--match` does, end to end:
 
-1. Serves our two MCP endpoints — **cop on port 61224, thief on port 61223**
-   (static public IP, router port-forwarded; no tunnel).
+1. Spawns **one OS process per role** (`scripts/ref3_role_worker.py`, driven by
+   `scripts/ref3_match/series_split.py`), each binding its own MCP endpoint —
+   **cop on port 61224, thief on port 61223** (static public IP, router
+   port-forwarded; no tunnel). The two role processes share no memory; the
+   orchestrator talks to them over JSON-line pipes and owns no game secrets.
 2. Dials the opponent's endpoints per sub-game (our cop dials their thief and
    vice versa), with per-call 10 s caps and at-least-once retries.
 3. Plays exactly **six sub-games** over the reference-v3 wire: signed Step-0
@@ -103,9 +116,12 @@ What `--match` does, end to end:
    given via `--report-to` — it is never stored in any config file
    (enforced by `tests/test_config_single_source.py::test_runtime_toml_has_no_league_address`).
 
-Useful flags: `--role`, `--sub-games`, `--scent-model`, `--move-policy
-{rl,hybrid_search}`, `--no-email`, `--opp-cop-url`/`--opp-thief-url` (override the
-profile), `--counted-played`.
+Useful flags: `--arch {split,inline}` (default **split** — one OS process per role;
+`inline` is the legacy single-process runtime), `--role`, `--sub-games`,
+`--scent-model`, `--move-policy {rl,hybrid_search,hybrid_search_belief}`
+(plain RL / minimax-over-exact-tracking with RL fallback / the same plus
+belief-space search when no oracle fix is available), `--no-email`,
+`--opp-cop-url`/`--opp-thief-url` (override the profile), `--counted-played`.
 
 ### Checking match status
 
@@ -148,7 +164,10 @@ always override profile values.
 
 The negotiated scent law is set per opponent in
 `config/opponents/<opp>/runtime.toml` under `[protocol] scent_model`
-(or `--scent-model`). Two registered models, each with a locked doc hash
+(or `--scent-model`); the base `config/runtime.toml` carries the same
+`[protocol]` block (`scent_model = "subtractive_chebyshev_v1"`,
+`move_policy = "hybrid_search"`) so a profile-less run uses the pairing
+defaults we actually play on. Two registered models, each with a locked doc hash
 (`cop_worker/protocol/reference_v3/constants.py::SCENT_LOCKS`):
 
 - `multiplicative_book_v1` (`934c220d…`)
@@ -175,9 +194,9 @@ on mismatch — a checkpoint can never be served under physics it was not traine
 ```mermaid
 flowchart TD
     CLI["CLI: live_match_ref3.py --match --config &lt;opp&gt;"] --> CFG["config loader<br/>game.json + runtime.toml profile"]
-    CFG --> RUN["Match runner (one process)"]
-    RUN --> COP["MCP endpoint :61224 (cop)"]
-    RUN --> THF["MCP endpoint :61223 (thief)"]
+    CFG --> RUN["Orchestrator (--arch split)<br/>ref3_match/series_split.py"]
+    RUN -->|spawns OS process| COP["Cop role worker<br/>MCP endpoint :61224"]
+    RUN -->|spawns OS process| THF["Thief role worker<br/>MCP endpoint :61223"]
     RUN -->|per sub-game, 6 total| NEG["Step-0 negotiate<br/>signed terms + locks + game_uid"]
     NEG --> TURNS["Sealed turns (commit-reveal)<br/>thief first, cop replies"]
     TURNS --> ENGINE["Move engine: hybrid_search<br/>chebyshev_tracker -> pursuit_search minimax<br/>RL fallback for blind frames"]
@@ -341,7 +360,9 @@ High level only (the repo's public design docs carry the details):
 
 | Path | Purpose |
 |---|---|
-| `scripts/live_match_ref3.py` | Match orchestrator and CLI entry point (self-test + live match) |
+| `scripts/live_match_ref3.py` | CLI entry point and public facade (self-test + live match); implementation lives in `scripts/ref3_match/` |
+| `scripts/ref3_match/series_split.py` | Split-architecture series loop: spawns one role worker per role, drives all six sub-games |
+| `scripts/ref3_role_worker.py` | Launcher for one role-worker OS process (cop **or** thief) |
 | `scripts/ref3_artifacts.py` | League-schema artifact emission, `config_sha256` |
 | `cop_worker/protocol/reference_v3/` | Reference-v3 wire: canonical JSON, commits, terms, locks, session |
 | `cop_worker/protocol/protocol_agent.py` | Pre-game LLM protocol-understanding agent (never in-game) |
@@ -357,20 +378,34 @@ High level only (the repo's public design docs carry the details):
 | `league_manager/` | Routing facade: router, series lifecycle, ledger, admin API, Gmail gatekeeper |
 | `models/MANIFEST.json` | Promoted champion registry (SHA-pinned, obs-mode-stamped) |
 
-The legacy `agent/` tree is **dead** (nothing imports it) and is scheduled for
-deletion — do not build on it.
+### Promoted cop champion
+
+`models/MANIFEST.json` pins one cop model: **`cop_chebyshev_champion.pt`**
+(RecurrentA2C-GRU, hidden size 128, 21,000 training steps, sha
+`a59e0a6c…`, obs-mode `subtractive_chebyshev_v1` + uniform belief).
+
+Its recorded `evaluation_win_rate` is **0.9926**, and the manifest states the
+caveat itself: that figure is measured **on the fixed-start harness**
+(`eval_candidate`, seed 20260810), where 80% of episodes open at the signed
+`cop_start`/`thief_start` — not on random starts (0.8704 for the random-start
+recipe) and not on the wire. In production this checkpoint serves as the
+**blind-frame fallback only**; the minimax engine plays every sighted frame.
 
 ## Project structure
 
 ```
 vibecode-cop/
-├── scripts/            # match runner, arenas, evaluation, Gmail setup
+├── scripts/            # orchestrator (ref3_match/), role-worker launcher, arenas, evaluation
 ├── cop_worker/         # the cop worker: protocol, RL, language, gmail, MCP server
 ├── league_manager/     # routing facade + reporting
+├── cop/                # thin `python -m cop` entry point delegating to cop_worker
 ├── config/             # game.json (shared) + runtime.toml (private) + opponents/
 ├── models/             # trained checkpoints + MANIFEST.json
 ├── tests/              # cross-package suites (plus per-package tests/)
+├── conformance/        # cross-repo conformance vectors + test_conformance.py
+├── tools/              # submission builder + PDF parser (not part of the runtime)
 ├── artifacts/          # league-schema per-game outputs
+├── results/            # counted-series ledger, declarations, logs, evaluation JSON
 ├── reports/            # timestamped match logs + result snapshots
 ├── evidence/           # played-series evidence (do not modify)
 └── docs/               # DESIGN, PRDs, PROMPTS, runbooks
@@ -379,7 +414,7 @@ vibecode-cop/
 ## Troubleshooting
 
 The full log-signature playbook (what each wire error means and the exact sentence
-to send the other team) is [`../docs/MATCH_DIAGNOSIS_PLAYBOOK.md`](../docs/MATCH_DIAGNOSIS_PLAYBOOK.md).
+to send the other team) is [`docs/MATCH_DIAGNOSIS_PLAYBOOK.md`](docs/MATCH_DIAGNOSIS_PLAYBOOK.md).
 The rows that matter most:
 
 | Symptom | Meaning / fix |
@@ -400,30 +435,31 @@ diagnose from `[wire<-]` and `[diag]` lines, not guesswork.
 1. Fork, create a feature branch, open a PR.
 2. Gates that must pass (same as CI): `uv run ruff check .`,
    `uv run ruff format --check .`, and the full pytest suite with branch
-   coverage >= 80%.
-3. Aspire to <= 150 lines per module (project rule; existing oversized modules
-   are recorded as an accepted deviation in `docs/KNOWN_DEVIATIONS.md`).
+   coverage >= 94% (`--cov-fail-under=94` in `.github/workflows/ci.yml`,
+   `fail_under = 94` in `pyproject.toml`).
+3. Aspire to <= 150 lines per module (project rule; the seven remaining oversized
+   modules are recorded as an accepted deviation in `docs/KNOWN_DEVIATIONS.md`).
 4. Never edit `evidence/`, `config/game.json` hashes, or the external kit.
 
 ## Self-grade (code quality)
 
 This grade covers **code quality only** — never league results. Basis, all
-reproducible from the repo: ~1,680 tests collected, branch coverage ≈91%
-(CI-gated at 80%), `ruff check` + `ruff format --check` gating every commit, and
-a 150-line-per-module discipline (three documented exceptions in
-[`docs/KNOWN_DEVIATIONS.md`](docs/KNOWN_DEVIATIONS.md)).
+reproducible from the repo: 1,891 tests collected (1,887 passed, 4 skipped),
+branch coverage **94.90%** (CI-gated at 94), `ruff check` + `ruff format --check`
+gating every commit, and a 150-line-per-module discipline (seven documented
+exceptions in [`docs/KNOWN_DEVIATIONS.md`](docs/KNOWN_DEVIATIONS.md)).
 
 **Self-grade: 92/100**
 
 | Dimension | Grade | Why |
 |---|---|---|
 | Correctness | 93 | Physics is one pure conformance-pinned function; kit vectors fail closed; serving guards refuse mismatched checkpoints |
-| Tests | 93 | ~1,680 tests, ≈91% branch coverage, conformance vectors, source-pin tests on the production seams |
+| Tests | 93 | 1,887 passing tests, 94.90% branch coverage, conformance vectors, source-pin tests on the production seams |
 | Documentation | 90 | DESIGN/PRDs/runbooks current; deviations documented rather than hidden |
-| Architecture | 92 | Single transition source of truth, mixin-decomposed gamelet, ≤150-line modules with 3 justified exceptions |
+| Architecture | 92 | Single transition source of truth, mixin-decomposed gamelet, ≤150-line modules with 7 justified exceptions |
 | Style | 92 | ruff + format zero-finding CI; docstrings throughout |
 
-What would raise it: eliminating the last three over-150 modules and lifting the
+What would raise it: eliminating the last seven over-150 modules and lifting the
 weakest per-module coverage pockets to the suite average.
 
 ## Submission

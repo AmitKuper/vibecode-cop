@@ -5,15 +5,27 @@ Evidence basis: cop `dedaaf147989d1b63f4d4536330bf70335df4630`; thief
 rules; Appendix F defines quantitative values. Repository claims alone are not
 evidence. Final statuses are only `PASS`, `FAIL`, or `EXTERNAL_PENDING`.
 
+> **Reading note (2026-08-15).** This matrix is a snapshot taken at the SHAs above.
+> The *Production code* column has since been repointed at the files that exist
+> today (the `agent/` package it originally cited was deleted), but the verdicts and
+> runtime-evidence IDs were not re-derived at the current SHA. Four rows have
+> demonstrably closed since the snapshot and are no longer `EXTERNAL_PENDING`:
+> rule 10 (public exposure — met via a router-forwarded static public IP,
+> `docs/KNOWN_DEVIATIONS.md` D1), rule 31 (five distinct outside groups played),
+> rule 32 (real Gmail sends, message IDs in `results/counted_series.json`), and
+> rule 45 (group ID `vibecode`, eight characters, in every declaration). Rules 41,
+> 43 and 44 remain genuinely external. Treat the totals line at the bottom as
+> historical.
+
 | Rule | Classification | Result | Production code | Tests | Runtime evidence | Cop SHA | Thief SHA | Notes |
 |---:|---|---|---|---|---|---|---|---|
-| 1. Separate police/thief processes | Mandatory | PASS | `agent/role_cli.py`; role packages | `test_codex_counted_composition.py` | CV-09 real TCP process series | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Separate PID/config/log/secret roots. |
-| 2. No shared memory/variables | Forbidden | PASS | `agent/peer_runtime.py` | process isolation tests | CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Only MCP messages cross processes. |
-| 3. One Orchestrator entry point | Mandatory | PASS | `AgentOrchestrator` | `test_codex_counted_composition.py` | CV-03/CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Counted construction fails closed. |
+| 1. Separate police/thief processes | Mandatory | PASS | `scripts/ref3_match/series_split.py`; `scripts/ref3_role_worker.py` | `test_split_architecture.py` | CV-09 real TCP process series | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Separate PID/config/log/secret roots. |
+| 2. No shared memory/variables | Forbidden | PASS | `scripts/ref3_match/worker_proc.py` (JSON-line pipes only) | process isolation tests | CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Only MCP messages cross processes. |
+| 3. One Orchestrator entry point | Mandatory | PASS | `scripts/live_match_ref3.py` facade -> `scripts/ref3_match/cli.py` | `test_codex_counted_composition_series.py` | CV-03/CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Counted construction fails closed. |
 | 4. Proper game state machine | Mandatory | PASS | `ProtocolCoordinator` | coordinator/state-machine suites | CV-03/CV-08 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Coordinator authorizes phases. |
-| 5. Reject illegal state transitions | Mandatory | PASS | `agent/mcp/coordinator.py` | adversarial ordering tests | CV-08 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | No permissive fallback. |
-| 6. Deadline tracking/deadlock prevention | Mandatory | PASS | `DeadlineTracker`; durable deadlines | `test_codex_reliability_v11.py` | CV-03/CV-08 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Counted timeout becomes technical loss. |
-| 7. Independent Watchdog/recovery | Mandatory | PASS | `agent/reliability/watchdog.py`; recovery state | `test_watchdog.py`; chaos tests | CV-08/CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Heartbeat failure fails closed. |
+| 5. Reject illegal state transitions | Mandatory | PASS | `cop_worker/mcp/coordinator.py` | adversarial ordering tests | CV-08 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | No permissive fallback. |
+| 6. Deadline tracking/deadlock prevention | Mandatory | PASS | `cop_worker/reliability/deadline_tracker.py` | `test_codex_deadline_tracker.py` | CV-03/CV-08 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Counted timeout becomes technical loss. |
+| 7. Independent Watchdog/recovery | Mandatory | PASS | `cop_worker/reliability/watchdog.py`; `scripts/ref3_match/watchdog_bridge.py` | `test_watchdog.py`; chaos tests | CV-08/CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Heartbeat failure fails closed. |
 | 8. Live GUI shows local truth | Mandatory | PASS | `SafeLiveView` | GUI/leak suites | CV-03 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Real screenshot is external pending. |
 | 9. Never show objective board | Forbidden | PASS | `LiveViewModel`; `LocalObservation` | hidden-coordinate leak tests | CV-03 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Opponent coordinate absent. |
 | 10. Public tunnel exposure | Mandatory | EXTERNAL_PENDING | tunnel runbook | N/A external | EXT-01 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Requires public infrastructure. |
@@ -23,7 +35,7 @@ evidence. Final statuses are only `PASS`, `FAIL`, or `EXTERNAL_PENDING`.
 | 14. No diagonal movement | Forbidden | PASS | legal mask + domain validation | illegal-action tests | CV-03 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Unknown actions rejected. |
 | 15. Declare barrier placement openly | Mandatory | PASS | `PLACE_*` commit/reveal/audit | barrier/audit tests | CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Audited physical action. |
 | 16. Never lie about barrier location | Forbidden | PASS | canonical derived target | barrier conformance | CV-03/CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | No separate location claim. |
-| 17. SHA-256 Commit-Reveal | Mandatory | PASS | gamelet-bound commitment helpers | `test_audit_adversarial.py` | CV-08/CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Actual gamelet/step bound. |
+| 17. SHA-256 Commit-Reveal | Mandatory | PASS | gamelet-bound commitment helpers | `test_audit_adversarial_consensus.py`, `test_audit_adversarial_journal.py` | CV-08/CV-09 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Actual gamelet/step bound. |
 | 18. Nonce secret until final audit | Mandatory | PASS | journal/audit serializers | nonce privacy tests | CV-09 public scan | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Zero public nonce values. |
 | 19. Audit mismatch is technical loss | Mandatory | PASS | audit exact-set validator | hostile tamper matrix | CV-08 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | No audit downgrade. |
 | 20. Trusted Replay reconstruction | Mandatory | PASS | `ReplayApp` canonical reconstruction | replay tamper/reconstruction tests | CV-08 | `dedaaf147989d1b63f4d4536330bf70335df4630` | `55d45fcd4010884b08c64380fe03c6cd39062266` | Trusted Step-0 keys, roots, six gamelets. |

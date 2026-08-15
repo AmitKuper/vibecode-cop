@@ -10,7 +10,7 @@ kernel centered on the emitting agent's cell.
 - Kernel size: 5x5 cells
 - Distance metric: Manhattan (L1)
 - Decay rate: DECAY = 0.9
-- Emission center value: SCENT_CENTER (defined in agent/scent.py)
+- Emission center value: `SCENT_CENTER_INTENSITY = 0.9` (defined in `cop_worker/scent.py`)
 
 ### Update Formula
 

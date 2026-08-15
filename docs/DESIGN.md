@@ -1,7 +1,9 @@
 # DESIGN — vibecode-cop architecture authority
 
-Status: current as of the counted win vs imreeyal (2026-08-10, 90–30, 6/6 audits
-Verified OK). This document is the architecture reference other docs cite.
+Status: current as of 2026-08-15, after five counted series
+(`results/counted_series.json`: won vs imreeyal, uoh-sqak, rstabcde and najamjad
+90–30 each; lost 35–75 vs anrbj666). This document is the architecture reference
+other docs cite.
 Requirements live in `docs/PRD_cop_worker.md`, `docs/PRD_league_manager.md`,
 `docs/PRD_search_engine.md`; prompts in `docs/PROMPTS.md`.
 
@@ -14,7 +16,7 @@ both report the settled result independently to the league.
 ```mermaid
 flowchart TB
     subgraph vibecode["Team vibecode"]
-        RUNNER["Match runner + cop worker<br/>(this repo)"]
+        RUNNER["Orchestrator + cop/thief role workers<br/>(this repo)"]
         THIEFREPO["vibecode-thief<br/>(thief model repo)"]
         RUNNER -->|loads thief champion from| THIEFREPO
     end
@@ -29,30 +31,48 @@ flowchart TB
 
 ## 2. Containers
 
-One OS process runs a whole series. It serves both of our wire endpoints and
-dials the opponent's; packages below it are libraries, not separate services.
+A series runs as **three OS processes** (`--arch split`, the production default):
+an orchestrator plus one role worker per role. Each role worker binds its own wire
+endpoint; the two role processes share no memory and exchange nothing directly —
+the orchestrator drives them over JSON-line pipes (stdin/stdout) and holds no game
+secrets (no nonces, no commits, no mover state). Packages below the workers are
+libraries, not services.
 
 ```mermaid
 flowchart TB
-    CLI["CLI<br/>scripts/live_match_ref3.py"] --> MR
-    subgraph proc["Match-runner process"]
-        MR["Match orchestrator<br/>(negotiate / turns / audit / settle)"]
-        COPE["MCP endpoint :61224 — cop"]
-        THFE["MCP endpoint :61223 — thief"]
-        MR --- COPE
-        MR --- THFE
+    CLI["CLI<br/>scripts/live_match_ref3.py"] --> ORCH
+    subgraph proc0["Orchestrator process — ref3_match/series_split.py"]
+        ORCH["Series loop<br/>(spawn, role schedule, index hold,<br/>settled rows, artifacts, report)"]
     end
-    MR --> CW["cop_worker package<br/>protocol, domain, RL, language"]
-    MR --> LM["league_manager package<br/>router, series lifecycle, ledger, admin API"]
-    MR --> GM["Gmail pipeline<br/>gatekeeper + token bucket + circuit breaker"]
+    subgraph proc1["Cop role-worker process — ref3_role_worker.py"]
+        COPW["Cop worker<br/>negotiate / turns / audit / settle"]
+        COPE["MCP endpoint :61224 — cop"]
+        COPW --- COPE
+    end
+    subgraph proc2["Thief role-worker process — ref3_role_worker.py"]
+        THFW["Thief worker<br/>negotiate / turns / audit / settle"]
+        THFE["MCP endpoint :61223 — thief"]
+        THFW --- THFE
+    end
+    ORCH -->|"JSON lines over stdin/stdout<br/>(init / play / shutdown / result)"| COPW
+    ORCH -->|"JSON lines over stdin/stdout"| THFW
+    COPW --> CW["cop_worker package<br/>protocol, domain, RL, language"]
+    THFW --> CW
+    ORCH --> LM["league_manager package<br/>ledger, reports"]
+    ORCH --> GM["Gmail pipeline<br/>gatekeeper + token bucket + circuit breaker"]
     CW --> MODELS["models/ + MANIFEST.json<br/>(SHA-pinned champions)"]
-    MR --> CFG["config/<br/>game.json (hashed) + runtime.toml (private)"]
-    MR --> OUT["artifacts/ + reports/ + results/"]
-    PEER["Opponent endpoints"] <-->|MCP| MR
+    ORCH --> CFG["config/<br/>game.json (hashed) + runtime.toml (private)"]
+    ORCH --> OUT["artifacts/ + reports/ + results/"]
+    PEER["Opponent endpoints"] <-->|MCP| COPE
+    PEER <-->|MCP| THFE
 ```
 
+`--arch inline` still exists: it runs both endpoints inside the orchestrator
+process (`ref3_match/series.py`) and is kept for local debugging only.
+
 Network topology: static public IP with router port-forwarding of 61223/61224 —
-deliberately **no tunnel** (see `../docs/ROUTER_PORT_FORWARDING.md`).
+deliberately **no tunnel** (see `docs/DEPLOYMENT.md` for the production
+deployment and `docs/DEPLOYMENT_TUNNEL_RUNBOOK.md` for the tunnel alternative).
 
 ## 3. Components — the move-engine stack
 
@@ -78,7 +98,7 @@ Files: `cop_worker/rl/chebyshev_tracker.py`, `cop_worker/rl/pursuit_search.py`,
 
 ```mermaid
 sequenceDiagram
-    participant Us as Match runner (us)
+    participant Us as Our role worker (cop or thief)
     participant Opp as Opponent peer
     Us->>Opp: negotiate — signed flat terms (14 keys), scent/wire locks, game_uid
     Opp->>Us: negotiate — their signed greeting (must match: SPAR-N02..N10 refusals)
@@ -97,17 +117,35 @@ sequenceDiagram
 
 ## 5. Architecture decisions
 
-### AD-1 Single match-runner process serving both endpoints
+### AD-1 One OS process per role, driven by an orchestrator (`--arch split`)
 
-One process (`scripts/live_match_ref3.py`) binds both MCP endpoints (cop 61224,
-thief 61223) and drives all six sub-games.
-**Rationale**: one clock, one config load, one artifact writer, one audit trail —
-and the roles alternate per sub-game, so a single orchestrator avoids six
-process-handoff seams. **Trade-off**: a crash costs the whole series (mitigated:
-per-sub-game exception isolation, artifacts flushed as produced). **Alternative
-rejected**: separate cop/thief OS processes with a coordinator — the earlier
-`agent/`-era design; it doubled the wire-facing surface and made evidence
-reconciliation harder without buying isolation the audit does not already give.
+**Status: current** (superseded the original AD-1 on 2026-08-13).
+
+`scripts/live_match_ref3.py --match` defaults to `--arch split`
+(`scripts/ref3_match/cli.py`). The orchestrator (`ref3_match/series_split.py`)
+spawns two role-worker processes via `scripts/ref3_role_worker.py` — one cop, one
+thief — each binding its own MCP endpoint (cop 61224, thief 61223). Role code and
+role state (mover, nonces, commits, sealed records) live entirely inside the
+worker process; the orchestrator sees only JSON-line control frames
+(`init` / `play` / `shutdown` → `ready` / `result` / `fail`) and never holds a
+game secret.
+**Rationale**: Appendix E rule 1 requires the police and thief programs to run as
+separate processes, and rule 2 forbids shared memory between them. A single
+process serving both endpoints satisfies neither by construction, however clean
+the internal separation is — so the split is a compliance requirement, not a
+performance choice.
+**Trade-off**: two extra processes to supervise, stray-greeting routing when a
+single-URL peer delivers the next window's Step-0 to the wrong door (handled in
+`role_worker._drain_strays`), and log interleaving (workers redirect all play
+output to stderr, which the orchestrator pumps into one timestamped log).
+**Superseded decision** (kept for the record): *"Single match-runner process
+serving both endpoints"* — one clock, one config load, one artifact writer, and
+no process-handoff seam as the roles alternate per sub-game. It played the first
+three counted series (anrbj666, imreeyal, uoh-sqak); rstabcde and najamjad ran on
+the split runtime, whose `runtime_match.log` records
+`SPLIT arch: cop pid=… thief pid=… orchestrator holds no game state`. The single
+process was replaced because it violates rules 1–2, not because it failed
+operationally; the code path survives as `--arch inline` for local debugging.
 
 ### AD-2 Chebyshev lock acceptance and the exact-tracking insight
 

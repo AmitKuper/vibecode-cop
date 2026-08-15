@@ -53,9 +53,12 @@ No trusted third party exists after protocol negotiation. Each side must defend 
 **Threat:** Main process hangs on a network call or deadlock; opponent gains time advantage.
 
 **Mitigation:**
-- `asyncio.wait_for` in `run_peer_turn_loop` enforces per-turn timeout (`get_watchdog_timeout()`).
-- **Independent OS-process Watchdog** (`agent/reliability/watchdog.py`) monitors heartbeats
-  from outside the event loop — immune to asyncio event loop stalls.
+- Per-call deadlines on every outbound MCP call and bounded polls on every inbound
+  wait (`cop_worker/net_gateway.py`; `[timeouts]` in `config/runtime.toml`).
+- **Independent OS-process Watchdog** (`cop_worker/reliability/watchdog.py`, launched
+  by `scripts/ref3_match/watchdog_bridge.py`) monitors heartbeats from outside the
+  event loop — immune to asyncio event loop stalls. `WorkerProc` covers a wedged role
+  process; the watchdog covers the coordinating process itself.
 - Threshold: `HEARTBEAT_INTERVAL_S * THRESHOLD_MULTIPLIER = 15 s` before SIGTERM.
 - Failure evidence written to disk before kill for post-mortem analysis.
 

@@ -1,6 +1,6 @@
 # TESTING — strategy and taxonomy (vibecode-cop)
 
-Status: current as of 2026-08-10 (HEAD `3ab6e1f`). Companion evidence document:
+Status: current as of 2026-08-15. Companion evidence document:
 `docs/TEST_EVIDENCE.md` (what the suite measured, when, and at which SHA).
 
 ## How to run
@@ -13,19 +13,18 @@ uv run pytest tests/ cop_worker/tests/ league_manager/tests/ -q --tb=short
 uv run pytest tests/ cop_worker/tests/ league_manager/tests/ \
   --cov=cop_worker --cov=league_manager --cov-branch \
   --cov-report=xml \
-  --cov-fail-under=80
+  --cov-fail-under=94
 ```
 
 CI (`.github/workflows/ci.yml`) additionally enforces: `uv sync --frozen`,
 `uv lock --check`, `ruff check .`, `ruff format --check .`, and a secret scan over
 `*.py`/`*.json`. Coverage is **branch** coverage (stricter than line) and is
-enforced twice: on the CI command line and via `fail_under = 80` in
+enforced twice: on the CI command line and via `fail_under = 94` in
 `pyproject.toml [tool.coverage.report]`.
 
-**Gate: 80% branch. Target: 85%** (the course guideline floor). Line coverage is
-already ~85%; the branch figure trails it, so the enforced floor is 80 while new
-tests push the branch number toward 85 (tests only — no source changes for
-coverage's sake).
+**Gate: 94% branch** — well above the course guideline floor of 85. The suite
+last measured **94.90%** (see `docs/TEST_EVIDENCE.md`); the gate is raised only
+by adding tests, never by changing source for coverage's sake.
 
 ## Test taxonomy — what actually exists
 
@@ -34,9 +33,12 @@ failure it is designed to catch:
 
 ### 1. Unit tests
 Plain behavior tests of a module in isolation: domain transition and rules
-(`tests/test_rules_engine*.py`, `tests/test_codex_scent_grid.py`), crypto and
-commit-reveal (`tests/test_audit_adversarial.py` — tampered move, tampered nonce,
-extra step, missing step, zero-turn chains), the Gmail pipeline
+(`tests/test_cov95_rules_outcomes.py`, `tests/test_coverage_gaps_domain.py`,
+`tests/test_codex_scent_grid.py`), crypto and commit-reveal
+(`tests/test_codex_crypto.py`, `tests/test_codex_commit_reveal.py`,
+`tests/test_audit_adversarial_consensus.py`,
+`tests/test_audit_adversarial_journal.py` — step-journal hash-chain tamper,
+insert, delete, zero-turn abort; bilateral result consensus), the Gmail pipeline
 (gatekeeper/token-bucket/circuit-breaker/DoS-detector tests), config canonicalization,
 the RL observation/policy stack.
 
@@ -46,7 +48,9 @@ them **verbatim** into our tests so conformance is checked on every run without
 importing the kit:
 
 - `tests/test_scent_chebyshev.py` — fixture values copied from the kit's
-  `vectors/pheromone.json` (CORE) at kit commit `be96e57`; fails if our
+  `vectors/pheromone.json` (CORE; in a sibling checkout,
+  `../external/copthief-league-protocol/vectors/pheromone.json`) at kit commit
+  `be96e57`; fails if our
   `cop_worker/scent_chebyshev.py` port ever drifts from the reference arithmetic.
 - `tests/reference_v3/test_game_uid_vectors.py` — game-uid derivation vectors.
 - `tests/test_scent_model_negotiation.py` — pins that `SCENT_LOCKS` carries exactly
@@ -64,7 +68,8 @@ never calls it.** These tests use `inspect.getsource()` on the production entry 
 
 - `tests/test_serving_episode_reset.py::test_play_subgame_resets_the_mover_before_the_first_turn`
   — asserts `policy.reset()` appears **after** the `RLMover(` construction and
-  **before** the turn loop in `_play_subgame`.
+  **before** the turn loop in `_run_turns` (the facade re-exports it from
+  `scripts/ref3_match/subgame_turns.py` precisely for this pin).
 - `tests/test_thief_enclosure_concession.py::TestServingLoopCallSites` — asserts the
   loop calls `observe_peer_barrier` and `self_capture_check`, and that the
   concession turn (with `"caught": True`, an advancing scent field, and `"move": "STAY"`)
@@ -87,7 +92,8 @@ Real examples:
 | `tests/reference_v3/test_duplicate_turn_idempotency.py`, `test_conflicting_duplicate_rejected.py` | At-least-once retries require dedup-on-commit: a re-send with identical bytes is drained, a re-send under a NEW commit (equivocation) is refused. |
 
 ### 5. Coverage-gap and contract tests
-Named `test_codex_*` / `test_cov85_*` / `test_coverage_gaps.py`: written specifically
+Named `test_codex_*` / `test_cov85_*` / `test_cov90_*` / `test_cov95_*` /
+`test_coverage_gaps_*.py`: written specifically
 to close measured branch-coverage gaps or to pin narrow API contracts
 (fail-closed token accounting, empty tool lists, recurrent-policy failure modes).
 They raise the floor; they are not the primary defect-finding species.
@@ -108,7 +114,7 @@ another student team and the audit is unforgiving. Live examples in `tests/`:
 
 - **Empty / null:** `test_turn_timestamp.py::test_empty_string_is_replaced_rather_than_sent`;
   `test_codex_adaptive_transport.py::test_protocol_detection_error_is_raised_on_empty_tool_list`;
-  `test_codex_recurrent_failure_contract.py::test_policy_rejects_empty_and_undeployable_legal_masks`.
+  `test_codex_recurrent_failure_contract_policy.py::test_policy_rejects_empty_and_undeployable_legal_masks`.
 - **Junk / wrong type:** `test_thief_enclosure_concession.py::test_duplicates_and_out_of_board_and_junk_ignored`
   — feeds `None`, the string `"2,3"`, duplicates, and the off-board cell `[9, 9]` to
   `observe_peer_barrier` and asserts none of them poison the barrier list.
@@ -125,8 +131,14 @@ the broken shape" test.
 
 ## Skips
 
-Exactly one test is skipped:
-`tests/reference_v3/test_survival_terminal.py` — skip reason `thief_worker not on
-path`; it exercises the cross-repo survival terminal and runs only when the sibling
-`vibecode-thief` checkout is importable. Everything else must pass;
-`addopts`-level permanent ignores are not used in this repo.
+Four tests skip, all on an environment condition, never on a defect:
+
+- `tests/reference_v3/test_survival_terminal.py` — `thief_worker not on path`; it
+  exercises the cross-repo survival terminal and runs only when the sibling
+  `vibecode-thief` checkout is importable.
+- `tests/test_pdf_parser_docx.py` (2) and `tests/test_submission_builder.py` (1) —
+  `python-docx not installed in this venv`; they cover the `tools/` submission
+  helpers, which are not part of the match runtime.
+
+Everything else must pass; `addopts`-level permanent ignores are not used in this
+repo.

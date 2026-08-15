@@ -7,5 +7,7 @@ per-component PRDs — [`docs/PRD_cop_worker.md`](docs/PRD_cop_worker.md),
 old links resolve.
 
 Current state: cop_worker + league_manager architecture, reference-v3 wire,
-`hybrid_search` move engine (minimax over exact chebyshev tracking, RL
-fallback). Counted series vs imreeyal won 90–30, 6/6 audits Verified OK.
+split (one process per role) production runtime, `hybrid_search` move engine
+(minimax over exact chebyshev tracking, RL fallback). Five counted series played
+(`results/counted_series.json`): lost 35–75 vs anrbj666, then won 90–30 vs
+imreeyal, uoh-sqak, rstabcde and najamjad — 6/6 audits Verified OK each.

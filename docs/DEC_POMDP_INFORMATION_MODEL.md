@@ -58,33 +58,37 @@ Explicit Bayesian belief tracking is an optional extension.
 | Thief | ✓   | ✗   | ✓  |
 
 Both agents have symmetric structural partial observability.
-The **commitment protocol** (Phase 10B) is necessary precisely because each agent
+The **commitment protocol** is necessary precisely because each agent
 cannot verify the opponent's move before committing its own — preventing adaptive
 cheating based on observing the opponent's pre-move intention.
 
-## Production Observation Builder (Phase 2 v7)
+## Production observation builder
 
-`build_local_observation()` in `agent/peer_turn_helpers.py` is the **sole** entry
-point for constructing strategy/RL observations in the production turn loop.
-It replaces the legacy `build_observation()` which accidentally included both
-`cop_position` and `thief_position` in `grid_state`.
+Every production turn builds a `LocalObservation`
+(`cop_worker/observation.py`) — the frozen dataclass is the only shape a policy
+ever sees. Two call sites construct it: `scripts/ref3_match/mover.py::RLMover`
+(the reference-v3 match path) and `cop_worker/gamelet_obs.py::_build_obs` (the
+worker/gamelet path). The type has **no opponent-coordinate field**, so the
+class of leak the earlier `build_observation()` allowed — shipping both
+`cop_position` and `thief_position` inside a `grid_state` dict — cannot be
+expressed.
 
 ### What each role sees
 
 | Field | Cop | Thief |
 |-------|:---:|:-----:|
 | `own_position` (own true coords) | ✓ | ✓ |
+| `own_barriers_remaining` | ✓ | 0 (thief places none) |
 | `known_barriers` (public) | ✓ | ✓ |
 | `opponent_scent` (NxN float) | thief scent | cop scent |
-| `belief_heatmap` (NxN float) | ✓ if BeliefEngine wired | ✓ if BeliefEngine wired |
-| `belief_entropy` | ✓ if BeliefEngine wired | ✓ if BeliefEngine wired |
 | `last_hint` | ✓ | ✓ |
 | `step`, `gamelet`, `grid_size` | ✓ | ✓ |
-| `cop_position` (hidden!) | ✗ | ✗ |
-| `thief_position` (hidden!) | ✗ | ✗ |
-| `opponent_position` (hidden!) | ✗ | ✗ |
+| *opponent true position* | ✗ (no such field) | ✗ (no such field) |
 
-The RL adapter `local_obs_to_tensor()` in `agent/rl/local_obs_adapter.py` operates
+The Bayesian posterior travels alongside as a separate `BeliefState`
+(`prob`, `entropy`, `confidence`, `step`), not as a field of the observation.
+
+The RL adapter `local_obs_to_tensor()` in `cop_worker/rl/local_obs_adapter.py` operates
 on `LocalObservation` which by design has no opponent-coordinate field, making
 hidden-coordinate leaks a type-level impossibility for the RL path.
 

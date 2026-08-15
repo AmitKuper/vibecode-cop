@@ -32,7 +32,7 @@
 ## Infrastructure
 
 - [x] CI pipeline: .github/workflows/ci.yml
-- [x] Version: pyproject.toml v2.0.0, agent/version.py
+- [x] Version: pyproject.toml v3.0.0 (single source; there is no `version.py`)
 - [x] results/verification_manifest.json
 
 ## External Evidence Required (PENDING)

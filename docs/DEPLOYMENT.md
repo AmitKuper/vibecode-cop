@@ -1,17 +1,21 @@
 # DEPLOYMENT — production match deployment (vibecode-cop)
 
 This is the deployment guide for how counted and friendly series are **actually**
-played: one match-runner process on a machine behind a **static public IP with
-router port-forwarding**. The LeagueManager-facade + tunnel topology is the
+played: the split runtime (an orchestrator plus one OS process per role) on a
+machine behind a **static public IP with router port-forwarding**. The LeagueManager-facade + tunnel topology is the
 *alternative*, kept in `docs/DEPLOYMENT_TUNNEL_RUNBOOK.md`.
 
-Both counted games (vs anrbj666 2026-08-08, vs imreeyal 2026-08-10) were played
-exactly as described here.
+All five counted games (anrbj666 2026-08-08, imreeyal 2026-08-10, uoh-sqak
+2026-08-11, rstabcde and najamjad 2026-08-14) were played on this network path.
+The last two ran on the split runtime — their `runtime_match.log` records
+`SPLIT arch: cop pid=… thief pid=… orchestrator holds no game state` and the two
+per-role worker logs; the earlier three predate it and ran the single-process
+runtime now reachable as `--arch inline`.
 
 ## Topology
 
-One OS process — `scripts/live_match_ref3.py --match` — serves **both** of our MCP
-endpoints and dials the opponent's:
+`scripts/live_match_ref3.py --match` spawns one role-worker process per role; each
+binds its own MCP endpoint and dials the opponent's opposite door:
 
 | Endpoint | Port | Forwarded |
 |---|---|---|

@@ -1,9 +1,10 @@
 # Counted-game checklist — vibecode
 
 Operational runbook for playing a **counted** league series. Tailored to vibecode's tooling:
-a **single orchestrator** (`scripts/live_match_ref3.py --match`) serves both our MCP endpoints,
-dials the opponent per window, runs six sub-games with the trained RL policy over the
-reference-v3 wire, writes the four artifact kinds, and emails the result. This file is the
+a **single orchestrator command** (`scripts/live_match_ref3.py --match`) spawns one OS process
+per role, each binding its own MCP endpoint and dialling the opponent per window; the six
+sub-games are played over the reference-v3 wire, the four artifact kinds are written, and the
+result is emailed. This file is the
 execution order; the same content lives in both repos (vibecode-cop, vibecode-thief).
 
 A counted series is **one-shot and irreversible** (rule 52: one counted match per rival). Get the
