@@ -83,7 +83,12 @@ async def replay_steps(log: str) -> JSONResponse:
     target = (results / Path(log).name).resolve()
     if not target.is_file() or target.parent != results.resolve():
         return JSONResponse({"error": "unknown log"}, status_code=404)
+    from cop_worker.replay.ref3_steps import load_log
+    from cop_worker.replay.replay_board import board_states
+
     overall, steps = verify_file(target)
+    doc = load_log(target)
+    boards = board_states(steps, our_role=(doc.get("summary") or {}).get("role", "police"))
     return JSONResponse(
         {
             "overall": overall,
@@ -95,8 +100,9 @@ async def replay_steps(log: str) -> JSONResponse:
                     "stored_commit": s.stored_commit,
                     "recomputed_commit": s.recomputed_commit,
                     "ok": s.ok,
+                    "board": boards[i],
                 }
-                for s in steps
+                for i, s in enumerate(steps)
             ],
         }
     )

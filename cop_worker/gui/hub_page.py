@@ -28,8 +28,8 @@ iframe{border:1px solid #2a2a3a;border-radius:6px;background:#0d0d16}
   <h1>Cop/Thief</h1>
   <a href="#status" id="nav-status">Status</a>
   <a href="#history" id="nav-history">Game History</a>
+  <a href="#replay" id="nav-replay">Replay</a>
   <a href="#settings" id="nav-settings">Settings</a>
-  <a href="/replay">Replay viewer ↗</a>
 </nav>
 <div id="main">
 
@@ -54,6 +54,11 @@ iframe{border:1px solid #2a2a3a;border-radius:6px;background:#0d0d16}
   <table id="t-local"></table>
 </div>
 
+<div class="view" id="view-replay">
+  <h2>Replay <a class="note" href="/replay" target="_blank">open full page ↗</a></h2>
+  <iframe id="replay-frame" style="width:100%;height:82vh" loading="lazy"></iframe>
+</div>
+
 <div class="view" id="view-settings">
   <h2>Settings <span class="note">(read-only — the dashboard never writes; edit config/runtime.toml)</span></h2>
   <table class="kv" id="t-settings"></table>
@@ -64,13 +69,21 @@ iframe{border:1px solid #2a2a3a;border-radius:6px;background:#0d0d16}
 </div>
 <script>
 function nav(){
-  const view=(location.hash||'#status').slice(1);
-  for(const v of ['status','history','settings']){
+  const view=(location.hash||'#status').slice(1).split('?')[0];
+  if(view==='replay'){
+    const f=document.getElementById('replay-frame');
+    if(!f.src)f.src='/replay';
+  }
+  for(const v of ['status','history','replay','settings']){
     document.getElementById('view-'+v).classList.toggle('show',v===view);
     document.getElementById('nav-'+v).classList.toggle('active',v===view);
   }
 }
 window.addEventListener('hashchange',nav);
+function openReplay(name){
+  document.getElementById('replay-frame').src='/replay?log='+encodeURIComponent(name);
+  location.hash='#replay';
+}
 function header(cat){
   return '<tr><th>game</th><th>group</th><th>opponent group</th><th>windows</th>'+
     '<th>started</th><th>score</th><th>winner</th><th>mutual sha</th>'+

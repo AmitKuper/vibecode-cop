@@ -137,3 +137,38 @@ def test_cli_stepper_clamps_at_both_ends(tmp_path, monkeypatch):
     text = out.getvalue()
     assert "timeline 0/3" not in text, "prev at the start must clamp, not underflow"
     assert "timeline 4/3" not in text, "next at the end must clamp, not overflow"
+
+
+def test_steps_api_reconstructs_boards_with_both_agents_and_scent():
+    """Positions from the revealed payloads; scent replayed via the locked emitter.
+
+    Uses a nis-yar1 log: both sides sealed positions there. (anrbj666 sealed
+    action+state_digest instead - their pieces legitimately cannot be placed,
+    and the board shows only what the revealed data supports.)
+    """
+    results = Path(__file__).resolve().parents[1] / "results"
+    logs = sorted(p.name for p in results.glob("log_nis-yar1*_g*.json"))
+    assert logs, "nis-yar1 logs are tracked in this repo"
+    d = live_client.get("/api/replay/steps", params={"log": logs[0]}).json()
+    boards = [s["board"] for s in d["steps"] if s.get("board")]
+    assert boards, "every step must carry a board"
+    late = boards[-1]
+    assert late["cop"] is not None and late["thief"] is not None
+    field = late["scent_thief"]
+    assert field, "the thief's reconstructed scent must not be empty"
+    assert max(field.values()) <= 0.8 + 1e-9, "wire law peak is 0.8 (post-decay)"
+    for key in field:  # wire "row,col" keys inside the board
+        r, c = key.split(",")
+        assert 0 <= int(r) < 7 and 0 <= int(c) < 7
+
+
+def test_replay_page_has_show_hide_toggles_and_stays_embeddable():
+    body = live_client.get("/replay").text
+    for marker in ('id="tg-cop"', 'id="tg-thief"', 'id="tg-scent"', "subtractive_chebyshev_v1"):
+        assert marker in body, marker
+
+
+def test_hub_keeps_replay_inside_the_tabs():
+    body = client.get("/").text
+    assert 'id="nav-replay"' in body and 'id="replay-frame"' in body
+    assert "openReplay" in body, "history links must open replay in the tab, not navigate away"

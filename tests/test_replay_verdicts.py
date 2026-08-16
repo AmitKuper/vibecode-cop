@@ -92,7 +92,7 @@ def test_dashboard_hub_page_has_the_three_surfaces():
     for marker in (
         "COP live view",
         "THIEF live view",
-        "Replay viewer",
+        "nav-replay",
         "Counted game history",
         "Friendly game history",
         "Local / simulated game history",
