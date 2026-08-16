@@ -63,3 +63,12 @@ def hardware_spec(identity: dict | None, sealed: dict | None) -> dict:
         if isinstance(candidate, dict) and candidate:
             return candidate
     return {}
+
+
+def series_counted_played(played: list | None) -> int:
+    """Their prior counted count from the first window that states one (0 if none)."""
+    for window in played or []:
+        n = counted_played(window.get("opp_identity"), step_zero_payload(window.get("opp_records")))
+        if n is not None:
+            return n
+    return 0

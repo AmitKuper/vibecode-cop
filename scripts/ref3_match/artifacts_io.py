@@ -94,22 +94,9 @@ def _emit_files(result: dict, args) -> dict:
     # The opponent's declared identity (rules 49/53) — repos, counted count — from their greeting.
     opp_ids = [sg.get("opp_identity") or {} for sg in played if sg.get("opp_identity")]
     opp_repos = next((i.get("repos") for i in opp_ids if i.get("repos")), {})
-    # Their prior counted count can arrive in the negotiate identity OR the sealed
-    # Step-0 record, under three different spellings - see league_artifacts.opponent_facts.
-    opp_counted = next(
-        (
-            n
-            for n in (
-                opponent_facts.counted_played(
-                    sg.get("opp_identity"),
-                    opponent_facts.step_zero_payload(sg.get("opp_records")),
-                )
-                for sg in played
-            )
-            if n is not None
-        ),
-        0,
-    )
+    # Their count can ride the negotiate identity OR the sealed Step-0 record, under
+    # three spellings - league_artifacts.opponent_facts knows all of them.
+    opp_counted = opponent_facts.series_counted_played(played)
     our_counted = getattr(args, "counted_played", 0)
     counted = getattr(args, "counted", False)
     rows, final_result = score_series(
