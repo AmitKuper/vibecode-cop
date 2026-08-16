@@ -5,6 +5,8 @@ from __future__ import annotations
 import json as _json
 from pathlib import Path
 
+from league_artifacts import opponent_facts
+
 from ref3_match.runtime_cfg import REPO_ROOT, _git_head
 
 
@@ -92,11 +94,19 @@ def _emit_files(result: dict, args) -> dict:
     # The opponent's declared identity (rules 49/53) — repos, counted count — from their greeting.
     opp_ids = [sg.get("opp_identity") or {} for sg in played if sg.get("opp_identity")]
     opp_repos = next((i.get("repos") for i in opp_ids if i.get("repos")), {})
+    # Their prior counted count can arrive in the negotiate identity OR the sealed
+    # Step-0 record, under three different spellings - see league_artifacts.opponent_facts.
     opp_counted = next(
         (
-            i.get("counted_games_played")
-            for i in opp_ids
-            if i.get("counted_games_played") is not None
+            n
+            for n in (
+                opponent_facts.counted_played(
+                    sg.get("opp_identity"),
+                    opponent_facts.step_zero_payload(sg.get("opp_records")),
+                )
+                for sg in played
+            )
+            if n is not None
         ),
         0,
     )

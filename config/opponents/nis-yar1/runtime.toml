@@ -8,8 +8,8 @@ our_cop_port      = 61224
 our_thief_port    = 61223
 
 opponent_group = "nis-yar1"
-opp_cop_url    = "https://nov-handles-wife-tray.trycloudflare.com/mcp"
-opp_thief_url  = "https://hosts-childrens-society-residence.trycloudflare.com/mcp"
+opp_cop_url    = "https://reproduced-authority-controversial-mails.trycloudflare.com/mcp"
+opp_thief_url  = "https://importantly-clusters-changed-vsnet.trycloudflare.com/mcp"
 
 [protocol]
 scent_model  = "subtractive_chebyshev_v1"
@@ -23,4 +23,4 @@ mode       = "send"
 token_path = "secrets/gmail/token.json"
 
 [counted]
-counted_played = 3
+counted_played = 5

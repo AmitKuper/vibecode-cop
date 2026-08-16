@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from cop_worker.language import token_ledger
+from league_artifacts import opponent_facts
 from league_artifacts.core import load_constitution
 
 
@@ -54,7 +55,9 @@ def score_series(
         tot_them += them
         won_us += us > them
         won_them += them > us
-        opp_commit = (sg.get("opp_identity") or {}).get("github_commit", "unknown")
+        opp_commit = opponent_facts.github_commit(
+            sg.get("opp_identity"), opponent_facts.step_zero_payload(sg.get("opp_records"))
+        )
         rows.append(
             {
                 "sub_game_number": n,
