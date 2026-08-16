@@ -58,3 +58,23 @@ def test_live_page_has_the_mandatory_panels():
 def test_replay_page_shows_both_verdicts():
     for marker in ("Verified OK", "TAMPERED", "recomputed", "slider"):
         assert marker in REPLAY_PAGE, marker
+
+
+def test_dashboard_games_endpoint_lists_real_series():
+    """The hub's history table is built from the results tree, newest first."""
+    import asyncio
+    import json as _json
+
+    from cop_worker.gui.dashboard import games
+
+    payload = _json.loads(asyncio.run(games()).body)
+    assert payload, "results/ holds series but the dashboard listed none"
+    row = payload[0]
+    assert {"game_id", "windows", "score", "winner", "mutual_sha", "logs"} <= set(row)
+
+
+def test_dashboard_hub_page_has_the_three_surfaces():
+    from cop_worker.gui.hub_page import HUB_PAGE
+
+    for marker in ("COP live view", "THIEF live view", "Replay viewer", "Game history"):
+        assert marker in HUB_PAGE, marker

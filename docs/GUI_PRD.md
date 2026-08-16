@@ -42,6 +42,14 @@ GUI runs in every game, counted included. Therefore: a dead, hung, or
 port-blocked GUI must NEVER delay or block a move. Publish is fire-and-forget;
 server start failure (including busy port) is a logged skip, never an error.
 
+### R6 — Persistent dashboard (added 2026-08-17, user request)
+A standalone always-on server (scripts/gui_dashboard.py, port 8780) that runs
+independently of any match: game-history table from results/ artifacts (score,
+winner, mutual sha + confirmed, per-gamelet replay links), the replay viewer,
+and embedded live panels whenever a match is running (probes the per-role GUIs;
+"no game running" is a normal state, not an error). Read-only by construction -
+it can never affect play.
+
 ## Non-goals
 - No input/controls in the live GUI (movement is autonomous).
 - No objective board view anywhere, not even in replay (replay reconstructs

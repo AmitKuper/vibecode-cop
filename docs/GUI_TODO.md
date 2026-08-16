@@ -12,6 +12,10 @@ Status legend: [ ] open · [~] in progress · [x] done (with date)
 - [x] WP8 evidence (2026-08-16): live belief-heatmap screenshots for BOTH roles + replay Verified-OK over the real nis-yar1 counted log, all captured during a live series, in evidence/gui/; KNOWN_DEVIATIONS updated; mirrored + drift-gated (42 shared files)
       sibling repo + drift-gate entries
 
+- [x] R6 dashboard (2026-08-17): persistent hub on :8780 - history table (all
+      series, shas, replay links), live-panel embedding, replay reuse; verified
+      against the real results tree (7 series listed, counted log Verified OK).
+
 Decisions on record (2026-08-16, with the user):
 - Panels: ALL extras (scent grid, hint+deception cue, integrity ticker).
 - Replay: BOTH CLI stepping and web page, one shared core.

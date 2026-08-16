@@ -50,6 +50,7 @@ ignore = ["N999"]
 # Inline HTML/JS page template: line length rules do not apply to markup.
 "cop_worker/gui/page.py" = ["E501"]
 "cop_worker/gui/replay_page.py" = ["E501"]
+"cop_worker/gui/hub_page.py" = ["E501"]
 "cop_worker/gui/app.py" = ["E501"]
 "cop_worker/replay/app.py" = ["E501"]
 # E402: tests use pytest.skip(allow_module_level=True) before imports by design.
