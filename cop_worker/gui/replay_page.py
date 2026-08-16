@@ -23,7 +23,9 @@ button:hover{background:#25253a}
 .match{color:#00ff88}.mismatch{color:#ff5566}
 #toggles{margin:10px 0;color:#aab}
 #toggles label{margin-right:18px;cursor:pointer}
-#board{display:grid;grid-template-columns:repeat(7,44px);gap:2px;margin-top:8px;width:max-content}
+#split{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-start;margin-top:6px}
+#board{display:grid;grid-template-columns:repeat(7,44px);gap:2px;width:max-content}
+#stepcard{flex:1;min-width:340px;margin-top:0}
 .cell{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1px solid #2a2a3a;font-weight:bold;font-size:17px;border-radius:3px}
 .mark-cop{color:#66aaff;text-shadow:0 0 6px #2244aa}
 .mark-thief{color:#ffd447;text-shadow:0 0 6px #aa8800}
@@ -45,10 +47,14 @@ button:hover{background:#25253a}
   <label><input type="checkbox" id="tg-scent" checked> show scent</label>
   <label><input type="checkbox" id="tg-scent-cop"> cop's scent instead of thief's</label>
 </div>
-<div id="board"></div>
-<div class="legend">scent reconstructed from the revealed positions via the locked
-<b>subtractive_chebyshev_v1</b> emitter — wire-exact (peak 0.8)</div>
-<div id="stepcard">(no step)</div>
+<div id="split">
+  <div>
+    <div id="board"></div>
+    <div class="legend">scent reconstructed from the revealed positions via the<br>
+    locked <b>subtractive_chebyshev_v1</b> emitter — wire-exact (peak 0.8)</div>
+  </div>
+  <div id="stepcard">(no step)</div>
+</div>
 <script>
 let steps=[];
 async function loadList(){

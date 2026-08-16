@@ -87,6 +87,9 @@ async def games() -> JSONResponse:
                 else sorted(p.name for p in RESULTS.glob(f"log_{game_id}_g*.json")),
             }
         )
+    # newest first regardless of source: current results/ and the recovered
+    # archive interleave (recovered runs otherwise cluster at the tail)
+    out.sort(key=lambda r: r["started"], reverse=True)
     return JSONResponse(out)
 
 
@@ -134,7 +137,9 @@ async def settings() -> JSONResponse:
             "move_policy": proto.get("move_policy"),
             "report_recipient": rep.get("recipient"),
             "report_mode": rep.get("mode"),
-            "counted_played": base.get("counted", {}).get("counted_played"),
+            # live truth from the ledger - the base-config value is a per-profile
+            # default and was showing a stale "1" while six series were filed
+            "counted_played": len(_counted_index()),
             "profiles": sorted(p.name for p in (CONFIG / "opponents").glob("*") if p.is_dir()),
         }
     )

@@ -22,7 +22,8 @@ fieldset{border:1px solid #2a2a3a;border-radius:6px;display:inline-block;margin:
 legend{color:#9ab;font-size:0.85em}
 </style></head>
 <body>
-<h1>Play vs the model <span class="note">— the exact counted engine (hybrid minimax)</span></h1>
+<h1 style="margin:4px 0 2px">Play vs the model</h1>
+<p class="note" style="margin:0 0 12px">the exact counted engine — hybrid minimax, production search</p>
 <div id="setup">
   <fieldset><legend>your role</legend>
     <button id="r-cop" class="sel">COP (hunt it)</button>
@@ -47,6 +48,8 @@ legend{color:#9ab;font-size:0.85em}
 capture = same cell or barrier on the thief · survive 35 steps to win as thief</div>
 <script>
 let G=null,role='cop',budget=10.0,busy=false;
+(function(){let h='';for(let i=0;i<49;i++)h+='<div class="cell"></div>';
+  document.getElementById('board').innerHTML=h;})();
 function selpair(a,b,idA,idB,on){document.getElementById(idA).classList.toggle('sel',on);
   document.getElementById(idB).classList.toggle('sel',!on);}
 document.getElementById('r-cop').onclick=()=>{role='cop';selpair(0,0,'r-cop','r-thief',true);};

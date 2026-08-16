@@ -18,6 +18,11 @@ h2{margin:6px 0 10px}
 a{color:#7ab8ff}
 table{border-collapse:collapse;margin:8px 0 18px;width:100%}
 td,th{border:1px solid #2a2a3a;padding:6px 10px;text-align:left}
+th{background:#181826;color:#9ab}
+table tr:nth-child(even){background:#161622}
+.chip{display:inline-block;background:#1d1d2e;border:1px solid #2a2a3a;border-radius:12px;padding:3px 12px;margin:3px 6px 3px 0}
+.kv{max-width:820px}
+.rec-w{color:#00ff88;font-weight:bold}.rec-l{color:#ff5566;font-weight:bold}
 .win{color:#00ff88}.loss{color:#ff5566}
 iframe{border:1px solid #2a2a3a;border-radius:6px;background:#0d0d16}
 .kv td:first-child{color:#9ab;width:220px}
@@ -44,6 +49,11 @@ iframe{border:1px solid #2a2a3a;border-radius:6px;background:#0d0d16}
     <div class="card"><b>League record</b><br><span id="record">—</span></div>
   </div>
   <div id="live-frames"></div>
+  <p class="note" id="idle-hint">Live panels light up here automatically when a match runs.
+  Meanwhile: step through <a href="#history">Game History</a> or take on the engine in
+  <a href="#play">Play vs Model</a>.</p>
+  <h2>Recent games</h2>
+  <table id="t-recent"></table>
 </div>
 
 <div class="view" id="view-history">
@@ -122,8 +132,14 @@ async function games(){
   for(const [cat,id] of Object.entries(tables))
     if(!counts[cat])document.getElementById(id).insertAdjacentHTML('beforeend',
       '<tr><td colspan="10" class="note">none yet</td></tr>');
-  document.getElementById('record').textContent=
-    `${counts.counted} counted: ${won}W – ${lost}L · ${counts.friendly} friendlies · ${counts.local} local`;
+  document.getElementById('record').innerHTML=
+    `${counts.counted} counted: <span class="rec-w">${won}W</span> – <span class="rec-l">${lost}L</span>`+
+    `<br><span class="note">${counts.friendly} friendlies · ${counts.local} local</span>`;
+  const rec=document.getElementById('t-recent');
+  rec.innerHTML='<tr><th>started</th><th>type</th><th>opponent</th><th>score</th><th>winner</th></tr>'+
+    list.slice(0,5).map(g=>`<tr><td>${(g.started||'').replace('T',' ')}</td><td>${g.category}</td>`+
+      `<td>${g.opponent}</td><td>${g.score}</td>`+
+      `<td class="${g.winner==='vibecode'?'win':'loss'}">${g.winner||'—'}</td></tr>`).join('');
 }
 async function live(){
   const r=await fetch('/api/hub/live');const d=await r.json();
@@ -135,6 +151,8 @@ async function live(){
     if(up)fh+=`<iframe src="http://127.0.0.1:${role==='cop'?8781:8782}/" width="49%" height="620"></iframe>`;
   }
   frames.innerHTML=fh;
+  const hint=document.getElementById('idle-hint');
+  if(hint)hint.style.display=fh?'none':'';
 }
 async function settings(){
   const r=await fetch('/api/hub/settings');const s=await r.json();
@@ -142,10 +160,10 @@ async function settings(){
     ['gui ports (cop / thief)',`${s.gui_cop_port} / ${s.gui_thief_port}`],
     ['scent model',s.scent_model],['move policy',s.move_policy],
     ['friendly report recipient',`${s.report_recipient} (${s.report_mode})`],
-    ['counted series played',s.counted_played]];
+    ['counted series played (ledger)',s.counted_played]];
   document.getElementById('t-settings').innerHTML=
     rows.map(([k,v])=>`<tr><td>${k}</td><td>${v??'—'}</td></tr>`).join('');
-  document.getElementById('profiles').textContent=(s.profiles||[]).join(' · ')||'none';
+  document.getElementById('profiles').innerHTML=(s.profiles||[]).map(p=>`<span class="chip">${p}</span>`).join('')||'none';
 }
 fetch('/api/play/available').then(r=>{if(r.ok)document.getElementById('nav-play').style.display='';}).catch(()=>{});
 nav();games();live();settings();setInterval(live,5000);
