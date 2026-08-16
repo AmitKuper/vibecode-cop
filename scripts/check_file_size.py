@@ -51,6 +51,11 @@ ALLOWED: dict[str, tuple[int, str]] = {
         "Audit exchange and settlement, one atomic sequence.",
     ),
     "scripts/ref3_match/role_worker.py": (155, "Worker entry point: stdio protocol loop."),
+    "cop_worker/gui/hub_page.py": (
+        200,
+        "A single HTML/JS page template in a string: its line count is markup, "
+        "not Python complexity. The page logic itself is small per view.",
+    ),
     "tests/test_submission_builder.py": (160, "Table-driven fixtures for the submission form."),
     "tests/test_split_architecture.py": (160, "End-to-end split-architecture scenario."),
     "tests/test_gui_routes_and_stepping.py": (
