@@ -23,6 +23,16 @@ Status legend: [ ] open · [~] in progress · [x] done (with date)
       per-run results recovered byte-exact from the sent report emails. The
       dashboard's friendly table now lists every run (16 friendlies).
 
+- [x] WP9 screenshot-driven UI/UX review (2026-08-17): scripts/gui_snapshot.py
+      captures every dashboard view headlessly (Edge, stable-size polling) to
+      reports/gui_review/ for visual review. The pass caught one real data bug
+      (settings displayed the stale base-config counted=1 instead of the
+      ledger's 6) and one ordering bug (recovered-archive friendlies clustered
+      at the table's tail; /api/hub/games now sorts newest-first). Layout
+      polish: colored W/L record + recent-games table on Status, zebra rows,
+      profile chips, replay board/step-card side by side, persistent play
+      board (no layout jump). Suites green: cop 1782, thief 1177.
+
 Decisions on record (2026-08-16, with the user):
 - Panels: ALL extras (scent grid, hint+deception cue, integrity ticker).
 - Replay: BOTH CLI stepping and web page, one shared core.
