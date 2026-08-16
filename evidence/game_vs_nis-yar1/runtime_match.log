@@ -1,0 +1,1408 @@
+22:32:42.200 [match] logging to D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\reports\ref3_matches\match_nis-yar1_20260816-223242.log
+22:32:44.062 [pw] [08/16/26 22:32:44] INFO     Starting MCP server               transport.py:361
+22:32:44.062 [pw]                              'vibecode-police' with transport
+22:32:44.062 [pw]                              'http' on
+22:32:44.062 [tw] [08/16/26 22:32:44] INFO     Starting MCP server               transport.py:361
+22:32:44.062 [pw]                              http://0.0.0.0:61224/mcp
+22:32:44.063 [tw]                              'vibecode-thief' with transport
+22:32:44.063 [tw]                              'http' on
+22:32:44.066 [tw]                              http://0.0.0.0:61223/mcp
+22:32:44.087 [pw] INFO:     Started server process [15164]
+22:32:44.087 [pw] INFO:     Waiting for application startup.
+22:32:44.087 [tw] INFO:     Started server process [12632]
+22:32:44.087 [tw] INFO:     Waiting for application startup.
+22:32:44.091 [pw] INFO:     Application startup complete.
+22:32:44.091 [tw] INFO:     Application startup complete.
+22:32:44.091 [pw] INFO:     Uvicorn running on http://0.0.0.0:61224 (Press CTRL+C to quit)
+22:32:44.091 [tw] INFO:     Uvicorn running on http://0.0.0.0:61223 (Press CTRL+C to quit)
+22:32:44.229 [tw] [thief-worker] endpoint live on :61223 (pid=12632, log=D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\reports\ref3_matches\worker_thief_20260816-223242.log)
+22:32:44.229 [pw] [police-worker] endpoint live on :61224 (pid=15164, log=D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\reports\ref3_matches\worker_police_20260816-223242.log)
+22:32:44.230 [match] police worker ready (pid=14748)
+22:32:44.230 [match] thief worker ready (pid=27832)
+22:32:44.237 [match] SPLIT arch: cop pid=14748 thief pid=27832 orchestrator holds no game state
+22:32:44.237 [match] sg1 (thief) — dispatching to thief worker
+22:32:44.427 [tw] INFO:     127.0.0.1:53653 - "POST /mcp HTTP/1.1" 400 Bad Request
+22:32:45.522 [pw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:32:45.532 [tw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 200 OK
+22:32:45.594 [pw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:45.608 [pw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:32:45.613 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:32:45.613 [tw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:45.639 [tw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 200 OK
+22:32:45.648 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=1 uid='None' scent=81ebee59 wire=229ae648
+22:32:45.874 [tw] [match] peer endpoint UP: https://concerts-translations-cruz-flows.trycloudflare.com/mcp
+22:32:46.774 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:32:46.776 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:32:46.848 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:46.848 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:46.866 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:32:46.866 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:32:47.048 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:32:47.050 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=1 uid='None' scent=81ebee59 wire=229ae648
+22:32:47.987 [pw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 200 OK
+22:32:48.072 [pw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:48.090 [pw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 200 OK
+22:32:48.091 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:32:48.171 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:32:48.249 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:48.264 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:32:48.264 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=1 uid='None' scent=81ebee59 wire=229ae648
+22:32:49.296 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:32:49.375 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:49.392 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:32:49.393 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:32:49.449 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:32:49.527 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:49.542 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:32:49.545 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=1 uid='None' scent=81ebee59 wire=229ae648
+22:32:50.157 [tw] [match] sg1 peer greeting sub_game=1 role=police
+22:32:50.157 [tw] [match] sg1 role=thief handshake OK vs nis-yar1 uid=21a1533b-575
+22:32:50.505 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:32:50.578 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:50.593 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:32:50.594 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:32:51.706 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:32:51.781 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:51.797 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:32:51.802 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:32:52.063 [tw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 200 OK
+22:32:52.162 [tw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:52.177 [tw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 200 OK
+22:32:52.178 [tw] [wire<-] turn step=1 sender='police' commit=a561ab5c ts='2026-08-16T19:32:52.195' cells=12 barrier=None claim=[1, 0] answer=None win=None
+22:32:52.212 [tw] [scent] sg1 step2: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+22:32:52.741 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:32:52.815 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:52.831 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:32:52.833 [tw] [wire<-] turn step=2 sender='police' commit=a71ff5c4 ts='2026-08-16T19:32:52.871' cells=15 barrier=None claim=[2, 0] answer=None win=None
+22:32:52.912 [pw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:32:52.985 [pw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:53.001 [pw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:32:53.002 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:32:53.463 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:32:53.537 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:53.550 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:32:53.551 [tw] [wire<-] turn step=3 sender='police' commit=812fb5c7 ts='2026-08-16T19:32:53.598' cells=20 barrier=None claim=[2, 1] answer=None win=None
+22:32:54.115 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:32:54.186 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:54.200 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:32:54.201 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:32:54.361 [tw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 200 OK
+22:32:54.447 [tw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:54.461 [tw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 200 OK
+22:32:54.462 [tw] [wire<-] turn step=4 sender='police' commit=d1d81cfd ts='2026-08-16T19:32:54.489' cells=24 barrier=None claim=[3, 1] answer=None win=None
+22:32:55.181 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:32:55.246 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:55.257 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:32:55.258 [tw] [wire<-] turn step=5 sender='police' commit=83537900 ts='2026-08-16T19:32:55.309' cells=27 barrier=None claim=[3, 2] answer=None win=None
+22:32:55.309 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:32:55.395 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:55.412 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:32:55.413 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:32:55.871 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:32:55.946 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:55.964 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:32:55.965 [tw] [wire<-] turn step=6 sender='police' commit=355c970a ts='2026-08-16T19:32:55.975' cells=30 barrier=None claim=[3, 3] answer=None win=None
+22:32:56.557 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:32:56.627 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:56.642 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:32:56.646 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:32:56.797 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:32:56.876 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:56.893 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:32:56.894 [tw] [wire<-] turn step=7 sender='police' commit=d7be8e3d ts='2026-08-16T19:32:56.912' cells=29 barrier=[3, 4] claim=None answer=None win=None
+22:32:57.562 [tw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 200 OK
+22:32:57.671 [tw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:57.693 [tw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 200 OK
+22:32:57.693 [tw] [wire<-] turn step=8 sender='police' commit=0705eaa1 ts='2026-08-16T19:32:57.673' cells=34 barrier=None claim=[4, 3] answer=None win=None
+22:32:57.781 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:32:57.866 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:57.880 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:32:57.881 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:32:58.225 [tw] INFO:     79.177.147.82:24996 - "POST /mcp HTTP/1.1" 200 OK
+22:32:58.295 [tw] INFO:     79.177.147.82:24996 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:58.307 [tw] INFO:     79.177.147.82:24996 - "POST /mcp HTTP/1.1" 200 OK
+22:32:58.308 [tw] [wire<-] turn step=9 sender='police' commit=5ac9fe70 ts='2026-08-16T19:32:58.352' cells=31 barrier=None claim=[4, 4] answer=None win=None
+22:32:58.803 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:32:58.880 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:58.893 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:32:58.894 [tw] [wire<-] turn step=10 sender='police' commit=2f13ae95 ts='2026-08-16T19:32:58.933' cells=27 barrier=None claim=[4, 5] answer=None win=None
+22:32:59.000 [pw] INFO:     79.177.147.82:24999 - "POST /mcp HTTP/1.1" 200 OK
+22:32:59.071 [pw] INFO:     79.177.147.82:24999 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:59.085 [pw] INFO:     79.177.147.82:24999 - "POST /mcp HTTP/1.1" 200 OK
+22:32:59.086 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:32:59.571 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:32:59.639 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:32:59.654 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:32:59.655 [tw] [wire<-] turn step=11 sender='police' commit=ae2fda2c ts='2026-08-16T19:32:59.709' cells=29 barrier=None claim=[3, 5] answer=None win=None
+22:33:00.168 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:33:00.198 [pw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 200 OK
+22:33:00.243 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:00.259 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:33:00.260 [tw] [wire<-] turn step=12 sender='police' commit=1c495b38 ts='2026-08-16T19:33:00.278' cells=27 barrier=None claim=[2, 5] answer=None win=None
+22:33:00.275 [pw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:00.291 [pw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 200 OK
+22:33:00.293 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:33:00.843 [tw] INFO:     79.177.147.82:25005 - "POST /mcp HTTP/1.1" 200 OK
+22:33:00.923 [tw] INFO:     79.177.147.82:25005 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:00.942 [tw] INFO:     79.177.147.82:25005 - "POST /mcp HTTP/1.1" 200 OK
+22:33:00.943 [tw] [wire<-] turn step=13 sender='police' commit=be22c449 ts='2026-08-16T19:33:00.953' cells=29 barrier=None claim=[2, 4] answer=None win=None
+22:33:01.427 [pw] INFO:     79.177.147.82:25003 - "POST /mcp HTTP/1.1" 200 OK
+22:33:01.496 [pw] INFO:     79.177.147.82:25003 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:01.510 [pw] INFO:     79.177.147.82:25003 - "POST /mcp HTTP/1.1" 200 OK
+22:33:01.511 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:33:01.659 [tw] INFO:     79.177.147.82:24996 - "POST /mcp HTTP/1.1" 200 OK
+22:33:01.735 [tw] INFO:     79.177.147.82:24996 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:01.748 [tw] INFO:     79.177.147.82:24996 - "POST /mcp HTTP/1.1" 200 OK
+22:33:01.749 [tw] [wire<-] turn step=14 sender='police' commit=f3d8c69f ts='2026-08-16T19:33:01.784' cells=33 barrier=None claim=[2, 3] answer=None win=None
+22:33:02.339 [tw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:33:02.430 [tw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:02.444 [tw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:33:02.445 [tw] [wire<-] turn step=15 sender='police' commit=db3bbb7d ts='2026-08-16T19:33:02.461' cells=34 barrier=None claim=[3, 3] answer=None win=None
+22:33:02.639 [pw] INFO:     79.177.147.82:24999 - "POST /mcp HTTP/1.1" 200 OK
+22:33:02.723 [pw] INFO:     79.177.147.82:24999 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:02.746 [pw] INFO:     79.177.147.82:24999 - "POST /mcp HTTP/1.1" 200 OK
+22:33:02.747 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:33:03.070 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:33:03.145 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:03.160 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:33:03.162 [tw] [wire<-] turn step=16 sender='police' commit=1e785b1e ts='2026-08-16T19:33:03.178' cells=33 barrier=None claim=[4, 3] answer=None win=None
+22:33:03.854 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:33:03.879 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:03.933 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:03.945 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:33:03.946 [tw] [wire<-] turn step=17 sender='police' commit=0a6e2f83 ts='2026-08-16T19:33:03.978' cells=34 barrier=None claim=[4, 4] answer=None win=None
+22:33:03.953 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:03.983 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:03.984 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:33:04.397 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:04.477 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:04.492 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:04.493 [tw] [wire<-] turn step=18 sender='police' commit=1aa5a6b5 ts='2026-08-16T19:33:04.518' cells=28 barrier=None claim=[4, 5] answer=None win=None
+22:33:05.031 [tw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:33:05.107 [tw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:05.112 [pw] INFO:     79.177.147.82:24996 - "POST /mcp HTTP/1.1" 200 OK
+22:33:05.121 [tw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:33:05.122 [tw] [wire<-] turn step=19 sender='police' commit=1f5e377a ts='2026-08-16T19:33:05.150' cells=28 barrier=None claim=[3, 5] answer=None win=None
+22:33:05.190 [pw] INFO:     79.177.147.82:24996 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:05.205 [pw] INFO:     79.177.147.82:24996 - "POST /mcp HTTP/1.1" 200 OK
+22:33:05.206 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:33:05.739 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:33:05.822 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:05.840 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:33:05.841 [tw] [wire<-] turn step=20 sender='police' commit=767642d2 ts='2026-08-16T19:33:05.867' cells=27 barrier=None claim=[2, 5] answer=None win=None
+22:33:06.329 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:06.407 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:06.425 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:06.427 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:33:06.444 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:33:06.517 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:06.535 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:33:06.537 [tw] [wire<-] turn step=21 sender='police' commit=33756757 ts='2026-08-16T19:33:06.549' cells=29 barrier=None claim=[2, 4] answer=None win=None
+22:33:07.124 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:33:07.196 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:07.208 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:33:07.209 [tw] [wire<-] turn step=22 sender='police' commit=5d2460ee ts='2026-08-16T19:33:07.240' cells=33 barrier=None claim=[2, 3] answer=None win=None
+22:33:07.566 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:33:07.642 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:07.656 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:33:07.658 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:33:07.786 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:07.859 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:07.872 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:07.874 [tw] [wire<-] turn step=23 sender='police' commit=84ef3781 ts='2026-08-16T19:33:07.918' cells=34 barrier=None claim=[3, 3] answer=None win=None
+22:33:08.474 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:33:08.539 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:08.553 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:33:08.554 [tw] [wire<-] turn step=24 sender='police' commit=0469bc95 ts='2026-08-16T19:33:08.604' cells=33 barrier=None claim=[4, 3] answer=None win=None
+22:33:08.782 [pw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 200 OK
+22:33:08.877 [pw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:08.894 [pw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 200 OK
+22:33:08.895 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:33:09.262 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:33:09.344 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:09.360 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:33:09.362 [tw] [wire<-] turn step=25 sender='police' commit=15b01b5e ts='2026-08-16T19:33:09.391' cells=34 barrier=None claim=[4, 4] answer=None win=None
+22:33:09.917 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:33:09.981 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:09.994 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:33:09.994 [tw] [wire<-] turn step=26 sender='police' commit=5dc2af24 ts='2026-08-16T19:33:10.045' cells=28 barrier=None claim=[4, 5] answer=None win=None
+22:33:10.130 [pw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:33:10.204 [pw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:10.219 [pw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:33:10.220 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:33:10.525 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:10.600 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:10.615 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:10.616 [tw] [wire<-] turn step=27 sender='police' commit=6d24e3fc ts='2026-08-16T19:33:10.651' cells=28 barrier=None claim=[3, 5] answer=None win=None
+22:33:11.155 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:11.244 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:11.262 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:11.263 [tw] [wire<-] turn step=28 sender='police' commit=4bb5c850 ts='2026-08-16T19:33:11.282' cells=27 barrier=None claim=[2, 5] answer=None win=None
+22:33:11.337 [pw] INFO:     79.177.147.82:24996 - "POST /mcp HTTP/1.1" 200 OK
+22:33:11.414 [pw] INFO:     79.177.147.82:24996 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:11.429 [pw] INFO:     79.177.147.82:24996 - "POST /mcp HTTP/1.1" 200 OK
+22:33:11.430 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:33:11.985 [tw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:33:12.061 [tw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:12.076 [tw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:33:12.077 [tw] [wire<-] turn step=29 sender='police' commit=97f1162b ts='2026-08-16T19:33:12.104' cells=29 barrier=None claim=[2, 4] answer=None win=None
+22:33:12.670 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:33:12.755 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:12.772 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:33:12.774 [tw] [wire<-] turn step=30 sender='police' commit=6fe0b52a ts='2026-08-16T19:33:12.783' cells=33 barrier=None claim=[2, 3] answer=None win=None
+22:33:13.414 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:13.480 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:13.496 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:13.497 [tw] [wire<-] turn step=31 sender='police' commit=2a25e057 ts='2026-08-16T19:33:13.547' cells=34 barrier=None claim=[3, 3] answer=None win=None
+22:33:13.548 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:33:13.627 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:13.645 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:33:13.647 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:33:14.154 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:14.225 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:14.238 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:14.240 [tw] [wire<-] turn step=32 sender='police' commit=ac1c92ac ts='2026-08-16T19:33:14.281' cells=33 barrier=None claim=[4, 3] answer=None win=None
+22:33:14.636 [tw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:33:14.723 [tw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:14.739 [tw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:33:14.740 [tw] [wire<-] turn step=33 sender='police' commit=eeac6cbd ts='2026-08-16T19:33:14.768' cells=29 barrier=[4, 4] claim=None answer=None win=None
+22:33:14.773 [pw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:33:14.849 [pw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:14.866 [pw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:33:14.867 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:33:15.083 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:15.166 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:15.182 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:15.184 [tw] [wire<-] turn step=34 sender='police' commit=f44fed98 ts='2026-08-16T19:33:15.206' cells=28 barrier=None claim=[5, 3] answer=None win=None
+22:33:15.558 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:33:15.642 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:15.680 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:33:15.682 [tw] [wire<-] audit sender='police' records=35 claim='survival'
+22:33:15.895 [tw] INFO:     79.177.147.82:24996 - "POST /mcp HTTP/1.1" 200 OK
+22:33:15.972 [tw] INFO:     79.177.147.82:24996 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:15.984 [tw] INFO:     79.177.147.82:24996 - "POST /mcp HTTP/1.1" 200 OK
+22:33:15.985 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:15.993 [pw] INFO:     79.177.147.82:25000 - "POST /mcp HTTP/1.1" 200 OK
+22:33:16.067 [pw] INFO:     79.177.147.82:25000 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:16.083 [pw] INFO:     79.177.147.82:25000 - "POST /mcp HTTP/1.1" 200 OK
+22:33:16.085 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:33:16.188 [tw] [match] sg1 audit ok=True errors=[] outcome=survival rl_moves=35 distinct=5 sample=['S', 'S', 'N', 'S', 'E', 'N', 'STAY', 'E']
+22:33:16.482 [match] sg1 complete
+22:33:16.482 [match] sg2 (police) — dispatching to police worker
+22:33:16.682 [pw] INFO:     127.0.0.1:64595 - "POST /mcp HTTP/1.1" 400 Bad Request
+22:33:17.101 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:33:17.175 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:17.189 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:33:17.190 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:17.213 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:17.289 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:17.304 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:17.305 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:33:18.126 [pw] [match] peer endpoint UP: https://carlos-cooperative-soldiers-daily.trycloudflare.com/mcp
+22:33:18.302 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:18.380 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:18.396 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:18.397 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:18.434 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:18.512 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:18.527 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:18.528 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:33:19.525 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:33:19.602 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:19.616 [tw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:33:19.617 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:19.658 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:19.734 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:19.752 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:19.753 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:33:20.745 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:33:20.827 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:20.844 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:33:20.845 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:20.876 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:20.951 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:20.966 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:20.967 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=2 uid='None' scent=81ebee59 wire=229ae648
+22:33:21.604 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:33:21.681 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:21.697 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:33:21.698 [pw] [wire<-] turn step=1 sender='thief' commit=f6811a28 ts='2026-08-16T19:33:21.722' cells=25 barrier=None claim=None answer=None win=None
+22:33:21.778 [pw] [match] sg2 peer greeting sub_game=2 role=thief
+22:33:21.778 [pw] [match] sg2 role=police handshake OK vs nis-yar1 uid=21a1533b-575
+22:33:21.975 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:22.051 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:22.066 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:22.067 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:23.207 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:23.267 [pw] [scent] sg2 step1: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+22:33:23.282 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:23.297 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:23.298 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:24.144 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:24.222 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:24.236 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:24.237 [pw] [wire<-] turn step=2 sender='thief' commit=eb84ef0b ts='2026-08-16T19:33:24.252' cells=30 barrier=None claim=None answer=False win=None
+22:33:24.452 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:33:24.526 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:24.548 [tw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:33:24.549 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:25.689 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:33:25.721 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:25.762 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:25.776 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:33:25.777 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:25.796 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:25.810 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:25.811 [pw] [wire<-] turn step=3 sender='thief' commit=d732288b ts='2026-08-16T19:33:25.843' cells=25 barrier=None claim=None answer=False win=None
+22:33:26.893 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:26.981 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:26.999 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:27.000 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:27.247 [pw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:33:27.318 [pw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:27.333 [pw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:33:27.335 [pw] [wire<-] turn step=4 sender='thief' commit=21fabbb0 ts='2026-08-16T19:33:27.373' cells=20 barrier=None claim=None answer=False win=None
+22:33:28.174 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:33:28.252 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:28.272 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:33:28.273 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:28.633 [pw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:33:28.702 [pw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:28.717 [pw] INFO:     79.177.147.82:24985 - "POST /mcp HTTP/1.1" 200 OK
+22:33:28.717 [pw] [wire<-] turn step=5 sender='thief' commit=e805b958 ts='2026-08-16T19:33:28.754' cells=19 barrier=None claim=None answer=False win=None
+22:33:29.386 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:29.468 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:29.474 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:29.475 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:30.510 [pw] INFO:     79.177.147.82:24996 - "POST /mcp HTTP/1.1" 200 OK
+22:33:30.602 [pw] INFO:     79.177.147.82:24996 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:30.603 [tw] INFO:     79.177.147.82:24999 - "POST /mcp HTTP/1.1" 200 OK
+22:33:30.618 [pw] INFO:     79.177.147.82:24996 - "POST /mcp HTTP/1.1" 200 OK
+22:33:30.620 [pw] [wire<-] turn step=6 sender='thief' commit=da5b355e ts='2026-08-16T19:33:30.604' cells=18 barrier=None claim=None answer=False win=None
+22:33:30.679 [tw] INFO:     79.177.147.82:24999 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:30.692 [tw] INFO:     79.177.147.82:24999 - "POST /mcp HTTP/1.1" 200 OK
+22:33:30.693 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:31.814 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:31.897 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:31.909 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:31.911 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:32.817 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:32.890 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:32.905 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:32.906 [pw] [wire<-] turn step=7 sender='thief' commit=f29829ab ts='2026-08-16T19:33:32.946' cells=15 barrier=None claim=None answer=False win=None
+22:33:33.018 [tw] INFO:     79.177.147.82:25000 - "POST /mcp HTTP/1.1" 200 OK
+22:33:33.093 [tw] INFO:     79.177.147.82:25000 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:33.109 [tw] INFO:     79.177.147.82:25000 - "POST /mcp HTTP/1.1" 200 OK
+22:33:33.110 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:34.234 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:34.296 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:34.311 [tw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:34.313 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:35.276 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:33:35.354 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:35.374 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:33:35.376 [pw] [wire<-] turn step=8 sender='thief' commit=a3481042 ts='2026-08-16T19:33:35.378' cells=12 barrier=None claim=None answer=False win=None
+22:33:35.444 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:33:35.525 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:35.541 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:33:35.542 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:36.685 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:33:36.762 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:36.787 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:33:36.788 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:37.726 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:37.808 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:37.821 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:33:37.823 [pw] [wire<-] turn step=9 sender='thief' commit=34759fd3 ts='2026-08-16T19:33:37.857' cells=16 barrier=None claim=None answer=False win=None
+22:33:37.894 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:37.965 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:37.979 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:37.980 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:39.114 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:39.198 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:39.224 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:39.226 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:39.931 [pw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:33:40.018 [pw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:40.033 [pw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:33:40.034 [pw] [wire<-] turn step=10 sender='thief' commit=d7522e67 ts='2026-08-16T19:33:40.059' cells=16 barrier=None claim=None answer=False win=None
+22:33:40.343 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:40.428 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:40.445 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:40.446 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:41.558 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:41.645 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:41.659 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:41.661 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:41.976 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:42.050 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:42.065 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:42.066 [pw] [wire<-] turn step=11 sender='thief' commit=71ac2248 ts='2026-08-16T19:33:42.087' cells=15 barrier=None claim=None answer=False win=None
+22:33:42.770 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:33:42.772 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:42.846 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:42.847 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:42.864 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:33:42.866 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:42.868 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:42.870 [pw] [wire<-] turn step=12 sender='thief' commit=f03dd24d ts='2026-08-16T19:33:42.884' cells=15 barrier=None claim=None answer=True win=None
+22:33:42.899 [pw] [match] sg2 thief conceded capture at step 12 (answer)
+22:33:42.993 [pw] INFO:     79.177.147.82:24999 - "POST /mcp HTTP/1.1" 200 OK
+22:33:43.063 [pw] INFO:     79.177.147.82:24999 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:43.081 [pw] INFO:     79.177.147.82:24999 - "POST /mcp HTTP/1.1" 200 OK
+22:33:43.083 [pw] [wire<-] audit sender='thief' records=13 claim='capture'
+22:33:43.212 [pw] INFO:     79.177.147.82:25000 - "POST /mcp HTTP/1.1" 200 OK
+22:33:43.296 [pw] INFO:     79.177.147.82:25000 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:43.312 [pw] INFO:     79.177.147.82:25000 - "POST /mcp HTTP/1.1" 200 OK
+22:33:43.313 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:33:43.641 [pw] [match] sg2 audit ok=True errors=[] outcome=capture rl_moves=11 distinct=3 sample=['S', 'S', 'S', 'E', 'S', 'E', 'E', 'E']
+22:33:43.926 [match] sg2 complete
+22:33:43.926 [match] sg3 (thief) — dispatching to thief worker
+22:33:44.103 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:44.104 [tw] INFO:     127.0.0.1:64633 - "POST /mcp HTTP/1.1" 400 Bad Request
+22:33:44.273 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:44.288 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:44.289 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:44.435 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:44.560 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:44.560 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:44.560 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:33:45.411 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:33:45.488 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:45.505 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:33:45.506 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:45.535 [tw] [match] peer endpoint UP: https://concerts-translations-cruz-flows.trycloudflare.com/mcp
+22:33:45.654 [pw] INFO:     79.177.147.82:25003 - "POST /mcp HTTP/1.1" 200 OK
+22:33:45.724 [pw] INFO:     79.177.147.82:25003 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:45.739 [pw] INFO:     79.177.147.82:25003 - "POST /mcp HTTP/1.1" 200 OK
+22:33:45.741 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:33:46.653 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:33:46.731 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:46.746 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:33:46.747 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:46.859 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:46.936 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:46.953 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:46.954 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:33:47.871 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:47.943 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:47.965 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:47.966 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:48.083 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:48.168 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:48.182 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:48.183 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:33:49.084 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:33:49.152 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:49.166 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:33:49.168 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=3 uid='None' scent=81ebee59 wire=229ae648
+22:33:49.316 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:49.398 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:49.414 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:49.415 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:33:49.594 [tw] [match] sg3 peer greeting sub_game=3 role=police
+22:33:49.594 [tw] [match] sg3 role=thief handshake OK vs nis-yar1 uid=21a1533b-575
+22:33:50.011 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:33:50.086 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:50.099 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:33:50.101 [tw] [wire<-] turn step=1 sender='police' commit=ca009092 ts='2026-08-16T19:33:50.116' cells=12 barrier=None claim=[1, 0] answer=None win=None
+22:33:50.152 [tw] [scent] sg3 step2: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+22:33:50.523 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:33:50.598 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:50.612 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:33:50.613 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:33:50.679 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:33:50.756 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:50.771 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:33:50.772 [tw] [wire<-] turn step=2 sender='police' commit=e7b67d59 ts='2026-08-16T19:33:50.807' cells=15 barrier=None claim=[2, 0] answer=None win=None
+22:33:51.301 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:51.401 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:51.414 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:51.415 [tw] [wire<-] turn step=3 sender='police' commit=ba199f3e ts='2026-08-16T19:33:51.422' cells=20 barrier=None claim=[2, 1] answer=None win=None
+22:33:51.770 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:51.877 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:51.909 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:51.910 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:33:52.127 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:33:52.205 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:52.218 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:33:52.219 [tw] [wire<-] turn step=4 sender='police' commit=2b94e296 ts='2026-08-16T19:33:52.211' cells=24 barrier=None claim=[3, 1] answer=None win=None
+22:33:53.045 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:33:53.086 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:53.167 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:53.183 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:33:53.185 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:33:53.224 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:53.239 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:53.239 [tw] [wire<-] turn step=5 sender='police' commit=ad911b48 ts='2026-08-16T19:33:53.175' cells=27 barrier=None claim=[3, 2] answer=None win=None
+22:33:53.863 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:53.995 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:54.046 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:54.047 [tw] [wire<-] turn step=6 sender='police' commit=8cdf1f75 ts='2026-08-16T19:33:53.988' cells=30 barrier=None claim=[3, 3] answer=None win=None
+22:33:54.342 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:33:54.455 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:54.526 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:33:54.528 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:33:54.738 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:54.809 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:54.865 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:54.866 [tw] [wire<-] turn step=7 sender='police' commit=0b6805b9 ts='2026-08-16T19:33:54.860' cells=29 barrier=[3, 4] claim=None answer=None win=None
+22:33:55.457 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:33:55.535 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:55.550 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:33:55.551 [tw] [wire<-] turn step=8 sender='police' commit=4698ac74 ts='2026-08-16T19:33:55.565' cells=34 barrier=None claim=[4, 3] answer=None win=None
+22:33:55.661 [pw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:33:55.739 [pw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:55.754 [pw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:33:55.755 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:33:56.022 [tw] INFO:     79.177.147.82:25000 - "POST /mcp HTTP/1.1" 200 OK
+22:33:56.095 [tw] INFO:     79.177.147.82:25000 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:56.111 [tw] INFO:     79.177.147.82:25000 - "POST /mcp HTTP/1.1" 200 OK
+22:33:56.112 [tw] [wire<-] turn step=9 sender='police' commit=f5200284 ts='2026-08-16T19:33:56.152' cells=31 barrier=None claim=[4, 4] answer=None win=None
+22:33:56.624 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:33:56.698 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:56.713 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:33:56.714 [tw] [wire<-] turn step=10 sender='police' commit=c87db679 ts='2026-08-16T19:33:56.730' cells=27 barrier=None claim=[4, 5] answer=None win=None
+22:33:56.872 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:56.947 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:56.968 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:33:56.969 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:33:57.365 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:57.445 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:57.465 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:33:57.466 [tw] [wire<-] turn step=11 sender='police' commit=4a38af0b ts='2026-08-16T19:33:57.482' cells=29 barrier=None claim=[3, 5] answer=None win=None
+22:33:57.964 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:58.038 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:58.056 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:33:58.056 [tw] [wire<-] turn step=12 sender='police' commit=496f6d5e ts='2026-08-16T19:33:58.083' cells=27 barrier=None claim=[2, 5] answer=None win=None
+22:33:58.097 [pw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:33:58.171 [pw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:58.194 [pw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:33:58.195 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:33:58.725 [tw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:33:58.808 [tw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:58.825 [tw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:33:58.826 [tw] [wire<-] turn step=13 sender='police' commit=874f23d0 ts='2026-08-16T19:33:58.858' cells=29 barrier=None claim=[2, 4] answer=None win=None
+22:33:59.315 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:33:59.390 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:59.407 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:33:59.408 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:33:59.430 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:33:59.497 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 202 Accepted
+22:33:59.510 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:33:59.511 [tw] [wire<-] turn step=14 sender='police' commit=1cb5c0b5 ts='2026-08-16T19:33:59.556' cells=33 barrier=None claim=[2, 3] answer=None win=None
+22:34:00.120 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:34:00.191 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:00.206 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:34:00.207 [tw] [wire<-] turn step=15 sender='police' commit=3051db1b ts='2026-08-16T19:34:00.240' cells=34 barrier=None claim=[3, 3] answer=None win=None
+22:34:00.534 [pw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:34:00.650 [pw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:00.688 [pw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:34:00.689 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:00.844 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:34:00.958 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:00.978 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:34:00.979 [tw] [wire<-] turn step=16 sender='police' commit=18a95dbe ts='2026-08-16T19:34:00.964' cells=33 barrier=None claim=[4, 3] answer=None win=None
+22:34:01.667 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:01.749 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:01.776 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:01.777 [tw] [wire<-] turn step=17 sender='police' commit=0c04ce39 ts='2026-08-16T19:34:01.789' cells=34 barrier=None claim=[4, 4] answer=None win=None
+22:34:01.818 [pw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:34:01.887 [pw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:01.904 [pw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:34:01.906 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:02.350 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:02.424 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:02.438 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:02.438 [tw] [wire<-] turn step=18 sender='police' commit=a0dccb89 ts='2026-08-16T19:34:02.472' cells=28 barrier=None claim=[4, 5] answer=None win=None
+22:34:02.966 [tw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:03.016 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:34:03.046 [tw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:03.064 [tw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:03.065 [tw] [wire<-] turn step=19 sender='police' commit=73129340 ts='2026-08-16T19:34:03.081' cells=28 barrier=None claim=[3, 5] answer=None win=None
+22:34:03.093 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:03.109 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:34:03.110 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:03.694 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:03.775 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:03.790 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:03.791 [tw] [wire<-] turn step=20 sender='police' commit=47c6809c ts='2026-08-16T19:34:03.823' cells=27 barrier=None claim=[2, 5] answer=None win=None
+22:34:04.285 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:34:04.362 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:04.376 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:34:04.377 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:04.380 [tw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:34:04.454 [tw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:04.468 [tw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:34:04.469 [tw] [wire<-] turn step=21 sender='police' commit=9e2807aa ts='2026-08-16T19:34:04.497' cells=29 barrier=None claim=[2, 4] answer=None win=None
+22:34:05.064 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:05.142 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:05.156 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:05.157 [tw] [wire<-] turn step=22 sender='police' commit=e1b4a8c0 ts='2026-08-16T19:34:05.196' cells=33 barrier=None claim=[2, 3] answer=None win=None
+22:34:05.509 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:05.581 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:05.596 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:05.598 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:05.796 [tw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:05.879 [tw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:05.896 [tw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:05.896 [tw] [wire<-] turn step=23 sender='police' commit=cf8e935f ts='2026-08-16T19:34:05.913' cells=34 barrier=None claim=[3, 3] answer=None win=None
+22:34:06.489 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:34:06.563 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:06.579 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:34:06.580 [tw] [wire<-] turn step=24 sender='police' commit=17f7a918 ts='2026-08-16T19:34:06.602' cells=33 barrier=None claim=[4, 3] answer=None win=None
+22:34:06.717 [pw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 200 OK
+22:34:06.798 [pw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:06.812 [pw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 200 OK
+22:34:06.813 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:07.258 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:07.339 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:07.356 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:07.357 [tw] [wire<-] turn step=25 sender='police' commit=a3fe558d ts='2026-08-16T19:34:07.387' cells=34 barrier=None claim=[4, 4] answer=None win=None
+22:34:07.971 [pw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:34:08.101 [pw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:08.119 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:08.124 [pw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:34:08.125 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:08.218 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:08.233 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:08.234 [tw] [wire<-] turn step=26 sender='police' commit=17b9f845 ts='2026-08-16T19:34:08.220' cells=28 barrier=None claim=[4, 5] answer=None win=None
+22:34:08.728 [tw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:08.821 [tw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:08.834 [tw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:08.835 [tw] [wire<-] turn step=27 sender='police' commit=917242a5 ts='2026-08-16T19:34:08.856' cells=28 barrier=None claim=[3, 5] answer=None win=None
+22:34:09.274 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:09.352 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:09.368 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:09.369 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:09.420 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:34:09.520 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:09.534 [tw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:34:09.535 [tw] [wire<-] turn step=28 sender='police' commit=44884bce ts='2026-08-16T19:34:09.539' cells=27 barrier=None claim=[2, 5] answer=None win=None
+22:34:10.164 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:10.237 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:10.253 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:10.254 [tw] [wire<-] turn step=29 sender='police' commit=5bdff851 ts='2026-08-16T19:34:10.278' cells=29 barrier=None claim=[2, 4] answer=None win=None
+22:34:10.516 [pw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:34:10.608 [pw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:10.623 [pw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:34:10.624 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:10.856 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:34:10.930 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:10.943 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:34:10.944 [tw] [wire<-] turn step=30 sender='police' commit=12172f3f ts='2026-08-16T19:34:10.982' cells=33 barrier=None claim=[2, 3] answer=None win=None
+22:34:11.518 [tw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:11.598 [tw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:11.610 [tw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:11.612 [tw] [wire<-] turn step=31 sender='police' commit=770a9fff ts='2026-08-16T19:34:11.649' cells=34 barrier=None claim=[3, 3] answer=None win=None
+22:34:11.731 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:34:11.803 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:11.819 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:34:11.819 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:12.397 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:12.478 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:12.499 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:12.500 [tw] [wire<-] turn step=32 sender='police' commit=3fd51f9b ts='2026-08-16T19:34:12.520' cells=33 barrier=None claim=[4, 3] answer=None win=None
+22:34:12.944 [pw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:34:13.013 [pw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:13.036 [pw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:34:13.039 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:14.070 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:14.144 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:34:14.155 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:14.168 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:14.169 [tw] [wire<-] turn step=33 sender='police' commit=7859feb6 ts='2026-08-16T19:34:14.182' cells=29 barrier=[4, 4] claim=None answer=None win=None
+22:34:14.217 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:14.236 [pw] INFO:     79.177.147.82:24990 - "POST /mcp HTTP/1.1" 200 OK
+22:34:14.237 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:15.351 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:15.422 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:15.434 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:15.435 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:16.125 [tw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:34:16.201 [tw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:16.215 [tw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:34:16.216 [tw] [wire<-] turn step=34 sender='police' commit=860a1e22 ts='2026-08-16T19:34:16.247' cells=28 barrier=None claim=[5, 3] answer=None win=None
+22:34:16.538 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:16.616 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:16.632 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:16.718 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:17.856 [pw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:17.944 [pw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:17.970 [pw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:17.971 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:18.239 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:18.335 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:18.391 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:18.392 [tw] [wire<-] audit sender='police' records=35 claim='survival'
+22:34:19.091 [pw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:34:19.159 [pw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:19.173 [pw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:34:19.174 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:20.070 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:34:20.146 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:20.162 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:34:20.164 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:20.294 [pw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:20.375 [pw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:20.405 [pw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:20.410 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:21.294 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:21.367 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:21.385 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:21.386 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:21.530 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:21.603 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:21.616 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:21.617 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:22.114 [tw] [match] sg3 audit ok=True errors=[] outcome=survival rl_moves=35 distinct=5 sample=['S', 'S', 'N', 'S', 'E', 'N', 'STAY', 'E']
+22:34:22.514 [match] sg3 complete
+22:34:22.514 [match] sg4 (police) — dispatching to police worker
+22:34:22.693 [pw] INFO:     127.0.0.1:62316 - "POST /mcp HTTP/1.1" 400 Bad Request
+22:34:22.903 [pw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:23.036 [pw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:23.049 [pw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:23.050 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:23.522 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:34:23.603 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:23.619 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:34:23.620 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:24.161 [pw] [match] peer endpoint UP: https://carlos-cooperative-soldiers-daily.trycloudflare.com/mcp
+22:34:24.336 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:24.414 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:24.431 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:24.432 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:24.767 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:24.833 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:24.847 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:24.848 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:25.553 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:25.633 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:25.647 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:25.648 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:25.983 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:34:26.058 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:26.076 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:34:26.077 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:26.804 [pw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:26.903 [pw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:26.944 [pw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:26.945 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=4 uid='None' scent=81ebee59 wire=229ae648
+22:34:27.199 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:27.277 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:27.294 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:27.295 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:27.568 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:27.638 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:27.654 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:27.655 [pw] [wire<-] turn step=1 sender='thief' commit=f17e468a ts='2026-08-16T19:34:27.694' cells=25 barrier=None claim=None answer=None win=None
+22:34:27.665 [pw] [match] sg4 peer greeting sub_game=4 role=thief
+22:34:27.665 [pw] [match] sg4 role=police handshake OK vs nis-yar1 uid=21a1533b-575
+22:34:27.671 [pw] [scent] sg4 step1: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+22:34:28.420 [tw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:28.492 [tw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:28.508 [tw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:28.509 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:28.525 [pw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:34:28.605 [pw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:28.621 [pw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:34:28.622 [pw] [wire<-] turn step=2 sender='thief' commit=724aa53c ts='2026-08-16T19:34:28.659' cells=30 barrier=None claim=None answer=False win=None
+22:34:29.631 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:34:29.720 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:29.749 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:34:29.750 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:30.029 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:30.126 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:30.152 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:30.153 [pw] [wire<-] turn step=3 sender='thief' commit=4580a3c2 ts='2026-08-16T19:34:30.148' cells=25 barrier=None claim=None answer=False win=None
+22:34:30.877 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:30.954 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:31.059 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:31.060 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:31.664 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:31.748 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:31.762 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:31.764 [pw] [wire<-] turn step=4 sender='thief' commit=17ee591b ts='2026-08-16T19:34:31.771' cells=20 barrier=None claim=None answer=False win=None
+22:34:32.234 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:34:32.316 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:32.331 [tw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:34:32.332 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:33.108 [pw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:33.188 [pw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:33.202 [pw] INFO:     79.177.147.82:24986 - "POST /mcp HTTP/1.1" 200 OK
+22:34:33.204 [pw] [wire<-] turn step=5 sender='thief' commit=e5681e96 ts='2026-08-16T19:34:33.208' cells=19 barrier=None claim=None answer=False win=None
+22:34:33.453 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:34:33.529 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:33.543 [tw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:34:33.546 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:34.676 [tw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 200 OK
+22:34:34.754 [tw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:34.772 [tw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 200 OK
+22:34:34.773 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:35.011 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:34:35.083 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:35.100 [pw] INFO:     79.177.147.82:24968 - "POST /mcp HTTP/1.1" 200 OK
+22:34:35.102 [pw] [wire<-] turn step=6 sender='thief' commit=3f6cc2d1 ts='2026-08-16T19:34:35.140' cells=19 barrier=None claim=None answer=False win=None
+22:34:35.889 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:35.968 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:35.986 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:35.988 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:37.143 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:37.165 [pw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 200 OK
+22:34:37.221 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:37.238 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:37.239 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:37.253 [pw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:37.269 [pw] INFO:     79.177.147.82:24981 - "POST /mcp HTTP/1.1" 200 OK
+22:34:37.270 [pw] [wire<-] turn step=7 sender='thief' commit=93b82ccc ts='2026-08-16T19:34:37.246' cells=18 barrier=None claim=None answer=False win=None
+22:34:38.370 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:38.450 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:38.465 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:38.466 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:39.596 [tw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 200 OK
+22:34:39.677 [tw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:39.694 [tw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 200 OK
+22:34:39.695 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:39.717 [pw] INFO:     79.177.147.82:25003 - "POST /mcp HTTP/1.1" 200 OK
+22:34:39.799 [pw] INFO:     79.177.147.82:25003 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:39.819 [pw] INFO:     79.177.147.82:25003 - "POST /mcp HTTP/1.1" 200 OK
+22:34:39.820 [pw] [wire<-] turn step=8 sender='thief' commit=6f929672 ts='2026-08-16T19:34:39.841' cells=13 barrier=None claim=None answer=False win=None
+22:34:40.807 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:40.890 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:40.907 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:40.908 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:42.053 [tw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 200 OK
+22:34:42.145 [tw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:42.165 [tw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 200 OK
+22:34:42.166 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:42.186 [pw] INFO:     79.177.147.82:25005 - "POST /mcp HTTP/1.1" 200 OK
+22:34:42.256 [pw] INFO:     79.177.147.82:25005 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:42.272 [pw] INFO:     79.177.147.82:25005 - "POST /mcp HTTP/1.1" 200 OK
+22:34:42.273 [pw] [wire<-] turn step=9 sender='thief' commit=91f6361d ts='2026-08-16T19:34:42.313' cells=16 barrier=None claim=None answer=False win=None
+22:34:43.284 [tw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:34:43.357 [tw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:43.372 [tw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:34:43.373 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:44.429 [pw] INFO:     79.177.147.82:25010 - "POST /mcp HTTP/1.1" 200 OK
+22:34:44.490 [tw] INFO:     79.177.147.82:25012 - "POST /mcp HTTP/1.1" 200 OK
+22:34:44.502 [pw] INFO:     79.177.147.82:25010 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:44.518 [pw] INFO:     79.177.147.82:25010 - "POST /mcp HTTP/1.1" 200 OK
+22:34:44.519 [pw] [wire<-] turn step=10 sender='thief' commit=59f20288 ts='2026-08-16T19:34:44.540' cells=16 barrier=None claim=None answer=False win=None
+22:34:44.566 [tw] INFO:     79.177.147.82:25012 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:44.586 [tw] INFO:     79.177.147.82:25012 - "POST /mcp HTTP/1.1" 200 OK
+22:34:44.587 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:45.706 [tw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 200 OK
+22:34:45.784 [tw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:45.798 [tw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 200 OK
+22:34:45.799 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:46.516 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:46.587 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:46.599 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:46.600 [pw] [wire<-] turn step=11 sender='thief' commit=a7d9f037 ts='2026-08-16T19:34:46.630' cells=15 barrier=None claim=None answer=False win=None
+22:34:46.938 [tw] INFO:     79.177.147.82:25006 - "POST /mcp HTTP/1.1" 200 OK
+22:34:47.017 [tw] INFO:     79.177.147.82:25006 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:47.034 [tw] INFO:     79.177.147.82:25006 - "POST /mcp HTTP/1.1" 200 OK
+22:34:47.035 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:47.146 [pw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:34:47.225 [pw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:47.240 [pw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:34:47.240 [pw] [wire<-] turn step=12 sender='thief' commit=61183d94 ts='2026-08-16T19:34:47.267' cells=15 barrier=None claim=None answer=True win=None
+22:34:47.270 [pw] [match] sg4 thief conceded capture at step 12 (answer)
+22:34:47.360 [pw] INFO:     79.177.147.82:25009 - "POST /mcp HTTP/1.1" 200 OK
+22:34:47.428 [pw] INFO:     79.177.147.82:25009 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:47.444 [pw] INFO:     79.177.147.82:25009 - "POST /mcp HTTP/1.1" 200 OK
+22:34:47.445 [pw] [wire<-] audit sender='thief' records=13 claim='capture'
+22:34:47.566 [pw] INFO:     79.177.147.82:25014 - "POST /mcp HTTP/1.1" 200 OK
+22:34:47.639 [pw] INFO:     79.177.147.82:25014 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:47.654 [pw] INFO:     79.177.147.82:25014 - "POST /mcp HTTP/1.1" 200 OK
+22:34:47.655 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:34:47.882 [pw] [match] sg4 audit ok=True errors=[] outcome=capture rl_moves=11 distinct=3 sample=['S', 'S', 'S', 'E', 'E', 'E', 'S', 'E']
+22:34:48.170 [tw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 200 OK
+22:34:48.205 [match] sg4 complete
+22:34:48.205 [match] sg5 (thief) — dispatching to thief worker
+22:34:48.382 [tw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:48.384 [tw] INFO:     127.0.0.1:62355 - "POST /mcp HTTP/1.1" 400 Bad Request
+22:34:48.569 [tw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 200 OK
+22:34:48.571 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:48.787 [pw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 200 OK
+22:34:48.852 [pw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:48.866 [pw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 200 OK
+22:34:48.867 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:34:49.778 [tw] INFO:     79.177.147.82:25013 - "POST /mcp HTTP/1.1" 200 OK
+22:34:49.780 [tw] [match] peer endpoint UP: https://concerts-translations-cruz-flows.trycloudflare.com/mcp
+22:34:49.954 [tw] INFO:     79.177.147.82:25013 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:49.972 [tw] INFO:     79.177.147.82:25013 - "POST /mcp HTTP/1.1" 200 OK
+22:34:49.973 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:49.998 [pw] INFO:     79.177.147.82:25016 - "POST /mcp HTTP/1.1" 200 OK
+22:34:50.078 [pw] INFO:     79.177.147.82:25016 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:50.097 [pw] INFO:     79.177.147.82:25016 - "POST /mcp HTTP/1.1" 200 OK
+22:34:50.098 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:34:51.092 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:51.167 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:51.184 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:51.186 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:51.218 [pw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 200 OK
+22:34:51.294 [pw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:51.309 [pw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 200 OK
+22:34:51.310 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:34:52.300 [tw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 200 OK
+22:34:52.369 [tw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:52.385 [tw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 200 OK
+22:34:52.386 [tw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='police' sub_game=5 uid='None' scent=81ebee59 wire=229ae648
+22:34:52.428 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:52.496 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:52.510 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:52.511 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:34:53.536 [tw] [match] sg5 peer greeting sub_game=5 role=police
+22:34:53.536 [tw] [match] sg5 role=thief handshake OK vs nis-yar1 uid=21a1533b-575
+22:34:53.646 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:53.718 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:53.733 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:53.736 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:34:53.868 [tw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 200 OK
+22:34:53.939 [tw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:53.953 [tw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 200 OK
+22:34:53.954 [tw] [wire<-] turn step=1 sender='police' commit=2ee8dfbb ts='2026-08-16T19:34:53.985' cells=12 barrier=None claim=[1, 0] answer=None win=None
+22:34:53.983 [tw] [scent] sg5 step2: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+22:34:54.549 [tw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 200 OK
+22:34:54.622 [tw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:54.635 [tw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 200 OK
+22:34:54.636 [tw] [wire<-] turn step=2 sender='police' commit=26f297d7 ts='2026-08-16T19:34:54.647' cells=15 barrier=None claim=[2, 0] answer=None win=None
+22:34:54.854 [pw] INFO:     79.177.147.82:25009 - "POST /mcp HTTP/1.1" 200 OK
+22:34:54.923 [pw] INFO:     79.177.147.82:25009 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:54.937 [pw] INFO:     79.177.147.82:25009 - "POST /mcp HTTP/1.1" 200 OK
+22:34:54.937 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:34:55.197 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:55.275 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:55.288 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:55.289 [tw] [wire<-] turn step=3 sender='police' commit=e61e91bf ts='2026-08-16T19:34:55.316' cells=20 barrier=None claim=[2, 1] answer=None win=None
+22:34:55.960 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:56.051 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:56.064 [pw] INFO:     79.177.147.82:25012 - "POST /mcp HTTP/1.1" 200 OK
+22:34:56.070 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:56.071 [tw] [wire<-] turn step=4 sender='police' commit=e578335f ts='2026-08-16T19:34:56.092' cells=24 barrier=None claim=[3, 1] answer=None win=None
+22:34:56.158 [pw] INFO:     79.177.147.82:25012 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:56.173 [pw] INFO:     79.177.147.82:25012 - "POST /mcp HTTP/1.1" 200 OK
+22:34:56.175 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:34:56.804 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:56.872 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:56.887 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:56.888 [tw] [wire<-] turn step=5 sender='police' commit=ef065a02 ts='2026-08-16T19:34:56.929' cells=27 barrier=None claim=[3, 2] answer=None win=None
+22:34:57.298 [pw] INFO:     79.177.147.82:24992 - "POST /mcp HTTP/1.1" 200 OK
+22:34:57.376 [pw] INFO:     79.177.147.82:24992 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:57.390 [pw] INFO:     79.177.147.82:24992 - "POST /mcp HTTP/1.1" 200 OK
+22:34:57.481 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:34:57.635 [tw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 200 OK
+22:34:57.710 [tw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:57.723 [tw] INFO:     79.177.147.82:25002 - "POST /mcp HTTP/1.1" 200 OK
+22:34:57.724 [tw] [wire<-] turn step=6 sender='police' commit=2e62c9b1 ts='2026-08-16T19:34:57.754' cells=30 barrier=None claim=[3, 3] answer=None win=None
+22:34:58.414 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:58.491 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:58.505 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:34:58.506 [tw] [wire<-] turn step=7 sender='police' commit=ca7afc6e ts='2026-08-16T19:34:58.526' cells=29 barrier=[3, 4] claim=None answer=None win=None
+22:34:58.593 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:58.664 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:58.680 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:34:58.681 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:34:59.093 [tw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 200 OK
+22:34:59.167 [tw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:59.181 [tw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 200 OK
+22:34:59.182 [tw] [wire<-] turn step=8 sender='police' commit=f9d5d895 ts='2026-08-16T19:34:59.209' cells=34 barrier=None claim=[4, 3] answer=None win=None
+22:34:59.681 [tw] INFO:     79.177.147.82:24992 - "POST /mcp HTTP/1.1" 200 OK
+22:34:59.750 [tw] INFO:     79.177.147.82:24992 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:59.790 [tw] INFO:     79.177.147.82:24992 - "POST /mcp HTTP/1.1" 200 OK
+22:34:59.791 [tw] [wire<-] turn step=9 sender='police' commit=bbe95789 ts='2026-08-16T19:34:59.810' cells=31 barrier=None claim=[4, 4] answer=None win=None
+22:34:59.804 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:59.879 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:34:59.924 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:34:59.925 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:00.321 [tw] INFO:     79.177.147.82:25025 - "POST /mcp HTTP/1.1" 200 OK
+22:35:00.460 [tw] INFO:     79.177.147.82:25025 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:00.478 [tw] INFO:     79.177.147.82:25025 - "POST /mcp HTTP/1.1" 200 OK
+22:35:00.479 [tw] [wire<-] turn step=10 sender='police' commit=4de96787 ts='2026-08-16T19:35:00.404' cells=27 barrier=None claim=[4, 5] answer=None win=None
+22:35:01.083 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:35:01.089 [tw] INFO:     79.177.147.82:25009 - "POST /mcp HTTP/1.1" 200 OK
+22:35:01.173 [tw] INFO:     79.177.147.82:25009 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:01.173 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:01.219 [tw] INFO:     79.177.147.82:25009 - "POST /mcp HTTP/1.1" 200 OK
+22:35:01.220 [pw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:35:01.221 [tw] [wire<-] turn step=11 sender='police' commit=ffb7472c ts='2026-08-16T19:35:01.222' cells=29 barrier=None claim=[3, 5] answer=None win=None
+22:35:01.221 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:01.773 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:35:01.851 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:01.905 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:35:01.906 [tw] [wire<-] turn step=12 sender='police' commit=037993cd ts='2026-08-16T19:35:01.858' cells=27 barrier=None claim=[2, 5] answer=None win=None
+22:35:02.392 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:35:02.472 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:02.521 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:35:02.522 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:02.587 [tw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:35:02.668 [tw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:02.681 [tw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:35:02.682 [tw] [wire<-] turn step=13 sender='police' commit=5a0600ec ts='2026-08-16T19:35:02.665' cells=29 barrier=None claim=[2, 4] answer=None win=None
+22:35:03.278 [tw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 200 OK
+22:35:03.354 [tw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:03.405 [tw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 200 OK
+22:35:03.406 [tw] [wire<-] turn step=14 sender='police' commit=fc290b4e ts='2026-08-16T19:35:03.403' cells=33 barrier=None claim=[2, 3] answer=None win=None
+22:35:03.725 [pw] INFO:     79.177.147.82:25012 - "POST /mcp HTTP/1.1" 200 OK
+22:35:03.802 [pw] INFO:     79.177.147.82:25012 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:03.830 [pw] INFO:     79.177.147.82:25012 - "POST /mcp HTTP/1.1" 200 OK
+22:35:03.831 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:04.024 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:35:04.105 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:04.121 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:35:04.122 [tw] [wire<-] turn step=15 sender='police' commit=cbf160bf ts='2026-08-16T19:35:04.123' cells=34 barrier=None claim=[3, 3] answer=None win=None
+22:35:04.711 [tw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:35:04.786 [tw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:04.801 [tw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:35:04.803 [tw] [wire<-] turn step=16 sender='police' commit=343f5b56 ts='2026-08-16T19:35:04.842' cells=33 barrier=None claim=[4, 3] answer=None win=None
+22:35:05.003 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:35:05.112 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:05.130 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:35:05.131 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:05.480 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:35:05.582 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:05.612 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:35:05.612 [tw] [wire<-] turn step=17 sender='police' commit=3c4fe847 ts='2026-08-16T19:35:05.588' cells=34 barrier=None claim=[4, 4] answer=None win=None
+22:35:06.262 [pw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:35:06.337 [pw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:06.353 [pw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:35:06.354 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:07.243 [tw] INFO:     79.177.147.82:24992 - "POST /mcp HTTP/1.1" 200 OK
+22:35:07.322 [tw] INFO:     79.177.147.82:24992 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:07.336 [tw] INFO:     79.177.147.82:24992 - "POST /mcp HTTP/1.1" 200 OK
+22:35:07.337 [tw] [wire<-] turn step=18 sender='police' commit=54c71bb3 ts='2026-08-16T19:35:06.358' cells=28 barrier=None claim=[4, 5] answer=None win=None
+22:35:07.493 [pw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:35:07.567 [pw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:07.582 [pw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:35:07.583 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:07.861 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:35:07.929 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:07.943 [tw] INFO:     79.177.147.82:24984 - "POST /mcp HTTP/1.1" 200 OK
+22:35:07.944 [tw] [wire<-] turn step=19 sender='police' commit=1eda0a15 ts='2026-08-16T19:35:07.993' cells=28 barrier=None claim=[3, 5] answer=None win=None
+22:35:08.492 [tw] INFO:     79.177.147.82:25012 - "POST /mcp HTTP/1.1" 200 OK
+22:35:08.568 [tw] INFO:     79.177.147.82:25012 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:08.582 [tw] INFO:     79.177.147.82:25012 - "POST /mcp HTTP/1.1" 200 OK
+22:35:08.583 [tw] [wire<-] turn step=20 sender='police' commit=961e7544 ts='2026-08-16T19:35:08.616' cells=27 barrier=None claim=[2, 5] answer=None win=None
+22:35:08.715 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:35:08.792 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:08.805 [pw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:35:08.806 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:09.280 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:35:09.362 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:09.379 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:35:09.379 [tw] [wire<-] turn step=21 sender='police' commit=faf0f539 ts='2026-08-16T19:35:09.405' cells=29 barrier=None claim=[2, 4] answer=None win=None
+22:35:09.935 [pw] INFO:     79.177.147.82:25013 - "POST /mcp HTTP/1.1" 200 OK
+22:35:10.010 [pw] INFO:     79.177.147.82:25013 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:10.016 [tw] INFO:     79.177.147.82:25014 - "POST /mcp HTTP/1.1" 200 OK
+22:35:10.027 [pw] INFO:     79.177.147.82:25013 - "POST /mcp HTTP/1.1" 200 OK
+22:35:10.027 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:10.100 [tw] INFO:     79.177.147.82:25014 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:10.113 [tw] INFO:     79.177.147.82:25014 - "POST /mcp HTTP/1.1" 200 OK
+22:35:10.115 [tw] [wire<-] turn step=22 sender='police' commit=84da4d2e ts='2026-08-16T19:35:10.128' cells=33 barrier=None claim=[2, 3] answer=None win=None
+22:35:10.879 [tw] INFO:     79.177.147.82:24982 - "POST /mcp HTTP/1.1" 200 OK
+22:35:10.955 [tw] INFO:     79.177.147.82:24982 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:10.973 [tw] INFO:     79.177.147.82:24982 - "POST /mcp HTTP/1.1" 200 OK
+22:35:10.974 [tw] [wire<-] turn step=23 sender='police' commit=d23ac254 ts='2026-08-16T19:35:11.003' cells=34 barrier=None claim=[3, 3] answer=None win=None
+22:35:11.169 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:35:11.245 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:11.278 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:35:11.279 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:12.071 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:35:12.153 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:12.171 [tw] INFO:     79.177.147.82:24983 - "POST /mcp HTTP/1.1" 200 OK
+22:35:12.174 [tw] [wire<-] turn step=24 sender='police' commit=952ddcce ts='2026-08-16T19:35:12.197' cells=33 barrier=None claim=[4, 3] answer=None win=None
+22:35:12.402 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:35:12.469 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:12.482 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:35:12.483 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:13.620 [pw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:35:13.702 [pw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:13.720 [pw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:35:13.720 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:14.050 [tw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:35:14.125 [tw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:14.139 [tw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:35:14.140 [tw] [wire<-] turn step=25 sender='police' commit=9843163c ts='2026-08-16T19:35:14.167' cells=34 barrier=None claim=[4, 4] answer=None win=None
+22:35:14.840 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:35:14.924 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:14.940 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:35:14.941 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:16.056 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:35:16.076 [tw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:35:16.135 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:16.151 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:35:16.152 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:16.152 [tw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:16.169 [tw] INFO:     79.177.147.82:24979 - "POST /mcp HTTP/1.1" 200 OK
+22:35:16.170 [tw] [wire<-] turn step=26 sender='police' commit=afa4b272 ts='2026-08-16T19:35:16.198' cells=28 barrier=None claim=[4, 5] answer=None win=None
+22:35:17.266 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:35:17.345 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:17.357 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:35:17.358 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:18.139 [tw] INFO:     79.177.147.82:24992 - "POST /mcp HTTP/1.1" 200 OK
+22:35:18.211 [tw] INFO:     79.177.147.82:24992 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:18.225 [tw] INFO:     79.177.147.82:24992 - "POST /mcp HTTP/1.1" 200 OK
+22:35:18.226 [tw] [wire<-] turn step=27 sender='police' commit=2bb225e7 ts='2026-08-16T19:35:18.264' cells=28 barrier=None claim=[3, 5] answer=None win=None
+22:35:18.490 [pw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 200 OK
+22:35:18.567 [pw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:18.585 [pw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 200 OK
+22:35:18.586 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:19.706 [pw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:35:19.790 [pw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:19.809 [pw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:35:19.810 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:20.134 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:35:20.210 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:20.228 [tw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:35:20.229 [tw] [wire<-] turn step=28 sender='police' commit=087112d6 ts='2026-08-16T19:35:20.259' cells=27 barrier=None claim=[2, 5] answer=None win=None
+22:35:20.945 [pw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 200 OK
+22:35:21.017 [pw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:21.033 [pw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 200 OK
+22:35:21.035 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:22.070 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:35:22.140 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:22.156 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:35:22.157 [tw] [wire<-] turn step=29 sender='police' commit=fde2b450 ts='2026-08-16T19:35:22.200' cells=29 barrier=None claim=[2, 4] answer=None win=None
+22:35:22.161 [pw] INFO:     79.177.147.82:24987 - "POST /mcp HTTP/1.1" 200 OK
+22:35:22.237 [pw] INFO:     79.177.147.82:24987 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:22.250 [pw] INFO:     79.177.147.82:24987 - "POST /mcp HTTP/1.1" 200 OK
+22:35:22.251 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:23.361 [pw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 200 OK
+22:35:23.445 [pw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:23.463 [pw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 200 OK
+22:35:23.465 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:24.069 [tw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 200 OK
+22:35:24.143 [tw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:24.158 [tw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 200 OK
+22:35:24.159 [tw] [wire<-] turn step=30 sender='police' commit=e21cc466 ts='2026-08-16T19:35:24.197' cells=33 barrier=None claim=[2, 3] answer=None win=None
+22:35:24.605 [pw] INFO:     79.177.147.82:25009 - "POST /mcp HTTP/1.1" 200 OK
+22:35:24.688 [pw] INFO:     79.177.147.82:25009 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:24.704 [pw] INFO:     79.177.147.82:25009 - "POST /mcp HTTP/1.1" 200 OK
+22:35:24.705 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:25.821 [pw] INFO:     79.177.147.82:24961 - "POST /mcp HTTP/1.1" 200 OK
+22:35:25.898 [pw] INFO:     79.177.147.82:24961 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:25.912 [pw] INFO:     79.177.147.82:24961 - "POST /mcp HTTP/1.1" 200 OK
+22:35:25.913 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:26.058 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:35:26.132 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:26.146 [tw] INFO:     79.177.147.82:24980 - "POST /mcp HTTP/1.1" 200 OK
+22:35:26.147 [tw] [wire<-] turn step=31 sender='police' commit=93d6292b ts='2026-08-16T19:35:26.178' cells=34 barrier=None claim=[3, 3] answer=None win=None
+22:35:27.037 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:35:27.114 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:27.131 [pw] INFO:     79.177.147.82:24969 - "POST /mcp HTTP/1.1" 200 OK
+22:35:27.133 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:28.097 [tw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 200 OK
+22:35:28.163 [tw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:28.176 [tw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 200 OK
+22:35:28.178 [tw] [wire<-] turn step=32 sender='police' commit=b56701f9 ts='2026-08-16T19:35:28.199' cells=33 barrier=None claim=[4, 3] answer=None win=None
+22:35:28.243 [pw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:35:28.325 [pw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:28.340 [pw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:35:28.341 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:29.470 [pw] INFO:     79.177.147.82:25009 - "POST /mcp HTTP/1.1" 200 OK
+22:35:29.540 [pw] INFO:     79.177.147.82:25009 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:29.555 [pw] INFO:     79.177.147.82:25009 - "POST /mcp HTTP/1.1" 200 OK
+22:35:29.556 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:30.098 [tw] INFO:     79.177.147.82:25016 - "POST /mcp HTTP/1.1" 200 OK
+22:35:30.172 [tw] INFO:     79.177.147.82:25016 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:30.187 [tw] INFO:     79.177.147.82:25016 - "POST /mcp HTTP/1.1" 200 OK
+22:35:30.188 [tw] [wire<-] turn step=33 sender='police' commit=9ca542ac ts='2026-08-16T19:35:30.202' cells=29 barrier=[4, 4] claim=None answer=None win=None
+22:35:30.676 [pw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 200 OK
+22:35:30.743 [pw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:30.758 [pw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 200 OK
+22:35:30.759 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:31.880 [pw] INFO:     79.177.147.82:25018 - "POST /mcp HTTP/1.1" 200 OK
+22:35:31.976 [pw] INFO:     79.177.147.82:25018 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:31.993 [pw] INFO:     79.177.147.82:25018 - "POST /mcp HTTP/1.1" 200 OK
+22:35:31.994 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:32.111 [tw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:35:32.185 [tw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:32.199 [tw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:35:32.200 [tw] [wire<-] turn step=34 sender='police' commit=1efce492 ts='2026-08-16T19:35:32.231' cells=28 barrier=None claim=[5, 3] answer=None win=None
+22:35:33.126 [pw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 200 OK
+22:35:33.205 [pw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:33.227 [pw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 200 OK
+22:35:33.228 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:34.082 [tw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:35:34.156 [tw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:34.192 [tw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:35:34.193 [tw] [wire<-] audit sender='police' records=35 claim='survival'
+22:35:34.334 [pw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 200 OK
+22:35:34.412 [pw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:34.428 [pw] INFO:     79.177.147.82:25008 - "POST /mcp HTTP/1.1" 200 OK
+22:35:34.429 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:35.552 [pw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 200 OK
+22:35:35.636 [pw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:35.650 [pw] INFO:     79.177.147.82:24993 - "POST /mcp HTTP/1.1" 200 OK
+22:35:35.650 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:36.775 [pw] INFO:     79.177.147.82:25085 - "POST /mcp HTTP/1.1" 200 OK
+22:35:36.859 [pw] INFO:     79.177.147.82:25085 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:36.875 [pw] INFO:     79.177.147.82:25085 - "POST /mcp HTTP/1.1" 200 OK
+22:35:36.876 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:37.995 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:35:38.061 [tw] gateway mcp:receive_control attempt 1/6 failed (HTTPStatusError); retrying in 0.5s
+22:35:38.065 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:38.081 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:35:38.082 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:39.204 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:35:39.281 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:39.295 [pw] INFO:     79.177.147.82:24975 - "POST /mcp HTTP/1.1" 200 OK
+22:35:39.296 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:39.746 [tw] gateway mcp:receive_control attempt 2/6 failed (RuntimeError); retrying in 1.0s
+22:35:40.436 [pw] INFO:     79.177.147.82:23313 - "POST /mcp HTTP/1.1" 200 OK
+22:35:40.513 [pw] INFO:     79.177.147.82:23313 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:40.527 [pw] INFO:     79.177.147.82:23313 - "POST /mcp HTTP/1.1" 200 OK
+22:35:40.527 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:41.650 [pw] INFO:     79.177.147.82:24991 - "POST /mcp HTTP/1.1" 200 OK
+22:35:41.725 [pw] INFO:     79.177.147.82:24991 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:41.740 [tw] gateway mcp:receive_control attempt 3/6 failed (RuntimeError); retrying in 2.0s
+22:35:41.744 [pw] INFO:     79.177.147.82:24991 - "POST /mcp HTTP/1.1" 200 OK
+22:35:41.748 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:42.861 [pw] INFO:     79.177.147.82:23311 - "POST /mcp HTTP/1.1" 200 OK
+22:35:42.944 [pw] INFO:     79.177.147.82:23311 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:43.073 [pw] INFO:     79.177.147.82:23311 - "POST /mcp HTTP/1.1" 200 OK
+22:35:43.074 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:43.748 [tw] gateway mcp:receive_control attempt 4/6 failed (RuntimeError); retrying in 4.0s
+22:35:44.210 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:35:44.285 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:44.299 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:35:44.300 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:45.430 [pw] INFO:     79.177.147.82:23306 - "POST /mcp HTTP/1.1" 200 OK
+22:35:45.520 [pw] INFO:     79.177.147.82:23306 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:45.533 [pw] INFO:     79.177.147.82:23306 - "POST /mcp HTTP/1.1" 200 OK
+22:35:45.535 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:46.663 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:35:46.738 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:46.754 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:35:46.755 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:47.762 [tw] gateway mcp:receive_control attempt 5/6 failed (RuntimeError); retrying in 5.0s
+22:35:47.868 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:35:47.936 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:47.959 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:35:47.960 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:49.120 [pw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:35:49.189 [pw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:49.206 [pw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:35:49.207 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:50.340 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:35:50.425 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:50.438 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:35:50.439 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:51.560 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:35:51.634 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:51.647 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:35:51.647 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:52.754 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:35:52.777 [tw] [match] sg5 audit ok=True errors=[] outcome=survival rl_moves=35 distinct=5 sample=['S', 'S', 'N', 'S', 'E', 'N', 'STAY', 'E']
+22:35:52.778 [tw] [match] sg5 settled, then HTTPStatusError: Server error '502 Bad Gateway' for url 'https://concerts-translations-cruz-flows.trycloudflare.com/mcp'
+22:35:52.778 [tw] For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502 — reporting the settlement
+22:35:52.778 [match] sg5 complete
+22:35:52.778 [match] sg6 (police) — dispatching to police worker
+22:35:52.951 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:52.954 [pw] INFO:     127.0.0.1:60544 - "POST /mcp HTTP/1.1" 400 Bad Request
+22:35:53.130 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:35:53.130 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:54.244 [pw] INFO:     79.177.147.82:24991 - "POST /mcp HTTP/1.1" 200 OK
+22:35:54.315 [pw] INFO:     79.177.147.82:24991 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:54.330 [pw] INFO:     79.177.147.82:24991 - "POST /mcp HTTP/1.1" 200 OK
+22:35:54.331 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:54.467 [pw] [match] peer endpoint UP: https://carlos-cooperative-soldiers-daily.trycloudflare.com/mcp
+22:35:55.592 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:35:55.734 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:55.751 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:35:55.752 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:56.913 [pw] INFO:     79.177.147.82:25026 - "POST /mcp HTTP/1.1" 200 OK
+22:35:57.006 [pw] INFO:     79.177.147.82:25026 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:57.022 [pw] INFO:     79.177.147.82:25026 - "POST /mcp HTTP/1.1" 200 OK
+22:35:57.023 [pw] [wire<-] negotiate keys=['commit_order', 'config_sha256', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'schema_version', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group=None role='thief' sub_game=6 uid='None' scent=81ebee59 wire=229ae648
+22:35:58.036 [pw] [match] sg6 peer greeting sub_game=6 role=thief
+22:35:58.036 [pw] [match] sg6 role=police handshake OK vs nis-yar1 uid=21a1533b-575
+22:35:58.146 [pw] INFO:     79.177.147.82:24991 - "POST /mcp HTTP/1.1" 200 OK
+22:35:58.221 [pw] INFO:     79.177.147.82:24991 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:58.235 [pw] INFO:     79.177.147.82:24991 - "POST /mcp HTTP/1.1" 200 OK
+22:35:58.236 [pw] [wire<-] turn step=1 sender='thief' commit=8de7fef6 ts='2026-08-16T19:35:58.264' cells=25 barrier=None claim=None answer=None win=None
+22:35:58.284 [pw] [scent] sg6 step1: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+22:35:59.102 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:35:59.189 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:35:59.203 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:35:59.204 [pw] [wire<-] turn step=2 sender='thief' commit=568aac26 ts='2026-08-16T19:35:59.230' cells=30 barrier=None claim=None answer=False win=None
+22:36:00.549 [pw] INFO:     79.177.147.82:24991 - "POST /mcp HTTP/1.1" 200 OK
+22:36:00.634 [pw] INFO:     79.177.147.82:24991 - "POST /mcp HTTP/1.1" 202 Accepted
+22:36:00.648 [pw] INFO:     79.177.147.82:24991 - "POST /mcp HTTP/1.1" 200 OK
+22:36:00.649 [pw] [wire<-] turn step=3 sender='thief' commit=ce4efa22 ts='2026-08-16T19:36:00.668' cells=25 barrier=None claim=None answer=False win=None
+22:36:01.799 [pw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:36:01.883 [pw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 202 Accepted
+22:36:01.900 [pw] INFO:     79.177.147.82:25007 - "POST /mcp HTTP/1.1" 200 OK
+22:36:01.901 [pw] [wire<-] turn step=4 sender='thief' commit=e43bebd8 ts='2026-08-16T19:36:01.929' cells=23 barrier=None claim=None answer=False win=None
+22:36:03.207 [pw] INFO:     79.177.147.82:25031 - "POST /mcp HTTP/1.1" 200 OK
+22:36:03.301 [pw] INFO:     79.177.147.82:25031 - "POST /mcp HTTP/1.1" 202 Accepted
+22:36:03.315 [pw] INFO:     79.177.147.82:25031 - "POST /mcp HTTP/1.1" 200 OK
+22:36:03.317 [pw] [wire<-] turn step=5 sender='thief' commit=b6ed4b7c ts='2026-08-16T19:36:03.330' cells=19 barrier=None claim=None answer=False win=None
+22:36:05.202 [pw] INFO:     79.177.147.82:23307 - "POST /mcp HTTP/1.1" 200 OK
+22:36:05.273 [pw] INFO:     79.177.147.82:23307 - "POST /mcp HTTP/1.1" 202 Accepted
+22:36:05.287 [pw] INFO:     79.177.147.82:23307 - "POST /mcp HTTP/1.1" 200 OK
+22:36:05.288 [pw] [wire<-] turn step=6 sender='thief' commit=9b7b5372 ts='2026-08-16T19:36:05.331' cells=18 barrier=None claim=None answer=False win=None
+22:36:07.207 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:36:07.281 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 202 Accepted
+22:36:07.294 [pw] INFO:     79.177.147.82:24970 - "POST /mcp HTTP/1.1" 200 OK
+22:36:07.295 [pw] [wire<-] turn step=7 sender='thief' commit=1c4d6533 ts='2026-08-16T19:36:07.332' cells=16 barrier=None claim=None answer=False win=None
+22:36:09.666 [pw] INFO:     79.177.147.82:25072 - "POST /mcp HTTP/1.1" 200 OK
+22:36:09.732 [pw] INFO:     79.177.147.82:25072 - "POST /mcp HTTP/1.1" 202 Accepted
+22:36:09.749 [pw] INFO:     79.177.147.82:25072 - "POST /mcp HTTP/1.1" 200 OK
+22:36:09.750 [pw] [wire<-] turn step=8 sender='thief' commit=0b1c152d ts='2026-08-16T19:36:09.799' cells=13 barrier=None claim=None answer=False win=None
+22:36:12.127 [pw] INFO:     79.177.147.82:25081 - "POST /mcp HTTP/1.1" 200 OK
+22:36:12.204 [pw] INFO:     79.177.147.82:25081 - "POST /mcp HTTP/1.1" 202 Accepted
+22:36:12.220 [pw] INFO:     79.177.147.82:25081 - "POST /mcp HTTP/1.1" 200 OK
+22:36:12.221 [pw] [wire<-] turn step=9 sender='thief' commit=9a799a30 ts='2026-08-16T19:36:12.243' cells=16 barrier=None claim=None answer=False win=None
+22:36:14.309 [pw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:36:14.379 [pw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 202 Accepted
+22:36:14.392 [pw] INFO:     79.177.147.82:24994 - "POST /mcp HTTP/1.1" 200 OK
+22:36:14.393 [pw] [wire<-] turn step=10 sender='thief' commit=5bb04c81 ts='2026-08-16T19:36:14.438' cells=16 barrier=None claim=None answer=False win=None
+22:36:16.406 [pw] INFO:     79.177.147.82:25033 - "POST /mcp HTTP/1.1" 200 OK
+22:36:16.476 [pw] INFO:     79.177.147.82:25033 - "POST /mcp HTTP/1.1" 202 Accepted
+22:36:16.489 [pw] INFO:     79.177.147.82:25033 - "POST /mcp HTTP/1.1" 200 OK
+22:36:16.490 [pw] [wire<-] turn step=11 sender='thief' commit=e6c4bf7c ts='2026-08-16T19:36:16.532' cells=15 barrier=None claim=None answer=False win=None
+22:36:17.005 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:36:17.076 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 202 Accepted
+22:36:17.089 [pw] INFO:     79.177.147.82:24962 - "POST /mcp HTTP/1.1" 200 OK
+22:36:17.090 [pw] [wire<-] turn step=12 sender='thief' commit=c22528bd ts='2026-08-16T19:36:17.120' cells=15 barrier=None claim=None answer=True win=None
+22:36:17.140 [pw] [match] sg6 thief conceded capture at step 12 (answer)
+22:36:17.203 [pw] INFO:     79.177.147.82:25036 - "POST /mcp HTTP/1.1" 200 OK
+22:36:17.280 [pw] INFO:     79.177.147.82:25036 - "POST /mcp HTTP/1.1" 202 Accepted
+22:36:17.296 [pw] INFO:     79.177.147.82:25036 - "POST /mcp HTTP/1.1" 200 OK
+22:36:17.297 [pw] [wire<-] audit sender='thief' records=13 claim='capture'
+22:36:17.723 [pw] gateway mcp:receive_control attempt 1/6 failed (HTTPStatusError); retrying in 0.5s
+22:36:18.235 [pw] gateway mcp:receive_control attempt 2/6 failed (RuntimeError); retrying in 1.0s
+22:36:19.241 [pw] gateway mcp:receive_control attempt 3/6 failed (RuntimeError); retrying in 2.0s
+22:36:21.243 [pw] gateway mcp:receive_control attempt 4/6 failed (RuntimeError); retrying in 4.0s
+22:36:25.250 [pw] gateway mcp:receive_control attempt 5/6 failed (RuntimeError); retrying in 5.0s
+22:36:30.261 [pw] [match] sg6 audit ok=True errors=[] outcome=capture rl_moves=11 distinct=3 sample=['S', 'S', 'S', 'E', 'E', 'E', 'S', 'E']
+22:36:30.261 [pw] [match] sg6 settled, then HTTPStatusError: Server error '502 Bad Gateway' for url 'https://carlos-cooperative-soldiers-daily.trycloudflare.com/mcp'
+22:36:30.261 [pw] For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/502 — reporting the settlement
+22:36:30.261 [match] sg6 complete
+22:36:30.296 [pw] ERROR:    Traceback (most recent call last):
+22:36:30.296 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\starlette\routing.py", line 645, in lifespan
+22:36:30.296 [pw]     await receive()
+22:36:30.296 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+22:36:30.296 [pw]     return await self.receive_queue.get()
+22:36:30.296 [pw]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+22:36:30.296 [pw]   File "C:\Users\kuper\AppData\Local\Programs\Python\Python313\Lib\asyncio\queues.py", line 186, in get
+22:36:30.296 [pw]     await getter
+22:36:30.296 [pw] asyncio.exceptions.CancelledError
+22:36:30.297 [tw] ERROR:    Traceback (most recent call last):
+22:36:30.297 [tw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\starlette\routing.py", line 645, in lifespan
+22:36:30.297 [tw]     await receive()
+22:36:30.297 [tw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+22:36:30.297 [tw]     return await self.receive_queue.get()
+22:36:30.297 [tw]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+22:36:30.297 [tw]   File "C:\Users\kuper\AppData\Local\Programs\Python\Python313\Lib\asyncio\queues.py", line 186, in get
+22:36:30.297 [tw]     await getter
+22:36:30.297 [tw] asyncio.exceptions.CancelledError
+
+22:36:30.913 [match] STATUS: audits 6/6 ok
+22:36:30.917 [match] saved config profile used vs nis-yar1 -> config/opponents/nis-yar1/ (existing profile files preserved)
+22:36:31.034 [match] artifacts: 6x(config+log) + declaration + result under results/ and config/games/
+22:36:31.034 [match] result: {'vibecode': 90, 'nis-yar1': 30} winner=vibecode
+22:36:32.772 [match] emailed result ONLY to rmisegal+uoh26finalgame@gmail.com (id=1a00c1363a39a870)
+22:36:32.773 [match] counted ledger updated: counted_games_played=6 (results/counted_series.json)

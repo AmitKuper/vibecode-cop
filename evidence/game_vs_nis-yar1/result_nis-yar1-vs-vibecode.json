@@ -1,0 +1,253 @@
+{
+  "_schema": "Summary and final result for the WHOLE series between two teams: per-sub-game scores + aggregate; identity lives in the declaration.",
+  "schema_version": "1.1",
+  "report_type": "final_game_result",
+  "game_id": "nis-yar1-vs-vibecode",
+  "game_uid": "21a1533b-5750-edcb-ea18-35061243b3f3",
+  "links": {
+    "declaration": "declaration_nis-yar1-vs-vibecode.json",
+    "config": "config_nis-yar1-vs-vibecode_g<NN>.json",
+    "log": "log_nis-yar1-vs-vibecode_g<NN>.json",
+    "result": "result_nis-yar1-vs-vibecode.json",
+    "github": {
+      "vibecode": {
+        "cop": "https://github.com/AmitKuper/vibecode-cop",
+        "thief": "https://github.com/AmitKuper/vibecode-thief"
+      },
+      "nis-yar1": {
+        "cop": "https://github.com/NisoDeri/nis-yar1-cop",
+        "thief": "https://github.com/NisoDeri/nis-yar1-thief"
+      }
+    }
+  },
+  "timezone": "Asia/Jerusalem",
+  "groups": [
+    "nis-yar1",
+    "vibecode"
+  ],
+  "num_sub_games": 6,
+  "sub_games": [
+    {
+      "sub_game_number": 1,
+      "roles": {
+        "vibecode": "thief",
+        "nis-yar1": "police"
+      },
+      "started_at": "2026-08-16T19:32:49.445253+00:00",
+      "ended_at": "2026-08-16T19:33:16.187919+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "542eb9337ff1b9a4a6ffdf1e54c36d014fbe75ea",
+        "nis-yar1": "c6b8aa6fa5eb24dba4fedfb5f2dc5541b7a1c926"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "nis-yar1": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "nis-yar1": 5
+      },
+      "log_files": {
+        "vibecode": "log_nis-yar1-vs-vibecode_g01.json",
+        "nis-yar1": "log_nis-yar1-vs-vibecode_g01.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 2,
+      "roles": {
+        "vibecode": "police",
+        "nis-yar1": "thief"
+      },
+      "started_at": "2026-08-16T19:33:21.163035+00:00",
+      "ended_at": "2026-08-16T19:33:43.641181+00:00",
+      "result": "capture",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "fdd15bf593e87eba925a44d0d48dd8f31a9d1810",
+        "nis-yar1": "c6b8aa6fa5eb24dba4fedfb5f2dc5541b7a1c926"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "nis-yar1": 0
+      },
+      "score": {
+        "vibecode": 20,
+        "nis-yar1": 5
+      },
+      "log_files": {
+        "vibecode": "log_nis-yar1-vs-vibecode_g02.json",
+        "nis-yar1": "log_nis-yar1-vs-vibecode_g02.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 3,
+      "roles": {
+        "vibecode": "thief",
+        "nis-yar1": "police"
+      },
+      "started_at": "2026-08-16T19:33:48.969368+00:00",
+      "ended_at": "2026-08-16T19:34:22.114654+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "542eb9337ff1b9a4a6ffdf1e54c36d014fbe75ea",
+        "nis-yar1": "c6b8aa6fa5eb24dba4fedfb5f2dc5541b7a1c926"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "nis-yar1": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "nis-yar1": 5
+      },
+      "log_files": {
+        "vibecode": "log_nis-yar1-vs-vibecode_g03.json",
+        "nis-yar1": "log_nis-yar1-vs-vibecode_g03.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 4,
+      "roles": {
+        "vibecode": "police",
+        "nis-yar1": "thief"
+      },
+      "started_at": "2026-08-16T19:34:27.114777+00:00",
+      "ended_at": "2026-08-16T19:34:47.882080+00:00",
+      "result": "capture",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "fdd15bf593e87eba925a44d0d48dd8f31a9d1810",
+        "nis-yar1": "c6b8aa6fa5eb24dba4fedfb5f2dc5541b7a1c926"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "nis-yar1": 0
+      },
+      "score": {
+        "vibecode": 20,
+        "nis-yar1": 5
+      },
+      "log_files": {
+        "vibecode": "log_nis-yar1-vs-vibecode_g04.json",
+        "nis-yar1": "log_nis-yar1-vs-vibecode_g04.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 5,
+      "roles": {
+        "vibecode": "thief",
+        "nis-yar1": "police"
+      },
+      "started_at": "2026-08-16T19:34:52.956105+00:00",
+      "ended_at": "2026-08-16T19:35:52.777541+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "542eb9337ff1b9a4a6ffdf1e54c36d014fbe75ea",
+        "nis-yar1": "c6b8aa6fa5eb24dba4fedfb5f2dc5541b7a1c926"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "nis-yar1": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "nis-yar1": 5
+      },
+      "log_files": {
+        "vibecode": "log_nis-yar1-vs-vibecode_g05.json",
+        "nis-yar1": "log_nis-yar1-vs-vibecode_g05.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 6,
+      "roles": {
+        "vibecode": "police",
+        "nis-yar1": "thief"
+      },
+      "started_at": "2026-08-16T19:35:57.437521+00:00",
+      "ended_at": "2026-08-16T19:36:30.260834+00:00",
+      "result": "capture",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "fdd15bf593e87eba925a44d0d48dd8f31a9d1810",
+        "nis-yar1": "c6b8aa6fa5eb24dba4fedfb5f2dc5541b7a1c926"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "nis-yar1": 0
+      },
+      "score": {
+        "vibecode": 20,
+        "nis-yar1": 5
+      },
+      "log_files": {
+        "vibecode": "log_nis-yar1-vs-vibecode_g06.json",
+        "nis-yar1": "log_nis-yar1-vs-vibecode_g06.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    }
+  ],
+  "final_result": {
+    "total_score": {
+      "vibecode": 90,
+      "nis-yar1": 30
+    },
+    "sub_games_won": {
+      "vibecode": 6,
+      "nis-yar1": 0
+    },
+    "ties": 0,
+    "winner_group": "vibecode",
+    "series_tie": false,
+    "tokens_total_series": {
+      "vibecode": 0,
+      "nis-yar1": 0
+    },
+    "games_played_including_this": {
+      "vibecode": 6,
+      "nis-yar1": 2
+    },
+    "first_meeting_between_groups": true,
+    "diversity_reward_applied": {
+      "vibecode": true,
+      "nis-yar1": false
+    }
+  },
+  "mutual_agreement": {
+    "sha256": "4e4950376d6adea2bda706f6614c4c34ac0111d4add4534b0d2bf39534135c98",
+    "confirmed": true
+  }
+}
