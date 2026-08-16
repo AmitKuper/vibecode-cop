@@ -41,7 +41,10 @@ def test_publish_updates_registered_view_model() -> None:
     view = vm.get_current()
     assert view is not None
     assert view.own_position == (3, 2)  # [x, y] -> wire (row, col)
-    assert view.belief_heatmap[4][1] == 0.9
+    # belief is the sensed field NORMALIZED to a probability surface (GUI_PRD R3);
+    # the raw value lives in opponent_scent.
+    assert view.belief_heatmap[4][1] == 1.0
+    assert view.opponent_scent[4][1] == 0.9
     assert view.turn == 1
     gui_bridge.publish_view(_mover(pos=(2, 4)), _heatmap())
     assert vm.get_current().turn == 2

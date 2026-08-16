@@ -58,7 +58,7 @@ reference-v3 wire, kit fixtures, the trainer, the gamelet, replay, the adaptive
 protocol stack, and the match runner — `scripts/live_match_ref3.py` is now a
 130-line facade over `scripts/ref3_match/`).
 
-### D5: No committed GUI screenshot
+- ~~No committed GUI screenshot~~ CLOSED 2026-08-16: live belief-heatmap and replay Verified-OK screenshots captured during a real series live in `evidence/gui/` (see docs/GUI_PRD.md acceptance evidence).
 
 The live GUI exists (`cop_worker/gui/app.py`, `cop_worker/gui/live_view_model.py`)
 and is started per role worker when `[network] gui_cop_port` / `gui_thief_port`

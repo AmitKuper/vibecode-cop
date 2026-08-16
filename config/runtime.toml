@@ -41,10 +41,12 @@ opponent_group = "anrbj666"
 opp_cop_url    = "https://cop-mcp.alon.website/mcp"
 opp_thief_url  = "https://thief-mcp.alon.website/mcp"
 
-# Optional local live GUI per role worker (local truth only, 127.0.0.1).
-# Absent by default => no GUI is started and play is byte-identical.
-# gui_cop_port   = 8781
-# gui_thief_port = 8782
+# Live GUI per role worker (local truth only, 127.0.0.1) - ALWAYS ON by
+# default (decision 2026-08-16, docs/GUI_PRD.md R5). Fail-open: a dead GUI or a
+# busy port is a logged skip and can never delay or block a move. Comment these
+# out to disable; play is byte-identical either way.
+gui_cop_port   = 8781
+gui_thief_port = 8782
 
 [protocol]
 # The pairing defaults. Every opponent profile repeats these explicitly, but the

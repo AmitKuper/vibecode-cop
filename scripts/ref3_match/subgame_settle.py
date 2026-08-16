@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from ref3_match import settled_row
+from ref3_match import gui_context, settled_row
 from ref3_match.net import _poll_deque
 from ref3_match.runtime_cfg import _t
 
@@ -73,6 +73,7 @@ async def _settle(
         f"[match] sg{sub_game} audit ok={ok} errors={errors[:2]} outcome={outcome} "
         f"rl_moves={len(rl_moves)} distinct={distinct} sample={rl_moves[:8]}"
     )
+    gui_context.note_settled(sub_game, ok, outcome, role)
     # Collect the sealed history for the log/result artifacts.
     our_records = [
         {"commit": r.get("commit"), "nonce": r.get("nonce"), "payload": r.get("payload")}

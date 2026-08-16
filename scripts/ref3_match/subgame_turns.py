@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import secrets
 
+from ref3_match import gui_context
 from ref3_match.match_log import _log_peer_scent_model
 from ref3_match.mover import RLMover
 from ref3_match.net import _latest_turn, _poll_turn
@@ -89,6 +90,7 @@ async def _run_turns(
             # Thief moves FIRST: at round r the cop's newest turn is numbered r-1
             # (per-sender numbering) — absorb that one, or the thief plays blind.
             opp = _latest_turn(in_session, step - 1) if step > 1 else {}
+        gui_context.note_received(opp, step)
         opp_hint = opp.get("hint", "")
         opp_smell = opp.get("smell_grid", {})
         # Log-only diagnostic: which registered scent_model is the peer actually transmitting?
@@ -96,6 +98,7 @@ async def _run_turns(
         action = mover.decide(step, sub_game, opp_smell, opp_hint)
         rl_moves.append(action)
         mover.apply(action)
+        gui_context.note_sent(out_session)
         # Profile the opponent's language; no trust verdict during play (their move
         # stays sealed until the audit — the trust model holds at its 0.5 default).
         if opp_hint:

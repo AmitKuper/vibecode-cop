@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 
 from league_artifacts.declaration import _hardware_spec, counted_opponents
 
-from ref3_match import settled_row
+from ref3_match import gui_context, settled_row
 from ref3_match.net import _poll_agreement
 from ref3_match.runtime_cfg import REPO_ROOT, _git_head, _t
 
@@ -130,6 +130,7 @@ async def _handshake(
         f"[match] sg{sub_game} role={role} handshake OK vs {negotiated.opponent_group} "
         f"uid={negotiated.game_uid[:12]}"
     )
+    gui_context.note_window(sub_game, negotiated.opponent_group, terms)
     # Step-0 sealed ON the wire: a fresh-nonce commitment of our identity (github_commit,
     # declaration_ref) that rides submit_audit as records[0] — matching anrbj666's g01 recipe
     # byte-for-byte. The peer's verify_audit rehashes it; step 0 is exempt from the played

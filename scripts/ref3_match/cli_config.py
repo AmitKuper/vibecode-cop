@@ -5,13 +5,21 @@ from __future__ import annotations
 
 def _resolve_args(args) -> None:
     """Fill any unset args from the selected config profile's runtime.toml, in place."""
-    from cop_worker.config_loader import load_config
+    from cop_worker.config_loader import load_config, load_runtime
     from ref3_match.runtime_cfg import apply_runtime_config
 
     cfg = load_config(args.config)
     rt = cfg["runtime"]
+    net = rt.setdefault("network", {})
+    # GUI ports are an operator default, not a pairing value: profiles REPLACE the
+    # base runtime.toml wholesale, so without this fallback the always-on GUI
+    # (docs/GUI_PRD.md R5) silently vanished in every real game (found 2026-08-16).
+    if "gui_cop_port" not in net or "gui_thief_port" not in net:
+        base_net = load_runtime(None).get("network", {})
+        for key in ("gui_cop_port", "gui_thief_port"):
+            net.setdefault(key, base_net.get(key))
     apply_runtime_config(rt)
-    net, ident, rep = rt.get("network", {}), rt.get("identity", {}), rt.get("report", {})
+    ident, rep = rt.get("identity", {}), rt.get("report", {})
     if args.opp_cop_url is None:
         args.opp_cop_url = net.get("opp_cop_url")
     if args.opp_thief_url is None:

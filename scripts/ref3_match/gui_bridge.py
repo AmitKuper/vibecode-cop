@@ -20,6 +20,9 @@ def set_view_model(vm) -> None:
     global _VIEW_MODEL, _TURN
     _VIEW_MODEL = vm
     _TURN = 0
+    from ref3_match.gui_context import _CTX
+
+    _CTX.clear()
 
 
 def publish_view(mover, heatmap) -> None:
@@ -33,22 +36,35 @@ def publish_view(mover, heatmap) -> None:
     global _TURN
     try:
         from cop_worker.observation import SafeLiveView
+        from ref3_match.gui_context import _CTX
 
         _TURN += 1
         grid = [[float(v) for v in row] for row in (heatmap or [])]
+        # Belief = the sensed field normalized to a probability surface. Honest
+        # label: production movement derives its opponent estimate from this
+        # same evidence, so the heatmap shows the inference actually in use.
+        total = sum(v for row in grid for v in row)
+        belief = [[v / total for v in row] for row in grid] if total > 0 else grid
         view = SafeLiveView(
             own_position=(int(mover.pos[1]), int(mover.pos[0])),  # wire (row, col)
-            belief_heatmap=grid,
+            belief_heatmap=belief,
             opponent_scent=grid,
-            last_hint="",
-            hint_reliability=0.0,
-            turn=_TURN,
-            gamelet=0,
-            score={"cop": 0, "thief": 0},
+            last_hint=str(_CTX.get("last_hint", "")),
+            hint_reliability=float(_CTX.get("hint_reliability", 0.5)),
+            turn=int(_CTX.get("step", _TURN)),
+            gamelet=int(_CTX.get("sub_game", 0)),
+            score=dict(_CTX.get("score", {"cop": 0, "thief": 0})),
             own_barriers_remaining=int(getattr(mover, "barriers_remaining", 0)),
-            protocol_state="GAMEPLAY",
-            your_turn=True,
+            protocol_state=str(_CTX.get("protocol_state", "GAMEPLAY")),
+            your_turn=bool(_CTX.get("your_turn", True)),
             connection_healthy=True,
+            sub_game=int(_CTX.get("sub_game", 0)),
+            max_steps=int(_CTX.get("max_steps", 35)),
+            num_sub_games=int(_CTX.get("num_sub_games", 6)),
+            opponent_group=str(_CTX.get("opponent_group", "")),
+            audits=tuple(_CTX.get("audits", ())),
+            last_commit_sent=str(_CTX.get("last_commit_sent", "")),
+            last_commit_received=str(_CTX.get("last_commit_received", "")),
         )
         _VIEW_MODEL.update(view)
     except Exception:  # the GUI must never be able to touch play

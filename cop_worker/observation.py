@@ -82,3 +82,11 @@ class SafeLiveView:
     protocol_state: str
     your_turn: bool
     connection_healthy: bool
+    # Extended panels (book ch.7 + agreed extras) - all still local truth:
+    sub_game: int = 0  # 1..num_sub_games; 0 = unknown/idle
+    max_steps: int = 35
+    num_sub_games: int = 6
+    opponent_group: str = ""
+    audits: tuple = ()  # per settled window: "ok" | "failed", index = sub_game-1
+    last_commit_sent: str = ""  # 12-char prefix; full hashes live in the log
+    last_commit_received: str = ""

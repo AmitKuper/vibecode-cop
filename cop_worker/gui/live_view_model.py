@@ -16,12 +16,16 @@ class LiveViewUpdate:
     event_id: str
     timestamp_utc: str
 
+    role: str = ""
+
     def to_json(self) -> str:
+        view = asdict(self.view)
+        view["role"] = self.role  # page header only; adds no game information
         return json.dumps(
             {
                 "event_id": self.event_id,
                 "timestamp_utc": self.timestamp_utc,
-                "view": asdict(self.view),
+                "view": view,
             }
         )
 
@@ -68,4 +72,5 @@ class LiveViewModel:
                 view=self._current,
                 event_id=str(self._event_counter),
                 timestamp_utc=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                role=self._role,
             )
