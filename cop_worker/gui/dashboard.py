@@ -20,6 +20,9 @@ from cop_worker.gui import app as live_app
 
 RESULTS = Path(__file__).resolve().parents[2] / "results"
 LIVE_PORTS = {"cop": 8781, "thief": 8782}
+OUR_GROUP = "vibecode"
+#: Opponents that are local benches, not real teams (peer simulator, kit sparring).
+SIM_GROUPS = {"peersim01", "sparring-match", "selftest"}
 
 app = FastAPI(title="Cop/Thief — Dashboard")
 # Replays are the same endpoints the in-match GUI serves; one implementation.
@@ -35,9 +38,26 @@ async def hub() -> HTMLResponse:
     return HTMLResponse(HUB_PAGE)
 
 
+def _counted_index() -> dict:
+    """game_id -> ledger entry, from results/counted_series.json ({} if absent)."""
+    try:
+        ledger = json.loads((RESULTS / "counted_series.json").read_text(encoding="utf-8"))
+        return {e.get("game_id"): e for e in ledger.get("series", [])}
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
 @app.get("/api/hub/games")
 async def games() -> JSONResponse:
-    """Every series with a result artifact, newest first, with its gamelet logs."""
+    """Every series with a result artifact, newest first, categorized.
+
+    counted  - filed in the league ledger (results/counted_series.json)
+    local    - a bench opponent (peer simulator / kit sparring), not a real team
+    friendly - everything else. NOTE: result artifacts are per game_id, so only
+    the LATEST series against an opponent is listed here; earlier friendlies
+    against the same opponent live in reports/ref3_matches/ match logs.
+    """
+    counted = _counted_index()
     out = []
     for res in sorted(RESULTS.glob("result_*.json"), key=lambda p: p.stat().st_mtime, reverse=True):
         try:
@@ -45,16 +65,28 @@ async def games() -> JSONResponse:
         except (OSError, json.JSONDecodeError):
             continue
         game_id = doc.get("game_id", res.stem.removeprefix("result_"))
+        groups = doc.get("groups") or []
+        opponent = next((g for g in groups if g != OUR_GROUP), "?")
+        if game_id in counted:
+            category = "counted"
+        elif opponent in SIM_GROUPS:
+            category = "local"
+        else:
+            category = "friendly"
         fr = doc.get("final_result", {})
         score = fr.get("total_score", {})
         out.append(
             {
                 "game_id": game_id,
+                "category": category,
+                "group": OUR_GROUP,
+                "opponent": opponent,
                 "windows": len(doc.get("sub_games", [])),
                 "score": " – ".join(f"{k} {v}" for k, v in score.items()),
                 "winner": fr.get("winner_group"),
                 "mutual_sha": (doc.get("mutual_agreement") or {}).get("sha256", ""),
                 "confirmed": bool((doc.get("mutual_agreement") or {}).get("confirmed")),
+                "report_id": (counted.get(game_id) or {}).get("report_message_id", ""),
                 "logs": sorted(p.name for p in RESULTS.glob(f"log_{game_id}_g*.json")),
             }
         )

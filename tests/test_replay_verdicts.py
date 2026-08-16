@@ -70,11 +70,31 @@ def test_dashboard_games_endpoint_lists_real_series():
     payload = _json.loads(asyncio.run(games()).body)
     assert payload, "results/ holds series but the dashboard listed none"
     row = payload[0]
-    assert {"game_id", "windows", "score", "winner", "mutual_sha", "logs"} <= set(row)
+    assert {
+        "game_id",
+        "category",
+        "group",
+        "opponent",
+        "windows",
+        "score",
+        "winner",
+        "mutual_sha",
+        "report_id",
+        "logs",
+    } <= set(row)
+    assert row["category"] in {"counted", "friendly", "local"}
+    assert row["group"] == "vibecode" and row["opponent"] != "vibecode"
 
 
 def test_dashboard_hub_page_has_the_three_surfaces():
     from cop_worker.gui.hub_page import HUB_PAGE
 
-    for marker in ("COP live view", "THIEF live view", "Replay viewer", "Game history"):
+    for marker in (
+        "COP live view",
+        "THIEF live view",
+        "Replay viewer",
+        "Counted game history",
+        "Friendly game history",
+        "Local / simulated game history",
+    ):
         assert marker in HUB_PAGE, marker
