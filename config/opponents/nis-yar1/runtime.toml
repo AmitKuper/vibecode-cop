@@ -8,8 +8,8 @@ our_cop_port      = 61224
 our_thief_port    = 61223
 
 opponent_group = "nis-yar1"
-opp_cop_url    = "https://reproduced-authority-controversial-mails.trycloudflare.com/mcp"
-opp_thief_url  = "https://importantly-clusters-changed-vsnet.trycloudflare.com/mcp"
+opp_cop_url    = "https://decor-conference-cosmetics-plc.trycloudflare.com/mcp"
+opp_thief_url  = "https://done-latitude-paid-skip.trycloudflare.com/mcp"
 
 [protocol]
 scent_model  = "subtractive_chebyshev_v1"
