@@ -68,5 +68,8 @@ Two more cross-team fixes proven live tonight before counting:
 - `counted_series.json` — ledger snapshot after filing (6 counted series)
 - `report_vibecode_to_lecturer_1a00c1363a39a870.eml` — byte-exact from our Sent box
 - `runtime_match.log` — full orchestrator log (split architecture, 22:32:42-22:36:33)
-- nis-yar1's own league report is sent manually per their §4 procedure; its copy
-  and message-id are added here when received.
+- `report_nis-yar1_copy_received.eml` + `report_nis-yar1_counted_result.json` —
+  their league report (inner To: the league address alone), forwarded to us
+  22:48 IST, Gmail id `1a00c1eac3363080`. Reconciled field-by-field: identical
+  `mutual_agreement.sha256` and confirmed, all six rows, all counters, and both
+  files record the same three frozen commits.
