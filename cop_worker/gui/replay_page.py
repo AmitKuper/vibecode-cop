@@ -13,7 +13,10 @@ body{font-family:monospace;background:#12121f;color:#e0e0e0;margin:16px}
 #verdict{font-size:1.8em;font-weight:bold;padding:10px 24px;border-radius:6px;display:inline-block;margin:8px 0}
 .okv{background:#1a5f3f;color:#00ff88}
 .badv{background:#6d1a24;color:#ff5566}
-select,input[type=range]{width:100%;margin:6px 0}
+select{width:100%;margin:6px 0}
+input[type=range]{margin:6px 8px;vertical-align:middle}
+button{background:#1d1d2e;color:#e0e0e0;border:1px solid #2a2a3a;border-radius:5px;padding:6px 14px;font-family:monospace;cursor:pointer}
+button:hover{background:#25253a}
 #stepcard{background:#1d1d2e;border-radius:6px;padding:12px;margin-top:8px}
 .hash{word-break:break-all;color:#9ab}
 .match{color:#00ff88}.mismatch{color:#ff5566}
@@ -25,7 +28,11 @@ select,input[type=range]{width:100%;margin:6px 0}
 <h1>Replay viewer — every step re-verified</h1>
 <select id="logs"></select>
 <div id="verdict" class="badv">select a log</div>
-<input type="range" id="slider" min="0" max="0" value="0">
+<div>
+  <button id="prev" title="previous step (Left arrow)">&#9664; prev</button>
+  <input type="range" id="slider" min="0" max="0" value="0" style="width:70%">
+  <button id="next" title="next step (Right arrow)">next &#9654;</button>
+</div>
 <div id="poslabel"></div>
 <div id="stepcard">(no step)</div>
 <div id="board"></div>
@@ -48,6 +55,17 @@ async function loadLog(name){
   s.max=Math.max(steps.length-1,0);s.value=0;s.oninput=()=>show(+s.value);
   show(0);
 }
+function step(d){
+  const s=document.getElementById('slider');
+  const v=Math.min(Math.max((+s.value)+d,0),+s.max);
+  s.value=v;show(v);
+}
+document.getElementById('prev').onclick=()=>step(-1);
+document.getElementById('next').onclick=()=>step(1);
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'){step(1);e.preventDefault();}
+  if(e.key==='ArrowLeft'){step(-1);e.preventDefault();}
+});
 function show(i){
   if(!steps.length)return;const s=steps[i];const p=s.payload||{};
   document.getElementById('poslabel').textContent=
