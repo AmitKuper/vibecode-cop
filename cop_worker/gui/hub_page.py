@@ -120,7 +120,7 @@ async function games(){
     counts[g.category]=(counts[g.category]||0)+1;
     const w=g.winner==='vibecode';
     if(g.category==='counted'){w?won++:lost++;}
-    const logs=!(g.logs||[]).length?'<i>rotated</i>':(g.logs||[]).map(l=>`<a href="/replay?log=${encodeURIComponent(l)}">g${l.match(/_g(\\d+)/)?.[1]||'?'}</a>`).join(' ');
+    const logs=!(g.logs||[]).length?'<i>rotated</i>':(g.logs||[]).map(l=>`<a href="#replay" onclick="openReplay('${l}')">g${l.match(/_g(\\d+)/)?.[1]||'?'}</a>`).join(' ');
     t.insertAdjacentHTML('beforeend',
       `<tr><td>${g.game_id}</td><td>${g.group}</td><td>${g.opponent}</td>`+
       `<td>${g.windows}</td><td>${(g.started||'').replace('T',' ')}</td><td>${g.score}</td>`+

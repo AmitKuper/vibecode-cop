@@ -10,6 +10,7 @@ time, and the field is a deterministic function of those positions.
 
 from __future__ import annotations
 
+from cop_worker.replay.ref3_steps import record_role
 from cop_worker.scent_chebyshev import ChebyshevTrail
 
 
@@ -23,18 +24,13 @@ def _position(payload: dict) -> tuple[int, int] | None:
 def board_states(steps: list, our_role: str = "police", board_size: int = 7) -> list[dict]:
     """One board per timeline entry: latest cop/thief positions + scent fields.
 
-    ``steps`` is ref3_steps.iter_steps() output; ``our_role`` is the log's own
-    role (its summary.role). Some peers seal no ``role`` key in their payloads,
-    so a record's role comes from its SIDE: ours = our_role, opponent = the
-    other one. A payload that does name a role wins.
+    ``steps`` is ref3_steps output in any order (the emitter replay sorts
+    chronologically itself); ``our_role`` is the log's own role (summary.role).
+    Role per record comes from :func:`record_role`.
     """
-    other = "thief" if our_role == "police" else "police"
 
     def _role(s) -> str:
-        named = s.payload.get("role")
-        if named in ("police", "thief"):
-            return named
-        return our_role if s.side == "ours" else other
+        return record_role(s, our_role)
 
     ordered = sorted(
         (s for s in steps if s.step >= 1 and _position(s.payload)),

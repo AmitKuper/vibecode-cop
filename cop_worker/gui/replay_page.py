@@ -32,6 +32,7 @@ button:hover{background:#25253a}
 .legend{color:#8888aa;font-size:0.9em;margin-top:6px}
 </style></head>
 <body>
+<a id="backlink" href="/#replay" style="display:none;color:#7ab8ff">&#8592; back to dashboard</a>
 <h1>Replay viewer — every step re-verified</h1>
 <select id="logs"></select>
 <div id="verdict" class="badv">select a log</div>
@@ -44,14 +45,15 @@ button:hover{background:#25253a}
 <div id="toggles">
   <label><input type="checkbox" id="tg-cop" checked> show cop (C)</label>
   <label><input type="checkbox" id="tg-thief" checked> show thief (T)</label>
-  <label><input type="checkbox" id="tg-scent" checked> show scent</label>
-  <label><input type="checkbox" id="tg-scent-cop"> cop's scent instead of thief's</label>
+  <label><input type="checkbox" id="tg-scent" checked> <span style="color:#d4a414">thief scent</span></label>
+  <label><input type="checkbox" id="tg-scent-cop"> <span style="color:#66aaff">cop scent</span></label>
 </div>
 <div id="split">
   <div>
     <div id="board"></div>
-    <div class="legend">scent reconstructed from the revealed positions via the<br>
-    locked <b>subtractive_chebyshev_v1</b> emitter — wire-exact (peak 0.8)</div>
+    <div class="legend"><span style="color:#d4a414">&#9632; thief scent</span> ·
+    <span style="color:#66aaff">&#9632; cop scent</span> — reconstructed from the revealed
+    positions<br>via the locked <b>subtractive_chebyshev_v1</b> emitter — wire-exact (peak 0.8)</div>
   </div>
   <div id="stepcard">(no step)</div>
 </div>
@@ -89,8 +91,18 @@ document.addEventListener('keydown',e=>{
 });
 for(const id of ['tg-cop','tg-thief','tg-scent','tg-scent-cop'])
   document.getElementById(id).onchange=()=>show(+document.getElementById('slider').value);
-function heat(v){const t=Math.min(1,v/0.8);
-  return `rgba(70,130,230,${(0.10+0.85*t).toFixed(2)})`;}
+if(window.self===window.top)document.getElementById('backlink').style.display='inline-block';
+const q0=new URLSearchParams(location.search).get('scent');
+if(q0){document.getElementById('tg-scent').checked=(q0==='thief'||q0==='both');
+  document.getElementById('tg-scent-cop').checked=(q0==='cop'||q0==='both');}
+function alpha(v){return 0.12+0.80*Math.min(1,v/0.8);}
+function cellBg(vt,vc){
+  // thief scent gold, cop scent blue - matching the T / C marker colors
+  const gold=vt>0?`rgba(212,164,20,${alpha(vt).toFixed(2)})`:null;
+  const blue=vc>0?`rgba(70,130,230,${alpha(vc).toFixed(2)})`:null;
+  if(gold&&blue)return `linear-gradient(135deg,${gold} 49%,${blue} 51%)`;
+  return gold||blue||'transparent';
+}
 function show(i){
   if(!steps.length)return;const s=steps[i];const p=s.payload||{};
   document.getElementById('poslabel').textContent=
@@ -104,17 +116,16 @@ function show(i){
   const b=s.board||{};
   const showC=document.getElementById('tg-cop').checked;
   const showT=document.getElementById('tg-thief').checked;
-  const showS=document.getElementById('tg-scent').checked;
-  const copScent=document.getElementById('tg-scent-cop').checked;
-  const field=showS?(copScent?(b.scent_cop||{}):(b.scent_thief||{})):{};
+  const fT=document.getElementById('tg-scent').checked?(b.scent_thief||{}):{};
+  const fC=document.getElementById('tg-scent-cop').checked?(b.scent_cop||{}):{};
   const n=7;let h='';
   for(let r=0;r<n;r++){for(let c=0;c<n;c++){
-    const v=field[`${r},${c}`]||0;
+    const vt=fT[`${r},${c}`]||0, vc=fC[`${r},${c}`]||0;
     const isC=showC&&b.cop&&b.cop[0]==c&&b.cop[1]==r;
     const isT=showT&&b.thief&&b.thief[0]==c&&b.thief[1]==r;
     const mark=isC&&isT?'<span class="mark-cop">C</span><span class="mark-thief">T</span>'
       :isC?'<span class="mark-cop">C</span>':isT?'<span class="mark-thief">T</span>':'';
-    h+=`<div class="cell" style="background:${v>0?heat(v):'transparent'}" title="scent ${v.toFixed(2)}">${mark}</div>`;}}
+    h+=`<div class="cell" style="background:${cellBg(vt,vc)}" title="thief ${vt.toFixed(2)} / cop ${vc.toFixed(2)}">${mark}</div>`;}}
   document.getElementById('board').innerHTML=h;
 }
 loadList();

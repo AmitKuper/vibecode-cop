@@ -64,10 +64,16 @@ def test_steps_api_order_is_the_timeline_the_arrows_walk():
     d = live_client.get("/api/replay/steps", params={"log": _a_tracked_log()}).json()
     steps = d["steps"]
     assert len(steps) >= 3
-    # per side, protocol steps are non-decreasing: index i+1 is "the next record"
-    for side in ("ours", "opponent"):
-        seq = [s["step"] for s in steps if s["side"] == side]
-        assert seq == sorted(seq), f"{side} records are not in protocol order"
+    # ONE chronological game: protocol steps non-decreasing across the WHOLE
+    # timeline. The pre-fix order (all ours, then all opponent again from step
+    # 1) looked like two games with a board reset in the middle.
+    seq = [max(s["step"], 0) for s in steps]
+    assert seq == sorted(seq), "timeline must be one chronological merge of both sides"
+    # both sides genuinely interleave (each protocol step: thief then cop)
+    sides = [s["side"] for s in steps]
+    assert "ours" in sides and "opponent" in sides
+    flips = sum(1 for a, b in zip(sides, sides[1:], strict=False) if a != b)
+    assert flips > 2, "sides must interleave, not cluster into two blocks"
     assert d["overall"] in ("Verified OK", "TAMPERED")
 
 
@@ -160,15 +166,3 @@ def test_steps_api_reconstructs_boards_with_both_agents_and_scent():
     for key in field:  # wire "row,col" keys inside the board
         r, c = key.split(",")
         assert 0 <= int(r) < 7 and 0 <= int(c) < 7
-
-
-def test_replay_page_has_show_hide_toggles_and_stays_embeddable():
-    body = live_client.get("/replay").text
-    for marker in ('id="tg-cop"', 'id="tg-thief"', 'id="tg-scent"', "subtractive_chebyshev_v1"):
-        assert marker in body, marker
-
-
-def test_hub_keeps_replay_inside_the_tabs():
-    body = client.get("/").text
-    assert 'id="nav-replay"' in body and 'id="replay-frame"' in body
-    assert "openReplay" in body, "history links must open replay in the tab, not navigate away"

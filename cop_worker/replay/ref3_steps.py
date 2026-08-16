@@ -16,7 +16,7 @@ themselves state.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 from cop_worker.protocol.reference_v3.hashing import reference_commit
@@ -77,6 +77,38 @@ def iter_steps(doc: dict) -> list[StepVerdict]:
     return out
 
 
+def record_role(step: StepVerdict, our_role: str) -> str:
+    """A record's role: the sealed ``role`` key when present, else by side.
+
+    Some peers (nis-yar1) seal no role - then ours = our_role and the
+    opponent plays the other one.
+    """
+    named = step.payload.get("role")
+    if named in ("police", "thief"):
+        return str(named)
+    other = "thief" if our_role == "police" else "police"
+    return our_role if step.side == "ours" else other
+
+
+def chronological(steps: list[StepVerdict], our_role: str = "police") -> list[StepVerdict]:
+    """Merge both sides into ONE game timeline: step-0 seals first, then each
+    protocol step with the thief's record before the cop's (thief moves first).
+
+    Without this merge a viewer walks ~35 of our steps and then ~35 opponent
+    steps AGAIN from step 1 - it looks like two games in one replay, with the
+    board resetting mid-timeline.
+    """
+    merged = sorted(
+        steps,
+        key=lambda s: (
+            max(s.step, 0),
+            0 if record_role(s, our_role) == "thief" else 1,
+            s.side,  # deterministic tie-break for duplicate seals
+        ),
+    )
+    return [replace(s, index=i) for i, s in enumerate(merged)]
+
+
 def overall_verdict(steps: list[StepVerdict]) -> str:
     """One tampered step invalidates the whole match (book 7.5)."""
     if not steps:
@@ -85,5 +117,9 @@ def overall_verdict(steps: list[StepVerdict]) -> str:
 
 
 def verify_file(path: str | Path) -> tuple[str, list[StepVerdict]]:
-    steps = iter_steps(load_log(path))
+    """Verdict + the CHRONOLOGICAL timeline (verification covers every record
+    regardless of order, so merging loses nothing)."""
+    doc = load_log(path)
+    our_role = (doc.get("summary") or {}).get("role", "police")
+    steps = chronological(iter_steps(doc), our_role)
     return overall_verdict(steps), steps

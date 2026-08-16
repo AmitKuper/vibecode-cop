@@ -28,6 +28,14 @@ VIEWS = {
     "replay_step0": (f"{BASE}/replay?log=log_nis-yar1-vs-vibecode_g02.json", "1150,1000"),
     "replay_midgame": (f"{BASE}/replay?log=log_nis-yar1-vs-vibecode_g02.json&i=20", "1150,1000"),
     "replay_empty": (f"{BASE}/replay", "1150,700"),
+    "replay_scent_cop": (
+        f"{BASE}/replay?log=log_nis-yar1-vs-vibecode_g02.json&i=20&scent=cop",
+        "1150,1000",
+    ),
+    "replay_scent_both": (
+        f"{BASE}/replay?log=log_nis-yar1-vs-vibecode_g02.json&i=20&scent=both",
+        "1150,1000",
+    ),
     "play_setup": (f"{BASE}/play", "1150,900"),
     "live_cop": ("http://127.0.0.1:8781/", "1150,850"),
     "live_thief": ("http://127.0.0.1:8782/", "1150,850"),
