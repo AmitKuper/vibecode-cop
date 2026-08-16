@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 
 from league_artifacts.declaration import _hardware_spec, counted_opponents
 
+from ref3_match import settled_row
 from ref3_match.net import _poll_agreement
 from ref3_match.runtime_cfg import REPO_ROOT, _git_head, _t
 
@@ -86,6 +87,7 @@ async def _handshake(
     }
     # Fresh per-sub-game state: sealed records and the inbox must never leak across
     # sub-games (else step 1 of the next sub-game equivocates against the last one).
+    settled_row.forget(in_session)  # a previous window's row must not answer for this one
     out_session.local_records = []
     out_session._local_records_by_step = {}
     in_session.turns = ReferenceV3Inbox(window=_t("reorder_window", 4))

@@ -48,6 +48,7 @@ def _drain_strays(session, *, beyond: int = 0) -> list[dict]:
 async def _play_window(cmd: dict, session, init: dict) -> dict:
     from fastmcp import Client
 
+    from ref3_match import settled_row
     from ref3_match.net import NoGameHappenedError, _await_endpoint
     from ref3_match.runtime_cfg import _t
     from ref3_match.servers import _dial_and_play
@@ -84,14 +85,14 @@ async def _play_window(cmd: dict, session, init: dict) -> dict:
         }
     except NoGameHappenedError as exc:
         return {"type": "fail", "kind": "no_game", "sub_game": sg, "error": str(exc)[:200]}
-    except Exception as exc:  # any other failure: the orchestrator files the row
-        # (settled-teardown absorption is orchestrator-side; we only report the kind)
-        return {
-            "type": "fail",
-            "kind": "error",
-            "sub_game": sg,
-            "error": f"{type(exc).__name__}: {str(exc)[:200]}",
-        }
+    except Exception as exc:  # any other failure
+        detail = f"{type(exc).__name__}: {str(exc)[:200]}"
+        settled = settled_row.recover(session, sg)
+        if settled is not None:  # audit already verified - see ref3_match.settled_row
+            settled["post_settlement_error"] = detail
+            print(f"[match] sg{sg} settled, then {detail} — reporting the settlement")
+            return {"type": "result", "sub_game": sg, "row": settled, "stray_greetings": []}
+        return {"type": "fail", "kind": "error", "sub_game": sg, "error": detail}
 
 
 async def _main() -> int:

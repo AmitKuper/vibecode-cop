@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+from ref3_match import settled_row
 from ref3_match.net import _poll_deque
 from ref3_match.runtime_cfg import _t
 
@@ -136,7 +137,7 @@ async def _settle(
         "group_id": "vibecode",
         "opponent_group_id": opponent_group_hint,
     }
-    return {
+    row = {
         "sub_game": sub_game,
         "role": role,
         "audit_ok": ok,
@@ -152,3 +153,5 @@ async def _settle(
         "opp_identity": hs["opp_identity"],
         "opponent_group": hs["negotiated"].opponent_group,
     }
+    settled_row.remember(in_session, row)  # survives a post-audit peer 502
+    return row
