@@ -65,7 +65,7 @@ def test_dashboard_games_endpoint_lists_real_series():
     import asyncio
     import json as _json
 
-    from cop_worker.gui.dashboard import games
+    from cop_worker.gui.hub_api import games
 
     payload = _json.loads(asyncio.run(games()).body)
     assert payload, "results/ holds series but the dashboard listed none"

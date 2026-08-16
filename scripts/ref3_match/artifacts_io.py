@@ -123,6 +123,13 @@ def _emit_files(result: dict, args) -> dict:
     )
     result_obj = build_result(game_id, game_uid, opp, rows, final_result, opp_repos=opp_repos)
     write_artifact(result_obj, results_dir / f"result_{game_id}.json")
+    # PER-RUN archive: result_<game_id>.json is one file per game_id, so each
+    # series used to OVERWRITE the last - three rstabcde friendlies and the
+    # nis-yar1 friendlies vanished under their counted results (found
+    # 2026-08-17). Every run now also lands in results/history/, timestamped
+    # from its first window, and is never overwritten.
+    stamp = (starts[0] or "")[:19].replace(":", "").replace("-", "").replace("T", "-") or "unknown"
+    write_artifact(result_obj, results_dir / "history" / f"result_{game_id}_{stamp}.json")
     print(
         f"[match] artifacts: {len(played)}x(config+log) + declaration + result "
         f"under results/ and config/games/"

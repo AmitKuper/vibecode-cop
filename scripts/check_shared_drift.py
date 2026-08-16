@@ -38,6 +38,7 @@ SHARED_WORKER_MODULES = [
     "domain/types_observation.py",
     "gui/app.py",
     "gui/dashboard.py",
+    "gui/hub_api.py",
     "gui/hub_page.py",
     "gui/live_view_model.py",
     "gui/page.py",

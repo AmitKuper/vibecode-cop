@@ -16,6 +16,13 @@ Status legend: [ ] open · [~] in progress · [x] done (with date)
       series, shas, replay links), live-panel embedding, replay reuse; verified
       against the real results tree (7 series listed, counted log Verified OK).
 
+- [x] per-run history (2026-08-17): result artifacts were one-file-per-game_id
+      and each series OVERWROTE the last - every friendly under a later counted
+      game was lost as structured data. Fixed forward (every run now archives to
+      results/history/, timestamped, never overwritten) and BACKFILLED: 17 lost
+      per-run results recovered byte-exact from the sent report emails. The
+      dashboard's friendly table now lists every run (16 friendlies).
+
 Decisions on record (2026-08-16, with the user):
 - Panels: ALL extras (scent grid, hint+deception cue, integrity ticker).
 - Replay: BOTH CLI stepping and web page, one shared core.
