@@ -29,6 +29,7 @@ iframe{border:1px solid #2a2a3a;border-radius:6px;background:#0d0d16}
   <a href="#status" id="nav-status">Status</a>
   <a href="#history" id="nav-history">Game History</a>
   <a href="#replay" id="nav-replay">Replay</a>
+  <a href="#play" id="nav-play" style="display:none">Play vs Model</a>
   <a href="#settings" id="nav-settings">Settings</a>
 </nav>
 <div id="main">
@@ -59,6 +60,11 @@ iframe{border:1px solid #2a2a3a;border-radius:6px;background:#0d0d16}
   <iframe id="replay-frame" style="width:100%;height:82vh" loading="lazy"></iframe>
 </div>
 
+<div class="view" id="view-play">
+  <h2>Play vs the model <a class="note" href="/play" target="_blank">open full page ↗</a></h2>
+  <iframe id="play-frame" style="width:100%;height:84vh" loading="lazy"></iframe>
+</div>
+
 <div class="view" id="view-settings">
   <h2>Settings <span class="note">(read-only — the dashboard never writes; edit config/runtime.toml)</span></h2>
   <table class="kv" id="t-settings"></table>
@@ -74,7 +80,11 @@ function nav(){
     const f=document.getElementById('replay-frame');
     if(!f.src)f.src='/replay';
   }
-  for(const v of ['status','history','replay','settings']){
+  if(view==='play'){
+    const f=document.getElementById('play-frame');
+    if(!f.src)f.src='/play';
+  }
+  for(const v of ['status','history','replay','play','settings']){
     document.getElementById('view-'+v).classList.toggle('show',v===view);
     document.getElementById('nav-'+v).classList.toggle('active',v===view);
   }
@@ -137,6 +147,7 @@ async function settings(){
     rows.map(([k,v])=>`<tr><td>${k}</td><td>${v??'—'}</td></tr>`).join('');
   document.getElementById('profiles').textContent=(s.profiles||[]).join(' · ')||'none';
 }
+fetch('/api/play/available').then(r=>{if(r.ok)document.getElementById('nav-play').style.display='';}).catch(()=>{});
 nav();games();live();settings();setInterval(live,5000);
 </script>
 </body>

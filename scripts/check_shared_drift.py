@@ -1,22 +1,14 @@
 """Detect silent divergence between the cop and thief copies of shared modules.
 
-The two repos deliberately duplicate a set of modules instead of importing a
-common package: each must clone, install and play on its own machine, and the
-league treats them as two independent teams' code. The cost of that decision is
-drift - `signing.py` or `networks.py` quietly differing between repos would
-produce two agents that disagree about the protocol or the observation layout,
-and nothing would fail until a counted match.
-
-This gate makes the decision honest: the shared set is pinned here, and any
-byte-difference fails. Divergence should be a deliberate, reviewed act - update
-BOTH copies, or remove the file from SHARED with a reason.
-
-Files that legitimately differ by role (imports of cop_worker vs thief_worker,
-role-specific policies) are simply not listed.
+The repos deliberately duplicate a pinned set of modules (each must clone and
+run standalone); the cost is drift - `signing.py` or `networks.py` quietly
+differing would make the two agents disagree about the protocol or the
+observation layout, failing nothing until a counted match. Any byte-difference
+in the pinned set fails; role-specific files are simply not listed.
 
     python scripts/check_shared_drift.py          # gate (exit 1 on drift)
     python scripts/check_shared_drift.py --list   # show every pinned pair
-Skips cleanly (exit 0) when the sibling repo is absent, e.g. a single-repo clone.
+Skips cleanly (exit 0) when the sibling repo is absent (single-repo clone).
 """
 
 from __future__ import annotations
@@ -42,6 +34,7 @@ SHARED_WORKER_MODULES = [
     "gui/hub_page.py",
     "gui/live_view_model.py",
     "gui/page.py",
+    "gui/play_page.py",
     "gui/replay_page.py",
     "replay/ref3_steps.py",
     "replay/replay_board.py",

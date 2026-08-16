@@ -53,6 +53,11 @@ ALLOWED: dict[str, tuple[int, str]] = {
     "scripts/ref3_match/role_worker.py": (155, "Worker entry point: stdio protocol loop."),
     "tests/test_submission_builder.py": (160, "Table-driven fixtures for the submission form."),
     "tests/test_split_architecture.py": (160, "End-to-end split-architecture scenario."),
+    "tests/test_gui_routes_and_stepping.py": (
+        180,
+        "One behavioral suite over the replay stepping contract: CLI loop, API "
+        "ordering, page wiring - splitting it would scatter one contract.",
+    ),
 }
 
 
