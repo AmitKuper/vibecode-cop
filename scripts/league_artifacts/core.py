@@ -38,13 +38,35 @@ def our_mcp() -> dict:
 GAME_JSON_PATH = REPO_ROOT / "config" / "game.json"
 
 
+def game_json_path() -> Path:
+    """The constitution THIS pairing declares: the ``--config`` profile's game.json.
+
+    ``agreed_between`` names the two groups and is inside the hash, so the file
+    is per-pairing. Reading the base path unconditionally meant every series
+    declared whichever pair the base file happened to name (it still said
+    imreeyal/vibecode six counted games later) while the opponent profile's own
+    game.json — loaded by ``--config`` and byte-diffed with the peer — never
+    reached the wire (found 2026-08-18, ahk-yosi pairing). Falls back to the
+    base file when no profile is selected or the profile carries no game.json.
+    """
+    try:
+        from ref3_match.runtime_cfg import profile_dir
+
+        selected = profile_dir()
+        if selected and (selected / "game.json").is_file():
+            return selected / "game.json"
+    except Exception:  # no CLI profile installed (unit tests, standalone scripts)
+        pass
+    return GAME_JSON_PATH
+
+
 def _sha(obj: object) -> str:
     return hashlib.sha256(canonical_json(obj).encode("utf-8")).hexdigest()
 
 
 def load_constitution() -> dict:
     """Load the shared game.json (lazy — a missing file must not crash on import)."""
-    return json.loads(GAME_JSON_PATH.read_text(encoding="utf-8"))
+    return json.loads(game_json_path().read_text(encoding="utf-8"))
 
 
 def config_sha256() -> str:

@@ -18,6 +18,10 @@ def _resolve_args(args) -> None:
         base_net = load_runtime(None).get("network", {})
         for key in ("gui_cop_port", "gui_thief_port"):
             net.setdefault(key, base_net.get(key))
+    # Ride the resolved profile along in the snapshot: it reaches the spawned
+    # role workers with the runtime, so every process declares this pairing's
+    # game.json (agreed_between is inside config_sha256), not the base file.
+    rt["profile"] = {"dir": str(cfg["profile_dir"]), "source": cfg["source"]}
     apply_runtime_config(rt)
     ident, rep = rt.get("identity", {}), rt.get("report", {})
     if args.opp_cop_url is None:

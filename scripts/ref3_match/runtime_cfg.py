@@ -26,6 +26,17 @@ def runtime_snapshot() -> dict:
     return dict(_RT)
 
 
+def profile_dir() -> Path | None:
+    """Directory the ``--config`` profile resolved to, or None for the base config/.
+
+    Installed under ``[profile]`` by the CLI, so it rides along in the snapshot a
+    split-arch role worker is handed and both processes declare the same
+    constitution (see league_artifacts.core.game_json_path).
+    """
+    raw = _RT.get("profile", {}).get("dir")
+    return Path(raw) if raw else None
+
+
 def apply_runtime_config(runtime: dict) -> None:
     """Install a loaded runtime.toml (from config_loader) for the helpers below to read."""
     global _RT
