@@ -97,13 +97,14 @@ announcement on the day.
 2. **Verify the report email left:** `emailed result ONLY to <LEAGUE_REPORT_ADDRESS>
    (id=<msg-id>)`. Record the message-id. Rule 35: both teams' reports must exist and agree — get
    the opponent's message-id too.
-3. **Commit + push ALL artifacts, both repos** — configs (`config/games/`) + logs + declaration +
+3. **Commit + push ALL artifacts, both repos** — configs (`config/games/`) + logs + **game
+   records** (`record_*_gNN.json`, full both-sides replay) + declaration +
    result + `counted_series.json` (`results/`). **These dirs are gitignored**, so use
    `git add -f`. Uncommitted artifacts are invisible to the audit; rule-53 hashes must resolve.
 4. **Verify the counted tracker:** `results/counted_series.json` gained this series with the
    report message-id; `counted_games_played` incremented.
 5. **Collect evidence** under `evidence/game_vs_<opponent>/` in EACH repo, split by the role that
-   repo played: cop repo = its cop gamelets (config+log), thief repo = its thief gamelets; both
+   repo played: cop repo = its cop gamelets (config+log+record), thief repo = its thief gamelets; both
    get result + declaration + `counted_series.json` + the filed report `.eml` + a `README.md`.
    Add the runtime log and the authorization exchange. Tag both repos `game_vs_<opponent>`.
 6. **Bump for next time:** the next counted game uses `--counted-played` = the new

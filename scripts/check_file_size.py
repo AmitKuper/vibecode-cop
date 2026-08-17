@@ -37,12 +37,16 @@ ALLOWED: dict[str, tuple[int, str]] = {
         170,
         "Single outbound-call policy surface: pacing, retry, breaker.",
     ),
+    "cop_worker/gui/hub_api.py": (
+        165,
+        "One read-only hub API: games/live/settings are a single surface.",
+    ),
     "cop_worker/protocol/reference_v3/session.py": (
         165,
         "One wire session; the four tools are one protocol unit.",
     ),
     "scripts/ref3_match/artifacts_io.py": (
-        160,
+        170,
         "One emission unit: every league artifact written in a single pass.",
     ),
     "scripts/ref3_match/subgame_settle.py": (
@@ -62,6 +66,10 @@ ALLOWED: dict[str, tuple[int, str]] = {
     ),
     "tests/test_submission_builder.py": (160, "Table-driven fixtures for the submission form."),
     "tests/test_split_architecture.py": (160, "End-to-end split-architecture scenario."),
+    "tests/test_game_record.py": (
+        180,
+        "The full record chain (capture/merge/timeline/API/archive) in one suite.",
+    ),
     "tests/test_gui_routes_and_stepping.py": (
         180,
         "One behavioral suite over the replay stepping contract: CLI loop, API "

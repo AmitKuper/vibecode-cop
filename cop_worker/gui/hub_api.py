@@ -27,6 +27,11 @@ def _counted_index() -> dict:
         return {}
 
 
+def _stamp(started: str) -> str:
+    """The per-run archive stamp artifacts_io derives from the first window."""
+    return started[:19].replace(":", "").replace("-", "").replace("T", "-") or "unknown"
+
+
 @router.get("/api/hub/games")
 async def games() -> JSONResponse:
     """Every series with a result artifact, newest first, categorized.
@@ -80,9 +85,15 @@ async def games() -> JSONResponse:
                 if from_archive
                 else (counted.get(game_id) or {}).get("report_message_id", ""),
                 "started": started,
-                # Gamelet logs rotate per game_id: replay links are only valid
-                # for the CURRENT run, never for archived ones.
-                "logs": []
+                # Gamelet logs rotate per game_id, so archived rows can't link
+                # them - but per-run GAME RECORDS are archived under history/
+                # (same stamp as the result), so those replay links survive.
+                "logs": sorted(
+                    f"history/{p.name}"
+                    for p in (RESULTS / "history").glob(
+                        f"record_{game_id}_g*_{_stamp(started)}.json"
+                    )
+                )
                 if from_archive
                 else sorted(p.name for p in RESULTS.glob(f"log_{game_id}_g*.json")),
             }

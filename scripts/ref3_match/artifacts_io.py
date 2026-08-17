@@ -138,6 +138,14 @@ def _emit_files(result: dict, args) -> dict:
     # from its first window, and is never overwritten.
     stamp = (starts[0] or "")[:19].replace(":", "").replace("-", "").replace("T", "-") or "unknown"
     write_artifact(result_obj, results_dir / "history" / f"result_{game_id}_{stamp}.json")
+    # Game records rotate per game_id exactly like logs - archive them per-run
+    # too, so EVERY run (friendly rematches included) stays fully replayable.
+    import shutil
+
+    for sg in played:
+        rec = results_dir / f"record_{game_id}_g{sg['sub_game']:02d}.json"
+        if rec.is_file():
+            shutil.copyfile(rec, results_dir / "history" / f"{rec.stem}_{stamp}.json")
     print(
         f"[match] artifacts: {len(played)}x(config+log) + declaration + result "
         f"under results/ and config/games/"

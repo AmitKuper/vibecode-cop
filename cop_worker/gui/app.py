@@ -71,6 +71,8 @@ async def replay_logs() -> JSONResponse:
     results = Path(__file__).resolve().parents[2] / "results"
     names = [f.name for f in results.glob("log_*.json")]
     names += [f.name for f in results.glob("record_*.json")]
+    # archived per-run records: replayable even after a rematch rotates results/
+    names += [f"history/{f.name}" for f in (results / "history").glob("record_*.json")]
     return JSONResponse(sorted(names))
 
 
@@ -82,8 +84,17 @@ async def replay_steps(log: str) -> JSONResponse:
     from cop_worker.replay.ref3_steps import verify_file
 
     results = Path(__file__).resolve().parents[2] / "results"
-    target = (results / Path(log).name).resolve()
-    if not target.is_file() or target.parent != results.resolve():
+    # only two shapes exist: a bare name in results/, or an archived record
+    # under exactly history/ - anything else (traversal included) is refused
+    if log.replace("\\", "/").startswith("history/"):
+        expected_parent = (results / "history").resolve()
+        target = (expected_parent / Path(log).name).resolve()
+        allowed = Path(log).name.startswith("record_")
+    else:
+        expected_parent = results.resolve()
+        target = (expected_parent / Path(log).name).resolve()
+        allowed = True
+    if not allowed or not target.is_file() or target.parent != expected_parent:
         return JSONResponse({"error": "unknown log"}, status_code=404)
     from cop_worker.replay.game_record import is_game_record, record_timeline
     from cop_worker.replay.ref3_steps import load_log

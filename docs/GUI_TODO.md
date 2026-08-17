@@ -42,6 +42,10 @@ Status legend: [ ] open · [~] in progress · [x] done (with date)
       recorded-wire-bytes legend, hints shown with a may-lie note); sealed
       logs remain the only integrity evidence. Proven on the production path:
       peersim 6/6 windows -> 6 record files, 35 steps each, both sides.
+      Durability (same day): records archive per-run to results/history/ (same
+      stamp as the result), the viewer serves history/record_* (traversal-
+      guarded), archived history rows in the dashboard link them, and the
+      counted checklist force-adds records with the other artifacts.
 
 Decisions on record (2026-08-16, with the user):
 - Panels: ALL extras (scent grid, hint+deception cue, integrity ticker).
