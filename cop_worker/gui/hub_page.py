@@ -25,6 +25,9 @@ table tr:nth-child(even){background:#161622}
 .rec-w{color:#00ff88;font-weight:bold}.rec-l{color:#ff5566;font-weight:bold}
 .win{color:#00ff88}.loss{color:#ff5566}
 iframe{border:1px solid #2a2a3a;border-radius:6px;background:#0d0d16}
+.lb{display:inline-block;margin:0 26px 12px 0;vertical-align:top}
+.lcell{width:32px;height:32px;display:inline-block;border:1px solid #2a2a3a;text-align:center;line-height:32px;vertical-align:top}
+.lcell.me{outline:3px solid #ffd447;outline-offset:-3px}
 .kv td:first-child{color:#9ab;width:220px}
 .note{color:#8888aa;font-size:0.9em}
 </style></head>
@@ -86,13 +89,11 @@ iframe{border:1px solid #2a2a3a;border-radius:6px;background:#0d0d16}
 <script>
 function nav(){
   const view=(location.hash||'#status').slice(1).split('?')[0];
-  if(view==='replay'){
-    const f=document.getElementById('replay-frame');
-    if(!f.src)f.src='/replay';
-  }
-  if(view==='play'){
-    const f=document.getElementById('play-frame');
-    if(!f.src)f.src='/play';
+  if(view==='replay'||view==='play'){
+    const f=document.getElementById(view+'-frame');
+    if(!f.src)f.src='/'+view;
+    // keyboard controls live inside the frame - without focus they go dead
+    setTimeout(()=>{try{f.contentWindow.focus();}catch(_){}},150);
   }
   for(const v of ['status','history','replay','play','settings']){
     document.getElementById('view-'+v).classList.toggle('show',v===view);
@@ -120,7 +121,9 @@ async function games(){
     counts[g.category]=(counts[g.category]||0)+1;
     const w=g.winner==='vibecode';
     if(g.category==='counted'){w?won++:lost++;}
-    const logs=!(g.logs||[]).length?'<i>rotated</i>':(g.logs||[]).map(l=>`<a href="#replay" onclick="openReplay('${l}')">g${l.match(/_g(\\d+)/)?.[1]||'?'}</a>`).join(' ');
+    const logs=!(g.logs||[]).length
+      ?'<span class="note" title="gamelet log files are kept per game id — a later run against this opponent overwrote this run\\'s logs, so no replay exists">no replay (logs rotated)</span>'
+      :(g.logs||[]).map(l=>`<a href="#replay" onclick="openReplay('${l}')">g${l.match(/_g(\\d+)/)?.[1]||'?'}</a>`).join(' ');
     t.insertAdjacentHTML('beforeend',
       `<tr><td>${g.game_id}</td><td>${g.group}</td><td>${g.opponent}</td>`+
       `<td>${g.windows}</td><td>${(g.started||'').replace('T',' ')}</td><td>${g.score}</td>`+
@@ -141,16 +144,30 @@ async function games(){
       `<td>${g.opponent}</td><td>${g.score}</td>`+
       `<td class="${g.winner==='vibecode'?'win':'loss'}">${g.winner||'—'}</td></tr>`).join('');
 }
+function liveBoard(v,role){
+  const bel=v.belief_heatmap||[],sc=v.opponent_scent||[],own=v.own_position;
+  let mx=0;for(const row of bel)for(const x of row)mx=Math.max(mx,x);
+  let h=`<div class="lb"><b>${role.toUpperCase()}</b> — sg${v.sub_game||'?'} step ${v.step||'?'}`+
+    `${v.your_turn?' · <span class="up">your turn</span>':''} · barriers ${v.barriers_left??'—'}<br>`;
+  for(let r=0;r<7;r++){for(let c=0;c<7;c++){
+    const b=mx>0?((bel[r]||[])[c]||0)/mx:0, s=(sc[r]||[])[c]||0;
+    const red=b>0?`rgba(220,60,60,${(0.08+0.92*b).toFixed(2)})`:null;
+    const blue=s>0?`rgba(70,130,230,${(0.12+0.80*Math.min(1,s/0.8)).toFixed(2)})`:null;
+    const bg=red&&blue?`linear-gradient(135deg,${red} 49%,${blue} 51%)`:(red||blue||'transparent');
+    const me=own&&own[0]==r&&own[1]==c;
+    h+=`<span class="lcell${me?' me':''}" style="background:${bg}">${me?'★':''}</span>`;}h+='<br>';}
+  return h+'<span class="note">★ own position · red = belief over opponent · blue = sensed scent</span></div>';
+}
 async function live(){
   const r=await fetch('/api/hub/live');const d=await r.json();
-  const frames=document.getElementById('live-frames');let fh='';
+  let fh='';
   for(const role of ['cop','thief']){
-    const el=document.getElementById(role+'-st');const up=d[role]&&d[role].up;
-    el.textContent=up?`LIVE — sg${d[role].sub_game||'?'} step ${d[role].step||'?'}`:'no game running';
-    el.className=up?'up':'down';
-    if(up)fh+=`<iframe src="http://127.0.0.1:${role==='cop'?8781:8782}/" width="49%" height="620"></iframe>`;
+    const el=document.getElementById(role+'-st');const v=d[role]||{};
+    el.textContent=v.up?`LIVE — sg${v.sub_game||'?'} step ${v.step||'?'}`:'no game running';
+    el.className=v.up?'up':'down';
+    if(v.up)fh+=liveBoard(v,role);
   }
-  frames.innerHTML=fh;
+  document.getElementById('live-frames').innerHTML=fh;
   const hint=document.getElementById('idle-hint');
   if(hint)hint.style.display=fh?'none':'';
 }

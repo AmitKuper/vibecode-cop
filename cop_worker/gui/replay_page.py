@@ -14,7 +14,11 @@ body{font-family:monospace;background:#12121f;color:#e0e0e0;margin:16px}
 #verdict{font-size:1.6em;font-weight:bold;padding:8px 20px;border-radius:6px;display:inline-block;margin:8px 0}
 .okv{background:#1a5f3f;color:#00ff88}
 .badv{background:#6d1a24;color:#ff5566}
-select{width:100%;margin:6px 0}
+#picker{margin:8px 0;line-height:2.1}
+.pkg{color:#9ab;margin:0 8px 0 2px}
+.pk{padding:4px 12px;margin:0 4px 0 0;border-radius:12px}
+.pk.on{border-color:#7ab8ff;color:#7ab8ff;background:#1d2a3e}
+#who{font-size:1.05em;margin:4px 0}
 input[type=range]{margin:6px 8px;vertical-align:middle;width:60%}
 button{background:#1d1d2e;color:#e0e0e0;border:1px solid #2a2a3a;border-radius:5px;padding:6px 14px;font-family:monospace;cursor:pointer}
 button:hover{background:#25253a}
@@ -34,7 +38,8 @@ button:hover{background:#25253a}
 <body>
 <a id="backlink" href="/#replay" style="display:none;color:#7ab8ff">&#8592; back to dashboard</a>
 <h1>Replay viewer — every step re-verified</h1>
-<select id="logs"></select>
+<div id="picker" class="legend">loading logs…</div>
+<div id="who"></div>
 <div id="verdict" class="badv">select a log</div>
 <div>
   <button id="prev" title="previous step (Left arrow)">&#9664; prev</button>
@@ -60,18 +65,27 @@ button:hover{background:#25253a}
 <script>
 let steps=[];
 async function loadList(){
-  const r=await fetch('/api/replay/logs');const names=await r.json();
-  const sel=document.getElementById('logs');
-  sel.innerHTML='<option value="">— choose a log —</option>'+names.map(n=>`<option>${n}</option>`).join('');
-  sel.onchange=()=>sel.value&&loadLog(sel.value);
+  const names=await (await fetch('/api/replay/logs')).json();
+  const by={};for(const n of names){const g=(n.match(/^log_(.+)_g\\d+\\.json$/)||[,n])[1];(by[g]=by[g]||[]).push(n);}
+  document.getElementById('picker').innerHTML=names.length
+    ?Object.entries(by).map(([g,ls])=>`<span class="pkg">${g}</span>`+
+      ls.map(n=>`<button class="pk" data-n="${n}">g${+((n.match(/_g(\\d+)/)||[])[1]||0)||'?'}</button>`).join('')).join('<br>')
+    :'no logs in results/ yet';
+  document.querySelectorAll('.pk').forEach(b=>b.onclick=()=>loadLog(b.dataset.n));
   const q=new URLSearchParams(location.search).get('log');
-  if(q){sel.value=q;loadLog(q);}
+  if(q)loadLog(q);
 }
 async function loadLog(name){
+  document.querySelectorAll('.pk').forEach(b=>b.classList.toggle('on',b.dataset.n===name));
   const r=await fetch('/api/replay/steps?log='+encodeURIComponent(name));
   const d=await r.json();steps=d.steps||[];
   const v=document.getElementById('verdict');
   v.textContent=d.overall;v.className=d.overall==='Verified OK'?'okv':'badv';
+  const su=d.summary||{},cop=su.role==='police'?su.group_id:su.opponent_group_id,
+    th=su.role==='thief'?su.group_id:su.opponent_group_id;
+  document.getElementById('who').innerHTML=(cop||th)
+    ?`<span class="mark-cop">COP — ${cop||'?'}</span> vs <span class="mark-thief">THIEF — ${th||'?'}</span>`+
+     `<span class="legend"> · outcome: ${su.outcome||'?'} · ${(su.started_at||'').slice(0,16).replace('T',' ')}</span>`:'';
   const s=document.getElementById('slider');
   s.max=Math.max(steps.length-1,0);s.oninput=()=>show(+s.value);
   const i=+(new URLSearchParams(location.search).get('i')||0);
@@ -105,8 +119,10 @@ function cellBg(vt,vc){
 }
 function show(i){
   if(!steps.length)return;const s=steps[i];const p=s.payload||{};
+  const rk=(s.board||{}).reckoned||[];
   document.getElementById('poslabel').textContent=
-    `timeline ${i+1}/${steps.length} — ${s.side}, protocol step ${s.step}`;
+    `timeline ${i+1}/${steps.length} — ${s.side}, protocol step ${s.step}`+
+    (rk.length?` · ${rk.join(' & ')} path dead-reckoned from sealed moves`:'');
   const cls=s.ok?'match':'mismatch';
   document.getElementById('stepcard').innerHTML=
     `<div>move: <b>${p.move||p.type||'—'}</b> · position: ${JSON.stringify(p.position||null)} · intent: ${p.intent||'—'}</div>`+

@@ -88,10 +88,13 @@ async def replay_steps(log: str) -> JSONResponse:
 
     overall, steps = verify_file(target)
     doc = load_log(target)
-    boards = board_states(steps, our_role=(doc.get("summary") or {}).get("role", "police"))
+    summ = doc.get("summary") or {}
+    boards = board_states(steps, our_role=summ.get("role", "police"))
+    keys = ("role", "group_id", "opponent_group_id", "outcome", "started_at")
     return JSONResponse(
         {
             "overall": overall,
+            "summary": {k: summ.get(k) for k in keys},
             "steps": [
                 {
                     "side": s.side,

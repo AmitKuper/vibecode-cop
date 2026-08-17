@@ -36,13 +36,13 @@ legend{color:#9ab;font-size:0.85em}
 <div id="status">choose a role and start</div>
 <div id="board"></div>
 <div id="controls" style="display:none">
-  <fieldset><legend>move (or arrow keys / space=stay)</legend>
+  <fieldset><legend>move — keys N/S/E/W or arrows · space = stay</legend>
     <button data-a="N">▲ N</button><button data-a="S">▼ S</button>
     <button data-a="W">◀ W</button><button data-a="E">▶ E</button>
     <button data-a="STAY">● stay</button></fieldset>
-  <fieldset id="barriers-box"><legend>place barrier (<span id="bleft">14</span> left)</legend>
-    <button data-a="PLACE_N">▲</button><button data-a="PLACE_S">▼</button>
-    <button data-a="PLACE_W">◀</button><button data-a="PLACE_E">▶</button></fieldset>
+  <fieldset id="barriers-box"><legend>place barrier — Shift+key (<span id="bleft">14</span> left)</legend>
+    <button data-a="PLACE_N">▲ N</button><button data-a="PLACE_S">▼ S</button>
+    <button data-a="PLACE_W">◀ W</button><button data-a="PLACE_E">▶ E</button></fieldset>
 </div>
 <div class="note">scent shown for the model's side · thief moves first each step ·
 capture = same cell or barrier on the thief · survive 35 steps to win as thief</div>
@@ -104,9 +104,14 @@ async function move(a){
 }
 document.querySelectorAll('#controls button').forEach(b=>b.onclick=()=>move(b.dataset.a));
 document.addEventListener('keydown',e=>{
-  const map={ArrowUp:'N',ArrowDown:'S',ArrowLeft:'W',ArrowRight:'E',' ':'STAY'};
-  if(map[e.key]!==undefined){move(map[e.key]);e.preventDefault();}
+  if(e.key===' '){move('STAY');e.preventDefault();return;}
+  const k=e.key.length===1?e.key.toUpperCase():e.key;
+  const dir={ArrowUp:'N',ArrowDown:'S',ArrowLeft:'W',ArrowRight:'E',N:'N',S:'S',W:'W',E:'E'}[k];
+  if(!dir)return;
+  const place=e.shiftKey&&G&&G.human_role==='cop'&&!G.over;
+  move(place?'PLACE_'+dir:dir);e.preventDefault();
 });
+window.focus();
 </script>
 </body>
 </html>"""

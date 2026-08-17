@@ -149,8 +149,8 @@ def test_steps_api_reconstructs_boards_with_both_agents_and_scent():
     """Positions from the revealed payloads; scent replayed via the locked emitter.
 
     Uses a nis-yar1 log: both sides sealed positions there. (anrbj666 sealed
-    action+state_digest instead - their pieces legitimately cannot be placed,
-    and the board shows only what the revealed data supports.)
+    action+state_digest instead - their path is dead-reckoned from the sealed
+    moves and flagged in the board's ``reckoned`` list; see replay_board.)
     """
     results = Path(__file__).resolve().parents[1] / "results"
     logs = sorted(p.name for p in results.glob("log_nis-yar1*_g*.json"))

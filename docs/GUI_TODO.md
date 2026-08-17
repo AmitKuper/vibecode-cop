@@ -33,6 +33,24 @@ Status legend: [ ] open · [~] in progress · [x] done (with date)
       profile chips, replay board/step-card side by side, persistent play
       board (no layout jump). Suites green: cop 1782, thief 1177.
 
+- [x] R7 user review round 2 (2026-08-17): six fixes from live user feedback.
+      (1) play: N/S/E/W letter keys + Shift+direction barrier hotkeys, clearer
+      legends; the hub now hands keyboard focus to the embedded frame — keys
+      were going dead because the iframe never had focus. (2) history: bare
+      "rotated" became "no replay (logs rotated)" with a tooltip saying why.
+      (3) status: native 7x7 board (own pos ★ + belief red + sensed scent
+      blue) replaces the 127.0.0.1 iframes, so it also renders when the
+      dashboard is viewed remotely; /api/hub/live forwards the board fields
+      (own knowledge only — never the opponent's coordinate). (4) replay: a
+      game/window chip picker replaces the <select>. (5) replay names the
+      group behind each role (COP x vs THIEF y + outcome + date) from the log
+      summary. (6) dialects that seal no positions (anrbj666, rstabcde,
+      uoh-sqak) are now dead-reckoned from their sealed moves + the fixed
+      start cells — validated 288/288 against the dialects that also
+      serialize state — so every replay shows BOTH roles and both scent
+      fields, labelled "dead-reckoned" on the timeline. Suites green: thief
+      1307, cop 1937 (2 pre-existing GPU-env failures, reproduced on master).
+
 Decisions on record (2026-08-16, with the user):
 - Panels: ALL extras (scent grid, hint+deception cue, integrity ticker).
 - Replay: BOTH CLI stepping and web page, one shared core.

@@ -111,6 +111,11 @@ async def live_status() -> JSONResponse:
                     "sub_game": view.get("sub_game"),
                     "step": view.get("turn"),
                     "your_turn": view.get("your_turn"),
+                    # Status-view board: own knowledge only, never the opponent's coordinate
+                    "own_position": view.get("own_position"),
+                    "belief_heatmap": view.get("belief_heatmap"),
+                    "opponent_scent": view.get("opponent_scent"),
+                    "barriers_left": view.get("own_barriers_remaining"),
                 }
         except Exception:
             pass  # not running - the normal idle state, never an error
