@@ -69,7 +69,7 @@ cd vibecode-cop && uv sync --frozen
 uv run pytest tests/ cop_worker/tests/ league_manager/tests/ -q
 ```
 
-Expected: **1,887 passed, 4 skipped** (the same suite CI gates, with branch coverage
+Expected: **1,937 passed, 4 skipped** (the same suite CI gates, with branch coverage
 >= 94%).
 
 ## Quick start — self-test against the bundled sparring peer
@@ -444,8 +444,8 @@ diagnose from `[wire<-]` and `[diag]` lines, not guesswork.
 ## Self-grade (code quality)
 
 This grade covers **code quality only** — never league results. Basis, all
-reproducible from the repo: 1,891 tests collected (1,887 passed, 4 skipped),
-branch coverage **94.90%** (CI-gated at 94), `ruff check` + `ruff format --check`
+reproducible from the repo: 1,941 tests collected (1,937 passed, 4 skipped),
+branch coverage **97.35%** (CI-gated at 94), `ruff check` + `ruff format --check`
 gating every commit, and a 150-line-per-module discipline (seven documented
 exceptions in [`docs/KNOWN_DEVIATIONS.md`](docs/KNOWN_DEVIATIONS.md)).
 
@@ -454,7 +454,7 @@ exceptions in [`docs/KNOWN_DEVIATIONS.md`](docs/KNOWN_DEVIATIONS.md)).
 | Dimension | Grade | Why |
 |---|---|---|
 | Correctness | 93 | Physics is one pure conformance-pinned function; kit vectors fail closed; serving guards refuse mismatched checkpoints |
-| Tests | 93 | 1,887 passing tests, 94.90% branch coverage, conformance vectors, source-pin tests on the production seams |
+| Tests | 93 | 1,937 passing tests, 97.35% branch coverage, conformance vectors, source-pin tests on the production seams |
 | Documentation | 90 | DESIGN/PRDs/runbooks current; deviations documented rather than hidden |
 | Architecture | 92 | Single transition source of truth, mixin-decomposed gamelet, ≤150-line modules with 7 justified exceptions |
 | Style | 92 | ruff + format zero-finding CI; docstrings throughout |
