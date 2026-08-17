@@ -64,6 +64,12 @@ ALLOWED: dict[str, tuple[int, str]] = {
         "A single HTML/JS page template in a string: its line count is markup, "
         "not Python complexity. The page logic itself is small per view.",
     ),
+    "cop_worker/gui/replay_page.py": (
+        175,
+        "Same as hub_page: one HTML/JS page template in a string. Splitting the "
+        "stylesheet from the markup it styles would hide the layout contract "
+        "(one column width drives every block) across two files.",
+    ),
     "tests/test_submission_builder.py": (160, "Table-driven fixtures for the submission form."),
     "tests/test_split_architecture.py": (160, "End-to-end split-architecture scenario."),
     "tests/test_game_record.py": (
