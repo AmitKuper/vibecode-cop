@@ -334,6 +334,53 @@ Auditing log_uoh-sqak-vs-vibecode_g06.json...
 === VERIFIED OK ===
 ```
 
+## Academic report
+
+### The chosen Dec-POMDP model
+
+The match is modeled as a two-agent decentralized POMDP. Hidden joint state:
+both positions, the public barrier set, and the step counter. Each side's
+**observation is strictly local** — own position, the public barrier list, the
+opponent's transmitted chebyshev scent field, and a free-language hint that may
+lie; the opponent's position is never observable during play
+(`cop_worker/observation.py` has no such field by design). Actions are the four
+orthogonal moves + stay, plus barrier placement for the cop; rewards follow the
+Appendix-F scoring table. Uncertainty is carried as a belief over the opponent's
+cell (`BeliefState`); in production the scent field itself is the operative
+position estimate — its unique post-decay peak drives the sighted minimax
+frames. Full information model: [`docs/DEC_POMDP_INFORMATION_MODEL.md`](docs/DEC_POMDP_INFORMATION_MODEL.md).
+
+### FastMCP orchestration dilemmas
+
+The four MCP tools are **non-blocking receivers** while a game is a blocking
+turn loop — resolved with inbound deques polled under explicit deadlines, never
+callbacks into game logic. Per-sender turn numbering means "the opponent's turn
+for round r" is r-1 when we move first — an off-by-one that plays blind if
+ignored. One physical door per role serves six windows, so sessions reset
+per-window (seals, inboxes, wire captures) and an expected-sender guard discards
+late turns from the previous window; eager peers that greet the wrong door
+early are held until their window's handshake. Everything inbound crosses a
+trust boundary: an `InboundGuard` rate-limits every tool, and nothing an
+opponent sends is believed until the commit-reveal audit verifies it.
+
+### Strategies, learning curves, and mandatory screenshots
+
+Movement is algorithmic (course rule): a depth-limited minimax with
+territory evaluation plays sighted frames; a trained RecurrentA2C-GRU net
+covers blind frames; the LLM layer only writes hint text (template mode in
+counted play). RL **was** used — the from-scratch chebyshev training run
+(12 generations per role, held-out eval each generation):
+
+![learning curves](assets/learning_curves.png)
+
+The cop's resumed generations regressed monotonically (fresh gen01 was the
+best cop of the run) — the negative result that moved promotion to the honest
+fixed-start harness (`docs/RL_RESEARCH_REPORT_20260810.md`).
+
+| Live GUI — belief map (real counted game) | Replay App — Verified OK |
+|---|---|
+| ![live belief map](assets/screenshots/live_belief_map.png) | ![replay verified](assets/screenshots/replay_verified_ok.png) |
+
 ## Strategy
 
 High level only (the repo's public design docs carry the details):
