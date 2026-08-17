@@ -33,6 +33,16 @@ Status legend: [ ] open · [~] in progress · [x] done (with date)
       profile chips, replay board/step-card side by side, persistent play
       board (no layout jump). Suites green: cop 1782, thief 1177.
 
+- [x] WP10 game-record artifact (2026-08-17): record_<game>_gNN.json now
+      written per window beside the sealed log - every step of BOTH sides as
+      experienced: our sealed move + sent scent/hint, the opponent's ACTUAL
+      received scent bytes/hints/claims (previously dropped at settle), their
+      positions enriched from the audit reveal (position_source marker). The
+      replay viewer plays record files directly (neutral RECORDED badge,
+      recorded-wire-bytes legend, hints shown with a may-lie note); sealed
+      logs remain the only integrity evidence. Proven on the production path:
+      peersim 6/6 windows -> 6 record files, 35 steps each, both sides.
+
 Decisions on record (2026-08-16, with the user):
 - Panels: ALL extras (scent grid, hint+deception cue, integrity ticker).
 - Replay: BOTH CLI stepping and web page, one shared core.

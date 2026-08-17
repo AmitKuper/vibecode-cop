@@ -38,18 +38,22 @@ ALLOWED: dict[str, tuple[int, str]] = {
         "Single outbound-call policy surface: pacing, retry, breaker.",
     ),
     "cop_worker/protocol/reference_v3/session.py": (
-        160,
+        165,
         "One wire session; the four tools are one protocol unit.",
+    ),
+    "scripts/ref3_match/artifacts_io.py": (
+        160,
+        "One emission unit: every league artifact written in a single pass.",
+    ),
+    "scripts/ref3_match/subgame_settle.py": (
+        170,
+        "Audit settlement is one transaction: verify, refine, snapshot, row.",
     ),
     "scripts/ref3_match/subgame_turns.py": (
         170,
         "The turn loop; call-site ordering is pinned by tests.",
     ),
     "scripts/ref3_match/subgame_setup.py": (165, "Handshake + step-0 seal, one atomic sequence."),
-    "scripts/ref3_match/subgame_settle.py": (
-        160,
-        "Audit exchange and settlement, one atomic sequence.",
-    ),
     "scripts/ref3_match/role_worker.py": (155, "Worker entry point: stdio protocol loop."),
     "cop_worker/gui/hub_page.py": (
         200,

@@ -36,6 +36,7 @@ SHARED_WORKER_MODULES = [
     "gui/page.py",
     "gui/play_page.py",
     "gui/replay_page.py",
+    "replay/game_record.py",
     "replay/ref3_steps.py",
     "replay/replay_board.py",
     "domain/types_records.py",

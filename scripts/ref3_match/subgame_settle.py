@@ -141,6 +141,12 @@ async def _settle(
     row = {
         "sub_game": sub_game,
         "role": role,
+        # Full wire experience of this window, both directions - feeds the
+        # game-record artifact only (score_series copies fields, never rows).
+        "wire_turns": {
+            "sent": [dict(t) for t in getattr(out_session, "sent_turns", [])],
+            "received": [dict(t) for t in in_session.turn_messages],
+        },
         "audit_ok": ok,
         "outcome": outcome,
         "rl_move_count": len(rl_moves),

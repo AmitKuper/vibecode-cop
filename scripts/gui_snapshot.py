@@ -32,6 +32,10 @@ VIEWS = {
         f"{BASE}/replay?log=log_nis-yar1-vs-vibecode_g02.json&i=20&scent=cop",
         "1150,1000",
     ),
+    "replay_record": (
+        f"{BASE}/replay?log=record_peersim01-vs-vibecode_g01.json&i=36&scent=both",
+        "1150,1000",
+    ),
     "replay_scent_both": (
         f"{BASE}/replay?log=log_nis-yar1-vs-vibecode_g02.json&i=20&scent=both",
         "1150,1000",

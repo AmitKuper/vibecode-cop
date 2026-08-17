@@ -65,11 +65,13 @@ async def replay_page() -> HTMLResponse:
 
 @app.get("/api/replay/logs")
 async def replay_logs() -> JSONResponse:
-    """Names of this repo's own reference-v3 logs (results/log_*.json)."""
+    """Sealed logs AND game records (results/log_*.json + record_*.json)."""
     from pathlib import Path
 
     results = Path(__file__).resolve().parents[2] / "results"
-    return JSONResponse(sorted(f.name for f in results.glob("log_*.json")))
+    names = [f.name for f in results.glob("log_*.json")]
+    names += [f.name for f in results.glob("record_*.json")]
+    return JSONResponse(sorted(names))
 
 
 @app.get("/api/replay/steps")
@@ -83,9 +85,15 @@ async def replay_steps(log: str) -> JSONResponse:
     target = (results / Path(log).name).resolve()
     if not target.is_file() or target.parent != results.resolve():
         return JSONResponse({"error": "unknown log"}, status_code=404)
+    from cop_worker.replay.game_record import is_game_record, record_timeline
     from cop_worker.replay.ref3_steps import load_log
     from cop_worker.replay.replay_board import board_states
 
+    doc0 = load_log(target)
+    if is_game_record(doc0):
+        # observational record: recorded wire scent, no commit verification here
+        overall, entries = record_timeline(doc0)
+        return JSONResponse({"overall": overall, "steps": entries})
     overall, steps = verify_file(target)
     doc = load_log(target)
     boards = board_states(steps, our_role=(doc.get("summary") or {}).get("role", "police"))

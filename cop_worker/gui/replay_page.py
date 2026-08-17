@@ -14,6 +14,7 @@ body{font-family:monospace;background:#12121f;color:#e0e0e0;margin:16px}
 #verdict{font-size:1.6em;font-weight:bold;padding:8px 20px;border-radius:6px;display:inline-block;margin:8px 0}
 .okv{background:#1a5f3f;color:#00ff88}
 .badv{background:#6d1a24;color:#ff5566}
+.recv{background:#23345c;color:#9ab8e8}
 select{width:100%;margin:6px 0}
 input[type=range]{margin:6px 8px;vertical-align:middle;width:60%}
 button{background:#1d1d2e;color:#e0e0e0;border:1px solid #2a2a3a;border-radius:5px;padding:6px 14px;font-family:monospace;cursor:pointer}
@@ -52,8 +53,9 @@ button:hover{background:#25253a}
   <div>
     <div id="board"></div>
     <div class="legend"><span style="color:#d4a414">&#9632; thief scent</span> ·
-    <span style="color:#66aaff">&#9632; cop scent</span> — reconstructed from the revealed
-    positions<br>via the locked <b>subtractive_chebyshev_v1</b> emitter — wire-exact (peak 0.8)</div>
+    <span style="color:#66aaff">&#9632; cop scent</span> — <span id="scent-src">reconstructed from
+    the revealed positions<br>via the locked <b>subtractive_chebyshev_v1</b> emitter — wire-exact
+    (peak 0.8)</span></div>
   </div>
   <div id="stepcard">(no step)</div>
 </div>
@@ -71,7 +73,8 @@ async function loadLog(name){
   const r=await fetch('/api/replay/steps?log='+encodeURIComponent(name));
   const d=await r.json();steps=d.steps||[];
   const v=document.getElementById('verdict');
-  v.textContent=d.overall;v.className=d.overall==='Verified OK'?'okv':'badv';
+  v.textContent=d.overall;
+  v.className=d.overall==='Verified OK'?'okv':(d.overall.startsWith('RECORDED')?'recv':'badv');
   const s=document.getElementById('slider');
   s.max=Math.max(steps.length-1,0);s.oninput=()=>show(+s.value);
   const i=+(new URLSearchParams(location.search).get('i')||0);
@@ -108,12 +111,18 @@ function show(i){
   document.getElementById('poslabel').textContent=
     `timeline ${i+1}/${steps.length} — ${s.side}, protocol step ${s.step}`;
   const cls=s.ok?'match':'mismatch';
+  const rec=(s.board||{}).scent_source==='recorded';
   document.getElementById('stepcard').innerHTML=
     `<div>move: <b>${p.move||p.type||'—'}</b> · position: ${JSON.stringify(p.position||null)} · intent: ${p.intent||'—'}</div>`+
-    `<div class="hash">stored     : ${s.stored_commit}</div>`+
-    `<div class="hash">recomputed : <span class="${cls}">${s.recomputed_commit}</span></div>`+
-    `<div>step verdict: <b class="${cls}">${s.ok?'Verified OK':'TAMPERED'}</b></div>`;
+    (p.hint?`<div>hint: <i>${String(p.hint).replace(/</g,'&lt;')}</i> <span class="legend">(may lie)</span></div>`:'')+
+    `<div class="hash">stored     : ${s.stored_commit||'—'}</div>`+
+    `<div class="hash">recomputed : <span class="${cls}">${s.recomputed_commit||'—'}</span></div>`+
+    (rec?`<div>scent: <b>recorded wire bytes</b> (as transmitted, not reconstructed)</div>`
+       :`<div>step verdict: <b class="${cls}">${s.ok?'Verified OK':'TAMPERED'}</b></div>`);
   const b=s.board||{};
+  document.getElementById('scent-src').innerHTML=b.scent_source==='recorded'
+    ?'recorded wire bytes — the fields each side actually transmitted'
+    :'reconstructed from the revealed positions<br>via the locked <b>subtractive_chebyshev_v1</b> emitter — wire-exact (peak 0.8)';
   const showC=document.getElementById('tg-cop').checked;
   const showT=document.getElementById('tg-thief').checked;
   const fT=document.getElementById('tg-scent').checked?(b.scent_thief||{}):{};

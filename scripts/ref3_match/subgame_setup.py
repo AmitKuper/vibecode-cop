@@ -90,6 +90,7 @@ async def _handshake(
     settled_row.forget(in_session)  # a previous window's row must not answer for this one
     out_session.local_records = []
     out_session._local_records_by_step = {}
+    out_session.sent_turns = []  # game-record capture is per-window, like the seals
     in_session.turns = ReferenceV3Inbox(window=_t("reorder_window", 4))
     in_session.turn_messages.clear()
     in_session.expected_turn_sender = None

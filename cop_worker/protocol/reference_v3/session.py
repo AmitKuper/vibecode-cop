@@ -24,6 +24,7 @@ class ReferenceV3Session:
         self.audits: deque[dict] = deque()
         self.controls: deque[dict] = deque()
         self.turn_messages: deque[dict] = deque()  # full wire-turn messages (for smell_grid access)
+        self.sent_turns: list[dict] = []  # full OUTBOUND wire turns (game-record capture)
         self.local_records: list[dict] = []
         self._local_records_by_step: dict[int, dict] = {}
         self.per_turn_llm_calls = 0
@@ -49,6 +50,9 @@ class ReferenceV3Session:
             stored = dict(private_record)
             self._local_records_by_step[step] = stored
             self.local_records.append(stored)
+            # Keep the WIRE turn too (scent/hint/claims): the sealed record has only
+            # the private payload, and the game-record artifact wants what we sent.
+            self.sent_turns.append(dict(turn))
         return await self._call("receive_turn", {"message": turn})
 
     async def send_audit(self, sender: str, result_claim: str) -> dict:

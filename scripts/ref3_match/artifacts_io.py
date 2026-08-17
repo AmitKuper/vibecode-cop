@@ -91,6 +91,14 @@ def _emit_files(result: dict, args) -> dict:
             ),
             results_dir / f"log_{game_id}_g{n:02d}.json",
         )
+        # Companion game record: both sides' full per-step experience (actual
+        # wire scent/hints), replayable in the viewer. Observational only.
+        from ref3_match.game_record import build_game_record
+
+        write_artifact(
+            build_game_record(game_id, game_uid, n, sg["role"], opp, sg),
+            results_dir / f"record_{game_id}_g{n:02d}.json",
+        )
     # The opponent's declared identity (rules 49/53) — repos, counted count — from their greeting.
     opp_ids = [sg.get("opp_identity") or {} for sg in played if sg.get("opp_identity")]
     opp_repos = next((i.get("repos") for i in opp_ids if i.get("repos")), {})
