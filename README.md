@@ -211,6 +211,11 @@ flowchart TD
 Design authority: [`docs/DESIGN.md`](docs/DESIGN.md) (C4 diagrams, sub-game
 sequence, numbered architecture decisions).
 
+Hardware disclosure: [`docs/HARDWARE_STATEMENT.md`](docs/HARDWARE_STATEMENT.md) —
+the dev machine's GPU was used in zero counted games, all production paths are
+CPU-pinned, and measured decision latency (p99 ≈ 1.2 ms vs the signed 30 s
+window) shows the hardware spec conferred no competitive advantage.
+
 ### Match visuals
 
 Rendered from a real rule-46/47 game between the shipped `hybrid_search` policies
