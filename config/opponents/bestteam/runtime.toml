@@ -1,0 +1,37 @@
+# bestteam pairing (Itay Malich & Diana Koroblov).
+# Two repos, two OS processes, two RESERVED ngrok domains on two separate ngrok
+# accounts - permanent, they do not rotate on restart. So unlike the quick-tunnel
+# pairings these URLs can be pinned here and probed days ahead.
+[network]
+ingress           = "static"
+our_cop_port      = 61224
+our_thief_port    = 61223
+
+opponent_group = "bestteam"
+# opp_cop_url is dialled when WE are thief (their cop answers), and vice versa.
+opp_cop_url    = "https://itinerary-single-overjoyed.ngrok-free.dev/mcp"
+opp_thief_url  = "https://denotatively-sciuroid-florine.ngrok-free.dev/mcp"
+
+[protocol]
+# Their declared hash is byte-identical to ours, and their published rings /
+# decay (0.900 -> 0.800, ring1 0.500, ring2 0.200) reproduce our emitter exactly.
+# Merge is max on both sides - verified against their worked example, so the
+# divergence they warned about does not exist between us.
+scent_model  = "subtractive_chebyshev_v1"
+move_policy  = "hybrid_search"
+mcp_call_sec = 10.0
+
+[timeouts]
+# Greeting poll shorter than the 300s index-hold so a quiet window retries with
+# a fresh drain instead of one long wait (najamjad lesson).
+agreement_poll_sec = 120.0
+
+[report]
+# FRIENDLY: mutual exchange by agreement - their operator inbox, never the
+# lecturer. Ours arrives at agentsorch@gmail.com from their side.
+recipient  = "itay.malich2@gmail.com"
+mode       = "send"
+token_path = "secrets/gmail/token.json"
+
+[counted]
+counted_played = 6
