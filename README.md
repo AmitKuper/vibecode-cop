@@ -442,6 +442,7 @@ recipe) and not on the wire. In production this checkpoint serves as the
 
 ```
 vibecode-cop/
+├── README.md           # the only Markdown file at the root; every other doc lives in docs/
 ├── scripts/            # orchestrator (ref3_match/), role-worker launcher, arenas, evaluation
 ├── cop_worker/         # the cop worker: protocol, RL, language, gmail, MCP server
 ├── league_manager/     # routing facade + reporting

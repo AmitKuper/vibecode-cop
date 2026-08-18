@@ -123,11 +123,15 @@ class LegacyResearchPolicy:
                 cop_scent_field=scent.thief_observation_scent(),
             )
         tensor = torch.tensor(observation, dtype=torch.float32).unsqueeze(0)
+        # The loader puts the net on CUDA when available; follow it (CPU boxes no-op).
+        tensor = tensor.to(next(self.policy.net.parameters()).device)
         with torch.no_grad():
             output = self.policy.net(tensor)
             logits = output[0] if isinstance(output, tuple) else output
         actions = COP_ACTIONS if logits.shape[-1] == len(COP_ACTIONS) else THIEF_ACTIONS
         legal = _legal(state, self.role)
-        mask = torch.tensor([action in legal for action in actions], dtype=torch.bool)
+        mask = torch.tensor(
+            [action in legal for action in actions], dtype=torch.bool, device=logits.device
+        )
         index = int(logits.squeeze(0).masked_fill(~mask, -1e9).argmax().item())
         return actions[index]
