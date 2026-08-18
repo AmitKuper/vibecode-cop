@@ -1,0 +1,55 @@
+01:19:01.045 [match] logging to D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\reports\ref3_matches\match_bestteam_20260819-011901.log
+01:19:03.009 [pw] [08/19/26 01:19:03] INFO     Starting MCP server               transport.py:361
+01:19:03.009 [pw]                              'vibecode-police' with transport
+01:19:03.009 [pw]                              'http' on
+01:19:03.009 [tw] [08/19/26 01:19:03] INFO     Starting MCP server               transport.py:361
+01:19:03.009 [tw]                              'vibecode-thief' with transport
+01:19:03.009 [tw]                              'http' on
+01:19:03.009 [tw]                              http://0.0.0.0:61223/mcp
+01:19:03.013 [pw]                              http://0.0.0.0:61224/mcp
+01:19:03.040 [tw] INFO:     Started server process [26700]
+01:19:03.040 [tw] INFO:     Waiting for application startup.
+01:19:03.040 [pw] INFO:     Started server process [3700]
+01:19:03.040 [pw] INFO:     Waiting for application startup.
+01:19:03.044 [tw] INFO:     Application startup complete.
+01:19:03.045 [pw] INFO:     Application startup complete.
+01:19:03.045 [tw] INFO:     Uvicorn running on http://0.0.0.0:61223 (Press CTRL+C to quit)
+01:19:03.045 [pw] INFO:     Uvicorn running on http://0.0.0.0:61224 (Press CTRL+C to quit)
+01:19:03.409 [pw] [police-worker] live GUI on http://127.0.0.1:8781
+01:19:03.409 [tw] [thief-worker] live GUI on http://127.0.0.1:8782
+01:19:03.409 [pw] [police-worker] endpoint live on :61224 (pid=3700, log=D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\reports\ref3_matches\worker_police_20260819-011901.log)
+01:19:03.409 [tw] [thief-worker] endpoint live on :61223 (pid=26700, log=D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\reports\ref3_matches\worker_thief_20260819-011901.log)
+01:19:03.409 [match] police worker ready (pid=25256)
+01:19:03.409 [match] thief worker ready (pid=16872)
+01:19:03.421 [match] SPLIT arch: cop pid=25256 thief pid=16872 orchestrator holds no game state
+01:19:03.421 [match] sg1 (thief) — dispatching to thief worker
+01:19:04.893 [tw] [match] peer endpoint UP: https://itinerary-single-overjoyed.ngrok-free.dev/mcp
+01:19:05.672 [tw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'sender', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='bestteam' role='police' sub_game=1 uid='d570f249-ac60' scent=81ebee59 wire=229ae648
+01:19:08.112 [tw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'sender', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='bestteam' role='police' sub_game=1 uid='d570f249-ac60' scent=81ebee59 wire=229ae648
+01:19:08.234 [tw] [match] sg1 peer greeting sub_game=1 role=police
+01:19:08.234 [tw] [match] sg1 role=thief handshake OK vs bestteam uid=d570f249-ac6
+01:19:10.169 [tw] [wire<-] turn step=1 sender='police' commit=8f576c6f ts='2026-08-18T22:19:10.727' cells=12 barrier=None claim=[1, 0] answer=None win=None
+01:19:11.879 [pw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'sender', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='bestteam' role='thief' sub_game=2 uid='d570f249-ac60' scent=81ebee59 wire=229ae648
+01:19:31.549 [match] sg1 complete
+01:19:31.549 [match] sg2 (police) — dispatching to police worker
+01:19:33.164 [pw] [match] peer endpoint UP: https://denotatively-sciuroid-florine.ngrok-free.dev/mcp
+01:19:36.379 [pw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'sender', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='bestteam' role='thief' sub_game=2 uid='d570f249-ac60' scent=81ebee59 wire=229ae648
+01:19:36.490 [pw] [match] sg2 peer greeting sub_game=2 role=thief
+01:19:36.490 [pw] [match] sg2 role=police handshake OK vs bestteam uid=d570f249-ac6
+01:19:38.141 [pw] [wire<-] turn step=1 sender='thief' commit=01988dd2 ts='2026-08-18T22:19:37.217' cells=25 barrier=None claim=None answer=None win=None
+01:19:57.932 [match] sg2 complete
+01:19:57.932 [match] sg3 (thief) — dispatching to thief worker
+01:20:40.303 [match] sg3 complete
+01:20:40.303 [match] sg4 (police) — dispatching to police worker
+01:21:03.795 [match] sg4 complete
+01:21:03.795 [match] sg5 (thief) — dispatching to thief worker
+01:22:11.778 [match] sg5 complete
+01:22:11.778 [match] sg6 (police) — dispatching to police worker
+01:22:39.805 [match] sg6 complete
+
+01:22:40.512 [match] STATUS: audits 6/6 ok
+01:22:40.516 [match] saved config profile used vs bestteam -> config/opponents/bestteam/ (existing profile files preserved)
+01:22:40.737 [match] artifacts: 6x(config+log) + declaration + result under results/ and config/games/
+01:22:40.737 [match] result: {'vibecode': 90, 'bestteam': 30} winner=vibecode
+01:22:42.439 [match] emailed result ONLY to rmisegal+uoh26finalgame@gmail.com (id=1a016f83951523c1)
+01:22:42.440 [match] counted ledger updated: counted_games_played=7 (results/counted_series.json)

@@ -1,0 +1,1397 @@
+{
+  "_schema": "p2p-police-artifacts",
+  "game_id": "bestteam-vs-vibecode",
+  "game_uid": "d570f249-ac60-ed87-efa6-f5efba7a8115",
+  "links": {
+    "config": "config_bestteam-vs-vibecode_g03.json",
+    "declaration": "declaration_bestteam-vs-vibecode.json",
+    "log": "log_bestteam-vs-vibecode_g03.json",
+    "result": "result_bestteam-vs-vibecode.json"
+  },
+  "opponent_records": [
+    {
+      "commit": "afd61d2552194fb0eb08f9bf27a4047bb6a555335d54cf8e0fadf45ef3efe57f",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          1,
+          0
+        ],
+        "hint": "Going south, low and quiet. You will not follow."
+      },
+      "nonce": "f0ebc6f0f0ed51bffd0bc19a1357aca1",
+      "payload": {
+        "step": 1,
+        "state": "grid=7x7;self=[1, 0];barriers=[]",
+        "position": [
+          1,
+          0
+        ],
+        "move": "S",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Going south, low and quiet. You will not follow.",
+        "github_commit": "6f5a7ed14b6f8180aa3acc08d304deb8fd2422da"
+      }
+    },
+    {
+      "commit": "62e5eec6e4743c63175cb873768b1b2e56300d1d225b8a7d7e0d5dc9b085a917",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          1,
+          1
+        ],
+        "hint": "Drifting west while you read the wrong scent."
+      },
+      "nonce": "cc715477bc99654d59d9ec9149d11e83",
+      "payload": {
+        "step": 2,
+        "state": "grid=7x7;self=[1, 1];barriers=[]",
+        "position": [
+          1,
+          1
+        ],
+        "move": "E",
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Drifting west while you read the wrong scent."
+      }
+    },
+    {
+      "commit": "5bef8af812d4b51c0ac540eaf4ce5a650df2f9bcc97fcf1cef9b7c9897a7d4fb",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          1,
+          2
+        ],
+        "hint": "I lean east, where your trail runs thin."
+      },
+      "nonce": "0b10c1a3288eeb240e93b3573b45b196",
+      "payload": {
+        "step": 3,
+        "state": "grid=7x7;self=[1, 2];barriers=[]",
+        "position": [
+          1,
+          2
+        ],
+        "move": "E",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "I lean east, where your trail runs thin."
+      }
+    },
+    {
+      "commit": "416bd398c90eabfcc67ab2844a70c9ac4a04f630b50c631bbd25b23e2b8d3009",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          2,
+          2
+        ],
+        "hint": "Going south, low and quiet. You will not follow."
+      },
+      "nonce": "06e9759e89e826412368c9586edd753a",
+      "payload": {
+        "step": 4,
+        "state": "grid=7x7;self=[2, 2];barriers=[]",
+        "position": [
+          2,
+          2
+        ],
+        "move": "S",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Going south, low and quiet. You will not follow."
+      }
+    },
+    {
+      "commit": "9940bae0fd5ed1ef4c002d75163e231f4df7264826b0f04455d29a96c9439efd",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          3,
+          2
+        ],
+        "hint": "The northern edge is calling me. Try to keep up."
+      },
+      "nonce": "91dfa79b77557a793b3e90a65dded910",
+      "payload": {
+        "step": 5,
+        "state": "grid=7x7;self=[3, 2];barriers=[]",
+        "position": [
+          3,
+          2
+        ],
+        "move": "S",
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "The northern edge is calling me. Try to keep up."
+      }
+    },
+    {
+      "commit": "be217fe43e30da61f443e5796430f05020a9df1f1b3c2abb0257a6b3a0d6fc8a",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          4,
+          2
+        ],
+        "hint": "The northern edge is calling me. Try to keep up."
+      },
+      "nonce": "085f4c1dc24b02c35794c910e43880d5",
+      "payload": {
+        "step": 6,
+        "state": "grid=7x7;self=[4, 2];barriers=[]",
+        "position": [
+          4,
+          2
+        ],
+        "move": "S",
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "The northern edge is calling me. Try to keep up."
+      }
+    },
+    {
+      "commit": "624b762f24dea286eaa32e755f28b465efc1fba9a2f2a83edfbf0b5f63916ab3",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          4,
+          3
+        ],
+        "hint": "Eastward now. The far side is friendlier."
+      },
+      "nonce": "b95dadae4672b7630e908fd914547b70",
+      "payload": {
+        "step": 7,
+        "state": "grid=7x7;self=[4, 3];barriers=[]",
+        "position": [
+          4,
+          3
+        ],
+        "move": "E",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Eastward now. The far side is friendlier."
+      }
+    },
+    {
+      "commit": "a6ba52cb45b92b7774cbd8f9c9aaecff6977d463a8968e6bce62ba35094d2553",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          4,
+          4
+        ],
+        "hint": "I lean east, where your trail runs thin."
+      },
+      "nonce": "326a315c9242e15421279c19164941a7",
+      "payload": {
+        "step": 8,
+        "state": "grid=7x7;self=[4, 4];barriers=[]",
+        "position": [
+          4,
+          4
+        ],
+        "move": "E",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "I lean east, where your trail runs thin."
+      }
+    },
+    {
+      "commit": "3353764bf186b4fa3f92dee4e09aaa0736d141b47a7ca229ccb9730b1cee7545",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          3,
+          4
+        ],
+        "hint": "Nothing you have read this turn was worth reading."
+      },
+      "nonce": "3456e93936d9833df20432a67a0fa6eb",
+      "payload": {
+        "step": 9,
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "N",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Nothing you have read this turn was worth reading."
+      }
+    },
+    {
+      "commit": "7a14ee4a7b884852f98050f23b7dfc72fa7df8a9a20e2e7748263a06080722a7",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          3,
+          3
+        ],
+        "hint": "Nothing you have read this turn was worth reading."
+      },
+      "nonce": "cf78a66ec608b0f1b436a99e7d513ea6",
+      "payload": {
+        "step": 10,
+        "state": "grid=7x7;self=[3, 3];barriers=[]",
+        "position": [
+          3,
+          3
+        ],
+        "move": "W",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Nothing you have read this turn was worth reading."
+      }
+    },
+    {
+      "commit": "4ce9b174134c639ee3327ea4fe840a35708df2df07c73a334fe049ada7da9ede",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          2,
+          3
+        ],
+        "hint": "Nothing you have read this turn was worth reading."
+      },
+      "nonce": "e80997a8db1265fe0cc7d592b543bd7c",
+      "payload": {
+        "step": 11,
+        "state": "grid=7x7;self=[2, 3];barriers=[]",
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Nothing you have read this turn was worth reading."
+      }
+    },
+    {
+      "commit": "368195cb67a9738889a13635da4ab14be73cbb837ee0688c196bada337913ff6",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          2,
+          2
+        ],
+        "hint": "Nothing you have read this turn was worth reading."
+      },
+      "nonce": "bea9e19a41e78803192137fcf341c810",
+      "payload": {
+        "step": 12,
+        "state": "grid=7x7;self=[2, 2];barriers=[]",
+        "position": [
+          2,
+          2
+        ],
+        "move": "W",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Nothing you have read this turn was worth reading."
+      }
+    },
+    {
+      "commit": "79cdfe0a4b434da7473a5c6dce5ac30d412ca1362a4538c2e7e691f01764c583",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          3,
+          2
+        ],
+        "hint": "Nothing you have read this turn was worth reading."
+      },
+      "nonce": "ce5b7c5c60a1d04331d703b733a19716",
+      "payload": {
+        "step": 13,
+        "state": "grid=7x7;self=[3, 2];barriers=[]",
+        "position": [
+          3,
+          2
+        ],
+        "move": "S",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Nothing you have read this turn was worth reading."
+      }
+    },
+    {
+      "commit": "4dd10ea136d763ce70813afea43c7cb0cdf7d99a50b3971dff41b913e2e7b603",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          4,
+          2
+        ],
+        "hint": "You are chasing a rumour, not an agent."
+      },
+      "nonce": "abbbb223cd9c8ecbf2f4831981bfd9f8",
+      "payload": {
+        "step": 14,
+        "state": "grid=7x7;self=[4, 2];barriers=[]",
+        "position": [
+          4,
+          2
+        ],
+        "move": "S",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "You are chasing a rumour, not an agent."
+      }
+    },
+    {
+      "commit": "f4f4a420d525c1825457d39cc63678f35ba136a8a784ac7c3fc47eac71e9e185",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          4,
+          3
+        ],
+        "hint": "I am somewhere you have not thought to look."
+      },
+      "nonce": "389af49d2679a1242e1878afcc61cb25",
+      "payload": {
+        "step": 15,
+        "state": "grid=7x7;self=[4, 3];barriers=[]",
+        "position": [
+          4,
+          3
+        ],
+        "move": "E",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "I am somewhere you have not thought to look."
+      }
+    },
+    {
+      "commit": "81b00d968aa83eb5407c2081ae8adb470c16d08f7abb4246931d4bf5b02ad389",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          3,
+          3
+        ],
+        "hint": "You are chasing a rumour, not an agent."
+      },
+      "nonce": "efee62ee9d684b57d2eea9d5b7f9f9ea",
+      "payload": {
+        "step": 16,
+        "state": "grid=7x7;self=[3, 3];barriers=[]",
+        "position": [
+          3,
+          3
+        ],
+        "move": "N",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "You are chasing a rumour, not an agent."
+      }
+    },
+    {
+      "commit": "718bc29220f58c19b0a02ee356bb34146d01bfc0c92313f24069bdc991456d44",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          2,
+          3
+        ],
+        "hint": "You are chasing a rumour, not an agent."
+      },
+      "nonce": "de39e36025814f626d68b4f99768c3a1",
+      "payload": {
+        "step": 17,
+        "state": "grid=7x7;self=[2, 3];barriers=[]",
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "You are chasing a rumour, not an agent."
+      }
+    },
+    {
+      "commit": "e8f27b1b5913c2bb999fedd05876c6713f10cd8b2aba397637bb2a3e0adecb9e",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          2,
+          4
+        ],
+        "hint": "Nothing you have read this turn was worth reading."
+      },
+      "nonce": "fe588a3bda07ae4e0c4480b720160750",
+      "payload": {
+        "step": 18,
+        "state": "grid=7x7;self=[2, 4];barriers=[]",
+        "position": [
+          2,
+          4
+        ],
+        "move": "E",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Nothing you have read this turn was worth reading."
+      }
+    },
+    {
+      "commit": "3c235d7cf754f288304e2ef828276a79efa2799f379dd91da7de6f32c26b4a86",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          3,
+          4
+        ],
+        "hint": "You are chasing a rumour, not an agent."
+      },
+      "nonce": "79b1a002e42dc5f84f76a9b34993a0d9",
+      "payload": {
+        "step": 19,
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "S",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "You are chasing a rumour, not an agent."
+      }
+    },
+    {
+      "commit": "cea372a9245eea7f06ea409346b4b8dc8e434ca4abc3b067cb5536aff7901345",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          4,
+          4
+        ],
+        "hint": "I am somewhere you have not thought to look."
+      },
+      "nonce": "69e8e327269a2836d31a202978de56f3",
+      "payload": {
+        "step": 20,
+        "state": "grid=7x7;self=[4, 4];barriers=[]",
+        "position": [
+          4,
+          4
+        ],
+        "move": "S",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "I am somewhere you have not thought to look."
+      }
+    },
+    {
+      "commit": "5aa02f1f02052b459578b81d0c478c5ee8a50b36aab56d33a61999de3aab6e12",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          4,
+          3
+        ],
+        "hint": "You are chasing a rumour, not an agent."
+      },
+      "nonce": "3b463c35808e0574c04d91c6ceb0ecce",
+      "payload": {
+        "step": 21,
+        "state": "grid=7x7;self=[4, 3];barriers=[]",
+        "position": [
+          4,
+          3
+        ],
+        "move": "W",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "You are chasing a rumour, not an agent."
+      }
+    },
+    {
+      "commit": "a0987d029a851dbbda50f9711b80142cfc59c0095433d6a035c439af29857722",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          3,
+          3
+        ],
+        "hint": "I am somewhere you have not thought to look."
+      },
+      "nonce": "382b2f8283da1aac905bfae372331a20",
+      "payload": {
+        "step": 22,
+        "state": "grid=7x7;self=[3, 3];barriers=[]",
+        "position": [
+          3,
+          3
+        ],
+        "move": "N",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "I am somewhere you have not thought to look."
+      }
+    },
+    {
+      "commit": "302950306a12a3cdccf16ff534da93ce326f96d6aeec2e7a6cb8834cbb5af8eb",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          2,
+          3
+        ],
+        "hint": "Nothing you have read this turn was worth reading."
+      },
+      "nonce": "c3b36cc078b81225e287bd839af4e3ba",
+      "payload": {
+        "step": 23,
+        "state": "grid=7x7;self=[2, 3];barriers=[]",
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Nothing you have read this turn was worth reading."
+      }
+    },
+    {
+      "commit": "c9462894c61da0cf868594fa51752c7c85910bddf33dac8331dd0cb1f84a272c",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          2,
+          4
+        ],
+        "hint": "Nothing you have read this turn was worth reading."
+      },
+      "nonce": "77a6183f1b958895f02955a88dccaf61",
+      "payload": {
+        "step": 24,
+        "state": "grid=7x7;self=[2, 4];barriers=[]",
+        "position": [
+          2,
+          4
+        ],
+        "move": "E",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Nothing you have read this turn was worth reading."
+      }
+    },
+    {
+      "commit": "604107eddb8e03afdc3be2cd89e1941a359ed19e586acc71373bd0f53c1d2dda",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          3,
+          4
+        ],
+        "hint": "You are chasing a rumour, not an agent."
+      },
+      "nonce": "2ae9b0547ed9d25cc9bf44c34c415abb",
+      "payload": {
+        "step": 25,
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "S",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "You are chasing a rumour, not an agent."
+      }
+    },
+    {
+      "commit": "0ea270bd1f178df2f2b3739c70c8bc3fbcd52ea5a578f926a92c91c89152341d",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          4,
+          4
+        ],
+        "hint": "Nothing you have read this turn was worth reading."
+      },
+      "nonce": "59f7bf7f35b275adc98a00a4dbaf292d",
+      "payload": {
+        "step": 26,
+        "state": "grid=7x7;self=[4, 4];barriers=[]",
+        "position": [
+          4,
+          4
+        ],
+        "move": "S",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Nothing you have read this turn was worth reading."
+      }
+    },
+    {
+      "commit": "88c66eec02b19edd4e36e3ea1449869342c327cbd5abc94c62ddd5fdf4c8d2c8",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          4,
+          3
+        ],
+        "hint": "I am somewhere you have not thought to look."
+      },
+      "nonce": "d5a84f45ee6a8dab7df9879a75158cc9",
+      "payload": {
+        "step": 27,
+        "state": "grid=7x7;self=[4, 3];barriers=[]",
+        "position": [
+          4,
+          3
+        ],
+        "move": "W",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "I am somewhere you have not thought to look."
+      }
+    },
+    {
+      "commit": "7fb52cff47737b99895095284a818b71981185585763cf65ac3abc2378719486",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          3,
+          3
+        ],
+        "hint": "Nothing you have read this turn was worth reading."
+      },
+      "nonce": "c03321f229d51eff4fe6ad2983467b9f",
+      "payload": {
+        "step": 28,
+        "state": "grid=7x7;self=[3, 3];barriers=[]",
+        "position": [
+          3,
+          3
+        ],
+        "move": "N",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Nothing you have read this turn was worth reading."
+      }
+    },
+    {
+      "commit": "aaf52e8a3e8b3bdabf3b81a8d45bd92696f0c88fdeb707e642ee8d277b3e92dd",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          2,
+          3
+        ],
+        "hint": "I am somewhere you have not thought to look."
+      },
+      "nonce": "a4ec4c857fd083dc4945b374139fb480",
+      "payload": {
+        "step": 29,
+        "state": "grid=7x7;self=[2, 3];barriers=[]",
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "I am somewhere you have not thought to look."
+      }
+    },
+    {
+      "commit": "ef213518348c428cbbb83939d3e7cd2745739667975ae0a05debaa2720ff370c",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          2,
+          4
+        ],
+        "hint": "I am somewhere you have not thought to look."
+      },
+      "nonce": "9d5306419361c956610a88daf7b6fdc9",
+      "payload": {
+        "step": 30,
+        "state": "grid=7x7;self=[2, 4];barriers=[]",
+        "position": [
+          2,
+          4
+        ],
+        "move": "E",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "I am somewhere you have not thought to look."
+      }
+    },
+    {
+      "commit": "99d73f29c138ccc9f0f42e432823a42835e6c45aec61288c0e1d8af4dc77b691",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          3,
+          4
+        ],
+        "hint": "I am somewhere you have not thought to look."
+      },
+      "nonce": "c630859a05c0a7b4b9c3e14f9e477c36",
+      "payload": {
+        "step": 31,
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "S",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "I am somewhere you have not thought to look."
+      }
+    },
+    {
+      "commit": "7e90ce3528b9c263e9de78dd9de484863d3f60567b2fa7d5bde8e9803aa401ad",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          4,
+          4
+        ],
+        "hint": "Nothing you have read this turn was worth reading."
+      },
+      "nonce": "b49fb1000346e451d5931365b40a3cca",
+      "payload": {
+        "step": 32,
+        "state": "grid=7x7;self=[4, 4];barriers=[]",
+        "position": [
+          4,
+          4
+        ],
+        "move": "S",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Nothing you have read this turn was worth reading."
+      }
+    },
+    {
+      "commit": "de2083757dc4464bf3d893fb300de8ce4e5c31ca6130c2097f200adf4381c368",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          4,
+          3
+        ],
+        "hint": "Nothing you have read this turn was worth reading."
+      },
+      "nonce": "7b587c5a6859c10ce0c3886d9ec0d899",
+      "payload": {
+        "step": 33,
+        "state": "grid=7x7;self=[4, 3];barriers=[]",
+        "position": [
+          4,
+          3
+        ],
+        "move": "W",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Nothing you have read this turn was worth reading."
+      }
+    },
+    {
+      "commit": "5744f413414b17df4da23a67bebc67593a08c2cb3b3394ac431360f88db78593",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": [
+          3,
+          3
+        ],
+        "hint": "I am somewhere you have not thought to look."
+      },
+      "nonce": "0fd2c51d160e1ac8b9b77f8b550f0402",
+      "payload": {
+        "step": 34,
+        "state": "grid=7x7;self=[3, 3];barriers=[]",
+        "position": [
+          3,
+          3
+        ],
+        "move": "N",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "I am somewhere you have not thought to look."
+      }
+    }
+  ],
+  "records": [
+    {
+      "commit": "81c48d3c85438ed36ccfe07ddd281fe780bc0a431b8c57031d3edcf7ffa8b027",
+      "nonce": "9e724491e48dd08076217ebc31587f67",
+      "payload": {
+        "declaration_ref": "declaration_bestteam-vs-vibecode.json",
+        "github_commit": "da8d3b541ff5c3768c49ad53c254c2323145117f",
+        "group_id": "vibecode",
+        "role": "thief",
+        "spec": {
+          "cpu_cores": 16,
+          "cpu_type": "Intel64 Family 6 Model 158 Stepping 13, GenuineIntel",
+          "machine": "AMD64",
+          "os": "Windows 11",
+          "python": "3.13.14",
+          "ram_gb": 34
+        },
+        "step": 0,
+        "sub_game_number": 3,
+        "type": "step_zero"
+      }
+    },
+    {
+      "commit": "82298b1c9206ee9080bef5b33624ceb27daf0cb9d655e5c1d6b34a116baa05bf",
+      "nonce": "3eb525469591305911887a8bd27cc919",
+      "payload": {
+        "step": 1,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          4,
+          3
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "ce18e5f8e61b1b47be584b24d4ff6796b06075437e4a2a6e53b954b2060a0c5f",
+      "nonce": "dfd2d8f3c838427a8bfef2d4837b40ad",
+      "payload": {
+        "step": 2,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          5,
+          3
+        ],
+        "move": "S",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "6c4c71ea5126656c97e9c6bc00749a12a8a1e76bd8bbc67f162094c74ee959be",
+      "nonce": "7910023206d255709dad786e9941df49",
+      "payload": {
+        "step": 3,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          4,
+          3
+        ],
+        "move": "N",
+        "intent": "ambiguous"
+      }
+    },
+    {
+      "commit": "e6f0ccc9e5f7838ce514d68aa81ca1e1c81ca9ec6c6fd379d1baef51479c6014",
+      "nonce": "9f21d28a7df50f6926133fa79064b9a6",
+      "payload": {
+        "step": 4,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          5,
+          3
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "0313eabf240d51b6302b7431aa41cc82fa1fa8267bec708e8b85ea85f900b1d7",
+      "nonce": "6415770b205c29c12cf4ca550966c9fc",
+      "payload": {
+        "step": 5,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          5,
+          4
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "d652bbe1e3832435ecc6cebf7b38dd27b0e51d2608bbf78cbcfb71366ec998a8",
+      "nonce": "494cbc5fadfeebcc14c4cfd1e10cf191",
+      "payload": {
+        "step": 6,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          4,
+          4
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "46de7ed32712f7af5add7b1f18827ecde91075d5ab8bb9c719454c8e3d224f6a",
+      "nonce": "a6758e69b14f0e83b51e2229066a0a15",
+      "payload": {
+        "step": 7,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          3,
+          4
+        ],
+        "move": "N",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "d509c9bbb91a7c490f77471b6102b4797e8ceeed482f7fbd02178675e2432149",
+      "nonce": "4c6991943bdfa319919ea1b4b7f1b60a",
+      "payload": {
+        "step": 8,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          2,
+          4
+        ],
+        "move": "N",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "4dc0df565d145f328e48d3a01c6ddcdbc4584141de85dbe5d6e9cc8dc03e86a1",
+      "nonce": "09e300aa55f488677aae01d63db7d462",
+      "payload": {
+        "step": 9,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          2,
+          3
+        ],
+        "move": "W",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "5bf8ff6cb8fbb544c7492aa254ab513b653b5dd3c9880da854da58998b0abf8b",
+      "nonce": "aef17ec1dc4ef994eeae22da8ff39291",
+      "payload": {
+        "step": 10,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          2,
+          2
+        ],
+        "move": "W",
+        "intent": "ambiguous"
+      }
+    },
+    {
+      "commit": "4d06efba75e325254397e38c211048d354b7b1d3928097b9336008555aee7214",
+      "nonce": "eb4d8a9237b6137767bd1a9435eb42b6",
+      "payload": {
+        "step": 11,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          2,
+          2
+        ],
+        "move": "STAY",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "9959a4fa7f28b780f7e74a9e03f8a377ae15fd79b67d3754cb3049296045e6dd",
+      "nonce": "76d36f9a84384c6f455a65ab8ed38305",
+      "payload": {
+        "step": 12,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          3,
+          2
+        ],
+        "move": "S",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "a1a2b291eaa5c226850c1ae4f4e69791b42eaffc80c421f86d3dd044b671ebe7",
+      "nonce": "26938d761127704cb47229f4aaa40182",
+      "payload": {
+        "step": 13,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          4,
+          2
+        ],
+        "move": "S",
+        "intent": "ambiguous"
+      }
+    },
+    {
+      "commit": "b451a3e99c538c583add25a086a9eb20893eca6e1db801d673bcf35f77453b43",
+      "nonce": "7b02b28640eb5bb933295f67545e8005",
+      "payload": {
+        "step": 14,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          4,
+          3
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "16215d6cc00e17eba71fab18ea13b9d51c6fbc5491f9dc20947a8e0722bb6c91",
+      "nonce": "1b70e585563a5d64bff0bec0dba1da5d",
+      "payload": {
+        "step": 15,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          3,
+          3
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "cb2a4813e4fbf1ead704f59bf022e3591dc3855e52d4d2b7da819660bb3bb9d5",
+      "nonce": "334fbbf3f774a087f5ade02f9f6a8b27",
+      "payload": {
+        "step": 16,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "3a4e66222b67474c0a6e5a74688f525f9117ca3dae1360da428d6911cc1b39c5",
+      "nonce": "30fa7aca8a0a8acf8297e395f4ab0a96",
+      "payload": {
+        "step": 17,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          2,
+          4
+        ],
+        "move": "E",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "64e78597b358e97ba6a6a2bfe5da96c9638afff7cecb1bb7444fd959d1e5c6bb",
+      "nonce": "daa5948bcbc4f9cbe0c9d788085f2943",
+      "payload": {
+        "step": 18,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          3,
+          4
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "04a2fbe5bde7b57c459d8cfddc39424930566171b4a8c3c36ab66be865ced56b",
+      "nonce": "f1d614e0c98148c2a0cd47693d0a3c53",
+      "payload": {
+        "step": 19,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          4,
+          4
+        ],
+        "move": "S",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "e050292da3b4ce9fdcc559d6faed7544759a93fc3fc7eee67ce4274562ada462",
+      "nonce": "042946e5728d1a9f829f9f0ac7b3e210",
+      "payload": {
+        "step": 20,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          4,
+          3
+        ],
+        "move": "W",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "56904ed60a090f431f232cee84e6c5851591629ee0ad3f8baf5c979b3d97f01c",
+      "nonce": "e96d8dacc98b39aef9b3d210a40dc751",
+      "payload": {
+        "step": 21,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          3,
+          3
+        ],
+        "move": "N",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "11b609b250e358744b0455a61fca2af35671a5ec8a9d270ca84f76fa047c6363",
+      "nonce": "d017a04162c08b25c7961f33384c44ca",
+      "payload": {
+        "step": 22,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "12ead6ccba3451e033b47d3361a3f26bce0caae633d2e4a987524aac5c49067b",
+      "nonce": "3f97a544ddefb2504957276e504dc54b",
+      "payload": {
+        "step": 23,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          2,
+          4
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "54e417cc7a53938964c7b1850e2bb25bea773350228e7e7d2145524608dc1915",
+      "nonce": "7d8e58c9a4336134413e47495b9999aa",
+      "payload": {
+        "step": 24,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          3,
+          4
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "446ed3ffb8d3c9300a56aad6463fd7718f0139607c7c92b8c5521ebc342177c8",
+      "nonce": "146b0dc689e5f9d33acc61b9b26881e8",
+      "payload": {
+        "step": 25,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          4,
+          4
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "d9eb8b045f1de63506b1c79e51e5303d039d62418f254fb2ab36bcbc3b2b900d",
+      "nonce": "5ab2c0189fd25f4cd941c24f34f54ada",
+      "payload": {
+        "step": 26,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          4,
+          3
+        ],
+        "move": "W",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "fdfb10e56485a14e9b265a797542b37be082cf5b4e4615709df9723753b6a097",
+      "nonce": "abb71592c03f5b8fa254b001fa814818",
+      "payload": {
+        "step": 27,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          3,
+          3
+        ],
+        "move": "N",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "55ad404ee1675da44b9e6d2cd79a8bae18fd713ccd409a055ab385a4c531e71d",
+      "nonce": "b08fabbec3a53eb8d59c671bbdbe4f8e",
+      "payload": {
+        "step": 28,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "49d611846f88e02ba18c44985286d7f06367ef05fc7aecea61a590b6d265bc35",
+      "nonce": "53ac7bfccffe8f16593babaaf010b7d1",
+      "payload": {
+        "step": 29,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          2,
+          4
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "3344915a6b21aa75432ad53e95747cbc5f806cfdcb59bb90c0a0529e7718ad68",
+      "nonce": "e83733904088e8de72426e08788b1864",
+      "payload": {
+        "step": 30,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          3,
+          4
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "267468004ac89fe2b735e8220f5d628eaf83bb3dbfe7c8c8357928f31819d89d",
+      "nonce": "e5c1cff84a30f8b783fbc4a29ba2dcac",
+      "payload": {
+        "step": 31,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          4,
+          4
+        ],
+        "move": "S",
+        "intent": "ambiguous"
+      }
+    },
+    {
+      "commit": "46297f27f687d6abb283515c2d7f66688593ea45ec76d92641d497437a52eb92",
+      "nonce": "f453e5f9514e9ef0a8c182ba2a7f690a",
+      "payload": {
+        "step": 32,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          4,
+          3
+        ],
+        "move": "W",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "39d04aec821431c0231e6c7efa9d0e071b63b7b77fde85cf5ffda86fb481fb59",
+      "nonce": "ff269cf490da207d8c242fc098368a5f",
+      "payload": {
+        "step": 33,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          3,
+          3
+        ],
+        "move": "N",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "7b9458c42998e0e4c13a50d8213b389176c0463a562270299d3fcf69117f8ebd",
+      "nonce": "d308505c159f547b9e6e4bb326440724",
+      "payload": {
+        "step": 34,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "d2663196714730857ad5ca8d3584cc119b1b4c5c30028696377d46e09537e279",
+      "nonce": "33e76628d7aa1be2bc4fb8c42c9a6791",
+      "payload": {
+        "step": 35,
+        "role": "thief",
+        "sub_game": 3,
+        "position": [
+          1,
+          3
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    }
+  ],
+  "report_type": "log",
+  "schema_version": "1.3",
+  "sub_game_number": 3,
+  "summary": {
+    "audit": "Verified OK",
+    "outcome": "survival",
+    "digest_match": null,
+    "disputed_capture": null,
+    "turns_completed": 35,
+    "steps_sealed": 36,
+    "opponent_step_zero": null,
+    "step_zero_mismatch": null,
+    "started_at": "2026-08-18T22:20:02.189911+00:00",
+    "ended_at": "2026-08-18T22:20:40.040227+00:00",
+    "role": "thief",
+    "group_id": "vibecode",
+    "opponent_group_id": "bestteam"
+  },
+  "wire_shape": "reference"
+}
