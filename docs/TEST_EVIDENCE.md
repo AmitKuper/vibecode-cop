@@ -39,8 +39,9 @@ uv run pytest tests/ cop_worker/tests/ league_manager/tests/ \
   --cov-report=xml --cov-fail-under=94
 ```
 
-Result: **94.90% branch coverage** (11,182 statements / 2,426 branches measured,
-130 s locally) — gate ≥ 94% passed. Branch coverage is stricter than line coverage;
+Result: **96.18% branch coverage** (24,199 statements / 3,056 branches measured,
+re-measured 2026-08-19 with 1,942 passed / 4 skipped; the 2026-08-15 audit read
+94.90%) — gate ≥ 94% passed. Branch coverage is stricter than line coverage;
 the enforced floor is 94 in both CI and `pyproject.toml` (`fail_under = 94`), which
 is above the course guideline target of 85 (see `docs/TESTING.md`).
 
@@ -66,7 +67,7 @@ secret scan — all green on `master`.
 ## Live evidence chain (the tests that were played, not run)
 
 The counted ledger (`results/counted_series.json`) records
-`counted_games_played: 5` against five distinct opponents — the league's
+`counted_games_played: 7` against seven distinct opponents — the league's
 `min_games_to_pass = 2` (`config/game.json`) satisfied more than twice over. Counted
 series were preceded by friendly rehearsals over the same wire path (friendlies
 default to the own-inbox report and increment no counter).

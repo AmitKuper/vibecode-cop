@@ -77,8 +77,8 @@ Architecture context: `docs/DESIGN.md`. Move-engine theory: `docs/PRD_search_eng
 |---|---|---|
 | Mutual audit verdicts, live series | 100% Verified OK | 12/12 (friendly + counted vs imreeyal) |
 | Counted result | win | 90–30 vs imreeyal (cop captured sg2/4/6) |
-| Test suite | green, no skips of live paths | 1,887 pass, 4 environment-conditional skips |
-| Branch coverage (CI gate) | >= 94% | 94.90%, passing |
+| Test suite | green, no skips of live paths | 1,942 pass, 4 environment-conditional skips (2026-08-19) |
+| Branch coverage (CI gate) | >= 94% | 96.18%, passing |
 | Kit conformance | all vectors | 125 checks / 15 fixtures PASS |
 
 ## 5. Test scenarios

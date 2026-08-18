@@ -84,10 +84,10 @@ omit = [
 ]
 
 [tool.coverage.report]
-# CI floor; local runs enforce the same gate. Measured branch coverage: 94.90%,
+# CI floor; local runs enforce the same gate. Measured branch coverage: 96.18%,
 # comfortably past the course guideline of 85.
 # Matches the CI gate exactly (.github/workflows/ci.yml) so a local run and a
-# CI run agree. Measured branch coverage at the last audit: 94.91%.
+# CI run agree. Measured branch coverage at the last audit (2026-08-19): 96.18%.
 fail_under = 94
 exclude_lines = [
     "pragma: no cover",

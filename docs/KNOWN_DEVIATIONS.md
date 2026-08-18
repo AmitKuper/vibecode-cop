@@ -13,7 +13,7 @@ The book mandates a tunnelling tool (ngrok/Cloudflare); its stated purpose (§2.
 is NAT traversal for hosts that cannot be reached directly. We instead expose the
 two role endpoints on a router-forwarded **static public IP** (cop 61224 /
 thief 61223), so the requirement's purpose — public reachability — is met without
-the tool. This was demonstrated across the internet in five counted cross-team
+the tool. This was demonstrated across the internet in seven counted cross-team
 series (anrbj666, imreeyal, uoh-sqak, rstabcde, najamjad —
 `results/counted_series.json`). ngrok remains
 supported and opt-in per pairing (`[network] ingress = "ngrok"`,
@@ -38,10 +38,14 @@ league/lecturer address is stored **nowhere** in code or config — test-enforce
 and enters only by hand via `--report-to` on counted day. An address the run
 cannot reach cannot be mailed by accident.
 
-### D4: 150-line module limit — seven files over
+### D4: 150-line module limit — eleven production files over
 
-The project rule is ≤150 lines per module. Seven production modules exceed it
-today (measured 2026-08-15):
+The project rule is ≤150 lines per module. Eleven production modules exceed it
+today (measured 2026-08-19; the authoritative, gate-enforced list with per-file
+justifications is `scripts/check_file_size.py::ALLOWED` — four test files carry
+allowances there too). The 2026-08-15 audit's seven grew by the GUI page
+templates (hub/replay pages + hub API, whose length is markup, not logic) and
+one artifact-emission module:
 
 | File | Lines | Why it is kept whole |
 |---|---:|---|
@@ -52,6 +56,10 @@ today (measured 2026-08-15):
 | `cop_worker/protocol/reference_v3/session.py` | 157 | One wire session object. |
 | `scripts/ref3_match/subgame_settle.py` | 154 | One sub-game's audit + settlement path. |
 | `scripts/ref3_match/role_worker.py` | 153 | One role-worker process: control-frame loop plus play dispatch. |
+| `cop_worker/gui/hub_page.py` | ≤200 | One HTML/JS page template in a string; line count is markup. |
+| `cop_worker/gui/replay_page.py` | ≤175 | Same: one page template; the stylesheet belongs with its markup. |
+| `cop_worker/gui/hub_api.py` | ≤165 | One read-only hub API surface. |
+| `scripts/ref3_match/artifacts_io.py` | ≤170 | One emission unit: every league artifact written in a single pass. |
 
 Everything above 390 lines was already split into ≤150-line packages/mixins (the
 reference-v3 wire, kit fixtures, the trainer, the gamelet, replay, the adaptive

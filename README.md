@@ -10,8 +10,8 @@ Companion repository: [vibecode-thief](https://github.com/AmitKuper/vibecode-thi
 distributed product; this repo hosts the orchestrator, which spawns **one OS process
 per role** (cop and thief) for every series.
 
-**Match record**: five counted series played (`results/counted_series.json`,
-`counted_games_played: 5`) — **won four, lost one**:
+**Match record**: seven counted series played (`results/counted_series.json`,
+`counted_games_played: 7`) — **won six, lost one**:
 
 | Opponent | Result | Sub-games | Date |
 |---|---|---|---|
@@ -20,6 +20,8 @@ per role** (cop and thief) for every series.
 | `uoh-sqak` | **won 90–30** | 6–0 | 2026-08-11 |
 | `rstabcde` | **won 90–30** | 6–0 | 2026-08-14 |
 | `najamjad` | **won 90–30** | 6–0 | 2026-08-14 |
+| `nis-yar1` | **won 90–30** | 6–0 | 2026-08-16 |
+| `bestteam` | **won 90–30** | 6–0 | 2026-08-19 |
 
 Every series settled 6/6 mutual audits *Verified OK* with a confirmed mutual-agreement
 hash; per-series evidence is in `evidence/game_vs_<opponent>/`.
@@ -69,7 +71,7 @@ cd vibecode-cop && uv sync --frozen
 uv run pytest tests/ cop_worker/tests/ league_manager/tests/ -q
 ```
 
-Expected: **1,937 passed, 4 skipped** (the same suite CI gates, with branch coverage
+Expected: **1,942 passed, 4 skipped** (the same suite CI gates, with branch coverage
 >= 94%).
 
 ## Quick start — self-test against the bundled sparring peer
@@ -491,26 +493,26 @@ diagnose from `[wire<-]` and `[diag]` lines, not guesswork.
    `uv run ruff format --check .`, and the full pytest suite with branch
    coverage >= 94% (`--cov-fail-under=94` in `.github/workflows/ci.yml`,
    `fail_under = 94` in `pyproject.toml`).
-3. Aspire to <= 150 lines per module (project rule; the seven remaining oversized
+3. Aspire to <= 150 lines per module (project rule; the eleven remaining oversized
    modules are recorded as an accepted deviation in `docs/KNOWN_DEVIATIONS.md`).
 4. Never edit `evidence/`, `config/game.json` hashes, or the external kit.
 
 ## Self-grade (code quality)
 
 This grade covers **code quality only** — never league results. Basis, all
-reproducible from the repo: 1,941 tests collected (1,937 passed, 4 skipped),
-branch coverage **97.35%** (CI-gated at 94), `ruff check` + `ruff format --check`
-gating every commit, and a 150-line-per-module discipline (seven documented
-exceptions in [`docs/KNOWN_DEVIATIONS.md`](docs/KNOWN_DEVIATIONS.md)).
+reproducible from the repo: 1,946 tests collected (1,942 passed, 4 skipped),
+branch coverage **96.18%** (measured 2026-08-19; CI-gated at 94), `ruff check` + `ruff format --check`
+gating every commit, and a 150-line-per-module discipline (eleven documented
+production exceptions in [`docs/KNOWN_DEVIATIONS.md`](docs/KNOWN_DEVIATIONS.md)).
 
 **Self-grade: 92/100**
 
 | Dimension | Grade | Why |
 |---|---|---|
 | Correctness | 93 | Physics is one pure conformance-pinned function; kit vectors fail closed; serving guards refuse mismatched checkpoints |
-| Tests | 93 | 1,937 passing tests, 97.35% branch coverage, conformance vectors, source-pin tests on the production seams |
+| Tests | 93 | 1,942 passing tests, 96.18% branch coverage, conformance vectors, source-pin tests on the production seams |
 | Documentation | 90 | DESIGN/PRDs/runbooks current; deviations documented rather than hidden |
-| Architecture | 92 | Single transition source of truth, mixin-decomposed gamelet, ≤150-line modules with 7 justified exceptions |
+| Architecture | 92 | Single transition source of truth, mixin-decomposed gamelet, ≤150-line modules with 11 justified production exceptions |
 | Style | 92 | ruff + format zero-finding CI; docstrings throughout |
 
 What would raise it: eliminating the last seven over-150 modules and lifting the

@@ -23,7 +23,7 @@ enforced twice: on the CI command line and via `fail_under = 94` in
 `pyproject.toml [tool.coverage.report]`.
 
 **Gate: 94% branch** — well above the course guideline floor of 85. The suite
-last measured **94.90%** (see `docs/TEST_EVIDENCE.md`); the gate is raised only
+last measured **96.18%** (2026-08-19, 1,942 passed; see `docs/TEST_EVIDENCE.md`); the gate is raised only
 by adding tests, never by changing source for coverage's sake.
 
 ## Test taxonomy — what actually exists

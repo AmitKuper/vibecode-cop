@@ -1,6 +1,6 @@
 # DESIGN — vibecode-cop architecture authority
 
-Status: current as of 2026-08-15, after five counted series
+Status: current as of 2026-08-19, after seven counted series
 (`results/counted_series.json`: won vs imreeyal, uoh-sqak, rstabcde and najamjad
 90–30 each; lost 35–75 vs anrbj666). This document is the architecture reference
 other docs cite.

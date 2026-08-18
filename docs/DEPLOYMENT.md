@@ -5,7 +5,7 @@ played: the split runtime (an orchestrator plus one OS process per role) on a
 machine behind a **static public IP with router port-forwarding**. The LeagueManager-facade + tunnel topology is the
 *alternative*, kept in `docs/DEPLOYMENT_TUNNEL_RUNBOOK.md`.
 
-All five counted games (anrbj666 2026-08-08, imreeyal 2026-08-10, uoh-sqak
+All seven counted games (anrbj666 2026-08-08 through bestteam 2026-08-19; anrbj666, imreeyal, uoh-sqak
 2026-08-11, rstabcde and najamjad 2026-08-14) were played on this network path.
 The last two ran on the split runtime — their `runtime_match.log` records
 `SPLIT arch: cop pid=… thief pid=… orchestrator holds no game state` and the two
