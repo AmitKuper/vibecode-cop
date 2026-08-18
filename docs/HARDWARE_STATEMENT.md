@@ -6,8 +6,11 @@ hardware declaration we publish records CPU, RAM, OS and Python only
 `hardware_spec`), so the GPU appears nowhere in our artifacts — but the machine
 does have one, and this note states plainly what was done with it.
 
-**We did not use the GPU at any point** — not for model training, not for
-evaluation, and not during any friendly or counted game:
+**The GPU played no part in anything submitted or played** — not in model
+training, not in the promotion evaluations behind the shipped champions, and
+not in any friendly or counted game. (The only place CUDA can engage at all
+is a research-only legacy loader exercised by unit tests on GPU machines —
+`policy_loader.py` below — which serves nothing on the counted path.)
 
 1. **The production paths are CPU-pinned.** The recurrent trainer
    (`cop_worker/rl/train_recurrent/`) contains no `device`, `.cuda()` or
