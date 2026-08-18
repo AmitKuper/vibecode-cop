@@ -42,7 +42,7 @@ CPU-only laptop with the commands in `docs/RL_REPRODUCTION.md`.
 We understand scoring may take the declared hardware spec into account. We ask
 that ours not be counted against us, on the following evidence:
 
-1. **The GPU was used in zero of the seven counted games.** Every counted
+1. **Seven counted games were played; the GPU was used in none of them.** Every counted
    series (anrbj666, imreeyal, uoh-sqak, rstabcde, najamjad, nis-yar1,
    bestteam) was played through the CPU-pinned production path described
    above; the signed `hardware_spec` in each Step-0 declaration records
