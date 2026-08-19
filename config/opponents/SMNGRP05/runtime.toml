@@ -1,0 +1,55 @@
+# SMNGRP05 pairing. Group id is UPPERCASE ON THE WIRE by their explicit request:
+# never normalise it — the sorted pair "SMNGRP05|vibecode" is the uid preimage,
+# and S (0x53) sorts before v (0x76) either way, so they cop sub-games 1/3/5.
+# One OS process on their side plays both roles, alternating by sub-game — it
+# cannot exit after its own last window (their words), so no settled_row risk.
+# uid f3926768… reproduced NATIVELY by their derive_game_ids (case test too):
+# the case question is closed by derivation on both sides, not by agreement.
+# Their armed commits (2026-08-20, config+src — src delta = rollup-nulls fix
+# + pinning test; supersedes 619369ea/9db5635a). Verified resolving as
+# HEAD/main on their PUBLIC repos via anonymous ls-remote:
+#   cop   f3818ec398080dd80f1d9d0958641fa917ba6553  github.com/afaf-gharra/SMNGRP05-police
+#   thief 0b37696242cb8b7c985d27852ebe513dbcdd37fd  github.com/afaf-gharra/SMNGRP05-thief
+# Identity: group_name SMNGRP05; members Afaf Gharra, Reem Awawdy;
+# llm_model "template-zero-token" (no model in move path; movement = exact
+# backward induction over the joint state, pure Python — explains the
+# deterministic mirror-evade thief). counted_games_played: 2 (saedshki,
+# uoh-ay26). Rollup-nulls bug: FIXED in writing 2026-08-20 (booleans on every
+# row, tampering_detected accusation-only, null pinned impossible by test).
+[network]
+ingress           = "static"
+our_cop_port      = 61224
+our_thief_port    = 61223
+
+opponent_group = "SMNGRP05"
+# FREE-TIER NGROK, ROTATES ON RESTART — valid only for the session it was sent
+# in (their own words). They will send a fixed hostname in writing before any
+# agreed T; re-pin these two lines from that message before every window.
+# opp_cop_url is dialled when WE are thief (their cop answers), and vice versa.
+opp_cop_url    = "https://f0eb-147-236-163-154.ngrok-free.app/mcp"
+opp_thief_url  = "https://f0eb-147-236-163-154.ngrok-free.app/mcp"
+
+[protocol]
+# Confirmed in writing 2026-08-19: subtractive_chebyshev_v1, hash byte-identical
+# to ours (81ebee59…), already in their config before our greeting. Physics
+# restated by them: subtractive, centre 0.9, decay 0.1, grid 5, min centre 0.5.
+scent_model  = "subtractive_chebyshev_v1"
+move_policy  = "hybrid_search"
+mcp_call_sec = 10.0
+
+[timeouts]
+# Greeting poll shorter than the 300s index-hold so a quiet window retries with
+# a fresh drain instead of one long wait (najamjad lesson).
+agreement_poll_sec = 120.0
+
+[report]
+# FRIENDLY: mutual exchange by agreement — ours to their operator inbox, theirs
+# to agentsorch@gmail.com. Never the lecturer in a friendly. Their report-FROM
+# address confirmed from a landed report (their token is gmail.send-only):
+# afafgharra000@gmail.com — same box both directions.
+recipient  = "afafgharra000@gmail.com"
+mode       = "send"
+token_path = "secrets/gmail/token.json"
+
+[counted]
+counted_played = 7
