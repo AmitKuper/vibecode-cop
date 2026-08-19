@@ -1,0 +1,2185 @@
+{
+  "_schema": "p2p-police-artifacts",
+  "game_id": "SMNGRP05-vs-vibecode",
+  "game_uid": "f3926768-06be-e93c-6cba-bd6ebf142059",
+  "links": {
+    "config": "config_SMNGRP05-vs-vibecode_g04.json",
+    "declaration": "declaration_SMNGRP05-vs-vibecode.json",
+    "log": "log_SMNGRP05-vs-vibecode_g04.json",
+    "result": "result_SMNGRP05-vs-vibecode.json"
+  },
+  "opponent_records": [
+    {
+      "commit": "73144e3e1d02cb591362d8c7fc11e9a32d6e8a988b2b5119a791813ee3f9b287",
+      "declared": {},
+      "nonce": "d944aca255baf87e62ea6825b35da4c6",
+      "payload": {
+        "step": 0,
+        "type": "system_spec",
+        "spec": {
+          "os": "Windows 11",
+          "python": "3.14.5",
+          "machine": "AMD64",
+          "cpu_type": "AMD64 Family 25 Model 33 Stepping 0, AuthenticAMD",
+          "cpu_cores": 12,
+          "cpu_freq_mhz": null,
+          "ram_gb": null,
+          "gpu_type": "NVIDIA GeForce RTX 3070",
+          "vram_gb": 8.0
+        },
+        "model": "template-zero-token",
+        "provider": "template",
+        "code_version": "1.00",
+        "github_commit": "b8b4c4197e3e5b89b8e74c532092ebff3262bad2",
+        "git": {
+          "commit": "b8b4c4197e3e5b89b8e74c532092ebff3262bad2",
+          "branch": "main",
+          "tag": "v1.0-submission-46-gb8b4c41"
+        },
+        "group_id": "SMNGRP05",
+        "group_name": "SMNGRP05",
+        "sub_game_number": 4,
+        "scent_model": {
+          "falloff": "linear",
+          "grid_size": 5,
+          "peak_intensity": 0.9,
+          "decay_per_step": 0.1,
+          "decay_mode": "subtractive",
+          "decay_formula": "tau(t+1) = max(0, tau(t) - rho) + delta_tau",
+          "worked_example": {
+            "deposit": 0.9,
+            "after_1_turn": 0.8,
+            "after_7_turns": 0.2
+          }
+        },
+        "declared_at": "2026-08-19T21:21:29.381436+00:00"
+      }
+    },
+    {
+      "commit": "d120c736a6e8aa0dfbdb0f20d29c35a237242eb5b28683ad2c9da46fab198fcb",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Still out here, still moving, still ahead of you."
+      },
+      "nonce": "10010d94a7d9f5519f50d323fa1820e4",
+      "payload": {
+        "step": 1,
+        "role": "thief",
+        "state": "grid=7x7;self=[4, 3];barriers=[]",
+        "position": [
+          4,
+          3
+        ],
+        "move": "S",
+        "action": "MOVE:S",
+        "barrier_placed": null,
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Still out here, still moving, still ahead of you.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "saying nothing that narrows the board",
+          "bluff_classification": "truth",
+          "move_rationale": "room=48/49 gap=7 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": null
+      }
+    },
+    {
+      "commit": "baa265280dc0586aa9926507afb90b66418d21b58d440ec4bd1842941344e4f4",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "You talk a lot for someone who has found nothing."
+      },
+      "nonce": "bcc9306278809a5e7ae0cdbf114f674c",
+      "payload": {
+        "step": 2,
+        "role": "thief",
+        "state": "grid=7x7;self=[3, 3];barriers=[]",
+        "position": [
+          3,
+          3
+        ],
+        "move": "N",
+        "action": "MOVE:N",
+        "barrier_placed": null,
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "You talk a lot for someone who has found nothing.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "saying nothing that narrows the board",
+          "bluff_classification": "truth",
+          "move_rationale": "room=48/49 gap=5 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            1,
+            0
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "0f52fe195a86049aa0fc1ede3b3177c914416e32912ac7bb1ecc6bd76e636bdd",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Still out here, still moving, still ahead of you."
+      },
+      "nonce": "73bd3877ed803e616f732744ce97721f",
+      "payload": {
+        "step": 3,
+        "role": "thief",
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "E",
+        "action": "MOVE:E",
+        "barrier_placed": null,
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Still out here, still moving, still ahead of you.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "saying nothing that narrows the board",
+          "bluff_classification": "truth",
+          "move_rationale": "room=48/49 gap=5 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            2,
+            0
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "9b04425f3c62d4ea8be42b2c5c70db2530eb59020191d18b726816da3c52c15d",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Still out here, still moving, still ahead of you."
+      },
+      "nonce": "a658c7e4210511528ceab9e2d2aaca92",
+      "payload": {
+        "step": 4,
+        "role": "thief",
+        "state": "grid=7x7;self=[2, 4];barriers=[]",
+        "position": [
+          2,
+          4
+        ],
+        "move": "N",
+        "action": "MOVE:N",
+        "barrier_placed": null,
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Still out here, still moving, still ahead of you.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "saying nothing that narrows the board",
+          "bluff_classification": "truth",
+          "move_rationale": "room=48/49 gap=5 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            3,
+            0
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "8ef20dd8f6840e5e64a0b4432a168bfaabe7d6c79ac75294c0c3a78450a20af7",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Keep guessing. The city is bigger than your patience."
+      },
+      "nonce": "2d341f526fa22ea64907418ed45b8153",
+      "payload": {
+        "step": 5,
+        "role": "thief",
+        "state": "grid=7x7;self=[2, 3];barriers=[]",
+        "position": [
+          2,
+          3
+        ],
+        "move": "W",
+        "action": "MOVE:W",
+        "barrier_placed": null,
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Keep guessing. The city is bigger than your patience.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "saying nothing that narrows the board",
+          "bluff_classification": "truth",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            3,
+            1
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "1ff0089601d3c9f6b73e059e518fdc77e04dc3f78eb31e4abfdac1186cbcf115",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Slipping around chinatown while you waste time."
+      },
+      "nonce": "bf4e44608b38c8911e2175225e0bf980",
+      "payload": {
+        "step": 6,
+        "role": "thief",
+        "state": "grid=7x7;self=[2, 4];barriers=[]",
+        "position": [
+          2,
+          4
+        ],
+        "move": "E",
+        "action": "MOVE:E",
+        "barrier_placed": null,
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Slipping around chinatown while you waste time.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "naming a decoy sector (urgency 0.36)",
+          "bluff_classification": "lie",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            3,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "1e37775fb3643c5506004be03827a71876caed8a22b693c6c4c05180edb43632",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "I have been in worse corners than this one."
+      },
+      "nonce": "a2d9045df5768258f95aa60baa691229",
+      "payload": {
+        "step": 7,
+        "role": "thief",
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "S",
+        "action": "MOVE:S",
+        "barrier_placed": null,
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "I have been in worse corners than this one.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "saying nothing that narrows the board",
+          "bluff_classification": "truth",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            2,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "24442b90d66d2f60a0c8c567ca38c6c079754c18b914606373ae50007ef21831",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Still out here, still moving, still ahead of you."
+      },
+      "nonce": "0b3725cd85b0a1b9b7f2cac2f03bcf0c",
+      "payload": {
+        "step": 8,
+        "role": "thief",
+        "state": "grid=7x7;self=[4, 4];barriers=[]",
+        "position": [
+          4,
+          4
+        ],
+        "move": "S",
+        "action": "MOVE:S",
+        "barrier_placed": null,
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Still out here, still moving, still ahead of you.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "saying nothing that narrows the board",
+          "bluff_classification": "truth",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            3,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "e3738b43f879e2448009dc78b7863869d5124b1de7cd7ca7aeb2b41a00c80e43",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Still out here, still moving, still ahead of you."
+      },
+      "nonce": "644e1c2e391a76c84c60b21366e9f138",
+      "payload": {
+        "step": 9,
+        "role": "thief",
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "N",
+        "action": "MOVE:N",
+        "barrier_placed": null,
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Still out here, still moving, still ahead of you.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "saying nothing that narrows the board",
+          "bluff_classification": "truth",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            4,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "a6cd2f9e238a15183290f01c33aa15d13833da4a114bace6803e046a6b914586",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Keep guessing. The city is bigger than your patience."
+      },
+      "nonce": "5a8232b1a5588c3e1da8f32e083e865e",
+      "payload": {
+        "step": 10,
+        "role": "thief",
+        "state": "grid=7x7;self=[2, 4];barriers=[]",
+        "position": [
+          2,
+          4
+        ],
+        "move": "N",
+        "action": "MOVE:N",
+        "barrier_placed": null,
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Keep guessing. The city is bigger than your patience.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "saying nothing that narrows the board",
+          "bluff_classification": "truth",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            3,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "081d3561170b01a622c8e47cae121a615ae012a9ca2e78fe8a456ee709703421",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Still out here, still moving, still ahead of you."
+      },
+      "nonce": "17d3e03c2989e6e67b987ef222d8515f",
+      "payload": {
+        "step": 11,
+        "role": "thief",
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "S",
+        "action": "MOVE:S",
+        "barrier_placed": null,
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Still out here, still moving, still ahead of you.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "saying nothing that narrows the board",
+          "bluff_classification": "truth",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            2,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "d89b104f49fa0b8d4da3ef9c6405da407e2c9b1b10fb107649eb2f37d9435847",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "You talk a lot for someone who has found nothing."
+      },
+      "nonce": "d8a06b256bbc95414198b02fe897b105",
+      "payload": {
+        "step": 12,
+        "role": "thief",
+        "state": "grid=7x7;self=[2, 4];barriers=[]",
+        "position": [
+          2,
+          4
+        ],
+        "move": "N",
+        "action": "MOVE:N",
+        "barrier_placed": null,
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "You talk a lot for someone who has found nothing.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "saying nothing that narrows the board",
+          "bluff_classification": "truth",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            3,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "22740e041b5ffef1bc0ac30b34413a0b0208f4b9313b24ef2e80c6c18100358e",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Slipping around broadway while you waste time."
+      },
+      "nonce": "07a37d67d656f7aacbbdba3089ffebf8",
+      "payload": {
+        "step": 13,
+        "role": "thief",
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "S",
+        "action": "MOVE:S",
+        "barrier_placed": null,
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Slipping around broadway while you waste time.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "naming a decoy sector (urgency 0.46)",
+          "bluff_classification": "lie",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            2,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "e34ff84f2ab1042bfd2543c675ebf7cde034e3ea28161f106601c475f02fd913",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Catch your breath, I am through soho."
+      },
+      "nonce": "c196af84a1b11e72c34bf1400dbb94f1",
+      "payload": {
+        "step": 14,
+        "role": "thief",
+        "state": "grid=7x7;self=[2, 4];barriers=[]",
+        "position": [
+          2,
+          4
+        ],
+        "move": "N",
+        "action": "MOVE:N",
+        "barrier_placed": null,
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Catch your breath, I am through soho.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "naming a decoy sector (urgency 0.47)",
+          "bluff_classification": "lie",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            3,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "2bfc80ba498587ede4c3587c8b31d6f88315d95fd34b70f9bd78cc45a752cc55",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Still out here, still moving, still ahead of you."
+      },
+      "nonce": "2d3f6c719e10df2bacde8cc28b1e304b",
+      "payload": {
+        "step": 15,
+        "role": "thief",
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "S",
+        "action": "MOVE:S",
+        "barrier_placed": null,
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Still out here, still moving, still ahead of you.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "saying nothing that narrows the board",
+          "bluff_classification": "truth",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            2,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "62260ad33ef85b0c329215f36fbab82337765099697150f8a5e7ecc243523d83",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Still out here, still moving, still ahead of you."
+      },
+      "nonce": "85d6941cc6d7f7c1d61968ba1f7b6d7e",
+      "payload": {
+        "step": 16,
+        "role": "thief",
+        "state": "grid=7x7;self=[4, 4];barriers=[]",
+        "position": [
+          4,
+          4
+        ],
+        "move": "S",
+        "action": "MOVE:S",
+        "barrier_placed": null,
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Still out here, still moving, still ahead of you.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "saying nothing that narrows the board",
+          "bluff_classification": "truth",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            3,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "d59621e414ac78ced2d6697750b29533b3f115fc6f045ac9a7b909506db6b2e0",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Already near broadway, and still moving."
+      },
+      "nonce": "47c4de51b9918cce85a46de70ad90be1",
+      "payload": {
+        "step": 17,
+        "role": "thief",
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "N",
+        "action": "MOVE:N",
+        "barrier_placed": null,
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Already near broadway, and still moving.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "naming a decoy sector (urgency 0.51)",
+          "bluff_classification": "lie",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            4,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "2a8871954544283e60cfb1b26a3659b7aaf00c6d1d930461eabf247e4e894111",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Already past broadway, and still moving."
+      },
+      "nonce": "d955adfc00929ae3b7ed24f07fd1230d",
+      "payload": {
+        "step": 18,
+        "role": "thief",
+        "state": "grid=7x7;self=[4, 4];barriers=[]",
+        "position": [
+          4,
+          4
+        ],
+        "move": "S",
+        "action": "MOVE:S",
+        "barrier_placed": null,
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Already past broadway, and still moving.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "naming a decoy sector (urgency 0.53)",
+          "bluff_classification": "lie",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            3,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "a51837857325253942641739ed69590eb6024d42a49b28bbd31922548d8a6ec5",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Slipping through midtown while you waste time."
+      },
+      "nonce": "654ab85e62323db676d0fb3ac268c4af",
+      "payload": {
+        "step": 19,
+        "role": "thief",
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "N",
+        "action": "MOVE:N",
+        "barrier_placed": null,
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Slipping through midtown while you waste time.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "naming a decoy sector (urgency 0.54)",
+          "bluff_classification": "lie",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            4,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "f8a835545a066d011606ea54e0b3d265695ef9f1b50cbd42973d00c5c15593b8",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Slipping around midtown while you waste time."
+      },
+      "nonce": "445d8d7f1ddc68f32a9d2bb64fbb547a",
+      "payload": {
+        "step": 20,
+        "role": "thief",
+        "state": "grid=7x7;self=[4, 4];barriers=[]",
+        "position": [
+          4,
+          4
+        ],
+        "move": "S",
+        "action": "MOVE:S",
+        "barrier_placed": null,
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Slipping around midtown while you waste time.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "naming a decoy sector (urgency 0.56)",
+          "bluff_classification": "lie",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            3,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "a165726d949234d5d7c18d47ff869b8748c593849ef6836b8f53d4cba4440ac0",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Catch your breath, I am near midtown."
+      },
+      "nonce": "960672922abcf845a2730c03aa22ea2c",
+      "payload": {
+        "step": 21,
+        "role": "thief",
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "N",
+        "action": "MOVE:N",
+        "barrier_placed": null,
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Catch your breath, I am near midtown.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "naming a decoy sector (urgency 0.57)",
+          "bluff_classification": "lie",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            4,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "ba4a94ccb3075506757c035c66f629a8efd61f57d32ed9d2b590fd489775931f",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "I have been in worse corners than this one."
+      },
+      "nonce": "3db0bfa8e2c9f914f957dcf7fe5e3fcc",
+      "payload": {
+        "step": 22,
+        "role": "thief",
+        "state": "grid=7x7;self=[4, 4];barriers=[]",
+        "position": [
+          4,
+          4
+        ],
+        "move": "S",
+        "action": "MOVE:S",
+        "barrier_placed": null,
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "I have been in worse corners than this one.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "saying nothing that narrows the board",
+          "bluff_classification": "truth",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            3,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "2f4aaf336ce512ad6709029a3c5df9c3d26aa85086e043dd86d36bfb6d1c4b52",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Already around broadway, and still moving."
+      },
+      "nonce": "223263557f35fc7b09373eee526ea62f",
+      "payload": {
+        "step": 23,
+        "role": "thief",
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "N",
+        "action": "MOVE:N",
+        "barrier_placed": null,
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Already around broadway, and still moving.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "naming a decoy sector (urgency 0.60)",
+          "bluff_classification": "lie",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            4,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "7e242b048971d81137f0cf0773412b47bb610743937c2e00796a3199ae1ae9c0",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Still out here, still moving, still ahead of you."
+      },
+      "nonce": "9dd5dc4eeaf7de7038c4e01dede2300f",
+      "payload": {
+        "step": 24,
+        "role": "thief",
+        "state": "grid=7x7;self=[2, 4];barriers=[]",
+        "position": [
+          2,
+          4
+        ],
+        "move": "N",
+        "action": "MOVE:N",
+        "barrier_placed": null,
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Still out here, still moving, still ahead of you.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "saying nothing that narrows the board",
+          "bluff_classification": "truth",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            3,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "5a9509a8d2cf8988fba877608482e0d9b5be573c95f57aa3bff017a70612132c",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Already past broadway, and still moving."
+      },
+      "nonce": "10cce188ef2de39b026fcdd596900096",
+      "payload": {
+        "step": 25,
+        "role": "thief",
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "S",
+        "action": "MOVE:S",
+        "barrier_placed": null,
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Already past broadway, and still moving.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "naming a decoy sector (urgency 0.63)",
+          "bluff_classification": "lie",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            2,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "77a7a217346b9f23a56841c7c5e66be1521d4f5ba7e9e0d92e04937fc0fa58b2",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "I have been in worse corners than this one."
+      },
+      "nonce": "b9f6330a053bc3d2179944fb44cdeb40",
+      "payload": {
+        "step": 26,
+        "role": "thief",
+        "state": "grid=7x7;self=[4, 4];barriers=[]",
+        "position": [
+          4,
+          4
+        ],
+        "move": "S",
+        "action": "MOVE:S",
+        "barrier_placed": null,
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "I have been in worse corners than this one.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "saying nothing that narrows the board",
+          "bluff_classification": "truth",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            3,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "4a5f5f4c7195ba2fa699534e118edd4d657b75c35556e32402c9547df5a2102d",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Every alley through midtown knows me better than you do."
+      },
+      "nonce": "55f844aa6b415fe2ade13a6a86fa78d2",
+      "payload": {
+        "step": 27,
+        "role": "thief",
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "N",
+        "action": "MOVE:N",
+        "barrier_placed": null,
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Every alley through midtown knows me better than you do.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "naming a decoy sector (urgency 0.66)",
+          "bluff_classification": "lie",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            4,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "622966acac9c86d6553a81a9024df4b8de7e35943e0c2ca7e9087dc49d510083",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "You talk a lot for someone who has found nothing."
+      },
+      "nonce": "5725df6849ff495434fddf9c4bb0bb88",
+      "payload": {
+        "step": 28,
+        "role": "thief",
+        "state": "grid=7x7;self=[4, 4];barriers=[]",
+        "position": [
+          4,
+          4
+        ],
+        "move": "S",
+        "action": "MOVE:S",
+        "barrier_placed": null,
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "You talk a lot for someone who has found nothing.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "saying nothing that narrows the board",
+          "bluff_classification": "truth",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            3,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "6da5f30971c13b8d99e4cf8e7533d99dbe58c0110cf47c169cff1ae7c05204ef",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Already by midtown, and still moving."
+      },
+      "nonce": "4f9d0ce90e27c6b5827b8534e0478115",
+      "payload": {
+        "step": 29,
+        "role": "thief",
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "N",
+        "action": "MOVE:N",
+        "barrier_placed": null,
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Already by midtown, and still moving.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "naming a decoy sector (urgency 0.69)",
+          "bluff_classification": "lie",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            4,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "0ceced99bb36ee800899fb5d4bbad392317e6d3dab919016116d3b9ce9faa9e2",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Already around chinatown, and still moving."
+      },
+      "nonce": "381997a811462463bde0955b5076482e",
+      "payload": {
+        "step": 30,
+        "role": "thief",
+        "state": "grid=7x7;self=[2, 4];barriers=[]",
+        "position": [
+          2,
+          4
+        ],
+        "move": "N",
+        "action": "MOVE:N",
+        "barrier_placed": null,
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Already around chinatown, and still moving.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "naming a decoy sector (urgency 0.70)",
+          "bluff_classification": "lie",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            3,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "5b7546d9839cfbda7b73e147ad3885862b52c17c5d40570da0d9054ede58fb86",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Slipping past midtown while you waste time."
+      },
+      "nonce": "d28cc998fccc5fa7ff8cf560b4682731",
+      "payload": {
+        "step": 31,
+        "role": "thief",
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "S",
+        "action": "MOVE:S",
+        "barrier_placed": null,
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Slipping past midtown while you waste time.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "naming a decoy sector (urgency 0.71)",
+          "bluff_classification": "lie",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            2,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "f3d943ae89d1922de024c4dd41688057da1cc71c5b1850711e8ac7fe6b9963c5",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "You talk a lot for someone who has found nothing."
+      },
+      "nonce": "d88326f03ae92c319b5d9c87e720bd7f",
+      "payload": {
+        "step": 32,
+        "role": "thief",
+        "state": "grid=7x7;self=[2, 4];barriers=[]",
+        "position": [
+          2,
+          4
+        ],
+        "move": "N",
+        "action": "MOVE:N",
+        "barrier_placed": null,
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "You talk a lot for someone who has found nothing.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "saying nothing that narrows the board",
+          "bluff_classification": "truth",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            3,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "4af3ccd99d5356b4c3c270af9febb78d10d2b8daa92132f88a8268ff29d9045b",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Every alley past midtown knows me better than you do."
+      },
+      "nonce": "840354fd3d79e92940e2fd1fd2c00476",
+      "payload": {
+        "step": 33,
+        "role": "thief",
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "S",
+        "action": "MOVE:S",
+        "barrier_placed": null,
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Every alley past midtown knows me better than you do.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "naming a decoy sector (urgency 0.74)",
+          "bluff_classification": "lie",
+          "move_rationale": "room=48/49 gap=3 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            2,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "3ab33d402806860581168e10fdd3a4a54d8a349e399355dcd83a5390f276566a",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Every alley around broadway knows me better than you do."
+      },
+      "nonce": "3e302785ebaa166859f4d13ba2737189",
+      "payload": {
+        "step": 34,
+        "role": "thief",
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "STAY",
+        "action": "HOLD:-",
+        "barrier_placed": null,
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Every alley around broadway knows me better than you do.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "naming a decoy sector (urgency 0.69)",
+          "bluff_classification": "lie",
+          "move_rationale": "room=48/49 gap=4 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            1,
+            2
+          ],
+          "caught": false
+        }
+      }
+    },
+    {
+      "commit": "933bbefff0b147998bdef57e81c952d004f7b09fffb42e19a26d94b96288aa65",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Every alley through midtown knows me better than you do."
+      },
+      "nonce": "faad82380d8c02ea48b7a21e19e3a14f",
+      "payload": {
+        "step": 35,
+        "role": "thief",
+        "state": "grid=7x7;self=[3, 3];barriers=[]",
+        "position": [
+          3,
+          3
+        ],
+        "move": "W",
+        "action": "MOVE:W",
+        "barrier_placed": null,
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Every alley through midtown knows me better than you do.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "naming a decoy sector (urgency 0.70)",
+          "bluff_classification": "lie",
+          "move_rationale": "room=48/49 gap=4 exits=4 threats=1"
+        },
+        "model": "template-zero-token",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "opponent_trust": 0.5,
+        "claims_capture": false,
+        "capture_claim": null,
+        "claim_response": {
+          "claim": [
+            0,
+            2
+          ],
+          "caught": false
+        }
+      }
+    }
+  ],
+  "records": [
+    {
+      "commit": "2b1dbb464460fa52a2ac6ee233ce9b33c911c0d2f8e6e2355f9b7a1965ce66a8",
+      "nonce": "44bb8be7f45480334608efe4d6f3c300",
+      "payload": {
+        "declaration_ref": "declaration_SMNGRP05-vs-vibecode.json",
+        "github_commit": "3eec6b21b74b512ecbd857782ea325c2bd887c09",
+        "group_id": "vibecode",
+        "role": "police",
+        "spec": {
+          "cpu_cores": 16,
+          "cpu_type": "Intel64 Family 6 Model 158 Stepping 13, GenuineIntel",
+          "machine": "AMD64",
+          "os": "Windows 11",
+          "python": "3.13.14",
+          "ram_gb": 34
+        },
+        "step": 0,
+        "sub_game_number": 4,
+        "type": "step_zero"
+      }
+    },
+    {
+      "commit": "6e48523526c4d921b43734b23811ab183eabb4039f168d9d2030d2a87950313d",
+      "nonce": "e5caada34069e4e4a4d796c8c2077cdc",
+      "payload": {
+        "step": 1,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          1,
+          0
+        ],
+        "move": "S",
+        "intent": "ambiguous"
+      }
+    },
+    {
+      "commit": "49a66efd59d62490250ac5f7fb12ec2b18b6c050a7f8aacb796921f2dbcbc15a",
+      "nonce": "3a1ea962d8430b0198dc45833bd4de0a",
+      "payload": {
+        "step": 2,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          0
+        ],
+        "move": "S",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "90fd07427df5fb47200a599f1ed6ccad5279625233e2458e6410d1813b73724c",
+      "nonce": "5c1737786b7f23c9d1ae720508445f99",
+      "payload": {
+        "step": 3,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          0
+        ],
+        "move": "S",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "fe7166b8d5334d7d8abfe5990fafcacd2a53110979dd9eb774b82072c0a7251f",
+      "nonce": "2d2b7b7703023143119f4b8a3375e39e",
+      "payload": {
+        "step": 4,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          1
+        ],
+        "move": "E",
+        "intent": "ambiguous"
+      }
+    },
+    {
+      "commit": "e46cfc2588f7dc40fc91a0f8ff7afabe4f56982d1eb770b1c738225c320b26d3",
+      "nonce": "8ad995a9208bb03ed3cdc0c6a5b028a3",
+      "payload": {
+        "step": 5,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          2
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "92db79a8eae10779c172912874ecaa97f38b691ac508cae8ef13aa7ca77bafe5",
+      "nonce": "c8197f2351f33c38227b776c223559af",
+      "payload": {
+        "step": 6,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          2
+        ],
+        "move": "N",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "5ec80ae062c65c58ee9db02418d3d60ad1983e2f73b9c7613e8ff0de56593b76",
+      "nonce": "76bc878bd7269741bead52c4fdf990f8",
+      "payload": {
+        "step": 7,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          2
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "ee5e7d2355d3a3bfe8069673f26fa86ecedb5358b01a82dd0e75e80a7ad18fc0",
+      "nonce": "7931bc8119811079dc81f5634893781e",
+      "payload": {
+        "step": 8,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          4,
+          2
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "475eb6e832ef2ffa4611ec865385bb9fad590283d444f16f356c07239f882af6",
+      "nonce": "ba16353eb0544055b151a6fe4ec030b3",
+      "payload": {
+        "step": 9,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          2
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "9dc017345143cb03c96c985e2f34b366680323da1322c57dc92d0dccbd589f37",
+      "nonce": "220f95d786da9aeb0ed8002d8dcb02bc",
+      "payload": {
+        "step": 10,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          2
+        ],
+        "move": "N",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "cedea608b78420b97a4fb707cd105fd86aae2073b409dbd3bfca13eb0507aebc",
+      "nonce": "913c4e82702adb3ad6f68e9727400bb5",
+      "payload": {
+        "step": 11,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          2
+        ],
+        "move": "S",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "77f195e0bc47b420c8ec68ce5c3eac203748a042ca7903d4c1b69b0c2f70339a",
+      "nonce": "73c8ed4c88cac86cdc5968b385ae1733",
+      "payload": {
+        "step": 12,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          2
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "7cd934ef0f21613caaa702986420443bca73adbd294232d465c11b31efbc3abd",
+      "nonce": "34f0e2c26c31bb3cac1572b15c92f759",
+      "payload": {
+        "step": 13,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          2
+        ],
+        "move": "S",
+        "intent": "ambiguous"
+      }
+    },
+    {
+      "commit": "6d82ee4088e4430c9e69242486cc58bb9126f877b1367b89dbe1eaf37e76ab3a",
+      "nonce": "89bc4fa8b4918a49019cdb17015566dc",
+      "payload": {
+        "step": 14,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          2
+        ],
+        "move": "N",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "0e01a5beb7323b71c03083fade932567e34cad80254ecf6ec63e7f377893d5e5",
+      "nonce": "08b3934d05df4b02d9336bf4cbb60d02",
+      "payload": {
+        "step": 15,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          2
+        ],
+        "move": "S",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "a48a431508cba71ff2f3087db50ffaf064921c1edbdf05b39d4c7d0ed640ecff",
+      "nonce": "e251c16b51e8ed3464ba1bfc5ac4d8ac",
+      "payload": {
+        "step": 16,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          4,
+          2
+        ],
+        "move": "S",
+        "intent": "ambiguous"
+      }
+    },
+    {
+      "commit": "19b19ad4d49faaf03556db2302002d5fcd02e4fc8799be764620a18b2e6f4fd5",
+      "nonce": "9162c47d0fbe068e31e5646ca319556e",
+      "payload": {
+        "step": 17,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          2
+        ],
+        "move": "N",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "c4b8efc788b2d30935d45466025985e377ebe460897f36e71636e43ce327d3a3",
+      "nonce": "efe9d78058b1322b0b3d074a6199a181",
+      "payload": {
+        "step": 18,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          4,
+          2
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "1276a3f5c66c1a595e62e6d6ddeba54d72ad2b665f45655a3e423323134e46b5",
+      "nonce": "ba1b349db874e31dabdd05735c5033a5",
+      "payload": {
+        "step": 19,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          2
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "dde2acd9449b2026faacf82850263fce408101502d1d062f568ca25dd7b34d51",
+      "nonce": "83c085261098cef2ec040b378680e4cf",
+      "payload": {
+        "step": 20,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          4,
+          2
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "baa53e6212a2135df9438e97bdeb0cec5491edd46e0a3b7c0abf0961b1b63710",
+      "nonce": "799d919a16dcf0d0116b1a6c348b8b8b",
+      "payload": {
+        "step": 21,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          2
+        ],
+        "move": "N",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "8d8d51742512035619c1bc59fb59ebef396966cfc4d4636e4e5f77825895a2bf",
+      "nonce": "ce65a8f3c4cc1ca9f5609446b2c39c86",
+      "payload": {
+        "step": 22,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          4,
+          2
+        ],
+        "move": "S",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "986e45b18a246fe9a68890e23885e0b97a07a0e4ef0f62ab2e53d37f1dcfed99",
+      "nonce": "576e6f7caaf06fd92d1725ebaafc875c",
+      "payload": {
+        "step": 23,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          2
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "687a071080f858e5c7928e2ec7188854bfe9df1d0a307bc24a1388246bb40207",
+      "nonce": "34e0b8d95b987fd1974453ccf0b3c3a4",
+      "payload": {
+        "step": 24,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          2
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "aeb93f8645ed5714d2fcd153c98245fcdf26172e30f8e5c87e4cea6e8e02a1de",
+      "nonce": "73597a51df588908fbce0959fcbe155e",
+      "payload": {
+        "step": 25,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          2
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "4c9cfacfbd74baedeeb8cac52abc2bc366705546f9c52e3fdd0e8b88b5793019",
+      "nonce": "41ea8be2c913713fff14d48dd7d7db6e",
+      "payload": {
+        "step": 26,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          4,
+          2
+        ],
+        "move": "S",
+        "intent": "ambiguous"
+      }
+    },
+    {
+      "commit": "1e050d37e3624af4fe595ea8d17485be71b1fde20a2888211c5cfd793351be71",
+      "nonce": "432a337d1fa22dcb829e55fb5c797c1a",
+      "payload": {
+        "step": 27,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          2
+        ],
+        "move": "N",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "5a3e2cac70b1b97eb44e56baa85ce3903910ee59f1877d693528dc8114f09ef5",
+      "nonce": "3ee4934ae9cf7829b691a7a676a2923b",
+      "payload": {
+        "step": 28,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          4,
+          2
+        ],
+        "move": "S",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "68b72c87b3ee330d4e04ab6993323523f1ab942ecec2dd04f29dd1bddeee5d48",
+      "nonce": "e86c163d35219c4fde489498415b9e6b",
+      "payload": {
+        "step": 29,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          2
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "704f0aed0887e710934feecb2df85ef33b8a58c40e4d93c20a88b27fdc3d305e",
+      "nonce": "1e188b1a161f4664c843327511eff3d1",
+      "payload": {
+        "step": 30,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          2
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "2d9ba4e60f3b72e6ff155d16da183b585e21e95a8f33134de75868b1ac82f0d9",
+      "nonce": "d0e81370fde28e0ebfe2c5cefb2e8560",
+      "payload": {
+        "step": 31,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          2
+        ],
+        "move": "S",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "7953b020611608cfbd258c5f4acb226ccfdcca0751b5f982b3587b91b6cc181a",
+      "nonce": "9f3ce5e4c58387527466c06b5836deb7",
+      "payload": {
+        "step": 32,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          2
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "354cbaf7a6bf2c71ca8aab92b0723f19e9115bc9242fc91b05a226e88d6fcce4",
+      "nonce": "08e83b03678d5f7b59ccd09f0971c760",
+      "payload": {
+        "step": 33,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          1,
+          2
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "1589fcbaa917eb05bcac8b7791929e12990f9d6ae06810a8e0aa0391aa9cfec3",
+      "nonce": "f7ce726300453eb075ff8860d9b5bc11",
+      "payload": {
+        "step": 34,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          0,
+          2
+        ],
+        "move": "N",
+        "intent": "bluff"
+      }
+    }
+  ],
+  "report_type": "log",
+  "schema_version": "1.3",
+  "sub_game_number": 4,
+  "summary": {
+    "audit": "Verified OK",
+    "outcome": "survival",
+    "digest_match": null,
+    "disputed_capture": null,
+    "turns_completed": 34,
+    "steps_sealed": 35,
+    "opponent_step_zero": {
+      "step": 0,
+      "type": "system_spec",
+      "spec": {
+        "os": "Windows 11",
+        "python": "3.14.5",
+        "machine": "AMD64",
+        "cpu_type": "AMD64 Family 25 Model 33 Stepping 0, AuthenticAMD",
+        "cpu_cores": 12,
+        "cpu_freq_mhz": null,
+        "ram_gb": null,
+        "gpu_type": "NVIDIA GeForce RTX 3070",
+        "vram_gb": 8.0
+      },
+      "model": "template-zero-token",
+      "provider": "template",
+      "code_version": "1.00",
+      "github_commit": "b8b4c4197e3e5b89b8e74c532092ebff3262bad2",
+      "git": {
+        "commit": "b8b4c4197e3e5b89b8e74c532092ebff3262bad2",
+        "branch": "main",
+        "tag": "v1.0-submission-46-gb8b4c41"
+      },
+      "group_id": "SMNGRP05",
+      "group_name": "SMNGRP05",
+      "sub_game_number": 4,
+      "scent_model": {
+        "falloff": "linear",
+        "grid_size": 5,
+        "peak_intensity": 0.9,
+        "decay_per_step": 0.1,
+        "decay_mode": "subtractive",
+        "decay_formula": "tau(t+1) = max(0, tau(t) - rho) + delta_tau",
+        "worked_example": {
+          "deposit": 0.9,
+          "after_1_turn": 0.8,
+          "after_7_turns": 0.2
+        }
+      },
+      "declared_at": "2026-08-19T21:21:29.381436+00:00"
+    },
+    "step_zero_mismatch": null,
+    "started_at": "2026-08-19T21:21:33.956069+00:00",
+    "ended_at": "2026-08-19T21:22:50.369161+00:00",
+    "role": "police",
+    "group_id": "vibecode",
+    "opponent_group_id": "SMNGRP05"
+  },
+  "wire_shape": "reference"
+}

@@ -1,0 +1,54 @@
+00:18:00.641 [match] logging to D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\reports\ref3_matches\match_SMNGRP05_20260820-001800.log
+00:18:02.776 [pw] [08/20/26 00:18:02] INFO     Starting MCP server               transport.py:361
+00:18:02.776 [pw]                              'vibecode-police' with transport
+00:18:02.777 [tw] [08/20/26 00:18:02] INFO     Starting MCP server               transport.py:361
+00:18:02.777 [tw]                              'vibecode-thief' with transport
+00:18:02.777 [pw]                              'http' on
+00:18:02.777 [tw]                              'http' on
+00:18:02.777 [tw]                              http://0.0.0.0:61223/mcp
+00:18:02.781 [pw]                              http://0.0.0.0:61224/mcp
+00:18:02.807 [tw] INFO:     Started server process [816]
+00:18:02.808 [tw] INFO:     Waiting for application startup.
+00:18:02.808 [pw] INFO:     Started server process [2424]
+00:18:02.808 [pw] INFO:     Waiting for application startup.
+00:18:02.812 [tw] INFO:     Application startup complete.
+00:18:02.812 [pw] INFO:     Application startup complete.
+00:18:02.812 [tw] INFO:     Uvicorn running on http://0.0.0.0:61223 (Press CTRL+C to quit)
+00:18:02.813 [pw] INFO:     Uvicorn running on http://0.0.0.0:61224 (Press CTRL+C to quit)
+00:18:03.220 [tw] [thief-worker] live GUI on http://127.0.0.1:8782
+00:18:03.221 [tw] [thief-worker] endpoint live on :61223 (pid=816, log=D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\reports\ref3_matches\worker_thief_20260820-001801.log)
+00:18:03.221 [match] thief worker ready (pid=20940)
+00:18:03.222 [pw] [police-worker] live GUI on http://127.0.0.1:8781
+00:18:03.222 [pw] [police-worker] endpoint live on :61224 (pid=2424, log=D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\reports\ref3_matches\worker_police_20260820-001801.log)
+00:18:03.222 [match] police worker ready (pid=17436)
+00:18:03.231 [match] SPLIT arch: cop pid=17436 thief pid=20940 orchestrator holds no game state
+00:18:03.231 [match] sg1 (thief) — dispatching to thief worker
+00:18:03.967 [tw] [match] waiting for peer endpoint https://f0eb-147-236-163-154.ngrok-free.app/mcp (HTTPStatusError: Server error '502 Bad Gateway' for url 'https://f0eb-147-236-163-154.ngrok-free.)
+00:19:19.059 [tw] [wire<-] negotiate keys=['game_uid', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms'] group=None role='police' sub_game=1 uid='f3926768-06be' scent=81ebee59 wire=None
+00:19:20.771 [tw] [match] peer endpoint UP: https://f0eb-147-236-163-154.ngrok-free.app/mcp
+00:19:24.145 [tw] [match] sg1 peer greeting sub_game=1 role=police
+00:19:24.145 [tw] [match] sg1 role=thief handshake OK vs SMNGRP05 uid=f3926768-06b
+00:19:25.900 [tw] [wire<-] turn step=1 sender='police' commit=e72a2d3b ts='2026-08-19T21:19:25.654' cells=12 barrier=None claim=[0, 1] answer=None win=None
+00:19:44.430 [pw] [wire<-] negotiate keys=['game_uid', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms'] group=None role='thief' sub_game=2 uid='f3926768-06be' scent=81ebee59 wire=None
+00:19:44.765 [match] sg1 complete
+00:19:44.765 [match] sg2 (police) — dispatching to police worker
+00:19:46.316 [pw] [match] peer endpoint UP: https://f0eb-147-236-163-154.ngrok-free.app/mcp
+00:19:49.376 [pw] [wire<-] turn step=1 sender='thief' commit=5e6fa753 ts='2026-08-19T21:19:49.129' cells=25 barrier=None claim=None answer=None win=None
+00:19:49.666 [pw] [match] sg2 peer greeting sub_game=2 role=thief
+00:19:49.666 [pw] [match] sg2 role=police handshake OK vs SMNGRP05 uid=f3926768-06b
+00:21:05.975 [match] sg2 complete
+00:21:05.975 [match] sg3 (thief) — dispatching to thief worker
+00:21:30.090 [match] sg3 complete
+00:21:30.090 [match] sg4 (police) — dispatching to police worker
+00:22:50.620 [match] sg4 complete
+00:22:50.620 [match] sg5 (thief) — dispatching to thief worker
+00:23:14.343 [match] sg5 complete
+00:23:14.343 [match] sg6 (police) — dispatching to police worker
+00:24:32.960 [match] sg6 complete
+
+00:24:33.589 [match] STATUS: audits 6/6 ok
+00:24:33.593 [match] saved config profile used vs SMNGRP05 -> config/opponents/SMNGRP05/ (existing profile files preserved)
+00:24:33.716 [match] artifacts: 6x(config+log) + declaration + result under results/ and config/games/
+00:24:33.716 [match] result: {'vibecode': 47, 'SMNGRP05': 47} winner=None
+00:24:35.414 [match] emailed result ONLY to rmisegal+uoh26finalgame@gmail.com (id=1a01be963af0cc06)
+00:24:35.415 [match] counted ledger updated: counted_games_played=8 (results/counted_series.json)

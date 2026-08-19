@@ -1,0 +1,84 @@
+{
+  "_schema": "p2p-police-artifacts",
+  "consensus_signature": "08ec5a7f9de6644348deb3b445aef3be8c9fb564b3387c44b03913dd5bf6cd4b",
+  "declaration_type": "pre_game_declaration",
+  "declared_at": "2026-08-19T21:24:32.711296+00:00",
+  "game_ended_at": "2026-08-19T21:24:32.711296+00:00",
+  "game_id": "SMNGRP05-vs-vibecode",
+  "game_started_at": "2026-08-19T21:19:23.635160+00:00",
+  "game_uid": "f3926768-06be-e93c-6cba-bd6ebf142059",
+  "groups": {
+    "group_1": {
+      "code_version": "1.00",
+      "counted_games_played": 7,
+      "counted_matches_played": 7,
+      "opponents_already_counted": [
+        "anrbj666",
+        "bestteam",
+        "imreeyal",
+        "najamjad",
+        "nis-yar1",
+        "rstabcde",
+        "uoh-sqak"
+      ],
+      "group_id": "vibecode",
+      "group_name": "vibecode",
+      "hardware_spec": {
+        "cpu_cores": 16,
+        "cpu_type": "Intel64 Family 6 Model 158 Stepping 13, GenuineIntel",
+        "machine": "AMD64",
+        "os": "Windows 11",
+        "python": "3.13.14",
+        "ram_gb": 34
+      },
+      "hardware_spec_sha256": "7caa489c0d9af45783090ac85dba82f01d34b2e8c5929bb63a5671499bc63b46",
+      "llm_model": "none (template hints; pure-Python algorithmic movement)",
+      "mcp_servers": {
+        "cop": "http://62.56.220.143:61224/mcp",
+        "thief": "http://62.56.220.143:61223/mcp"
+      },
+      "members": [
+        "Ron Marom",
+        "Amit Kuperminz"
+      ],
+      "repos": {
+        "cop": "https://github.com/AmitKuper/vibecode-cop",
+        "thief": "https://github.com/AmitKuper/vibecode-thief"
+      },
+      "signature": "sha256:395fdf0514720c9bcdca2d5ff6b056e9664d97f4c938a4d96c069e315f03b3f8"
+    },
+    "group_2": {
+      "group_id": "SMNGRP05",
+      "group_name": "SMNGRP05",
+      "counted_games_played": 2,
+      "hardware_spec": {},
+      "hardware_spec_sha256": "",
+      "llm_model": "template-zero-token",
+      "mcp_servers": {
+        "cop": "https://f0eb-147-236-163-154.ngrok-free.app/mcp",
+        "thief": "https://f0eb-147-236-163-154.ngrok-free.app/mcp"
+      },
+      "members": [
+        "Afaf Gharra",
+        "Reem Awawdy"
+      ],
+      "repos": {
+        "cop": "https://github.com/afaf-gharra/SMNGRP05-police",
+        "thief": "https://github.com/afaf-gharra/SMNGRP05-thief"
+      },
+      "signature": "undeclared"
+    }
+  },
+  "links": {
+    "config": "config_SMNGRP05-vs-vibecode_g<NN>.json",
+    "declaration": "declaration_SMNGRP05-vs-vibecode.json",
+    "log": "log_SMNGRP05-vs-vibecode_g<NN>.json",
+    "result": "result_SMNGRP05-vs-vibecode.json"
+  },
+  "max_tokens_per_game": 200000,
+  "num_sub_games": 6,
+  "report_type": "declaration",
+  "schema_version": "1.00",
+  "timezone": "Asia/Jerusalem",
+  "token_budget_per_series": 200000
+}
