@@ -71,9 +71,9 @@ protocol stack, and the match runner — `scripts/live_match_ref3.py` is now a
 The live GUI exists (`cop_worker/gui/app.py`, `cop_worker/gui/live_view_model.py`)
 and is started per role worker when `[network] gui_cop_port` / `gui_thief_port`
 is set (`scripts/ref3_match/gui_bridge.py`); with the keys absent — the default —
-no GUI starts and play is byte-identical. `assets/screenshots/` carries match
-visuals and a replay-verification capture, but **no browser screenshot of the
-live GUI** is committed.
+no GUI starts and play is byte-identical. Browser screenshots of the live GUI
+(belief heatmaps for both roles) and the replay `Verified OK` view are committed
+in `evidence/gui/`; `assets/screenshots/` additionally carries match visuals.
 
 ### D6: Duplicated modules across packages and repositories
 

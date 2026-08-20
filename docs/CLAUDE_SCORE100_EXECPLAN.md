@@ -101,3 +101,31 @@ peersim rehearsal `audits 6/6 ok` with cop captures @4/9/10; full suite
 gain; residual risk = capture delay past step 35 in unobserved states,
 bounded by strict improvement + 8-wall cap + `STALL_TURNS=4` (do not lower
 without a wider variant matrix). Details: `docs/ANTI_EVADER_ANALYSIS.md`.
+
+## 2026-08-20 — External (ChatGPT) review response: 3 submission items
+
+Review scored 94/100; its three action items were verified against the tree
+before acting (two were real, one was understated):
+
+1. **Submission tag** — review said `v1.0-submission` was missing; actually
+   it EXISTED in both repos but pointed at 2026-08-02 commits (pre-rebuild,
+   pre-evidence) — worse than missing. Standardized: `v1.0-submission` (the
+   book's checklist name) is THE graded tag, re-pointed to the final heads
+   and force-pushed in both repos; `v2.0`/`v5.0-submission` demoted to
+   historical milestones; both READMEs updated to say so.
+2. **Step-0 evidence** — confirmed root causes in OUR writer
+   (`league_artifacts/declaration.py`): `declared_at` was stamped with the
+   series END (settlement-time write), and the opponent's
+   `hardware_spec_sha256` was hard-coded `""` even when they transmitted a
+   spec. Fixed (declared_at = series start; sha = theirs, else checksum of
+   received spec) + 4 pins in `tests/test_declaration_step0_provenance.py`.
+   bestteam's empty fields are what they actually transmitted — documented
+   in `evidence/game_vs_bestteam/README.md` with pointers to the raw
+   pre-play negotiate frames (runtime_match.log 01:19:05-08). Historical
+   artifacts left untouched.
+3. **KNOWN_DEVIATIONS contradiction** — confirmed (cop only): the "no
+   browser screenshot of the live GUI" sentence contradicted the CLOSED
+   entry above it; rewritten to point at `evidence/gui/`.
+
+Review factual errors noted: it counted 7 counted series 6W-1L (ledger has
+8: 6W-1L-1D incl. the SMNGRP05 draw) and said the tag was absent.

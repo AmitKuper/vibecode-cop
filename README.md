@@ -521,8 +521,10 @@ weakest per-module coverage pockets to the suite average.
 ## Submission
 
 The graded submission state of this repository is the annotated tag
-**`v5.0-submission`** (created at the final commit). The two repositories
-cross-link each other — this README links
+**`v1.0-submission`** — the exact tag name the course instructions require —
+re-pointed to the final commit whenever the submission state advances
+(earlier `v2.0`/`v5.0-submission` tags are historical milestones). The two
+repositories cross-link each other — this README links
 [vibecode-thief](https://github.com/AmitKuper/vibecode-thief) above, and the
 thief README links back here — and are operated as one distributed product.
 Interpretation decisions are recorded in

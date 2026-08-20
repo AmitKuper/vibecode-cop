@@ -102,12 +102,15 @@ def build_declaration(
         "signature": f"sha256:{_sha({'group_id': 'vibecode', 'game_uid': game_uid})}",
     }
     oi = opp_identity or {}
+    opp_hw = oi.get("hardware_spec", {})
     theirs = {
         "group_id": oi.get("group_id", opponent),
         "group_name": oi.get("group_name", opponent),
         "counted_games_played": oi.get("counted_games_played", 0),
-        "hardware_spec": oi.get("hardware_spec", {}),
-        "hardware_spec_sha256": "",
+        "hardware_spec": opp_hw,
+        # Prefer the sha THEY transmitted; else checksum what we received (was
+        # hard-coded "" even when a spec arrived — flagged in external review).
+        "hardware_spec_sha256": oi.get("hardware_spec_sha256") or (_sha(opp_hw) if opp_hw else ""),
         "llm_model": oi.get("llm_model", "unknown"),
         "mcp_servers": oi.get("mcp_servers", {}),
         "members": oi.get("members", []),
@@ -118,7 +121,10 @@ def build_declaration(
         "_schema": "p2p-police-artifacts",
         "consensus_signature": _sha({"uid": game_uid, "g": sorted(["vibecode", opponent])}),
         "declaration_type": "pre_game_declaration",
-        "declared_at": ended_at,
+        # Step-0 identities are exchanged at the window-1 handshake, so the
+        # declaration is stamped with the series START (was ended_at, which
+        # made genuine pre-game data look post-hoc: declared_at == ended_at).
+        "declared_at": started_at,
         "game_ended_at": ended_at,
         "game_id": game_id,
         "game_started_at": started_at,
