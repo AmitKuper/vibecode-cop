@@ -129,3 +129,17 @@ before acting (two were real, one was understated):
 
 Review factual errors noted: it counted 7 counted series 6W-1L (ledger has
 8: 6W-1L-1D incl. the SMNGRP05 draw) and said the tag was absent.
+
+## 2026-08-21 — Overnight barrier-distillation experiment (research-only)
+
+User-approved overnight experiment: can a net learn the barrier strategy?
+`scripts/barrier_distill/` (teacher/thieves/collect/train/arena) — fully
+firewalled (no MANIFEST/champion/serving change; artifacts in gitignored
+results/barrier_distill/). 550 teacher episodes, two students (GRU + a
+memoryless MLP), 4-policy arena. Result: both students exactly match the
+search teacher's 22/28 (learned wall placement AND restraint); plain
+minimax 20/28; nobody — teacher included — beats the future-wall-aware
+minimax thief (0/4), consistent with the exact-solve draw value. Memory
+hypothesis (stall timing needs a GRU) rejected: the MLP ties the GRU.
+Recommendation recorded: keep search in production; experiment stands as
+report evidence. Full writeup: docs/RL_BARRIER_EXPERIMENT.md.
