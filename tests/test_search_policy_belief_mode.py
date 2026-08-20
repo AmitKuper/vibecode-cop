@@ -4,7 +4,8 @@ frames with a peaked posterior, net fallback when flat, default mode untouched."
 from __future__ import annotations
 
 from cop_worker.observation import BeliefState, LocalObservation
-from cop_worker.rl.search_policy import SearchRolePolicy, wrap_with_search
+from cop_worker.rl.search_policy import SearchRolePolicy
+from cop_worker.rl.search_wrap import wrap_with_search
 
 N = 7
 

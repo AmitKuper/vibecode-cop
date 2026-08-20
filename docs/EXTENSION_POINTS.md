@@ -26,7 +26,7 @@ in `scripts/live_match_ref3.py`; profile default read from
 `RLMover.__init__`: the base RL policy is always loaded via
 `cop_worker/rl/counted_policy.py::load_counted_policy` (MANIFEST-pinned,
 obs-mode guarded); `hybrid_search*` wraps it with
-`cop_worker/rl/search_policy.py::wrap_with_search` (minimax over the chebyshev
+`cop_worker/rl/search_wrap.py::wrap_with_search` (minimax over the chebyshev
 oracle, RL fallback for blind frames); anything else raises `ValueError`. A new
 policy is a new wrapper in the same shape plus a branch in that `if` — and, if
 it needs a new checkpoint, an entry in `models/MANIFEST.json` with a correct

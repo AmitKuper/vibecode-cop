@@ -79,3 +79,25 @@ python scripts/preflight_opponent.py <url> [...]   # peer surface probe
 Final submission tag: deferred until the operator declares the project
 final; the `game_vs_*` tags and backup branches carry the per-game truth
 until then.
+
+## 2026-08-20 — Anti-evader stall-squeeze hook (post-SMNGRP05 47-47)
+
+Starting SHA `f9d79a1`. Committed the previously uncommitted hook after a
+verification round that found and fixed two defects:
+
+- `stall_squeeze._PLACE` was hand-typed in a rotated convention
+  (`(-1,0)→PLACE_N` vs production `PLACE_N==(0,-1)`): every hook wall would
+  have landed 90° off on the wire. Now derived from `action_space.PLACE_DIRS`
+  and pinned by an exact-direction test (`PLACE_S` in the mirror state).
+- The hook could fire at Manhattan distance 1 and preempt a capture-in-hand;
+  added a `d <= 1` never-fire guard + test.
+
+Evidence: `scripts/anti_evader_lab.py` (production `StallSqueeze` +
+`best_cop_action`, production deltas) — mobility evader survival→capture@10,
+hook silent where minimax already wins, mirror2 capture delayed 9→15 (same
+outcome; known heuristic-trigger trade-off, never flipped an outcome);
+peersim rehearsal `audits 6/6 ok` with cop captures @4/9/10; full suite
+1952 passed / 4 skipped; ruff clean. Strength-guard after-pass: net cop
+gain; residual risk = capture delay past step 35 in unobserved states,
+bounded by strict improvement + 8-wall cap + `STALL_TURNS=4` (do not lower
+without a wider variant matrix). Details: `docs/ANTI_EVADER_ANALYSIS.md`.

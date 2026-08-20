@@ -14,6 +14,7 @@ from __future__ import annotations
 from cop_worker.observation import BeliefState, LocalObservation
 from cop_worker.rl.chebyshev_tracker import exact_opponent_cell
 from cop_worker.rl.pursuit_search import best_cop_action, best_thief_action
+from cop_worker.rl.stall_squeeze import StallSqueeze
 
 
 class SearchRolePolicy:
@@ -43,10 +44,13 @@ class SearchRolePolicy:
         self.belief_peak_threshold = belief_peak_threshold
         self._belief_engine = None
         self._last_seen: tuple[int, int] | None = None
+        self._squeeze = StallSqueeze() if self.role == "cop" else None
 
     def reset(self) -> None:
         self._last_seen = None
         self._belief_engine = None
+        if self._squeeze is not None:
+            self._squeeze.reset()
         if self.fallback is not None:
             self.fallback.reset()
 
@@ -99,6 +103,19 @@ class SearchRolePolicy:
         barriers = [tuple(b) for b in observation.known_barriers]
         steps_left = max(1, self.max_steps - int(observation.step) + 1)
         if self.role == "cop":
+            # Anti-evader override first: a stalled minimax provably never
+            # captures (open-board pursuit is thief-win), so a squeezing wall
+            # strictly dominates whatever move it would have picked.
+            squeeze = self._squeeze.override(
+                own,
+                opp,
+                barriers,
+                int(observation.own_barriers_remaining),
+                steps_left,
+                legal_actions,
+            )
+            if squeeze is not None:
+                return squeeze
             action = best_cop_action(
                 own,
                 opp,
@@ -124,23 +141,3 @@ class SearchRolePolicy:
         if self.fallback is not None:
             return self.fallback.select_action(observation, belief, legal_actions)
         return "STAY" if "STAY" in legal_actions else legal_actions[0]
-
-
-def wrap_with_search(
-    policy, role: str, terms: dict | None = None, *, depth: int = 4, belief_mode: bool = False
-):
-    """Wrap a loaded RL policy in the minimax-first adapter (serving entry point).
-
-    Depth 4 measured 2026-08-10: cop d4 captures thief d4 4/4 (mean step 18) at
-    ~3s/half-move — decisive and far inside the 180s turn budget; thief d4 survives
-    every non-search cop tested. Lower to 3 only if latency ever becomes a concern.
-    """
-    terms = terms or {}
-    return SearchRolePolicy(
-        "cop" if role in {"police", "cop"} else "thief",
-        depth=depth,
-        fallback=policy,
-        max_steps=int(terms.get("max_steps", 35)),
-        barriers_max=int(terms.get("barriers_max", 14)),
-        belief_mode=belief_mode,
-    )
