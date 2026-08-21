@@ -65,6 +65,11 @@ ALLOWED: dict[str, tuple[int, str]] = {
     "scripts/ref3_match/role_worker.py": (155, "Worker entry point: stdio protocol loop."),
     "cop_worker/rl/search_policy.py": (175, "One decision sequence; override priority order."),
     "scripts/barrier_distill/collect.py": (160, "One research collection recipe (non-runtime)."),
+    "scripts/barrier_distill/cops.py": (
+        220,
+        "One opponent pool (non-runtime): every scripted cop the thief student "
+        "trains against, incl. both recorded operator strategies.",
+    ),
     "scripts/pocketer_lab.py": (
         220,
         "One lab (non-runtime): both scripted operator strategies (adaptive "

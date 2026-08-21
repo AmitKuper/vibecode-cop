@@ -63,6 +63,68 @@ class SweepCop:
         )
 
 
+class OperatorPocketCop:
+    """The operator's adaptive pocketing (2026-08-21, beat the champion 6-0):
+    cut-reducing walls + a short herding line + minimax hunt. Wraps the
+    reproducible lab cop so training sees the exact recorded strategy."""
+
+    def __init__(self) -> None:
+        self.reset()
+
+    def reset(self) -> None:
+        from pocketer_lab import AdaptivePocketer
+
+        self._p = AdaptivePocketer()
+
+    def action(self, state, rng: random.Random, scent=None) -> str:
+        cop, thief = tuple(state.cop_position), tuple(state.thief_position)
+        self._p.b_left = int(state.cop_barriers_remaining)
+        kind, val = self._p.act(cop, thief, {tuple(b) for b in state.barriers})
+        delta = (val[0] - cop[0], val[1] - cop[1])
+        return (_PLACE_NAME if kind == "place" else _MOVE_NAME).get(delta, "STAY")
+
+
+class OperatorLineCop:
+    """The operator's line-partition hunt (record 20260821-203028): wall a
+    partial lane beside the thief leaving one door, cross, hunt with the
+    production minimax. Parameterized (axis, lane, door end, length) so
+    students learn the concept, not the recorded column."""
+
+    def __init__(self, rng: random.Random) -> None:
+        self.axis = rng.choice((0, 1))
+        self.k = rng.choice((2, 3, 4))
+        self.stand = self.k + rng.choice((-1, 1))
+        door_at_far = rng.choice((True, False))
+        length = rng.choice((4, 5))
+        alongs = range(length) if door_at_far else range(N - length, N)
+        self.line = [self._mk(self.k, j) for j in alongs]
+
+    def reset(self) -> None:
+        pass
+
+    def _mk(self, across, along):
+        return (across, along) if self.axis == 0 else (along, across)
+
+    def action(self, state, rng: random.Random, scent=None) -> str:
+        cop, thief = tuple(state.cop_position), tuple(state.thief_position)
+        walls = {tuple(b) for b in state.barriers}
+        b_left = int(state.cop_barriers_remaining)
+        for cell in self.line:
+            if cell in walls or b_left == 0:
+                continue
+            stand_cell = self._mk(self.stand, cell[1] if self.axis == 0 else cell[0])
+            if cop == stand_cell and cell != thief:
+                delta = (cell[0] - cop[0], cell[1] - cop[1])
+                return _PLACE_NAME.get(delta, "STAY")
+            step = _step_toward(cop, stand_cell)
+            dx, dy = MOVE_DELTAS.get(step, (0, 0))
+            q = (cop[0] + dx, cop[1] + dy)
+            if q not in walls and q != thief:
+                return step
+            break  # build lane blocked: give up the line, hunt with what stands
+        return best_cop_action(cop, thief, list(walls), b_left, 35, depth=4, n=N, time_budget_s=1.0)
+
+
 class GreedyChaser:
     """Steps to minimize Manhattan distance; never places walls."""
 
@@ -138,12 +200,16 @@ LEGACY_FAMILIES = (
 
 
 def make_cop_pool(rng: random.Random) -> list:
-    """One thief-collection cycle: sweeps + the FULL classic family set —
-    the merged curriculum (the sweep-only corpus scored 0.374 on the legacy
-    harness vs the champion's 0.827; narrow pools make narrow students)."""
+    """One thief-collection cycle: sweeps + BOTH recorded operator strategies
+    + the FULL classic family set — the merged curriculum (the sweep-only
+    corpus scored 0.374 on the legacy harness vs the champion's 0.827;
+    narrow pools make narrow students)."""
     return [
         SweepCop(rng),
         SweepCop(rng),
+        OperatorPocketCop(),
+        OperatorLineCop(rng),
+        OperatorLineCop(rng),
         StackCop(hook=True),
         GreedyChaser(),
         *(FamilyCop(f) for f in LEGACY_FAMILIES),
