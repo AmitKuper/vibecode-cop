@@ -71,6 +71,11 @@ ALLOWED: dict[str, tuple[int, str]] = {
         "One role-policy decision sequence: sighted fix + corridor plan + "
         "stall-squeeze (cop) + confined-mode escape (thief), in priority order.",
     ),
+    "scripts/barrier_distill/collect.py": (
+        160,
+        "One episode-collection loop: teacher/driver/pool selection is the "
+        "experiment's whole recipe and reads as a unit (research-only).",
+    ),
     "cop_worker/gui/hub_page.py": (
         200,
         "A single HTML/JS page template in a string: its line count is markup, "
