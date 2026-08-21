@@ -229,3 +229,23 @@ minimax survives under simultaneous moves); conclusions rest on the
 sequential line_sweep_lab. Writeup docs/RL_PLAYER_PROGRAM.md. Phases 2
 (RL fine-tune from distilled init) and 3 (gated promotion, friendlies
 first) defined. Production untouched.
+
+## 2026-08-22 — corridor-planner cop (offensive half, operator-directed)
+
+`cop_worker/rl/corridor_plan.py` + priority wiring in search_policy (cop:
+corridor > stall-squeeze > minimax). yanell11's line-partition strategy
+industrialized: on a sustained CLOSE oscillation (6 turns, d 2..6, spread
+<=1, step>=8, budget>=9) the plan builds a wall line 2 cells off the thief
+on the widest axis from a guard lane, seals to ONE door, then goes silent —
+minimax + stall-squeeze hunt the strip (the combination that captured our
+own thief @26 in the lab). corridor_lab matrix: mirror2 (near-perfect
+evader) survival -> CAPTURE @30; zero regression (distance/center/away
+identical; mobility same outcome, slower — plan preempts the quicker
+squeeze kill, documented); confined + minimax thieves still survive
+(consistent with exact theory: no forced 35-step win vs wall-aware
+defense). Trigger hardened twice: spread<=1 (never a slow close),
+max(recent)<=6 (a far thief is not evading — caught by the sighted-book
+test). 7 pins in test_corridor_plan.py; suite 1980/4; peersim 6/6
+(captures @5/@6 — trigger silent vs weak thieves). Rematch projection vs
+yanell11 same brains: WIN if their thief is wall-myopic (mirror2-class),
+DRAW if confined-quality; loss requires an unseen strategy.

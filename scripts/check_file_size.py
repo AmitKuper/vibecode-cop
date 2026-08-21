@@ -67,9 +67,9 @@ ALLOWED: dict[str, tuple[int, str]] = {
     ),
     "scripts/ref3_match/role_worker.py": (155, "Worker entry point: stdio protocol loop."),
     "cop_worker/rl/search_policy.py": (
-        160,
-        "One role-policy decision sequence composing the sighted fix, the "
-        "stall-squeeze (cop), and the confined-mode escape (thief).",
+        175,
+        "One role-policy decision sequence: sighted fix + corridor plan + "
+        "stall-squeeze (cop) + confined-mode escape (thief), in priority order.",
     ),
     "cop_worker/gui/hub_page.py": (
         200,

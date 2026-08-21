@@ -12,6 +12,7 @@ hint-independent.
 from __future__ import annotations
 
 from cop_worker.observation import BeliefState, LocalObservation
+from cop_worker.rl.corridor_plan import CorridorPlan
 from cop_worker.rl.line_escape import LineEscape
 from cop_worker.rl.opponent_fix import OpponentFix
 from cop_worker.rl.pursuit_search import best_cop_action, best_thief_action
@@ -50,6 +51,7 @@ class SearchRolePolicy:
         # book-scent pairings; chebyshev pairings resolve byte-identically.
         self._fix = OpponentFix(decode_book_scent)
         self._squeeze = StallSqueeze() if self.role == "cop" else None
+        self._corridor = CorridorPlan() if self.role == "cop" else None
         self._escape = LineEscape() if self.role == "thief" else None
 
     def reset(self) -> None:
@@ -57,6 +59,8 @@ class SearchRolePolicy:
         self._belief_engine = None
         if self._squeeze is not None:
             self._squeeze.reset()
+        if self._corridor is not None:
+            self._corridor.reset()
         if self._escape is not None:
             self._escape.reset()
         if self.fallback is not None:
@@ -107,7 +111,21 @@ class SearchRolePolicy:
         barriers = [tuple(b) for b in observation.known_barriers]
         steps_left = max(1, self.max_steps - int(observation.step) + 1)
         if self.role == "cop":
-            # Anti-evader override first: a stalled minimax provably never
+            # Corridor plan first: a sustained non-converging chase means the
+            # winning strategy is a wall line + door + strip hunt, not more
+            # pursuit. While the plan builds, it drives; once the line stands
+            # it goes silent and minimax + stall-squeeze hunt the strip.
+            plan = self._corridor.override(
+                own,
+                opp,
+                barriers,
+                int(observation.own_barriers_remaining),
+                int(observation.step),
+                legal_actions,
+            )
+            if plan is not None:
+                return plan
+            # Anti-evader override next: a stalled minimax provably never
             # captures (open-board pursuit is thief-win), so a squeezing wall
             # strictly dominates whatever move it would have picked.
             squeeze = self._squeeze.override(
