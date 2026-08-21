@@ -1,11 +1,17 @@
-"""Pocketer lab: the operator's adaptive wall strategy as a scripted cop.
+"""Pocketer lab: the operator's recorded cop strategies as scripted cops.
 
-Modeled on the eight recorded human-vs-model games (2026-08-21): keep light
-line pressure, watch where the thief commits, and place the wall that most
-REDUCES THE THIEF'S ESCAPE CUT (sealability) — then close and take rule 47.
-This cop beat the pre-sealability champion thief six games straight when
-played by hand. Arms: thief with the old scoring (no pocket trigger,
-simulated by min-cut-blind evader) vs the new sealability-aware thief.
+Three arms modeled on the recorded human-vs-model games (2026-08-21/22):
+adaptive pocketing, the line-partition hunt, and the cage-cork. Each runs
+against the old cut-blind thief and the current production thief.
+
+MEASUREMENT RULE: verdicts are only valid at IDLE CPU with the 5s search
+budgets below. Earlier runs under training load throttled the scripted
+cops' minimax and reported false thief survivals (the 1ff0ed4 "cage
+survival" was such an artifact). Idle truth at 1ff0ed4: pocket SURVIVAL,
+line-hunt capture @20, cage capture @32 — a full-depth wall cop still
+beats the thief endgame, consistent with walls flipping the 7x7 game
+value. The counters that map to real opponents (line_sweep_lab,
+corridor_lab confined row) hold at idle.
 
 Usage:  python scripts/pocketer_lab.py
 """
@@ -83,7 +89,7 @@ class AdaptivePocketer:
             if 0 <= q[0] < N and 0 <= q[1] < N and q not in walls and q != thief:
                 return ("move", q)
         act = best_cop_action(
-            cop, thief, list(walls), self.b_left, 35, depth=4, n=N, time_budget_s=1.0
+            cop, thief, list(walls), self.b_left, 35, depth=4, n=N, time_budget_s=5.0
         )
         if act in PLACE_DIRS and self.b_left > 0:
             dx, dy = PLACE_DIRS[act]
@@ -122,7 +128,7 @@ class LineHunter:
                 return ("move", q)
             break
         act = best_cop_action(
-            cop, thief, list(walls), self.b_left, 35, depth=4, n=N, time_budget_s=1.0
+            cop, thief, list(walls), self.b_left, 35, depth=4, n=N, time_budget_s=5.0
         )
         if act in PLACE_DIRS and self.b_left > 0:
             dx, dy = PLACE_DIRS[act]
@@ -207,7 +213,7 @@ def run(aware: bool, hunter: str = "pocket"):
         if aware:
             act = best_thief_action(
                 cop, thief, list(walls), 36 - step, depth=4, n=N,
-                cop_barriers_left=pocketer.b_left, time_budget_s=1.0,
+                cop_barriers_left=pocketer.b_left, time_budget_s=5.0,
             )  # fmt: skip
             legal = [a for a, (dx, dy) in MOVE_DELTAS.items()
                      if 0 <= thief[0] + dx < N and 0 <= thief[1] + dy < N
