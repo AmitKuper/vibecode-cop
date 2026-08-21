@@ -66,16 +66,8 @@ ALLOWED: dict[str, tuple[int, str]] = {
         "One series lifecycle over role workers (grew by the kit §5 series-label fold).",
     ),
     "scripts/ref3_match/role_worker.py": (155, "Worker entry point: stdio protocol loop."),
-    "cop_worker/rl/search_policy.py": (
-        175,
-        "One role-policy decision sequence: sighted fix + corridor plan + "
-        "stall-squeeze (cop) + confined-mode escape (thief), in priority order.",
-    ),
-    "scripts/barrier_distill/collect.py": (
-        160,
-        "One episode-collection loop: teacher/driver/pool selection is the "
-        "experiment's whole recipe and reads as a unit (research-only).",
-    ),
+    "cop_worker/rl/search_policy.py": (175, "One decision sequence; override priority order."),
+    "scripts/barrier_distill/collect.py": (160, "One research collection recipe (non-runtime)."),
     "cop_worker/gui/hub_page.py": (
         200,
         "A single HTML/JS page template in a string: its line count is markup, "
