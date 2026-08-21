@@ -136,6 +136,32 @@ class LineHunter:
         return ("move", q) if 0 <= q[0] < N and 0 <= q[1] < N and q not in walls else ("move", cop)
 
 
+class CageCop(AdaptivePocketer):
+    """The operator's cage-cork (records 20260821-2122/2123, both wins):
+    partial south column with a NORTH door, loop around it, then cork the
+    thief's quadrant with two corner walls + the cop's own body as the
+    door. The finish reuses the pocketer (whose cut walls, with cop-blocked
+    sealability, are exactly the recorded cage corners)."""
+
+    LINE = ((3, 3), (3, 4), (3, 5), (3, 6))
+
+    def act(self, cop, thief, walls):
+        for cell in self.LINE:
+            if cell in walls or self.b_left == 0:
+                continue
+            stand = (2, cell[1])
+            if cop == stand and cell != thief:
+                self.b_left -= 1
+                return ("place", cell)
+            dx = (stand[0] > cop[0]) - (stand[0] < cop[0])
+            dy = 0 if dx else (stand[1] > cop[1]) - (stand[1] < cop[1])
+            q = (cop[0] + dx, cop[1] + dy)
+            if 0 <= q[0] < N and 0 <= q[1] < N and q not in walls and q != thief:
+                return ("move", q)
+            break
+        return super().act(cop, thief, walls)
+
+
 def _blind_move(thief, cop, walls, steps_left, cache):
     """The OLD confined-mode scoring (no sealability): surv, mobility, dist."""
     wk = frozenset(walls)
@@ -160,10 +186,13 @@ def _blind_move(thief, cop, walls, steps_left, cache):
     return best
 
 
+HUNTERS = {"pocket": AdaptivePocketer, "line-hunt": LineHunter, "cage": CageCop}
+
+
 def run(aware: bool, hunter: str = "pocket"):
     cop, thief = (0, 0), (3, 3)
     walls: set = set()
-    pocketer = AdaptivePocketer() if hunter == "pocket" else LineHunter()
+    pocketer = HUNTERS[hunter]()
     escape = LineEscape() if aware else None
     cache: dict = {}
     for step in range(1, 36):
@@ -206,7 +235,7 @@ def run(aware: bool, hunter: str = "pocket"):
 
 
 def main() -> None:
-    for hunter in ("pocket", "line-hunt"):
+    for hunter in ("pocket", "line-hunt", "cage"):
         for label, aware in (("cut-BLIND thief (old scoring)", False), ("sealability-aware", True)):
             print(f"{label:<30} vs {hunter:<9} cop -> {run(aware, hunter)}")
 

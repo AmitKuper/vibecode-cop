@@ -2,12 +2,10 @@
 
 Measured 2026-08-21 (yanell11 friendly, records g03/g05): a cop that builds
 a wall LINE with one door, crosses, and pockets the thief captures our
-depth-4 minimax thief at ~step 25 — and depth 6/8 die identically (the
-pocket refutation lies beyond any practical horizon). What DOES survive it,
-measured in scripts/line_sweep_lab.py, is exact current-walls survival play
-with a mobility tie-break — the same class of evader that drew us 47-47 as
-an opponent. Mobility bias is what dodges both the sweep and the corner
-deaths that killed minimax.
+depth-4 minimax thief at ~step 25 — depth 6/8 die identically (the pocket
+refutation lies beyond any practical horizon). What survives, measured in
+scripts/line_sweep_lab.py, is exact current-walls survival play — the
+evader class that drew us 47-47 — with wall-aware tie-breaks.
 
 So: when a completable wall line is forming (>= 2 collinear walls within
 the cop's remaining budget) OR the thief's escape cut is narrow (pocket
@@ -110,21 +108,24 @@ class LineEscape:
             qi = idx[q]
             surv = 1 if all(c2 != qi and layers[s2][c2][qi] for c2 in cop_replies) else 0
             dist = abs(q[0] - cop[0]) + abs(q[1] - cop[1])
-            # Order after survival: WALL-SAFE — continuations left after the
-            # cop's best adjacent wall (a cut-1 cell dies to one placement:
-            # the operator's corner-seal finish); then sealability; mobility;
-            # distance last. Two richer terms were tried here and measurably
-            # LOST games — a partition-crossing/door-dance score (thrashes
-            # against door-closing line hunters) and a safe-area BFS (breaks
-            # the sweep/pocket dances). Do not reintroduce either without
-            # rerunning pocketer_lab + line_sweep_lab + corridor_lab.
+            # Key: surv gated by seal (below), then wallsafe (continuations
+            # after the cop's best adjacent wall), seal, mobility, distance.
+            # Two richer terms were tried and measurably LOST games — a
+            # partition-crossing/door-dance score and a safe-area BFS. Do
+            # not reintroduce either without rerunning ALL the labs
+            # (pocketer_lab 3x2 + line_sweep_lab + corridor_lab).
             wallsafe = self._wall_safe(q, cop_t, walls, layers, idx, s2, cop_barriers_left)
             seal = min(sealability(q, cop_t, walls, self.n), 4)
-            options.append((surv, wallsafe, seal, self._mobility(q, walls), min(dist, 3), name))
+            # A cut<=1 cell is one wall from sealed: current-walls survival
+            # there is a lie while the cop has budget (edge-run rule-47 @35).
+            surv_safe = surv if (seal >= 2 or int(cop_barriers_left) <= 0) else 0
+            options.append(
+                (surv_safe, surv, wallsafe, seal, self._mobility(q, walls), min(dist, 3), name)
+            )
         if not options:
             return None
         options.sort(reverse=True)
-        best = options[0][5]
+        best = options[0][6]
         return best if best != planned else None
 
     def _wall_safe(self, q, cop_t, walls, layers, idx, s2, budget) -> int:

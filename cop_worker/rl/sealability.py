@@ -9,9 +9,10 @@ is exactly the number of future walls a perfect pocketer needs — a thief
 that keeps its cut wide cannot be pocketed inside the cop's tempo.
 
 Vertex min-cut via node-split max-flow (Edmonds-Karp) on the 7x7 grid:
-every free cell costs 1 to wall, the thief's and cop's own cells cannot be
-walled (infinite), sink = free cells at distance >= FAR from the thief.
-49 nodes; microseconds per call.
+every free cell costs 1 to wall, the thief's own cell cannot be walled
+(infinite), the COP's cell is excluded entirely (not a route, and its body
+corks a door for free), sink = free cells at distance >= FAR from the
+thief. 49 nodes; microseconds per call.
 """
 
 from __future__ import annotations
@@ -27,7 +28,15 @@ def sealability(thief, cop, walls, n: int = 7) -> int:
     """Min walls to cut ``thief`` off from all open space (INF-capped at 9)."""
     walls = set(map(tuple, walls))
     thief, cop = tuple(thief), tuple(cop)
-    free = [(x, y) for x in range(n) for y in range(n) if (x, y) not in walls]
+    # The cop's cell is NOT an escape route: routing flow through it counted
+    # phantom exits and hid the operator's cage-cork kill (two corner walls
+    # plus the cop's own body as the door — records 20260821-2122/2123).
+    free = [
+        (x, y)
+        for x in range(n)
+        for y in range(n)
+        if ((x, y) not in walls and (x, y) != cop) or (x, y) == thief
+    ]
     far = [c for c in free if abs(c[0] - thief[0]) + abs(c[1] - thief[1]) >= FAR]
     if not far:
         return 0  # already confined to a small region — maximally sealable
@@ -42,7 +51,7 @@ def sealability(thief, cop, walls, n: int = 7) -> int:
         cap[v].setdefault(u, 0)
 
     for c, i in idx.items():
-        add(2 * i, 2 * i + 1, INF if c in (thief, cop) else 1)
+        add(2 * i, 2 * i + 1, INF if c == thief else 1)
         if c in far:
             add(2 * i + 1, sink, INF)
         for dx, dy in ORTHO:

@@ -38,12 +38,17 @@ def test_confined_region_is_cut_zero():
     assert sealability((0, 0), (6, 6), [(1, 0), (0, 1)]) == 0
 
 
-def test_thief_and_cop_cells_are_not_wallable():
-    # the cut must consist of OTHER cells: with the cop sitting in the only
-    # corridor cell, the cut is 0 free walls short of... still >= 1 because
-    # the cop's own cell can't be counted as a wall
-    cut = sealability((0, 0), (1, 0), [(0, 1)])
-    assert cut >= 1
+def test_cop_body_corks_a_door():
+    # cage-cork semantics (records 20260821-2122/2123): the cop standing in
+    # the thief's only corridor is as good as a wall — the region reads
+    # already-sealed (0), never "one more wall needed"
+    assert sealability((0, 0), (1, 0), [(0, 1)]) == 0
+
+
+def test_cop_adjacent_narrows_the_cut():
+    # open board, cop right next to the thief: one of the four escape lanes
+    # is the cop itself, so only three walls finish the job
+    assert sealability((3, 3), (3, 2), []) == 3
 
 
 def test_pocket_trigger_fires_without_a_line():

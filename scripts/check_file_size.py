@@ -75,9 +75,9 @@ ALLOWED: dict[str, tuple[int, str]] = {
         "trains against, incl. both recorded operator strategies.",
     ),
     "scripts/pocketer_lab.py": (
-        220,
-        "One lab (non-runtime): both scripted operator strategies (adaptive "
-        "pocketer + line hunter) x both thief arms, a single reproducible matrix.",
+        250,
+        "One lab (non-runtime): every scripted operator strategy (adaptive "
+        "pocketer, line hunter, cage-cork) x both thief arms, one reproducible matrix.",
     ),
     "cop_worker/gui/hub_page.py": (
         200,
