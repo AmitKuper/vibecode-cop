@@ -30,6 +30,7 @@ def record_timeline(doc: dict, board_size: int = 7) -> tuple[str, list[dict]]:
     role_of = {"ours": our_role, "opponent": "thief" if our_role == "police" else "police"}
     latest_pos: dict = {"police": None, "thief": None}
     latest_scent: dict = {"police": {}, "thief": {}}
+    walls: list = []
     entries = []
     for row in doc.get("steps") or []:
         step = row.get("step")
@@ -39,27 +40,36 @@ def record_timeline(doc: dict, board_size: int = 7) -> tuple[str, list[dict]]:
             role = role_of[side]
             pos = view.get("position")
             if isinstance(pos, (list, tuple)) and len(pos) == 2:
-                latest_pos[role] = [int(pos[0]), int(pos[1])]
+                # wire positions are [row,col]; the viewer draws markers as (x,y)
+                latest_pos[role] = [int(pos[1]), int(pos[0])]
             if view.get("smell_grid"):
                 latest_scent[role] = _grid(view["smell_grid"])
+            placed = view.get("barrier_placed")
+            if isinstance(placed, (list, tuple)) and len(placed) == 2:
+                cell = [int(placed[0]), int(placed[1])]
+                if cell not in walls:
+                    walls.append(cell)
             commit = str(view.get("commit") or "")
             entries.append(
                 {
                     "index": len(entries),
                     "side": side,
                     "step": step,
+                    "role": role,
                     "ok": True,
                     "payload": {
                         "move": view.get("move"),
                         "position": view.get("position"),
                         "intent": view.get("intent"),
                         "hint": view.get("hint"),
+                        "barrier_placed": view.get("barrier_placed"),
                     },
                     "stored_commit": commit,
                     "recomputed_commit": commit,
                     "board": {
                         "cop": list(latest_pos["police"]) if latest_pos["police"] else None,
                         "thief": list(latest_pos["thief"]) if latest_pos["thief"] else None,
+                        "barriers": [list(w) for w in walls],
                         "scent_cop": dict(latest_scent["police"]),
                         "scent_thief": dict(latest_scent["thief"]),
                         "scent_source": "recorded",

@@ -73,7 +73,7 @@ button:hover{background:#25253a}
 </div>
 </div>
 <script>
-let steps=[];
+let steps=[];let meta=null;
 async function loadList(){
   const r=await fetch('/api/replay/logs');const names=await r.json();
   const sel=document.getElementById('logs');
@@ -84,9 +84,9 @@ async function loadList(){
 }
 async function loadLog(name){
   const r=await fetch('/api/replay/steps?log='+encodeURIComponent(name));
-  const d=await r.json();steps=d.steps||[];
+  const d=await r.json();steps=d.steps||[];meta=d.meta||null;
   const v=document.getElementById('verdict');
-  v.textContent=d.overall;
+  v.textContent=d.overall+(meta?`  —  COP: ${meta.our_role==='police'?meta.our_group:meta.opponent_group} · THIEF: ${meta.our_role==='thief'?meta.our_group:meta.opponent_group} (sub-game ${meta.sub_game??'?'})`:'');
   v.className=d.overall==='Verified OK'?'okv':(d.overall.startsWith('RECORDED')?'recv':'badv');
   const s=document.getElementById('slider');
   s.max=Math.max(steps.length-1,0);s.oninput=()=>show(+s.value);
@@ -124,9 +124,12 @@ function show(i){
   document.getElementById('poslabel').textContent=`${i+1}/${steps.length}`;
   const cls=s.ok?'match':'mismatch';
   const rec=(s.board||{}).scent_source==='recorded';
+  const who=s.role?(s.role==='police'?'COP':'THIEF'):s.side;
+  const grp=meta?(s.side==='ours'?meta.our_group:meta.opponent_group):'';
   document.getElementById('movecard').innerHTML=
-    `<div class="legend" style="margin:0 0 4px">${s.side} · protocol step ${s.step}</div>`+
+    `<div class="legend" style="margin:0 0 4px"><b>${who}</b>${grp?` (${grp})`:''} · ${s.side} · protocol step ${s.step}</div>`+
     `<div>move: <b>${p.move||p.type||'—'}</b> · position: ${JSON.stringify(p.position||null)} · intent: ${p.intent||'—'}</div>`+
+    (p.barrier_placed?`<div>barrier placed at <b>${JSON.stringify(p.barrier_placed)}</b></div>`:'')+
     (p.hint?`<div>hint: <i>${String(p.hint).replace(/</g,'&lt;')}</i> <span class="legend">(may lie)</span></div>`:'');
   document.getElementById('stepcard').innerHTML=
     `<div class="hash">stored     : ${s.stored_commit||'—'}</div>`+
@@ -141,14 +144,18 @@ function show(i){
   const showT=document.getElementById('tg-thief').checked;
   const fT=document.getElementById('tg-scent').checked?(b.scent_thief||{}):{};
   const fC=document.getElementById('tg-scent-cop').checked?(b.scent_cop||{}):{};
+  const wallSet=new Set((b.barriers||[]).map(w=>`${w[0]},${w[1]}`));
   const n=7;let h='';
   for(let r=0;r<n;r++){for(let c=0;c<n;c++){
     const vt=fT[`${r},${c}`]||0, vc=fC[`${r},${c}`]||0;
     const isC=showC&&b.cop&&b.cop[0]==c&&b.cop[1]==r;
     const isT=showT&&b.thief&&b.thief[0]==c&&b.thief[1]==r;
+    // barrier cells travel as [row,col] on the wire — match the scent keys
+    const isW=wallSet.has(`${r},${c}`);
     const mark=isC&&isT?'<span class="mark-cop">C</span><span class="mark-thief">T</span>'
-      :isC?'<span class="mark-cop">C</span>':isT?'<span class="mark-thief">T</span>':'';
-    h+=`<div class="cell" style="background:${cellBg(vt,vc)}" title="thief ${vt.toFixed(2)} / cop ${vc.toFixed(2)}">${mark}</div>`;}}
+      :isC?'<span class="mark-cop">C</span>':isT?'<span class="mark-thief">T</span>':(isW?'&#9632;':'');
+    const bg=isW?'#666':cellBg(vt,vc);
+    h+=`<div class="cell" style="background:${bg}" title="${isW?'BARRIER · ':''}thief ${vt.toFixed(2)} / cop ${vc.toFixed(2)}">${mark}</div>`;}}
   document.getElementById('board').innerHTML=h;
 }
 loadList();

@@ -102,7 +102,9 @@ def test_record_timeline_is_chronological_with_recorded_scent():
     ]
     board = entries[-1]["board"]
     assert board["scent_source"] == "recorded"
-    assert board["thief"] == [3, 1] and board["cop"] == [0, 2]
+    # wire positions are [row,col]; the board normalizes to the viewer's (x,y)
+    # so markers align with the "row,col"-keyed scent and barrier cells
+    assert board["thief"] == [1, 3] and board["cop"] == [2, 0]
     # our field lands on the thief channel, theirs on the cop channel
     assert board["scent_thief"]["3,3"] == 0.8
     assert board["scent_cop"] == {"0,0": 0.8}

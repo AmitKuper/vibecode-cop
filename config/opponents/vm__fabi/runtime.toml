@@ -11,6 +11,10 @@
 ingress           = "static"
 our_cop_port      = 61224
 our_thief_port    = 61223
+# Live belief-heatmap pages for the operator (observational only; with the
+# keys absent no GUI starts and play is byte-identical).
+gui_cop_port      = 8781
+gui_thief_port    = 8782
 
 opponent_group = "vm__fabi"
 opp_cop_url    = "https://cop-rob-p2p.ngrok.app/mcp"
