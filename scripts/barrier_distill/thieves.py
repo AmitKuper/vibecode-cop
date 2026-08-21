@@ -27,7 +27,7 @@ class EvaderThief:
     def reset(self) -> None:
         self._evader = ResolvingEvader(self.variant, MAX_STEPS)
 
-    def action(self, state, rng: random.Random) -> str:
+    def action(self, state, rng: random.Random, scent=None) -> str:
         walls = {tuple(b) for b in state.barriers}
         cell = self._evader.move(
             tuple(state.cop_position),
@@ -50,7 +50,7 @@ class MinimaxThief:
     def reset(self) -> None:
         pass
 
-    def action(self, state, rng: random.Random) -> str:
+    def action(self, state, rng: random.Random, scent=None) -> str:
         return best_thief_action(
             tuple(state.cop_position),
             tuple(state.thief_position),
@@ -72,7 +72,7 @@ class ScriptedThief:
     def reset(self) -> None:
         pass
 
-    def action(self, state, rng: random.Random) -> str:
+    def action(self, state, rng: random.Random, scent=None) -> str:
         walls = {tuple(b) for b in state.barriers}
         thief = tuple(state.thief_position)
         cop = tuple(state.cop_position)
@@ -89,7 +89,53 @@ class ScriptedThief:
         return max(options, key=lambda o: abs(o[1][0] - cop[0]) + abs(o[1][1] - cop[1]))[0]
 
 
+class FamilyThief:
+    """A classic training-family thief (the legacy harness opponents)."""
+
+    def __init__(self, family: str) -> None:
+        self.family = family
+        self.variant = family
+        self.reset()
+
+    def reset(self) -> None:
+        from cop_worker.belief_engine import BeliefEngine
+
+        self._belief = BeliefEngine(7, "thief")
+
+    def action(self, state, rng: random.Random, scent=None) -> str:
+        import cop_worker.rl.train_recurrent as _pkg
+
+        opp_scent = scent.thief_observation_scent() if scent is not None else None
+        if opp_scent is not None:
+            barriers = [tuple(b) for b in state.barriers]
+            self._belief = self._belief.predict(barriers).observe_scent(opp_scent, barriers)
+        return _pkg._opponent_action(
+            state, "thief", self.family, rng,
+            historical_policy=None, opponent_scent=opp_scent, opponent_belief=self._belief,
+        )  # fmt: skip
+
+
+LEGACY_FAMILIES = (
+    "belief_pursuit_evasion",
+    "anti_loop",
+    "targeted_exploit",
+    "deceptive_language",
+    "scent_following",
+    "local_adversarial_ensemble",
+    "corridor_cutting",
+    "random",
+    "wall",
+)
+
+
 def make_pool() -> list:
-    """One collection cycle: evader-heavy (that's where PLACE labels live)."""
-    evaders = [EvaderThief(v) for v in VARIANTS] + [EvaderThief(v) for v in VARIANTS]
-    return [*evaders, MinimaxThief(), ScriptedThief("away"), ScriptedThief("random")]
+    """One cop-collection cycle: evaders + the FULL classic family set (the
+    evader-only corpus scored 0.667 on the legacy harness vs the champion's
+    0.959 — merged curricula are mandatory for both roles)."""
+    return [
+        *(EvaderThief(v) for v in VARIANTS),
+        MinimaxThief(),
+        ScriptedThief("away"),
+        ScriptedThief("random"),
+        *(FamilyThief(f) for f in LEGACY_FAMILIES),
+    ]

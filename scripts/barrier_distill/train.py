@@ -88,9 +88,10 @@ def main() -> None:
     torch.manual_seed(args.seed)
     actions = COP_ACTIONS if args.role == "cop" else THIEF_ACTIONS
     PLACE_IDS = {i for i, a in enumerate(actions) if a.startswith("PLACE_")}
-    shards_dir = RESULTS / ("shards" if args.role == "cop" else f"shards_{args.role}")
+    # cop: prefer the corridor-era corpus (shards_cop) over the night-1 corpus
+    shards_dir = RESULTS / f"shards_{args.role}"
     if args.role == "cop" and not shards_dir.exists():
-        shards_dir = RESULTS / "shards_cop"
+        shards_dir = RESULTS / "shards"
     episodes = load_shards(shards_dir)
     rng = random.Random(args.seed)
     rng.shuffle(episodes)

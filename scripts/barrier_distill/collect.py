@@ -30,7 +30,7 @@ def collect(seed: int, episodes: int, out: Path, role: str = "cop") -> dict:
     """Roll episodes with the full-stack teacher for ``role`` vs its opponent pool."""
     import torch
 
-    from barrier_distill.teacher import SearchHookTeacher, ThiefStackTeacher
+    from barrier_distill.teacher import ChampionTeacher, SearchHookTeacher, ThiefStackTeacher
     from barrier_distill.thieves import make_pool
     from cop_worker.belief_engine import BeliefEngine
     from cop_worker.domain.transition import apply_joint_action
@@ -42,18 +42,22 @@ def collect(seed: int, episodes: int, out: Path, role: str = "cop") -> dict:
     rng = random.Random(seed)
     actions = COP_ACTIONS if role == "cop" else THIEF_ACTIONS
     episodes_out, place_labels, outcomes = [], 0, {}
+    # Mixture of experts: the manifest champion teaches against the classic
+    # families it was trained on (it beats the search stack there); the search
+    # stack teaches everything else (sweeps, evaders — where IT is stronger).
+    stack_teacher = SearchHookTeacher() if role == "cop" else ThiefStackTeacher()
+    champion_teacher = ChampionTeacher(role)
     t0 = time.time()
     for ep in range(episodes):
         if role == "cop":
-            teacher, opponent = SearchHookTeacher(), None
             pool = make_pool()
-            opponent = pool[ep % len(pool)]
         else:
             from barrier_distill.cops import make_cop_pool
 
-            teacher = ThiefStackTeacher()
             pool = make_cop_pool(rng)
-            opponent = pool[ep % len(pool)]
+        opponent = pool[ep % len(pool)]
+        is_family = type(opponent).__name__ in ("FamilyCop", "FamilyThief")
+        teacher = champion_teacher if is_family else stack_teacher
         opponent.reset()
         teacher.reset()
         state = _initial_state(rng, random_start=(ep % 2 == 1))
@@ -64,8 +68,8 @@ def collect(seed: int, episodes: int, out: Path, role: str = "cop") -> dict:
         while state.turn < 35:
             legal = _legal(state, role)
             obs, _mask = _observation(state, role, scent, belief, legal, (ep % 6) + 1)
-            action = teacher.action(state, legal)
-            opp_action = opponent.action(state, rng)
+            action = teacher.action(state, legal, obs=obs)
+            opp_action = opponent.action(state, rng, scent)
             feats.append(obs)
             labels.append(actions.index(action))
             place_labels += int(action.startswith("PLACE_") or opp_action.startswith("PLACE_"))

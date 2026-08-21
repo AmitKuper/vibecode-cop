@@ -44,6 +44,47 @@ Repro: `collect.py --role cop|thief` (sharded) → `train.py --arch gru|ff
 --role ...` → `arena.py` / `arena_thief.py` / the sequential labs.
 Artifacts in results/barrier_distill/ (gitignored, local).
 
+## Phase 1 extended — curriculum iterations and the interference frontier
+## (2026-08-22, four rounds, all measured)
+
+| thief student | corpus / teacher | legacy (champ 0.827) | sweep acid test |
+|---|---|---|---|
+| v1 | sweep-heavy, search teacher | 0.374 | **survives** |
+| v2 | + classic families, search teacher | 0.527 | (untested) |
+| v3 | mixture teachers (champion on families) | **0.798 ≈ parity** | captured @25 |
+| v4 | filtered union of v1+v3 corpora | **0.802 ≈ parity** | captured @19 |
+
+| cop student | corpus / teacher | legacy (champ 0.959) | arena (teacher 22/28) | seq. mirror2 |
+|---|---|---|---|---|
+| ff v2 | corridor corpus, search teacher | 0.667 | **23/28 > teacher** | **capture @8** |
+| gru v3 | mixture teachers | 0.831 | 20/28 | — |
+| gru v4 | filtered union | 0.770 | 18/28 | — |
+
+Findings, in order of importance:
+
+1. **Per-skill expert parity is fully achievable by distillation.** For every
+   instrument there exists a student at or above the relevant expert:
+   thief legacy 0.798-0.802 vs champion 0.827; thief sweep survival (v1);
+   cop arena 23/28 vs teacher 22/28; cop sequential mirror2 @8.
+2. **The teacher-quality diagnosis paid off**: the search stack is genuinely
+   WEAKER than the RL champion against belief_pursuit (0.37 vs 0.78) and
+   targeted_exploit (0.33 vs 0.78) — the families it trained on. Mixture-of-
+   experts teaching (champion on its families, search on the new threats)
+   lifted thief legacy 0.527 -> 0.798 in one round.
+3. **The frontier is capability interference, not method**: no single
+   128-hidden GRU holds ALL skills at once. The naive union corpus made the
+   cop WORSE on both instruments (0.831 -> 0.770; 20 -> 18) — conflicting
+   expert styles on overlapping states at fixed capacity.
+4. Levers for closing the last gap, in expected order of value:
+   **capacity** (256+ hidden), **DAgger** (on-policy relabeling by the
+   per-state best expert), and **Phase 2 RL fine-tune** (reward arbitrates
+   where imitation conflicts). All three are standard responses to exactly
+   this failure mode.
+
+Production stance unchanged: the search stack plays matches; no student is
+promoted (the bar is "matches the incumbent on EVERY instrument", and no
+single artifact does yet).
+
 ## Phase 2 — RL fine-tune from distilled weights (NEXT)
 
 Initialize from the Phase 1 students; PPO/A2C against the hard pool
