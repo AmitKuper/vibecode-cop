@@ -19,10 +19,12 @@ for _p in (str(_REPO), str(_REPO / "scripts")):
 import torch  # noqa: E402
 
 from barrier_distill.models import make_student  # noqa: E402
-from cop_worker.rl.action_space import COP_ACTIONS  # noqa: E402
+from cop_worker.rl.action_space import COP_ACTIONS, THIEF_ACTIONS  # noqa: E402
 
 RESULTS = _REPO / "results" / "barrier_distill"
-PLACE_IDS = {i for i, a in enumerate(COP_ACTIONS) if a.startswith("PLACE_")}
+
+
+PLACE_IDS: set = set()  # set per-run in main() from the role's action list
 
 
 def load_shards(shards_dir: Path) -> list[dict]:
@@ -32,11 +34,11 @@ def load_shards(shards_dir: Path) -> list[dict]:
     return episodes
 
 
-def class_weights(episodes: list[dict]) -> torch.Tensor:
-    counts = torch.ones(len(COP_ACTIONS))
+def class_weights(episodes: list[dict], n_actions: int) -> torch.Tensor:
+    counts = torch.ones(n_actions)
     for ep in episodes:
-        counts += torch.bincount(ep["labels"], minlength=len(COP_ACTIONS))
-    weights = (counts.sum() / (len(COP_ACTIONS) * counts)).sqrt()
+        counts += torch.bincount(ep["labels"], minlength=n_actions)
+    weights = (counts.sum() / (n_actions * counts)).sqrt()
     return weights.clamp(1.0, 20.0)
 
 
@@ -74,22 +76,29 @@ def _epoch(net, episodes, weights, optimizer=None) -> dict:
 
 
 def main() -> None:
+    global PLACE_IDS
     ap = argparse.ArgumentParser()
     ap.add_argument("--arch", choices=["gru", "ff"], required=True)
+    ap.add_argument("--role", choices=["cop", "thief"], default="cop")
     ap.add_argument("--epochs", type=int, default=30)
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
     torch.manual_seed(args.seed)
-    episodes = load_shards(RESULTS / "shards")
+    actions = COP_ACTIONS if args.role == "cop" else THIEF_ACTIONS
+    PLACE_IDS = {i for i, a in enumerate(actions) if a.startswith("PLACE_")}
+    shards_dir = RESULTS / ("shards" if args.role == "cop" else f"shards_{args.role}")
+    if args.role == "cop" and not shards_dir.exists():
+        shards_dir = RESULTS / "shards_cop"
+    episodes = load_shards(shards_dir)
     rng = random.Random(args.seed)
     rng.shuffle(episodes)
     cut = max(1, len(episodes) // 10)
     val, train = episodes[:cut], episodes[cut:]
-    weights = class_weights(train)
+    weights = class_weights(train, len(actions))
     input_size = train[0]["features"].shape[1]
-    net = make_student(args.arch, input_size, len(COP_ACTIONS))
+    net = make_student(args.arch, input_size, len(actions))
     optimizer = torch.optim.Adam(net.parameters(), lr=args.lr)
     best = {"val_place_recall": -1.0}
     t0 = time.time()
@@ -106,8 +115,9 @@ def main() -> None:
             torch.save(
                 {
                     "arch": args.arch,
+                    "role": args.role,
                     "input_size": input_size,
-                    "n_actions": len(COP_ACTIONS),
+                    "n_actions": len(actions),
                     "state_dict": net.state_dict(),
                     "train_stats": {"train": tr, "val": va, "epoch": epoch},
                     "episodes": len(train),

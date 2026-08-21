@@ -47,3 +47,39 @@ class SearchHookTeacher:
             time_budget_s=self.time_budget_s,
         )
         return act if act in legal else ("STAY" if "STAY" in legal else legal[0])
+
+
+class ThiefStackTeacher:
+    """The full production thief: minimax evasion + confined-mode escape."""
+
+    def __init__(self, depth: int = 4, time_budget_s: float = 1.5) -> None:
+        from cop_worker.rl.line_escape import LineEscape
+
+        self.depth = depth
+        self.time_budget_s = time_budget_s
+        self.escape = LineEscape()
+
+    def reset(self) -> None:
+        self.escape.reset()
+
+    def action(self, state, legal: list[str]) -> str:
+        from cop_worker.rl.pursuit_search import best_thief_action
+
+        cop = tuple(state.cop_position)
+        thief = tuple(state.thief_position)
+        barriers = [tuple(b) for b in state.barriers]
+        cop_left = int(state.cop_barriers_remaining)
+        steps_left = max(1, MAX_STEPS - int(state.turn))
+        act = best_thief_action(
+            cop,
+            thief,
+            barriers,
+            steps_left,
+            depth=self.depth,
+            n=state.grid_size,
+            cop_barriers_left=cop_left,
+            time_budget_s=self.time_budget_s,
+        )
+        override = self.escape.override(thief, cop, barriers, cop_left, steps_left, act, legal)
+        act = override or act
+        return act if act in legal else ("STAY" if "STAY" in legal else legal[0])

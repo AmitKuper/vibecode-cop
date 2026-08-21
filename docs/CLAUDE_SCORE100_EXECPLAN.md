@@ -213,3 +213,19 @@ wall-myopic — but the minimax thief already loses to such cops, floor
 holds. Open offensive half: corridor-planner cop (their strategy, ours to
 industrialize) — required before any counted-game consideration vs
 yanell11.
+
+## 2026-08-22 — learned-player program Phase 1 (operator-directed)
+
+Operator goal shift: a player whose match-time decisions come from learned
+weights (algorithms as training-time teachers only). Phase 1 = full-stack
+distillation BOTH roles: thief teacher = minimax + confined-mode; thief
+corpus 400 episodes vs randomized sweep-cop curriculum (teacher survived
+400/400 incl. vs our own hook cop). Students (GRU + MLP, both roles):
+match the teacher everywhere measurable, and BOTH thief students SURVIVE
+the sequential sweep-cop acid test where minimax d4/d6/d8 die @26 — the
+learned thief beats the strategy that beat us live, weights-only. Harness
+honesty: the joint-action thief arena proved non-discriminating (even
+minimax survives under simultaneous moves); conclusions rest on the
+sequential line_sweep_lab. Writeup docs/RL_PLAYER_PROGRAM.md. Phases 2
+(RL fine-tune from distilled init) and 3 (gated promotion, friendlies
+first) defined. Production untouched.
