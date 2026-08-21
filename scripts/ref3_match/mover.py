@@ -48,6 +48,7 @@ class RLMover(MoverStateMixin):
                 manifest_role,
                 terms,
                 belief_mode=(move_policy == "hybrid_search_belief"),
+                scent_model=scent_model,
             )
         elif move_policy != "rl":
             raise ValueError(f"unknown move_policy {move_policy!r}")

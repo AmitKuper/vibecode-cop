@@ -143,3 +143,28 @@ minimax thief (0/4), consistent with the exact-solve draw value. Memory
 hypothesis (stall timing needs a GRU) rejected: the MLP ties the GRU.
 Recommendation recorded: keep search in production; experiment stands as
 report evidence. Full writeup: docs/RL_BARRIER_EXPERIMENT.md.
+
+## 2026-08-21 — yanell11 pairing: interop verified + sighted-under-book
+
+New opponent (yanell11, kit-dialect doc). Verified their spec line-by-line
+vs our code: seal/tools/terms/scent-law/settlement/uid/tie-add/timing all
+byte-identical. Two reconciliation items sent in writing: (1) scent model —
+AGREED multiplicative_book_v1 934c220d, both greetings declare it; (2) turn
+order — their cop_first vs the kit's thief-first; sent verbatim kit
+citations at be96e57 (PAIRING-PLAYBOOK L65/501, netplay.py:263,
+turnloop.py docstring — which names bookletter-v3 `commit_order:
+police_first` as the likely origin of their value and documents the kit's
+own 2026-08-04 dogfood deadlock — series.py:124). Awaiting their written
+thief-first confirmation before any window.
+
+Sighted-under-book: locking book scent would have benched the sighted
+minimax+stall-squeeze (chebyshev tracker reads only chebyshev frames).
+Added `cop_worker/rl/opponent_fix.py`: exact inverse of the clamped book
+law (scent_decoder, pinned 100% exact) accepted only on a UNIQUE consistent
+cell, coasting otherwise; per-pairing switch via runtime.toml scent_model →
+wrap_with_search → SearchRolePolicy(decode_book_scent). Both roles gain.
+Chebyshev pairings byte-identical (decode off default). Gates: 5 new pins
+in tests/test_sighted_under_book.py (incl. plateau-step action ==
+best_cop_action on the TRUE cell), suite 1961/4, peersim rehearsal
+6/6 (captures @7/6/8). Profile config/opponents/yanell11/ staged (Haifa
+terms; URLs + operator inbox to fill from chat).

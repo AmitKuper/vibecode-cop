@@ -12,7 +12,7 @@ hint-independent.
 from __future__ import annotations
 
 from cop_worker.observation import BeliefState, LocalObservation
-from cop_worker.rl.chebyshev_tracker import exact_opponent_cell
+from cop_worker.rl.opponent_fix import OpponentFix
 from cop_worker.rl.pursuit_search import best_cop_action, best_thief_action
 from cop_worker.rl.stall_squeeze import StallSqueeze
 
@@ -30,6 +30,7 @@ class SearchRolePolicy:
         barriers_max: int = 14,
         belief_mode: bool = False,
         belief_peak_threshold: float = 0.06,
+        decode_book_scent: bool = False,
     ) -> None:
         if role not in {"cop", "thief"}:
             raise ValueError(f"role must be cop/thief, got {role!r}")
@@ -43,11 +44,14 @@ class SearchRolePolicy:
         self.belief_mode = belief_mode
         self.belief_peak_threshold = belief_peak_threshold
         self._belief_engine = None
-        self._last_seen: tuple[int, int] | None = None
+        # decode_book_scent (per-pairing, from the locked scent model): also
+        # invert multiplicative_book_v1 frames so the search stays sighted in
+        # book-scent pairings; chebyshev pairings resolve byte-identically.
+        self._fix = OpponentFix(decode_book_scent)
         self._squeeze = StallSqueeze() if self.role == "cop" else None
 
     def reset(self) -> None:
-        self._last_seen = None
+        self._fix.reset()
         self._belief_engine = None
         if self._squeeze is not None:
             self._squeeze.reset()
@@ -73,11 +77,7 @@ class SearchRolePolicy:
     ) -> str:
         if not legal_actions:
             raise RuntimeError("canonical domain returned no legal actions")
-        opp = exact_opponent_cell(observation.opponent_scent, observation.grid_size)
-        if opp is None:
-            opp = self._last_seen  # coast on the last fix for a malformed frame
-        else:
-            self._last_seen = opp
+        opp = self._fix.fix(observation.opponent_scent, observation.grid_size)
         posterior = self._live_posterior(observation) if self.belief_mode else None
         if opp is None:
             if posterior is not None and self.role == "cop":
