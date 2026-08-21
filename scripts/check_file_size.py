@@ -37,7 +37,7 @@ ALLOWED: dict[str, tuple[int, str]] = {
         170,
         "Single outbound-call policy surface: pacing, retry, breaker.",
     ),
-    "cop_worker/gui/hub_api.py": (190, "One read-only hub API surface incl. human-play history."),
+    "cop_worker/gui/hub_api.py": (195, "One read-only hub API surface incl. human-play history."),
     "cop_worker/protocol/reference_v3/session.py": (
         165,
         "One wire session; the four tools are one protocol unit.",

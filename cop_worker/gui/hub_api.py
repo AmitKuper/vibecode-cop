@@ -88,6 +88,9 @@ async def games() -> JSONResponse:
                 # Gamelet logs rotate per game_id, so archived rows can't link
                 # them - but per-run GAME RECORDS are archived under history/
                 # (same stamp as the result), so those replay links survive.
+                # Replay links prefer the game RECORDS (both sides, scent bytes,
+                # barriers rendered); the sealed logs are the fallback when no
+                # record exists (pre-2026-08-17 series).
                 "logs": sorted(
                     f"history/{p.name}"
                     for p in (RESULTS / "history").glob(
@@ -95,7 +98,10 @@ async def games() -> JSONResponse:
                     )
                 )
                 if from_archive
-                else sorted(p.name for p in RESULTS.glob(f"log_{game_id}_g*.json")),
+                else (
+                    sorted(p.name for p in RESULTS.glob(f"record_{game_id}_g*.json"))
+                    or sorted(p.name for p in RESULTS.glob(f"log_{game_id}_g*.json"))
+                ),
             }
         )
     # Human-vs-model games: persisted as replayable game records by play_record
