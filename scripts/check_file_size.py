@@ -65,6 +65,11 @@ ALLOWED: dict[str, tuple[int, str]] = {
     "scripts/ref3_match/role_worker.py": (155, "Worker entry point: stdio protocol loop."),
     "cop_worker/rl/search_policy.py": (175, "One decision sequence; override priority order."),
     "scripts/barrier_distill/collect.py": (160, "One research collection recipe (non-runtime)."),
+    "scripts/pocketer_lab.py": (
+        180,
+        "One lab scenario (non-runtime): the scripted adaptive pocketer and both "
+        "thief arms are a single reproducible experiment.",
+    ),
     "cop_worker/gui/hub_page.py": (
         200,
         "A single HTML/JS page template in a string: its line count is markup, "

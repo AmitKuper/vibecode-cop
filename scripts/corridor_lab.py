@@ -43,9 +43,9 @@ def make_thief(kind: str):
         ev = ResolvingEvader(kind, 35)
         return lambda cop, thief, walls, b_left, sl: ev.move(cop, thief, walls, sl)
 
-    def searcher(
-        cop, thief, walls, b_left, sl, escape=LineEscape() if kind == "confined" else None
-    ):
+    esc = LineEscape() if kind == "confined" else None
+
+    def searcher(cop, thief, walls, b_left, sl, escape=esc):
         act = best_thief_action(
             cop, thief, list(walls), sl, depth=4, n=N,
             cop_barriers_left=b_left, time_budget_s=1.0,

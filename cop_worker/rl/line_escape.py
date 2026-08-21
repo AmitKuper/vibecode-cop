@@ -66,15 +66,38 @@ class LineEscape:
     def override(
         self, thief, cop, barriers, cop_barriers_left, steps_left, planned: str, legal
     ) -> str | None:
-        """Exact-evader move under a line threat; None keeps minimax's move."""
+        """Exact-evader move under a line OR pocket threat; None keeps minimax."""
+        from cop_worker.rl.sealability import sealability
+
         walls = frozenset(map(tuple, barriers))
-        if not _threat_line(walls, int(cop_barriers_left), self.n):
+        # Pocket threat (operator-found, 2026-08-21): an adaptive wall-placer
+        # needs only ``cut`` future walls to seal us — treat a narrow escape
+        # cut like a forming line once the cop has started walling.
+        pocket = (
+            len(walls) >= 1
+            and int(cop_barriers_left) >= (cut := sealability(thief, cop, walls, self.n))
+            and cut <= 4  # trigger EARLY and stay on — a flapping trigger lets
+            # minimax undo the escape between activations (observed vs the
+            # adaptive pocketer: herded to cut 3 during the off-phases)
+        )
+        if not pocket and not _threat_line(walls, int(cop_barriers_left), self.n):
             return None
         layers, idx = self._table(walls)
         s = max(0, min(steps_left - 1, 35))
         cop_t, thief_t = tuple(cop), tuple(thief)
         if cop_t not in idx or thief_t not in idx:
             return None
+        # Turn parity: after WE land on q the COP replies. layers[s][c][t] is
+        # "thief to move" — using it directly on q marks cop-adjacent cells
+        # survivable (fatal, observed: STAY next to the cop, captured s16).
+        # Committing to q survives iff EVERY cop reply c2 misses q and leaves
+        # a thief-to-move surviving state.
+        cop_replies = [idx[cop_t]]
+        for dx, dy in ORTHO:
+            c2 = (cop[0] + dx, cop[1] + dy)
+            if c2 in idx:
+                cop_replies.append(idx[c2])
+        s2 = max(0, s - 1)
         options = []
         for (dx, dy), name in _NAMES.items():
             if name not in legal:
@@ -82,11 +105,16 @@ class LineEscape:
             q = (thief[0] + dx, thief[1] + dy)
             if not (0 <= q[0] < self.n and 0 <= q[1] < self.n) or q in walls or q == cop_t:
                 continue
-            surv = 1 if layers[s][idx[cop_t]][idx[q]] else 0
+            qi = idx[q]
+            surv = 1 if all(c2 != qi and layers[s2][c2][qi] for c2 in cop_replies) else 0
             dist = abs(q[0] - cop[0]) + abs(q[1] - cop[1])
-            options.append((surv, self._mobility(q, walls), min(dist, 3), name))
+            # Sealability before mobility (widest escape cut wins), and cop
+            # DISTANCE before mobility too — never loiter in reply range while
+            # a pocketer is placing walls (observed adjacency death).
+            seal = min(sealability(q, cop_t, walls, self.n), 4)
+            options.append((surv, seal, min(dist, 3), self._mobility(q, walls), name))
         if not options:
             return None
         options.sort(reverse=True)
-        best = options[0][3]
+        best = options[0][4]
         return best if best != planned else None
