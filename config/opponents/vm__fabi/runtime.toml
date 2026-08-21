@@ -1,0 +1,37 @@
+# vm__fabi pairing (Vasily Mironovich & Fahed Bitar, University of Haifa).
+# ONE process, both roles, ONE static ngrok domain (does not rotate) — both
+# opp URLs point at the same endpoint (ahk-yosi precedent). Between windows
+# it answers 502; during a window a bare probe answers 406. They REFUSE
+# dials from unconfigured groups and outside agreed windows.
+# OPEN ITEM before any game: ROLE PARITY — their rule (alpha-first = police
+# on odd) makes vibecode police on 1/3/5; our driver hardcodes thief-on-odd.
+# Reconciliation requested in the greeting reply; do NOT schedule before it
+# is settled in writing.
+[network]
+ingress           = "static"
+our_cop_port      = 61224
+our_thief_port    = 61223
+
+opponent_group = "vm__fabi"
+opp_cop_url    = "https://cop-rob-p2p.ngrok.app/mcp"
+opp_thief_url  = "https://cop-rob-p2p.ngrok.app/mcp"
+
+[protocol]
+# Locked in their greeting: subtractive_chebyshev_v1 (0.8-peak
+# after-one-decay — kit-exact, matches our ChebyshevTrail), wire reference-v3.
+# Our NATIVE sighted regime: minimax + squeeze + corridor need no decoder.
+scent_model  = "subtractive_chebyshev_v1"
+move_policy  = "hybrid_search"
+mcp_call_sec = 10.0
+
+[timeouts]
+agreement_poll_sec = 120.0
+
+[report]
+# FRIENDLY: operator-to-operator only, never the lecturer (their rule too).
+recipient  = "mironovichvasily@gmail.com"
+mode       = "send"
+token_path = "secrets/gmail/token.json"
+
+[counted]
+counted_played = 8

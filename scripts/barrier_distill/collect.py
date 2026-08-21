@@ -26,8 +26,20 @@ os.environ["COPTHIEF_UNIFORM_BELIEF"] = "1"
 RESULTS = _REPO / "results" / "barrier_distill"
 
 
-def collect(seed: int, episodes: int, out: Path, role: str = "cop") -> dict:
-    """Roll episodes with the full-stack teacher for ``role`` vs its opponent pool."""
+def collect(
+    seed: int,
+    episodes: int,
+    out: Path,
+    role: str = "cop",
+    driver_ckpt: str = "",
+    pool_kind: str = "full",
+) -> dict:
+    """Roll episodes for ``role`` vs its opponent pool.
+
+    Teacher labels every state. With ``driver_ckpt`` (DAgger), the STUDENT
+    drives the trajectory — the corpus then covers the states the student
+    actually reaches, labeled by the per-opponent expert.
+    """
     import torch
 
     from barrier_distill.teacher import ChampionTeacher, SearchHookTeacher, ThiefStackTeacher
@@ -47,14 +59,30 @@ def collect(seed: int, episodes: int, out: Path, role: str = "cop") -> dict:
     # stack teaches everything else (sweeps, evaders — where IT is stronger).
     stack_teacher = SearchHookTeacher() if role == "cop" else ThiefStackTeacher()
     champion_teacher = ChampionTeacher(role)
+    driver = None
+    if driver_ckpt:
+        from barrier_distill.models import load_student
+
+        driver, _meta = load_student(str(RESULTS / driver_ckpt))
     t0 = time.time()
     for ep in range(episodes):
         if role == "cop":
-            pool = make_pool()
-        else:
-            from barrier_distill.cops import make_cop_pool
+            if pool_kind == "weak":  # targeted round: the student's weakest families
+                from barrier_distill.thieves import FamilyThief
 
-            pool = make_cop_pool(rng)
+                pool = [
+                    FamilyThief(f)
+                    for f in ("wall", "anti_loop", "targeted_exploit", "deceptive_language")
+                ]
+            else:
+                pool = make_pool()
+        else:
+            from barrier_distill.cops import StackCop, SweepCop, make_cop_pool
+
+            if pool_kind == "sweep":  # targeted round: the diluted skill
+                pool = [SweepCop(rng), SweepCop(rng), SweepCop(rng), StackCop(hook=True)]
+            else:
+                pool = make_cop_pool(rng)
         opponent = pool[ep % len(pool)]
         is_family = type(opponent).__name__ in ("FamilyCop", "FamilyThief")
         teacher = champion_teacher if is_family else stack_teacher
@@ -64,16 +92,22 @@ def collect(seed: int, episodes: int, out: Path, role: str = "cop") -> dict:
         scent = make_scent_fields(state.grid_size)
         belief = BeliefEngine(state.grid_size, role)  # unused under uniform belief
         feats, labels = [], []
+        hidden = None
         outcome = "steps"
         while state.turn < 35:
             legal = _legal(state, role)
-            obs, _mask = _observation(state, role, scent, belief, legal, (ep % 6) + 1)
-            action = teacher.action(state, legal, obs=obs)
+            obs, mask = _observation(state, role, scent, belief, legal, (ep % 6) + 1)
+            action = teacher.action(state, legal, obs=obs)  # the LABEL, always
+            played = action
+            if driver is not None:  # DAgger: the student drives, the expert labels
+                with torch.no_grad():
+                    logits, _v, hidden = driver(obs.unsqueeze(0), hidden)
+                played = actions[int(logits[0].masked_fill(~mask, -1e9).argmax())]
             opp_action = opponent.action(state, rng, scent)
             feats.append(obs)
             labels.append(actions.index(action))
             place_labels += int(action.startswith("PLACE_") or opp_action.startswith("PLACE_"))
-            cop_a, thief_a = (action, opp_action) if role == "cop" else (opp_action, action)
+            cop_a, thief_a = (played, opp_action) if role == "cop" else (opp_action, played)
             result = apply_joint_action(state, cop_a, thief_a)
             state = result.new_state
             scent = scent.update(state.cop_position, state.thief_position)
@@ -104,12 +138,17 @@ def main() -> None:
     ap.add_argument("--seed", type=int, required=True)
     ap.add_argument("--episodes", type=int, default=44)
     ap.add_argument("--role", choices=["cop", "thief"], default="cop")
+    ap.add_argument("--driver", default="", help="student checkpoint that DRIVES (DAgger)")
+    ap.add_argument("--pool", default="full", choices=["full", "sweep", "weak"])
     ap.add_argument("--out", default="")
     args = ap.parse_args()
-    out_dir = RESULTS / f"shards_{args.role}"
+    out_dir = RESULTS / (f"shards_{args.role}_dagger" if args.driver else f"shards_{args.role}")
     out_dir.mkdir(parents=True, exist_ok=True)
     out = Path(args.out) if args.out else out_dir / f"shard_{args.seed:02d}.pt"
-    stats = collect(args.seed, args.episodes, out, role=args.role)
+    stats = collect(
+        args.seed, args.episodes, out,
+        role=args.role, driver_ckpt=args.driver, pool_kind=args.pool,
+    )  # fmt: skip
     print(f"[shard {args.role}-{args.seed}] DONE {stats}", flush=True)
 
 

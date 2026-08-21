@@ -81,8 +81,11 @@ def main() -> None:
     ap.add_argument("--arch", choices=["gru", "ff"], required=True)
     ap.add_argument("--role", choices=["cop", "thief"], default="cop")
     ap.add_argument("--epochs", type=int, default=30)
+    ap.add_argument("--hidden", type=int, default=128)
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--init", default="", help="warm-start from this checkpoint (DAgger round)")
+    ap.add_argument("--extra-shards", default="", help="additional shards dir to union in")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
     torch.manual_seed(args.seed)
@@ -93,13 +96,20 @@ def main() -> None:
     if args.role == "cop" and not shards_dir.exists():
         shards_dir = RESULTS / "shards"
     episodes = load_shards(shards_dir)
+    if args.extra_shards:
+        episodes += load_shards(RESULTS / args.extra_shards)
     rng = random.Random(args.seed)
     rng.shuffle(episodes)
     cut = max(1, len(episodes) // 10)
     val, train = episodes[:cut], episodes[cut:]
     weights = class_weights(train, len(actions))
     input_size = train[0]["features"].shape[1]
-    net = make_student(args.arch, input_size, len(actions))
+    net = make_student(args.arch, input_size, len(actions), args.hidden)
+    if args.init:
+        from barrier_distill.models import load_student
+
+        warm, _meta = load_student(str(RESULTS / args.init))
+        net.load_state_dict(warm.state_dict())
     optimizer = torch.optim.Adam(net.parameters(), lr=args.lr)
     best = {"val_place_recall": -1.0}
     t0 = time.time()
@@ -117,6 +127,7 @@ def main() -> None:
                 {
                     "arch": args.arch,
                     "role": args.role,
+                    "hidden": args.hidden,
                     "input_size": input_size,
                     "n_actions": len(actions),
                     "state_dict": net.state_dict(),

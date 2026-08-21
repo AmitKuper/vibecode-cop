@@ -30,19 +30,19 @@ class FeedforwardPolicy(nn.Module):
         return self.net(features), None, hidden
 
 
-def make_student(arch: str, input_size: int, n_actions: int):
+def make_student(arch: str, input_size: int, n_actions: int, hidden: int = 128):
     """'gru' (deployed architecture) or 'ff' (memoryless ablation)."""
     if arch == "gru":
-        return RecurrentActorCritic(input_size, n_actions)
+        return RecurrentActorCritic(input_size, n_actions, hidden_size=hidden)
     if arch == "ff":
-        return FeedforwardPolicy(input_size, n_actions)
+        return FeedforwardPolicy(input_size, n_actions, hidden_size=hidden)
     raise ValueError(f"unknown arch {arch!r}")
 
 
 def load_student(path: str):
     """Load a checkpoint saved by train.py; returns (network, meta)."""
     blob = torch.load(path, map_location="cpu", weights_only=False)
-    net = make_student(blob["arch"], blob["input_size"], blob["n_actions"])
+    net = make_student(blob["arch"], blob["input_size"], blob["n_actions"], blob.get("hidden", 128))
     net.load_state_dict(blob["state_dict"])
     net.eval()
     return net, blob
