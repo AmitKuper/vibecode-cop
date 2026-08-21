@@ -61,6 +61,8 @@ iframe{border:1px solid #2a2a3a;border-radius:6px;background:#0d0d16}
   <table id="t-counted"></table>
   <h2>Friendly game history <small>(every run; recovered runs have no replay links — gamelet logs rotate per game)</small></h2>
   <table id="t-friendly"></table>
+  <h2>Human vs model <small>(play-page games against the production engine)</small></h2>
+  <table id="t-human"></table>
   <h2>Local / simulated game history <small>(peer simulator, kit sparring)</small></h2>
   <table id="t-local"></table>
 </div>
@@ -111,7 +113,7 @@ function header(cat){
 }
 async function games(){
   const r=await fetch('/api/hub/games');const list=await r.json();
-  const tables={counted:'t-counted',friendly:'t-friendly',local:'t-local'};
+  const tables={counted:'t-counted',friendly:'t-friendly',local:'t-local',human:'t-human'};
   for(const [cat,id] of Object.entries(tables))
     document.getElementById(id).innerHTML=header(cat);
   const counts={counted:0,friendly:0,local:0};let won=0,lost=0;

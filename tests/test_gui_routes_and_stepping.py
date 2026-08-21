@@ -47,7 +47,7 @@ def test_settings_endpoint_is_read_only_config_truth():
 
 def test_games_endpoint_categories_are_exhaustive():
     for row in client.get("/api/hub/games").json():
-        assert row["category"] in {"counted", "friendly", "local"}
+        assert row["category"] in {"counted", "friendly", "local", "human"}
 
 
 # --- replay stepping: the API ordering the arrows depend on -----------------
