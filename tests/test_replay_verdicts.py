@@ -82,7 +82,7 @@ def test_dashboard_games_endpoint_lists_real_series():
         "report_id",
         "logs",
     } <= set(row)
-    assert row["category"] in {"counted", "friendly", "local"}
+    assert row["category"] in {"counted", "friendly", "local", "human"}
     assert row["group"] == "vibecode" and row["opponent"] != "vibecode"
 
 

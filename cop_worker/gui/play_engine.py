@@ -52,6 +52,9 @@ def _emit(g: dict, role: str) -> None:
 
 def _model_reply(g: dict) -> None:
     """The engine's half-move (and outcome checks), using production search."""
+    from cop_worker.gui.play_record import note
+
+    placed = None
     barriers = set(map(tuple, g["barriers"]))
     steps_left = MAX_STEPS - g["step"] + 1
     if g["human_role"] == "cop":
@@ -84,6 +87,7 @@ def _model_reply(g: dict) -> None:
             if 0 <= cell[0] < N and 0 <= cell[1] < N and cell not in barriers:
                 g["barriers"].append(list(cell))
                 g["barriers_left"] -= 1
+                placed = list(cell)
                 if list(cell) == g["thief"]:
                     g["over"], g["outcome"] = True, "capture"  # rule 46
         else:
@@ -94,3 +98,4 @@ def _model_reply(g: dict) -> None:
         if g["cop"] == g["thief"]:
             g["over"], g["outcome"] = True, "capture"
     g["last_model_action"] = action
+    note(g, "model", "thief" if g["human_role"] == "cop" else "cop", action, placed)

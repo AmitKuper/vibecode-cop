@@ -98,6 +98,35 @@ async def games() -> JSONResponse:
                 else sorted(p.name for p in RESULTS.glob(f"log_{game_id}_g*.json")),
             }
         )
+    # Human-vs-model games: persisted as replayable game records by play_record
+    for rec in sorted(RESULTS.glob("record_human-vs-model_*.json"), reverse=True):
+        try:
+            doc = json.loads(rec.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        stamp = str(doc.get("started_at") or "")
+        started = (
+            f"{stamp[:4]}-{stamp[4:6]}-{stamp[6:8]}T{stamp[9:11]}:{stamp[11:13]}:{stamp[13:15]}"
+            if len(stamp) >= 15
+            else stamp
+        )
+        human_won = (doc.get("outcome") == "capture") == (doc.get("human_role") == "cop")
+        out.append(
+            {
+                "game_id": "human-vs-model",
+                "category": "human",
+                "group": OUR_GROUP,
+                "opponent": f"human ({doc.get('human_role')})",
+                "windows": 1,
+                "score": doc.get("outcome") or "?",
+                "winner": "human" if human_won else "model",
+                "mutual_sha": "",
+                "confirmed": False,
+                "report_id": "",
+                "started": started,
+                "logs": [rec.name],
+            }
+        )
     # newest first regardless of source: current results/ and the recovered
     # archive interleave (recovered runs otherwise cluster at the tail)
     out.sort(key=lambda r: r["started"], reverse=True)

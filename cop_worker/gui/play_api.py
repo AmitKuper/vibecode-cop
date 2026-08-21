@@ -28,6 +28,7 @@ from cop_worker.gui.play_engine import (
     _move,
     _state,
 )
+from cop_worker.gui.play_record import note, persist_if_over
 from cop_worker.rl.action_space import PLACE_DIRS
 from cop_worker.rl.pursuit_eval import _legal_moves
 from cop_worker.scent_chebyshev import ChebyshevTrail
@@ -64,6 +65,7 @@ async def new_game(body: dict) -> JSONResponse:
     _GAMES[g["id"]] = g
     if role == "cop":  # thief moves first every step: model opens
         _model_reply(g)
+    persist_if_over(g)
     resp = _state(g)
     resp["last_model_action"] = g.get("last_model_action")
     return JSONResponse(resp)
@@ -79,6 +81,7 @@ async def play_move(body: dict) -> JSONResponse:
     action = str(body.get("action", "")).upper()
     barriers = set(map(tuple, g["barriers"]))
     if g["human_role"] == "cop":
+        placed = None
         if action in PLACE_DIRS:
             dx, dy = PLACE_DIRS[action]
             cell = (g["cop"][0] + dx, g["cop"][1] + dy)
@@ -90,6 +93,7 @@ async def play_move(body: dict) -> JSONResponse:
                 return JSONResponse({"error": "illegal barrier placement"}, status_code=400)
             g["barriers"].append(list(cell))
             g["barriers_left"] -= 1
+            placed = list(cell)
             if list(cell) == g["thief"]:
                 g["over"], g["outcome"] = True, "capture"
         else:
@@ -98,6 +102,7 @@ async def play_move(body: dict) -> JSONResponse:
                 return JSONResponse({"error": "illegal move"}, status_code=400)
             g["cop"] = new
         _emit(g, "cop")
+        note(g, "human", "cop", action, placed)
         if g["cop"] == g["thief"]:
             g["over"], g["outcome"] = True, "capture"
     else:
@@ -107,6 +112,7 @@ async def play_move(body: dict) -> JSONResponse:
         new = _move(g["thief"], action, barriers)
         g["thief"] = new if new else g["thief"]
         _emit(g, "thief")
+        note(g, "human", "thief", action)
         if g["thief"] == g["cop"]:
             g["over"], g["outcome"] = True, "capture"
     # round complete when the second mover has played; thief always moves first
@@ -121,6 +127,8 @@ async def play_move(body: dict) -> JSONResponse:
                 _model_reply(g)  # next step opens with the model thief
                 if not g["over"] and g["step"] > MAX_STEPS:
                     g["over"], g["outcome"] = True, "survival"
+    persist_if_over(g)
     resp = _state(g)
     resp["last_model_action"] = g.get("last_model_action")
+    resp["record_file"] = g.get("record_file")
     return JSONResponse(resp)
