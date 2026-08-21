@@ -95,7 +95,13 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--policy", required=True, help="stack | minimax | <checkpoint>")
     args = ap.parse_args()
-    from barrier_distill.cops import GreedyChaser, StackCop, SweepCop
+    from barrier_distill.cops import (
+        GreedyChaser,
+        OperatorLineCop,
+        OperatorPocketCop,
+        StackCop,
+        SweepCop,
+    )
 
     if args.policy == "stack":
         thief = SearchThief(escape=True)
@@ -105,6 +111,8 @@ def main() -> None:
         thief = StudentThief(RESULTS / args.policy)
     opponents = [
         *((f"sweep{i}", SweepCop(random.Random(i))) for i in range(4)),
+        ("op-pocket", OperatorPocketCop()),
+        *((f"op-line{i}", OperatorLineCop(random.Random(10 + i))) for i in range(2)),
         ("stack-hook", StackCop(hook=True)),
         ("stack-plain", StackCop(hook=False)),
         ("greedy", GreedyChaser()),
