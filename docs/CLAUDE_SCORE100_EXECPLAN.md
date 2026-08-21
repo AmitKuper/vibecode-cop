@@ -168,3 +168,20 @@ in tests/test_sighted_under_book.py (incl. plateau-step action ==
 best_cop_action on the TRUE cell), suite 1961/4, peersim rehearsal
 6/6 (captures @7/6/8). Profile config/opponents/yanell11/ staged (Haifa
 terms; URLs + operator inbox to fill from chat).
+
+## 2026-08-21 (later) — yanell11: thief-first CONFIRMED; series-label folding shipped
+
+yanell11 verified our kit citations upstream and CONFIRMED
+`turn_order = thief_first` in writing (they flip their engine + re-gate
+their strategy; sparring-peer dry-run on their side; they ping with an
+endpoint + window in ~2 days). Scent stays locked book/934c220d. Ack sent
+(reply-yanell11-ack.md) incl. a sequencing tell for their dry-run.
+
+Shipped kit §5 series-label folding end to end: derive_game_id/uid take an
+optional label (labeled uid seeds on the LABELED game_id; unlabeled bytes
+unchanged — pinned), build/verify_negotiation fold + REFUSE a label
+disagreement (SPAR-N10), plumbed config [protocol] series_label →
+cli --series-label → both play paths → role worker → handshake →
+artifacts_io. 5 pins in tests/test_series_label_uid.py; suite 1966/4;
+size-gate allowances bumped with justification (subgame_setup 170,
+series_split 155); peersim rehearsal 6/6 on the unlabeled default.

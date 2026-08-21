@@ -66,8 +66,9 @@ def _emit_files(result: dict, args) -> dict:
 
     opp = args.opponent_group
     _save_opponent_profile(opp, played_profile=getattr(args, "config", None))
-    game_id = derive_game_id("vibecode", opp)
-    game_uid = derive_game_uid(default_terms({"setting": args.setting}), "vibecode", opp)
+    label = getattr(args, "series_label", "") or None
+    game_id = derive_game_id("vibecode", opp, label)
+    game_uid = derive_game_uid(default_terms({"setting": args.setting}), "vibecode", opp, label)
     cop_commit = _git_head(REPO_ROOT)
     results_dir = REPO_ROOT / "results"
     config_dir = REPO_ROOT / "config" / "games"

@@ -28,6 +28,7 @@ async def _play_match(
     our_counted: int = 0,
     scent_model: str = "multiplicative_book_v1",
     move_policy: str = "rl",
+    series_label: str = "",
 ) -> dict:
     """Real match vs a live peer over reference-v3, role-split, RL moves.
 
@@ -89,6 +90,7 @@ async def _play_match(
                     scent_model=scent_model,
                     move_policy=move_policy,
                     confirmed_group=confirmed_group,
+                    series_label=series_label,
                 )
                 results.append(sg_result)
                 # Learned from a VERIFIED handshake: declare the uid from sg2 onward.

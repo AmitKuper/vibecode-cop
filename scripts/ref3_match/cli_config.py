@@ -46,6 +46,10 @@ def _resolve_args(args) -> None:
         args.scent_model = rt.get("protocol", {}).get("scent_model", "multiplicative_book_v1")
     if args.move_policy is None:
         args.move_policy = rt.get("protocol", {}).get("move_policy", "rl")
+    if getattr(args, "series_label", None) is None:
+        # Distinct per-series label (kit §5): folded into game_id/game_uid so two
+        # counted series vs the same team cannot collapse to one uid. Empty = off.
+        args.series_label = rt.get("protocol", {}).get("series_label", "")
     # One switch, everywhere: the locked model drives our wire emission (RLMover), our
     # Step-0 declaration (build_negotiation), the peer-frame diagnostic, AND any policy/
     # obs-mode code that reads COPTHIEF_SCENT_MODEL — set the env before policies load.

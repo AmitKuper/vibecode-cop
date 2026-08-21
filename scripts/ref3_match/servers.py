@@ -98,6 +98,7 @@ async def _dial_and_play(
     scent_model: str,
     move_policy: str,
     confirmed_group: str | None,
+    series_label: str = "",
 ) -> dict:
     """Dial the peer's window endpoint and play one sub-game through it."""
     from fastmcp import Client
@@ -145,4 +146,5 @@ async def _dial_and_play(
             scent_model=scent_model,
             move_policy=move_policy,
             declared_opponent_group=confirmed_group,
+            series_label=series_label,
         )

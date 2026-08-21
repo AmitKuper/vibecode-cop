@@ -35,6 +35,7 @@ async def _play_match_split(
     our_counted: int = 0,
     scent_model: str = "multiplicative_book_v1",
     move_policy: str = "rl",
+    series_label: str = "",
 ) -> dict:
     """Real match over reference-v3 with one OS process per role + this orchestrator."""
     from cop_worker.protocol.reference_v3 import default_terms
@@ -53,6 +54,7 @@ async def _play_match_split(
         "our_counted": our_counted,
         "scent_model": scent_model,
         "move_policy": move_policy,
+        "series_label": series_label,
     }
     from ref3_match.worker_proc import role_init
 

@@ -73,6 +73,11 @@ def _build_parser() -> argparse.ArgumentParser:
         choices=("rl", "hybrid_search", "hybrid_search_belief"),
         help="Move engine: plain RL, or minimax-over-exact-tracking with RL fallback",
     )
+    p.add_argument(
+        "--series-label",
+        default=None,
+        help="Agreed per-series label folded into game_id/game_uid (kit §5); empty = off",
+    )
     return p
 
 
@@ -101,6 +106,7 @@ def main() -> int:
                 our_counted=args.counted_played,
                 scent_model=args.scent_model,
                 move_policy=args.move_policy,
+                series_label=args.series_label or "",
             )
         )
         _write_result(result)  # raw internal snapshot (debug)

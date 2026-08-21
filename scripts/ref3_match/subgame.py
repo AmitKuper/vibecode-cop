@@ -22,6 +22,7 @@ async def _play_subgame(
     scent_model: str = "multiplicative_book_v1",
     move_policy: str = "rl",
     declared_opponent_group: str | None = None,
+    series_label: str = "",
 ) -> dict:
     """Drive one full sub-game; returns the settled result row (see _settle)."""
     hs = await _handshake(
@@ -36,6 +37,7 @@ async def _play_subgame(
         our_counted=our_counted,
         scent_model=scent_model,
         declared_opponent_group=declared_opponent_group,
+        series_label=series_label,
     )
     _mover, rl_moves, captured, disputed, caught_cell = await _run_turns(
         out_session,

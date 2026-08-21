@@ -51,6 +51,7 @@ async def _handshake(
     our_counted: int,
     scent_model: str,
     declared_opponent_group: str | None,
+    series_label: str = "",
 ):
     """Exchange + verify greetings; seal step-0. Returns the handshake context dict."""
     from ref3_artifacts import OUR_REPOS, our_mcp
@@ -111,6 +112,7 @@ async def _handshake(
         identity=our_identity,
         opponent_group=declared_opponent_group,
         scent_model=scent_model,
+        series_label=series_label or None,
     )
     await out_session.send_negotiation(greeting)
     # Match the greeting by sub_game_number (not FIFO) — the peer's re-dials pile up.
@@ -123,7 +125,7 @@ async def _handshake(
         f"sub_game={theirs.get('sub_game_number')} role={theirs.get('role')}"
     )
     try:
-        negotiated = verify_negotiation(greeting, theirs)
+        negotiated = verify_negotiation(greeting, theirs, series_label or None)
     except Exception as exc:
         _print_refusal_diag(sub_game, greeting, theirs, exc)
         raise

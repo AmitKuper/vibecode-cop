@@ -70,6 +70,7 @@ def build_negotiation(
     opponent_group: str | None = None,
     identity: dict | None = None,
     scent_model: str = "multiplicative_book_v1",
+    series_label: str | None = None,
 ) -> dict:
     if role not in {"police", "thief"} or sub_game_number not in range(1, 7):
         raise ReferenceV3Error("reference-v3 requires police/thief and sub-game 1..6")
@@ -99,11 +100,13 @@ def build_negotiation(
         "wire_shape_sha256": REFERENCE_V3_WIRE_LOCK,
     }
     if opponent_group:
-        wire["game_uid"] = derive_game_uid(terms, group_id, opponent_group)
+        wire["game_uid"] = derive_game_uid(terms, group_id, opponent_group, series_label)
     return wire
 
 
-def verify_negotiation(ours: dict, theirs: dict) -> NegotiatedReferenceV3:
+def verify_negotiation(
+    ours: dict, theirs: dict, series_label: str | None = None
+) -> NegotiatedReferenceV3:
     if not isinstance(theirs, dict) or not isinstance(theirs.get("terms"), dict):
         raise ReferenceV3Error("SPAR-N01: peer did not send flat signed terms")
     terms = theirs["terms"]
@@ -128,11 +131,11 @@ def verify_negotiation(ours: dict, theirs: dict) -> NegotiatedReferenceV3:
     opponent = theirs.get("group_id") or (theirs.get("identity") or {}).get("group_id")
     if not isinstance(opponent, str) or not opponent:
         raise ReferenceV3Error("SPAR-N08: peer names no group_id")
-    uid = derive_game_uid(terms, ours["group_id"], opponent)
+    uid = derive_game_uid(terms, ours["group_id"], opponent, series_label)
     if isinstance(theirs.get("game_uid"), str) and theirs["game_uid"] != uid:
         raise ReferenceV3Error("SPAR-N10: game_uid mismatch")
     return NegotiatedReferenceV3(
-        game_id=derive_game_id(ours["group_id"], opponent),
+        game_id=derive_game_id(ours["group_id"], opponent, series_label),
         game_uid=uid,
         opponent_group=opponent,
         opponent_role=theirs.get("role"),

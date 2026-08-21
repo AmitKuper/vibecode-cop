@@ -76,6 +76,7 @@ async def _play_window(cmd: dict, session, init: dict) -> dict:
             scent_model=init["scent_model"],
             move_policy=init["move_policy"],
             confirmed_group=cmd.get("confirmed_group"),
+            series_label=init.get("series_label", ""),
         )
         return {
             "type": "result",
