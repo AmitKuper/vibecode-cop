@@ -6,14 +6,17 @@
 # netplay.py:263, turnloop.py docstring, series.py:124) — awaiting their
 # written confirmation; do NOT schedule a window before it lands.
 [network]
-ingress           = "ngrok"
+# Operator decision 2026-08-21: static IP for BOTH doors (same as bestteam &
+# all counted series) — no ngrok for this pairing.
+ingress           = "static"
 our_cop_port      = 61224
 our_thief_port    = 61223
 
 opponent_group = "yanell11"
 # opp_cop_url is dialled when WE are thief (their cop answers), and vice versa.
-opp_cop_url    = "FILL_FROM_CHAT_BEFORE_MATCH"
-opp_thief_url  = "FILL_FROM_CHAT_BEFORE_MATCH"
+# From their kickoff runbook 2026-08-21 (cloudflare quick tunnels, rotate on restart):
+opp_cop_url    = "https://receives-role-choice-album.trycloudflare.com/mcp"
+opp_thief_url  = "https://tracks-albert-were-provinces.trycloudflare.com/mcp"
 
 [protocol]
 # Locked book model: the search stack stays sighted via the exact wire-law

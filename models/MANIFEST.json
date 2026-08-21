@@ -29,6 +29,34 @@
       },
       "evaluation_win_rate": 0.9926,
       "description": "From-scratch chebyshev recurrent cop, 80% fixed-start episodes (cop_start/thief_start are SIGNED terms \u2014 the match always opens there). 0.9926 at scent=chebyshev/belief=prod on the FIXED-START harness (eval_candidate seed 20260810) vs 0.8704 for the random-start recipe and 0.2148 for the superseded book champion. Thief kept the random-start recipe (0.9741 beats fixed-start 0.9444). Serves as the hybrid_search BLIND-FRAME FALLBACK only \u2014 the minimax engine plays sighted frames."
+    },
+    {
+      "role": "cop",
+      "algorithm": "RecurrentA2C-GRU",
+      "artifact": "cop_prodobs_candidate_v2.pt",
+      "architecture": "linear-tanh-grucell-policy-value",
+      "sha256": "a568c5fbdda2a76c10da649789fd530c83abb27020bf5ef0f3b7846408730a5d",
+      "training_code_sha": "20260809-wire-recipe",
+      "config_sha256": "da1c9108c5989ac5634bae374dc6b90de4389135a699000bfe52f76ec43743ff",
+      "observation_schema_version": "1.0",
+      "action_schema_version": "1.0",
+      "belief_schema_version": "1.0",
+      "inference_mode": "argmax",
+      "grid_size": 7,
+      "random_seed": 20260809,
+      "training_steps": 0,
+      "obs_mode": {
+        "uniform_belief": true,
+        "wire_scent": true,
+        "decoded_scent": false,
+        "scent_model": "multiplicative_book_v1"
+      },
+      "hyperparams": {
+        "hidden_size": 128,
+        "gamma": 0.99
+      },
+      "evaluation_win_rate": 0.6667,
+      "description": "BOOK-model (clamped wire law) fallback entry, added 2026-08-21 for book-scent pairings (yanell11). This is the 2026-08-09 promoted wire-scent champion: trained with COPTHIEF_WIRE_SCENT=1 + COPTHIEF_UNIFORM_BELIEF=1, 0.6667 at scent=wire/belief=prod (eval_candidate). Under hybrid_search it is the BLIND-FRAME FALLBACK only: the sighted minimax reads book frames via the exact wire-law inverse (opponent_fix/scent_decoder), so this net plays only when the inverse is ambiguous."
     }
   ]
 }

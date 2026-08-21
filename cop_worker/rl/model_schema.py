@@ -66,10 +66,31 @@ class ModelLoadError(ValueError):
 
 
 def load_manifest(path: str) -> dict:
-    """Load models/MANIFEST.json, returns role->entry dict."""
+    """Load models/MANIFEST.json, returns role->entry dict.
+
+    A role may carry ONE entry per locked scent model (a chebyshev pairing and
+    a book pairing need different fallback nets — the obs-guard rightly refuses
+    a cross-load). Selection: the entry whose ``obs_mode.scent_model`` matches
+    the live locked model wins; with a single entry per role (every manifest
+    before 2026-08-21) the behavior is byte-identical to the old first-wins.
+    """
+    from cop_worker.rl.obs_mode import scent_model
+
     with open(path) as f:
         data = json.load(f)
-    return {e["role"]: ModelManifestEntry(**e) for e in data["models"]}
+    live = scent_model()
+    roles: dict[str, ModelManifestEntry] = {}
+    for raw in data["models"]:
+        entry = ModelManifestEntry(**raw)
+        current = roles.get(entry.role)
+        if current is None:
+            roles[entry.role] = entry
+            continue
+        current_model = (current.obs_mode or {}).get("scent_model", "multiplicative_book_v1")
+        entry_model = (entry.obs_mode or {}).get("scent_model", "multiplicative_book_v1")
+        if current_model != live and entry_model == live:
+            roles[entry.role] = entry
+    return roles
 
 
 def validate_model_file(path: str, expected_sha256: str) -> None:
