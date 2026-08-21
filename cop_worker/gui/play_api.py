@@ -26,6 +26,7 @@ from cop_worker.gui.play_engine import (
     _emit,
     _model_reply,
     _move,
+    _rule47,
     _state,
 )
 from cop_worker.gui.play_record import note, persist_if_over
@@ -102,6 +103,7 @@ async def play_move(body: dict) -> JSONResponse:
                 return JSONResponse({"error": "illegal move"}, status_code=400)
             g["cop"] = new
         _emit(g, "cop")
+        _rule47(g)  # a placement that seals the last exit captures (rule 47)
         note(g, "human", "cop", action, placed)
         if g["cop"] == g["thief"]:
             g["over"], g["outcome"] = True, "capture"

@@ -50,6 +50,18 @@ def _emit(g: dict, role: str) -> None:
     g[f"scent_{role}"] = trail.full_turn((pos[1], pos[0]))
 
 
+def _rule47(g: dict) -> None:
+    """Enclosure capture, matching the production domain: a thief with no
+    legal NON-STAY move is captured where it stands (STAY does not rescue)."""
+    from cop_worker.rl.pursuit_eval import _legal_moves
+
+    if g["over"]:
+        return
+    walls = set(map(tuple, g["barriers"]))
+    if not any(a != "STAY" for a, _ in _legal_moves(tuple(g["thief"]), walls, N)):
+        g["over"], g["outcome"] = True, "capture"
+
+
 def _model_reply(g: dict) -> None:
     """The engine's half-move (and outcome checks), using production search."""
     from cop_worker.gui.play_record import note
@@ -98,4 +110,5 @@ def _model_reply(g: dict) -> None:
         if g["cop"] == g["thief"]:
             g["over"], g["outcome"] = True, "capture"
     g["last_model_action"] = action
+    _rule47(g)
     note(g, "model", "thief" if g["human_role"] == "cop" else "cop", action, placed)
