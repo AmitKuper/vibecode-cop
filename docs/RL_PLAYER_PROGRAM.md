@@ -101,3 +101,22 @@ default until the net matches it on every instrument. Known ceilings,
 stated once: vs perfect play the game value is a draw (nobody beats it),
 and a net cannot counter strategy classes absent from its training pool —
 the adversary library grows with every opponent that shows us a new one.
+
+## Phase 1 final state (2026-08-22 evening, rounds v5-v8)
+
+Capacity (256 hidden) + two DAgger rounds + one targeted round, measured:
+
+| artifact | legacy | new-threat instruments | verdict |
+|---|---:|---|---|
+| thief_gru_v7 | 0.802 (champ 0.827) | sweep SURVIVAL, arena 14/14 | **UNIFORM — done** |
+| cop_gru_v7 | 0.897 (champ 0.959) | arena 21-22/28, both acid captures | best cop; 4-family gap |
+| cop_gru_v8 (targeted) | 0.885 | arena 20/28 | traded families — DAgger plateau |
+
+Conclusions: DAgger closed the thief completely (the sweep-weighted round
+was decisive) and took the cop from 0.667 to ~0.90 with belief_pursuit
+12/27 -> 27/27, but plateaus ~0.06 short of a champion that RL-specialized
+on these exact families for 105k steps. The uniform cop's remaining path
+is Phase 2: PPO fine-tune of cop_gru_v7 against the weak families with
+reward arbitration — imitation cannot out-imitate a reward-optimized
+specialist in its own niche. The thief side of "strongest in all
+situations, from weights" is ACHIEVED and reproducible.
