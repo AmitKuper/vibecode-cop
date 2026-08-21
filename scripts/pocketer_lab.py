@@ -97,6 +97,45 @@ class AdaptivePocketer:
         return ("move", q) if 0 <= q[0] < N and 0 <= q[1] < N and q not in walls else ("move", cop)
 
 
+class LineHunter:
+    """The operator's SECOND winning strategy (record 20260821-203028): wall a
+    column beside the thief (x=3, y=0..4), leaving a south door, then walk the
+    thief's side and hunt with the production minimax + remaining walls. The
+    pre-cross thief sat on the cop's side of the line and died in the strip."""
+
+    def __init__(self) -> None:
+        self.b_left = 14
+        self.line = [(3, y) for y in range(5)]
+
+    def act(self, cop, thief, walls):
+        for cell in self.line:
+            if cell in walls or self.b_left == 0:
+                continue
+            stand = (2, cell[1])  # build from the west lane, like the record
+            if cop == stand and cell != thief:
+                self.b_left -= 1
+                return ("place", cell)
+            dx = (stand[0] > cop[0]) - (stand[0] < cop[0])
+            dy = 0 if dx else (stand[1] > cop[1]) - (stand[1] < cop[1])
+            q = (cop[0] + dx, cop[1] + dy)
+            if 0 <= q[0] < N and 0 <= q[1] < N and q not in walls and q != thief:
+                return ("move", q)
+            break
+        act = best_cop_action(
+            cop, thief, list(walls), self.b_left, 35, depth=4, n=N, time_budget_s=1.0
+        )
+        if act in PLACE_DIRS and self.b_left > 0:
+            dx, dy = PLACE_DIRS[act]
+            cell = (cop[0] + dx, cop[1] + dy)
+            if 0 <= cell[0] < N and 0 <= cell[1] < N and cell not in walls:
+                self.b_left -= 1
+                return ("place", cell)
+            return ("move", cop)
+        dx, dy = MOVE_DELTAS.get(act, (0, 0))
+        q = (cop[0] + dx, cop[1] + dy)
+        return ("move", q) if 0 <= q[0] < N and 0 <= q[1] < N and q not in walls else ("move", cop)
+
+
 def _blind_move(thief, cop, walls, steps_left, cache):
     """The OLD confined-mode scoring (no sealability): surv, mobility, dist."""
     wk = frozenset(walls)
@@ -121,10 +160,10 @@ def _blind_move(thief, cop, walls, steps_left, cache):
     return best
 
 
-def run(aware: bool):
+def run(aware: bool, hunter: str = "pocket"):
     cop, thief = (0, 0), (3, 3)
     walls: set = set()
-    pocketer = AdaptivePocketer()
+    pocketer = AdaptivePocketer() if hunter == "pocket" else LineHunter()
     escape = LineEscape() if aware else None
     cache: dict = {}
     for step in range(1, 36):
@@ -167,8 +206,9 @@ def run(aware: bool):
 
 
 def main() -> None:
-    for label, aware in (("cut-BLIND thief (old scoring)", False), ("sealability-aware", True)):
-        print(f"{label:<30} vs adaptive pocketer -> {run(aware)}")
+    for hunter in ("pocket", "line-hunt"):
+        for label, aware in (("cut-BLIND thief (old scoring)", False), ("sealability-aware", True)):
+            print(f"{label:<30} vs {hunter:<9} cop -> {run(aware, hunter)}")
 
 
 if __name__ == "__main__":

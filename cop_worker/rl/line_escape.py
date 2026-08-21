@@ -10,11 +10,13 @@ an opponent. Mobility bias is what dodges both the sweep and the corner
 deaths that killed minimax.
 
 So: when a completable wall line is forming (>= 2 collinear walls within
-the cop's remaining budget), the thief switches to the exact-table evader;
-with no line threat it plays byte-identical minimax (proven against every
-chaser). Known trade-off, accepted: a stall-squeeze-style cop (scattered
-adjacent walls) can also trip the trigger, and evader mode is wall-myopic —
-but our minimax thief already loses to such cops today, so the floor holds.
+the cop's remaining budget) OR the thief's escape cut is narrow (pocket
+threat, operator-found 2026-08-21), the thief switches to the exact-table
+evader with wall-aware tie-breaks: cop-reply-correct survival, wall-safe
+(continuations left after the cop's best adjacent placement), sealability
+(min-cut to open space), mobility, distance. Verified in pocketer_lab
+(adaptive pocketing AND line-hunt: survival), line_sweep_lab and
+corridor_lab; with no threat it plays byte-identical minimax.
 """
 
 from __future__ import annotations
@@ -108,13 +110,40 @@ class LineEscape:
             qi = idx[q]
             surv = 1 if all(c2 != qi and layers[s2][c2][qi] for c2 in cop_replies) else 0
             dist = abs(q[0] - cop[0]) + abs(q[1] - cop[1])
-            # Sealability before mobility (widest escape cut wins), and cop
-            # DISTANCE before mobility too — never loiter in reply range while
-            # a pocketer is placing walls (observed adjacency death).
+            # Order after survival: WALL-SAFE — continuations left after the
+            # cop's best adjacent wall (a cut-1 cell dies to one placement:
+            # the operator's corner-seal finish); then sealability; mobility;
+            # distance last. Two richer terms were tried here and measurably
+            # LOST games — a partition-crossing/door-dance score (thrashes
+            # against door-closing line hunters) and a safe-area BFS (breaks
+            # the sweep/pocket dances). Do not reintroduce either without
+            # rerunning pocketer_lab + line_sweep_lab + corridor_lab.
+            wallsafe = self._wall_safe(q, cop_t, walls, layers, idx, s2, cop_barriers_left)
             seal = min(sealability(q, cop_t, walls, self.n), 4)
-            options.append((surv, seal, min(dist, 3), self._mobility(q, walls), name))
+            options.append((surv, wallsafe, seal, self._mobility(q, walls), min(dist, 3), name))
         if not options:
             return None
         options.sort(reverse=True)
-        best = options[0][4]
+        best = options[0][5]
         return best if best != planned else None
+
+    def _wall_safe(self, q, cop_t, walls, layers, idx, s2, budget) -> int:
+        """Surviving continuations from ``q`` after the cop's WORST adjacent
+        wall placement (one-ply wall lookahead, capped at 3). The grind
+        endgame kills by walling the thief's only continuation; a candidate
+        whose escape routes a single placement can erase scores 0 here."""
+        conts = [
+            m
+            for dx, dy in (*ORTHO, (0, 0))
+            if (m := (q[0] + dx, q[1] + dy)) in idx
+            and m != cop_t
+            and layers[s2][idx[cop_t]][idx[m]]
+        ]
+        if int(budget) <= 0:
+            return min(len(conts), 3)
+        worst = len(conts)
+        for dx, dy in ORTHO:
+            p = (cop_t[0] + dx, cop_t[1] + dy)
+            if p in idx and p != q:
+                worst = min(worst, sum(1 for m in conts if m != p))
+        return min(worst, 3)

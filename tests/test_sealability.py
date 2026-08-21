@@ -74,3 +74,25 @@ def test_stay_in_reply_range_is_rejected():
     walls = [(5, 4), (3, 4), (1, 4), (0, 4)]
     move = esc.override((4, 5), (4, 4), walls, 7, 20, "STAY", LEGAL)
     assert move is not None and move != "STAY"
+
+
+def test_wall_safe_counts_the_cops_best_placement():
+    # mocked table: q=(3,3) has exactly two surviving continuations,
+    # (3,2) and (3,3)-stay; the cop at (2,2) can wall (3,2) -> worst = 1
+    esc = LineEscape()
+    cells = [(3, 3), (3, 2), (3, 4), (2, 3), (4, 3), (2, 2), (1, 2), (2, 1), (3, 1)]
+    idx = {c: i for i, c in enumerate(cells)}
+    surviving = {(3, 3), (3, 2)}
+    row = [c in surviving for c in cells]
+    layers = {5: [row] * len(cells)}
+    assert esc._wall_safe((3, 3), (2, 2), frozenset(), layers, idx, 5, budget=8) == 1
+
+
+def test_wall_safe_without_budget_keeps_all_continuations():
+    esc = LineEscape()
+    cells = [(3, 3), (3, 2), (3, 4), (2, 3), (4, 3), (2, 2)]
+    idx = {c: i for i, c in enumerate(cells)}
+    surviving = {(3, 3), (3, 2), (3, 4)}
+    row = [c in surviving for c in cells]
+    layers = {5: [row] * len(cells)}
+    assert esc._wall_safe((3, 3), (2, 2), frozenset(), layers, idx, 5, budget=0) == 3
