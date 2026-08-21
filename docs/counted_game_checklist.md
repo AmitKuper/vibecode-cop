@@ -36,6 +36,16 @@ opponent whose group_id sorts AFTER `vibecode`, the hardcoded split is inverted 
 
 ## BEFORE (T-minus, in order)
 
+0. **Series label agreed IN WRITING (uid disambiguation).** `game_uid` derives from
+   terms + the team pair — identical for every series between the same teams unless a
+   label is folded in (kit §5: `seed_tail = game_id` including the label; our flag
+   `--series-label`, or `[protocol] series_label` in the profile). Friendlies and the
+   counted series otherwise share ONE uid (observed: both vm__fabi friendlies +
+   would-be counted = `6268e7d5…`). Agree either "label <name>" (both sides derive and
+   cross-check the labeled uid in chat BEFORE T) or explicitly "unlabeled". A
+   one-sided label = SPAR-N10 uid refusal at the handshake (observed live 2026-08-21
+   21:55: our labeled counted driver correctly refused their unlabeled greeting —
+   window lost, nothing burned).
 1. **Written counted authorization (rule 52).** Both operators agree IN WRITING, before T, that
    this series is counted and is the single counted meeting. Exchange the declaration + our
    confirmation quoting it back with the exact `T = <date>, <time> Israel time`. Keep the
