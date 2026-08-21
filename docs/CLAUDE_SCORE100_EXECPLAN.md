@@ -185,3 +185,31 @@ cli --series-label → both play paths → role worker → handshake →
 artifacts_io. 5 pins in tests/test_series_label_uid.py; suite 1966/4;
 size-gate allowances bumped with justification (subgame_setup 170,
 series_split 155); peersim rehearsal 6/6 on the unlabeled default.
+
+## 2026-08-21 (night) — anti-squeeze thief (yanell11 postmortem response)
+
+Friendly vs yanell11: LOST all 4 played windows (60-20; sg1-2 burned on
+their stale-driver desync, report withheld). Postmortem from sealed
+records: NO bugs on our side (decoder exact 120/120 vs audit-true
+positions; live chase correct; claims-convention consistent) — outplayed
+by a deterministic scripted line-partition cop (guard col, wall line with
+one self-door, cross, pocket; identical move-for-move g03/g05) and a
+scripted evader thief.
+
+Counter shipped: confined-mode thief (`cop_worker/rl/line_escape.py` +
+thief-branch hook in search_policy). Trigger: any interior row/col line
+with >= 2 walls completable within the cop's remaining budget. Mode: exact
+current-walls survival table + MOBILITY tie-break (the SMNGRP05-evader
+style) — measured the only survivor of the sweep (minimax d4/d6/d8 all die
+@26; pessimistic-completion tables are blind to future pocket walls; the
+crossing-tempo override oscillates). Lab `scripts/line_sweep_lab.py`:
+sweep-cop clone (line phase from their records + minimax hunt = stronger
+than their actual cop) — escape OFF captured @26 (reproduces the loss),
+escape ON SURVIVES (mode active 24 turns). 8 pins in test_line_escape.py;
+suite 1974/4; peersim rehearsal 6/6 (trigger silent vs normal cops —
+byte-identical minimax without a line threat). Known trade-off documented:
+a stall-squeeze-style cop can trip the trigger and evader mode is
+wall-myopic — but the minimax thief already loses to such cops, floor
+holds. Open offensive half: corridor-planner cop (their strategy, ours to
+industrialize) — required before any counted-game consideration vs
+yanell11.

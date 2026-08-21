@@ -66,6 +66,11 @@ ALLOWED: dict[str, tuple[int, str]] = {
         "One series lifecycle over role workers (grew by the kit §5 series-label fold).",
     ),
     "scripts/ref3_match/role_worker.py": (155, "Worker entry point: stdio protocol loop."),
+    "cop_worker/rl/search_policy.py": (
+        160,
+        "One role-policy decision sequence composing the sighted fix, the "
+        "stall-squeeze (cop), and the confined-mode escape (thief).",
+    ),
     "cop_worker/gui/hub_page.py": (
         200,
         "A single HTML/JS page template in a string: its line count is markup, "

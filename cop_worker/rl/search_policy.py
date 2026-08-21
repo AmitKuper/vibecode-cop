@@ -12,6 +12,7 @@ hint-independent.
 from __future__ import annotations
 
 from cop_worker.observation import BeliefState, LocalObservation
+from cop_worker.rl.line_escape import LineEscape
 from cop_worker.rl.opponent_fix import OpponentFix
 from cop_worker.rl.pursuit_search import best_cop_action, best_thief_action
 from cop_worker.rl.stall_squeeze import StallSqueeze
@@ -49,12 +50,15 @@ class SearchRolePolicy:
         # book-scent pairings; chebyshev pairings resolve byte-identically.
         self._fix = OpponentFix(decode_book_scent)
         self._squeeze = StallSqueeze() if self.role == "cop" else None
+        self._escape = LineEscape() if self.role == "thief" else None
 
     def reset(self) -> None:
         self._fix.reset()
         self._belief_engine = None
         if self._squeeze is not None:
             self._squeeze.reset()
+        if self._escape is not None:
+            self._escape.reset()
         if self.fallback is not None:
             self.fallback.reset()
 
@@ -127,6 +131,7 @@ class SearchRolePolicy:
             )
         else:
             # The cop's spent walls are visible on the board; the rest can still come.
+            cop_left = max(0, self.barriers_max - len(barriers))
             action = best_thief_action(
                 opp,
                 own,
@@ -134,8 +139,15 @@ class SearchRolePolicy:
                 steps_left=steps_left,
                 depth=self.depth,
                 n=observation.grid_size,
-                cop_barriers_left=max(0, self.barriers_max - len(barriers)),
+                cop_barriers_left=cop_left,
             )
+            # Anti-partition override: if a wall line is forming and minimax's
+            # move is doomed once it completes, cross while the gap exists.
+            escape = self._escape.override(
+                own, opp, barriers, cop_left, steps_left, action, legal_actions
+            )
+            if escape is not None:
+                action = escape
         if action in legal_actions:
             return action
         if self.fallback is not None:

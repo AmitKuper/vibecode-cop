@@ -1,0 +1,92 @@
+"""Confined-mode thief: exact survival play against partition-building cops.
+
+Measured 2026-08-21 (yanell11 friendly, records g03/g05): a cop that builds
+a wall LINE with one door, crosses, and pockets the thief captures our
+depth-4 minimax thief at ~step 25 — and depth 6/8 die identically (the
+pocket refutation lies beyond any practical horizon). What DOES survive it,
+measured in scripts/line_sweep_lab.py, is exact current-walls survival play
+with a mobility tie-break — the same class of evader that drew us 47-47 as
+an opponent. Mobility bias is what dodges both the sweep and the corner
+deaths that killed minimax.
+
+So: when a completable wall line is forming (>= 2 collinear walls within
+the cop's remaining budget), the thief switches to the exact-table evader;
+with no line threat it plays byte-identical minimax (proven against every
+chaser). Known trade-off, accepted: a stall-squeeze-style cop (scattered
+adjacent walls) can also trip the trigger, and evader mode is wall-myopic —
+but our minimax thief already loses to such cops today, so the floor holds.
+"""
+
+from __future__ import annotations
+
+from cop_worker.rl.stall_squeeze import survival_layers
+
+ORTHO = ((-1, 0), (1, 0), (0, -1), (0, 1))
+_NAMES = {(-1, 0): "W", (1, 0): "E", (0, -1): "N", (0, 1): "S", (0, 0): "STAY"}
+MIN_LINE_WALLS = 2
+
+
+def _threat_line(walls: frozenset, cop_barriers_left: int, n: int) -> bool:
+    """True when any interior row/col line is >= 2 built and completable."""
+    for axis in (0, 1):
+        for k in range(1, n - 1):  # an edge line partitions nothing
+            cells = {(k, j) if axis == 0 else (j, k) for j in range(n)}
+            built = len(cells & walls)
+            if built >= MIN_LINE_WALLS and len(cells - walls) <= cop_barriers_left:
+                return True
+    return False
+
+
+class LineEscape:
+    """Per-sub-game confined-mode switch for the thief."""
+
+    def __init__(self, n: int = 7) -> None:
+        self.n = n
+        self._cache: dict[frozenset, tuple] = {}
+
+    def reset(self) -> None:
+        self._cache.clear()
+
+    def _table(self, walls: frozenset):
+        if walls not in self._cache:
+            if len(self._cache) >= 8:  # bound memory across sub-games
+                self._cache.clear()
+            self._cache[walls] = survival_layers(walls, self.n)
+        return self._cache[walls]
+
+    def _mobility(self, q, walls) -> int:
+        return sum(
+            1
+            for dx, dy in ORTHO
+            if 0 <= q[0] + dx < self.n
+            and 0 <= q[1] + dy < self.n
+            and (q[0] + dx, q[1] + dy) not in walls
+        )
+
+    def override(
+        self, thief, cop, barriers, cop_barriers_left, steps_left, planned: str, legal
+    ) -> str | None:
+        """Exact-evader move under a line threat; None keeps minimax's move."""
+        walls = frozenset(map(tuple, barriers))
+        if not _threat_line(walls, int(cop_barriers_left), self.n):
+            return None
+        layers, idx = self._table(walls)
+        s = max(0, min(steps_left - 1, 35))
+        cop_t, thief_t = tuple(cop), tuple(thief)
+        if cop_t not in idx or thief_t not in idx:
+            return None
+        options = []
+        for (dx, dy), name in _NAMES.items():
+            if name not in legal:
+                continue
+            q = (thief[0] + dx, thief[1] + dy)
+            if not (0 <= q[0] < self.n and 0 <= q[1] < self.n) or q in walls or q == cop_t:
+                continue
+            surv = 1 if layers[s][idx[cop_t]][idx[q]] else 0
+            dist = abs(q[0] - cop[0]) + abs(q[1] - cop[1])
+            options.append((surv, self._mobility(q, walls), min(dist, 3), name))
+        if not options:
+            return None
+        options.sort(reverse=True)
+        best = options[0][3]
+        return best if best != planned else None
