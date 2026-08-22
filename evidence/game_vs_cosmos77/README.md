@@ -17,6 +17,11 @@
   All four were frozen/amended in the written ceremony (three declared amendments on our
   cop, each mailed before doors; their mail's first cop-sha cite was hand-mangled and
   corrected in writing against the wire-sealed value).
+- **Rule 35 CLOSED (2026-08-23 00:39):** cosmos77's league report id `1a02b655d0cba1cb`;
+  their sealed result copy (file sha `bdfb26011d6ea8c7e46ef03597175cac038d241c3907399f1d5d239170d59cda`,
+  from their cross-check mail id `1a02b6a005179d50`) reconciles byte-level with ours —
+  identical mutual sha, uid, rows, and aggregate; their schema additionally declares
+  `league.counted: true`.
 - **This repo played police** (even windows g02/g04/g06) — those gamelets' config+log+record
   are here; the thief repo holds g01/g03/g05.
 
