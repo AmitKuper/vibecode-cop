@@ -51,18 +51,22 @@ class SearchRolePolicy:
         # invert multiplicative_book_v1 frames so the search stays sighted in
         # book-scent pairings; chebyshev pairings resolve byte-identically.
         self._fix = OpponentFix(decode_book_scent)
-        # Opt-in cop plan selection, COPTHIEF_COP_CHAIN = corridor (default)
-        # | hunt | plain (squeeze+minimax only, no committed plan).
-        # COPTHIEF_HUNT_MODE=1 remains an alias for hunt. Measured
-        # 2026-08-22: hunt captures the exact-evader class the corridor
-        # cannot (confined @31) but gives up the corridor's mirror-evade
-        # capture (@30, the SMNGRP05 draw class) — the plans do NOT
-        # compose. The counted default stays the corridor chain.
+        # Cop plan selection, COPTHIEF_COP_CHAIN = plain (default: squeeze +
+        # graded minimax, no committed plan) | corridor | hunt.
+        # COPTHIEF_HUNT_MODE=1 remains an alias for hunt. Default re-measured
+        # 2026-08-23 after the squeeze self-cutoff guard and the graded
+        # search leaves landed: plain now dominates or ties the corridor on
+        # every corridor_lab row (mobility @10 vs @30, mirror2 @15 vs @29,
+        # rest equal) and outperformed it live against a real evader peer
+        # (corridor lost the chase outright in the killed run; plain drove
+        # the same thief to adjacent range). hunt stays the per-pairing
+        # counter for the confined class (@31), which no other chain takes;
+        # the plans do NOT compose.
         import os
 
         chain = os.environ.get("COPTHIEF_COP_CHAIN", "").strip().lower()
         if chain not in ("corridor", "hunt", "plain"):
-            chain = "hunt" if os.environ.get("COPTHIEF_HUNT_MODE") == "1" else "corridor"
+            chain = "hunt" if os.environ.get("COPTHIEF_HUNT_MODE") == "1" else "plain"
         self._cop_chain = chain
         self._squeeze = StallSqueeze() if self.role == "cop" else None
         self._corridor = CorridorPlan() if self.role == "cop" else None

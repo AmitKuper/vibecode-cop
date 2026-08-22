@@ -36,9 +36,18 @@ def _frame(x, y):
     return grid
 
 
-def test_default_chain_is_corridor(monkeypatch):
+def test_default_chain_is_plain(monkeypatch):
+    # Re-measured 2026-08-23 (post squeeze guard + graded leaves): plain
+    # dominates or ties the corridor on every corridor_lab row and beat it
+    # live vs a real evader peer. corridor/hunt stay selectable per pairing.
     monkeypatch.delenv("COPTHIEF_HUNT_MODE", raising=False)
     monkeypatch.delenv("COPTHIEF_COP_CHAIN", raising=False)
+    assert SearchRolePolicy("cop")._cop_chain == "plain"
+
+
+def test_corridor_chain_selectable(monkeypatch):
+    monkeypatch.delenv("COPTHIEF_HUNT_MODE", raising=False)
+    monkeypatch.setenv("COPTHIEF_COP_CHAIN", "corridor")
     assert SearchRolePolicy("cop")._cop_chain == "corridor"
 
 

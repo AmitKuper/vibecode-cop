@@ -46,9 +46,10 @@ def _resolve_args(args) -> None:
         args.scent_model = rt.get("protocol", {}).get("scent_model", "multiplicative_book_v1")
     if args.move_policy is None:
         args.move_policy = rt.get("protocol", {}).get("move_policy", "rl")
-    # Per-pairing cop plan selection ([protocol] cop_chain = corridor|hunt|
-    # plain): exported as env so the spawned role worker's SearchRolePolicy
-    # reads it at construction. Unset = the corridor default.
+    # Per-pairing cop plan selection ([protocol] cop_chain = plain|corridor|
+    # hunt): exported as env so the spawned role worker's SearchRolePolicy
+    # reads it at construction. Unset = the plain default (re-measured
+    # 2026-08-23: dominates or ties corridor on every corridor_lab row).
     chain = str(rt.get("protocol", {}).get("cop_chain", "")).strip().lower()
     if chain in ("corridor", "hunt", "plain"):
         import os
