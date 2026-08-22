@@ -63,9 +63,9 @@ def _rule47(g: dict) -> None:
 
 
 def _model_reply(g: dict) -> None:
-    """The engine's half-move — the FULL champion stack, not bare minimax:
-    thief = minimax + confined-mode escape; cop = corridor plan >
-    stall-squeeze > minimax (the wire player's exact priority chain)."""
+    """The engine's half-move, with per-layer switches (operator test bench):
+    thief = minimax + optional confined-mode escape; cop = selectable plan
+    (hunt/corridor/none) > optional stall-squeeze > minimax."""
     from cop_worker.gui.play_record import note
     from cop_worker.rl.action_space import COP_ACTIONS, THIEF_ACTIONS
 
@@ -81,15 +81,16 @@ def _model_reply(g: dict) -> None:
             cop_barriers_left=g["barriers_left"],
             time_budget_s=g["budget"],
         )
-        if "_escape" not in g:
-            from cop_worker.rl.line_escape import LineEscape
+        if g.get("escape_on", True):
+            if "_escape" not in g:
+                from cop_worker.rl.line_escape import LineEscape
 
-            g["_escape"] = LineEscape()
-        override = g["_escape"].override(
-            tuple(g["thief"]), tuple(g["cop"]), list(barriers),
-            g["barriers_left"], steps_left, action, list(THIEF_ACTIONS),
-        )  # fmt: skip
-        action = override or action
+                g["_escape"] = LineEscape()
+            override = g["_escape"].override(
+                tuple(g["thief"]), tuple(g["cop"]), list(barriers),
+                g["barriers_left"], steps_left, action, list(THIEF_ACTIONS),
+            )  # fmt: skip
+            action = override or action
         new = _move(g["thief"], action, barriers)
         if new:
             g["thief"] = new
@@ -97,20 +98,39 @@ def _model_reply(g: dict) -> None:
         if g["thief"] == g["cop"]:
             g["over"], g["outcome"] = True, "capture"
     else:
-        if "_hunt" not in g:
-            from cop_worker.rl.committed_hunt import CommittedHunt
+        if "_squeeze" not in g:
             from cop_worker.rl.stall_squeeze import StallSqueeze
 
-            # GUI fields the COMMITTED-HUNT cop (operator playbook): it is
-            # the only cop that captures our own thief class (@31) — the
-            # operator, playing thief, is its acceptance test. The counted
-            # wire chain keeps the corridor default (see search_policy).
-            g["_hunt"], g["_squeeze"] = CommittedHunt(), StallSqueeze()
-        action = g["_hunt"].override(
-            tuple(g["cop"]), tuple(g["thief"]), list(barriers),
-            g["barriers_left"], steps_left, list(COP_ACTIONS),
-        )  # fmt: skip
-        if action is None:
+            # Selectable model cop (operator request): "hunt" (default —
+            # committed-hunt, the only cop that captures our own thief
+            # class), "corridor" (the counted-wire default chain), or
+            # "plain" (squeeze + minimax only). The plan layer differs;
+            # squeeze + minimax are common to all three.
+            g["_squeeze"] = StallSqueeze()
+            chain = g.get("cop_chain", "hunt")
+            if chain == "hunt":
+                from cop_worker.rl.committed_hunt import CommittedHunt
+
+                g["_plan"] = CommittedHunt()
+            elif chain == "corridor":
+                from cop_worker.rl.corridor_plan import CorridorPlan
+
+                g["_plan"] = CorridorPlan()
+            else:
+                g["_plan"] = None
+        action = None
+        if g["_plan"] is not None:
+            if g.get("cop_chain", "hunt") == "corridor":
+                action = g["_plan"].override(
+                    tuple(g["cop"]), tuple(g["thief"]), list(barriers),
+                    g["barriers_left"], g["step"], list(COP_ACTIONS),
+                )  # fmt: skip
+            else:
+                action = g["_plan"].override(
+                    tuple(g["cop"]), tuple(g["thief"]), list(barriers),
+                    g["barriers_left"], steps_left, list(COP_ACTIONS),
+                )  # fmt: skip
+        if action is None and g.get("squeeze_on", True):
             action = g["_squeeze"].override(
                 tuple(g["cop"]), tuple(g["thief"]), list(barriers),
                 g["barriers_left"], steps_left, list(COP_ACTIONS),

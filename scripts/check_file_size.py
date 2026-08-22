@@ -67,7 +67,16 @@ ALLOWED: dict[str, tuple[int, str]] = {
         "One series lifecycle over role workers (grew by the kit §5 series-label fold).",
     ),
     "scripts/ref3_match/role_worker.py": (155, "Worker entry point: stdio protocol loop."),
-    "cop_worker/rl/search_policy.py": (200, "One decision sequence; override priority order."),
+    "cop_worker/rl/search_policy.py": (
+        210,
+        "One decision sequence; override priority order incl. the selectable "
+        "cop chain (corridor/hunt/plain).",
+    ),
+    "cop_worker/gui/play_engine.py": (
+        175,
+        "One game-state engine for human play: physics + the model half-move "
+        "with the operator's per-layer test-bench switches.",
+    ),
     "cop_worker/rl/committed_hunt.py": (
         170,
         "One committed plan: trigger gates, line build, and hunt phase are a "

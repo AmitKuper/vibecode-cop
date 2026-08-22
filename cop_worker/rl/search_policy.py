@@ -51,14 +51,19 @@ class SearchRolePolicy:
         # invert multiplicative_book_v1 frames so the search stays sighted in
         # book-scent pairings; chebyshev pairings resolve byte-identically.
         self._fix = OpponentFix(decode_book_scent)
-        # Opt-in cop plan swap (COPTHIEF_HUNT_MODE=1): the committed-hunt
-        # chain replaces the corridor. Measured 2026-08-22: hunt captures the
-        # exact-evader class the corridor cannot (confined @31) but gives up
-        # the corridor's mirror-evade capture (@30, the SMNGRP05 draw class)
-        # — the two plans do NOT compose. Default stays the corridor chain.
+        # Opt-in cop plan selection, COPTHIEF_COP_CHAIN = corridor (default)
+        # | hunt | plain (squeeze+minimax only, no committed plan).
+        # COPTHIEF_HUNT_MODE=1 remains an alias for hunt. Measured
+        # 2026-08-22: hunt captures the exact-evader class the corridor
+        # cannot (confined @31) but gives up the corridor's mirror-evade
+        # capture (@30, the SMNGRP05 draw class) — the plans do NOT
+        # compose. The counted default stays the corridor chain.
         import os
 
-        self._hunt_mode = os.environ.get("COPTHIEF_HUNT_MODE") == "1"
+        chain = os.environ.get("COPTHIEF_COP_CHAIN", "").strip().lower()
+        if chain not in ("corridor", "hunt", "plain"):
+            chain = "hunt" if os.environ.get("COPTHIEF_HUNT_MODE") == "1" else "corridor"
+        self._cop_chain = chain
         self._squeeze = StallSqueeze() if self.role == "cop" else None
         self._corridor = CorridorPlan() if self.role == "cop" else None
         self._hunt = CommittedHunt() if self.role == "cop" else None
@@ -127,7 +132,8 @@ class SearchRolePolicy:
             # winning strategy is a wall line + door + strip hunt, not more
             # pursuit. While the plan builds, it drives; once the line stands
             # it goes silent and minimax + stall-squeeze hunt the strip.
-            if self._hunt_mode:
+            plan = None
+            if self._cop_chain == "hunt":
                 plan = self._hunt.override(
                     own,
                     opp,
@@ -136,7 +142,7 @@ class SearchRolePolicy:
                     steps_left,
                     legal_actions,
                 )
-            else:
+            elif self._cop_chain == "corridor":
                 plan = self._corridor.override(
                     own,
                     opp,
@@ -145,7 +151,7 @@ class SearchRolePolicy:
                     int(observation.step),
                     legal_actions,
                 )
-            if plan is not None:
+            if plan is not None:  # "plain" skips the plan layer entirely
                 return plan
             # Anti-evader override next: a stalled minimax provably never
             # captures (open-board pursuit is thief-win), so a squeezing wall

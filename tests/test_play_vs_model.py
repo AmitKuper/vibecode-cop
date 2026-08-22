@@ -66,6 +66,20 @@ def test_the_gui_cop_walls_an_evading_thief():
     assert g["barriers"] or g["outcome"] == "capture", "hunt cop neither walled nor captured"
 
 
+def test_cop_chain_and_layer_switches_are_selectable():
+    r = client.post(
+        "/api/play/new",
+        json={"role": "thief", "budget": 1.0, "cop_chain": "plain", "squeeze": False},
+    )
+    assert r.status_code == 200
+    g = r.json()
+    # a plain chaser must still work end-to-end
+    g = client.post("/api/play/move", json={"game": g["id"], "action": "N"}).json()
+    assert g["step"] >= 1 and not g["barriers"]
+    bad = client.post("/api/play/new", json={"role": "thief", "cop_chain": "nope"})
+    assert bad.status_code == 400
+
+
 def test_scent_fields_flow_during_play():
     g = client.post("/api/play/new", json={"role": "thief", "budget": 1.0}).json()
     g = client.post("/api/play/move", json={"game": g["id"], "action": "N"}).json()

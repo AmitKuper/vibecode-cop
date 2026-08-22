@@ -36,15 +36,36 @@ def _frame(x, y):
     return grid
 
 
-def test_hunt_mode_is_off_by_default(monkeypatch):
+def test_default_chain_is_corridor(monkeypatch):
     monkeypatch.delenv("COPTHIEF_HUNT_MODE", raising=False)
-    assert SearchRolePolicy("cop")._hunt_mode is False
+    monkeypatch.delenv("COPTHIEF_COP_CHAIN", raising=False)
+    assert SearchRolePolicy("cop")._cop_chain == "corridor"
 
 
-def test_hunt_mode_engages_behind_the_flag(monkeypatch):
+def test_hunt_mode_alias_still_selects_hunt(monkeypatch):
+    monkeypatch.delenv("COPTHIEF_COP_CHAIN", raising=False)
     monkeypatch.setenv("COPTHIEF_HUNT_MODE", "1")
+    assert SearchRolePolicy("cop")._cop_chain == "hunt"
+
+
+def test_plain_chain_skips_every_committed_plan(monkeypatch):
+    monkeypatch.setenv("COPTHIEF_COP_CHAIN", "plain")
     policy = SearchRolePolicy("cop", depth=2)
-    assert policy._hunt_mode is True
+    assert policy._cop_chain == "plain"
+    for step in range(1, 12):  # a stalled dance: no plan may ever commit
+        action = policy.select_action(
+            _obs(_frame(2, 0), own=(0, 0), step=step),
+            BeliefState.uniform(N, step=step),
+            COP_LEGAL,
+        )
+        assert action in COP_LEGAL
+    assert policy._hunt._line is None, "plain chain must never commit the hunt plan"
+
+
+def test_hunt_chain_engages_behind_the_flag(monkeypatch):
+    monkeypatch.setenv("COPTHIEF_COP_CHAIN", "hunt")
+    policy = SearchRolePolicy("cop", depth=2)
+    assert policy._cop_chain == "hunt"
     # a stalled dance at fixed distance: the hunt must eventually commit
     action = None
     for step in range(1, 12):

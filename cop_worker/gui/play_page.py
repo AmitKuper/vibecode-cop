@@ -31,6 +31,13 @@ legend{color:#9ab;font-size:0.85em}
   <fieldset><legend>engine budget</legend>
     <button id="b-fast">fast (2s/move)</button>
     <button id="b-prod" class="sel">production (10s/move)</button></fieldset>
+  <fieldset id="chain-box"><legend>model cop plan (when you play thief)</legend>
+    <button id="c-hunt" class="sel">HUNTER (cage walls)</button>
+    <button id="c-corridor">WARDEN (corridor)</button>
+    <button id="c-plain">CHASER (no plan)</button></fieldset>
+  <fieldset><legend>layer switches</legend>
+    <button id="t-squeeze" class="sel">stall-squeeze ON</button>
+    <button id="t-escape" class="sel">thief escape ON</button></fieldset>
   <button id="start" style="border-color:#00ff88;color:#00ff88">start game</button>
 </div>
 <div id="status">choose a role and start</div>
@@ -47,7 +54,7 @@ legend{color:#9ab;font-size:0.85em}
 <div class="note">scent shown for the model's side · thief moves first each step ·
 capture = same cell or barrier on the thief · survive 35 steps to win as thief</div>
 <script>
-let G=null,role='cop',budget=10.0,busy=false;
+let G=null,role='cop',budget=10.0,chain='hunt',squeeze=true,escape=true,busy=false;
 (function(){let h='';for(let i=0;i<49;i++)h+='<div class="cell"></div>';
   document.getElementById('board').innerHTML=h;})();
 function selpair(a,b,idA,idB,on){document.getElementById(idA).classList.toggle('sel',on);
@@ -56,13 +63,22 @@ document.getElementById('r-cop').onclick=()=>{role='cop';selpair(0,0,'r-cop','r-
 document.getElementById('r-thief').onclick=()=>{role='thief';selpair(0,0,'r-cop','r-thief',false);};
 document.getElementById('b-fast').onclick=()=>{budget=2.0;selpair(0,0,'b-fast','b-prod',true);};
 document.getElementById('b-prod').onclick=()=>{budget=10.0;selpair(0,0,'b-fast','b-prod',false);};
+function selchain(c){chain=c;for(const id of ['c-hunt','c-corridor','c-plain'])
+  document.getElementById(id).classList.toggle('sel',id==='c-'+c);}
+document.getElementById('c-hunt').onclick=()=>selchain('hunt');
+document.getElementById('c-corridor').onclick=()=>selchain('corridor');
+document.getElementById('c-plain').onclick=()=>selchain('plain');
+document.getElementById('t-squeeze').onclick=function(){squeeze=!squeeze;
+  this.classList.toggle('sel',squeeze);this.textContent='stall-squeeze '+(squeeze?'ON':'OFF');};
+document.getElementById('t-escape').onclick=function(){escape=!escape;
+  this.classList.toggle('sel',escape);this.textContent='thief escape '+(escape?'ON':'OFF');};
 async function api(path,body){
   const r=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
   return {ok:r.ok,data:await r.json()};
 }
 document.getElementById('start').onclick=async()=>{
   setStatus('model thinking…','');busy=true;
-  const {data}=await api('/api/play/new',{role,budget});
+  const {data}=await api('/api/play/new',{role,budget,cop_chain:chain,squeeze,thief_escape:escape});
   G=data;busy=false;render();
 };
 function heat(v){return `rgba(70,130,230,${(0.10+0.85*Math.min(1,v/0.8)).toFixed(2)})`;}

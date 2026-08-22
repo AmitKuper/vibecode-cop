@@ -47,9 +47,15 @@ async def new_game(body: dict) -> JSONResponse:
     role = body.get("role", "cop")
     if role not in ("cop", "thief"):
         return JSONResponse({"error": "role must be cop or thief"}, status_code=400)
+    cop_chain = body.get("cop_chain", "hunt")
+    if cop_chain not in ("hunt", "corridor", "plain"):
+        return JSONResponse({"error": "cop_chain must be hunt/corridor/plain"}, status_code=400)
     g = {
         "id": secrets.token_hex(8),
         "human_role": role,
+        "cop_chain": cop_chain,
+        "squeeze_on": bool(body.get("squeeze", True)),
+        "escape_on": bool(body.get("thief_escape", True)),
         "step": 1,
         "cop": [0, 0],
         "thief": [3, 3],
