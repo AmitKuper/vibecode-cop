@@ -42,7 +42,12 @@ def load_games(results_dir: str | Path, group_id: str = "vibecode") -> list[dict
                 "them": entry["total_score"][opponent],
                 "declared": declared.get(opponent, ""),
                 "won": entry["winner_group"] == group_id,
-                "tie": entry.get("series_tie", False),
+                # series_tie lives in the RESULT's final_result, not the ledger
+                # row; reading it from the entry silently counted every drawn
+                # series as a loss (caught on the 10-game form: lost 3/drawn 0
+                # instead of lost 1/drawn 2). A null winner_group backs it up.
+                "tie": bool(result["final_result"].get("series_tie"))
+                or entry["winner_group"] is None,
             }
         )
     return games

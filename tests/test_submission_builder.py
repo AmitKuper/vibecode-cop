@@ -10,35 +10,46 @@ from tools.pdf_parser.reader import PdfParserError
 from tools.submission_builder import compute_totals, load_games, unfilled_placeholders
 
 
-def _write_fixture_results(tmp_path):
+def _write_fixture_results(tmp_path, with_draw=False):
+    series = [
+        {
+            "game_id": "oppa-vs-vibecode",
+            "opponent": "oppa",
+            "winner_group": "oppa",
+            "total_score": {"vibecode": 35, "oppa": 75},
+        },
+        {
+            "game_id": "oppb-vs-vibecode",
+            "opponent": "oppb",
+            "winner_group": "vibecode",
+            "total_score": {"vibecode": 90, "oppb": 30},
+        },
+    ]
+    days = [("oppa", "08"), ("oppb", "10")]
+    if with_draw:
+        series.append(
+            {
+                "game_id": "oppc-vs-vibecode",
+                "opponent": "oppc",
+                "winner_group": None,
+                "total_score": {"vibecode": 47, "oppc": 47},
+            }
+        )
+        days.append(("oppc", "20"))
     (tmp_path / "counted_series.json").write_text(
         json.dumps(
-            {
-                "group_id": "vibecode",
-                "counted_games_played": 2,
-                "series": [
-                    {
-                        "game_id": "oppa-vs-vibecode",
-                        "opponent": "oppa",
-                        "winner_group": "oppa",
-                        "total_score": {"vibecode": 35, "oppa": 75},
-                    },
-                    {
-                        "game_id": "oppb-vs-vibecode",
-                        "opponent": "oppb",
-                        "winner_group": "vibecode",
-                        "total_score": {"vibecode": 90, "oppb": 30},
-                    },
-                ],
-            }
+            {"group_id": "vibecode", "counted_games_played": len(series), "series": series}
         ),
         encoding="utf-8",
     )
-    for name, day in (("oppa", "08"), ("oppb", "10")):
+    for name, day in days:
+        final = {"games_played_including_this": {name: 2, "vibecode": 1}}
+        if name == "oppc":
+            final["series_tie"] = True
         (tmp_path / f"result_{name}-vs-vibecode.json").write_text(
             json.dumps(
                 {
-                    "final_result": {"games_played_including_this": {name: 2, "vibecode": 1}},
+                    "final_result": final,
                     "sub_games": [
                         {
                             "started_at": f"2026-08-{day}T19:14:06+00:00",
@@ -70,6 +81,17 @@ def test_compute_totals(tmp_path):
     _write_fixture_results(tmp_path)
     totals = compute_totals(load_games(tmp_path))
     assert totals == {"legal_games": 2, "points": 125, "won": 1, "lost": 1, "drawn": 0}
+
+
+def test_a_drawn_series_counts_as_drawn_not_lost(tmp_path):
+    """series_tie lives in the RESULT's final_result, not the ledger row —
+    reading it from the entry silently filed every draw as a loss (caught on
+    the real 10-game form: lost 3 / drawn 0 instead of lost 1 / drawn 2)."""
+    _write_fixture_results(tmp_path, with_draw=True)
+    games = load_games(tmp_path)
+    assert games[2]["tie"] is True and games[2]["won"] is False
+    totals = compute_totals(games)
+    assert totals == {"legal_games": 3, "points": 172, "won": 1, "lost": 1, "drawn": 1}
 
 
 def test_missing_ledger_is_a_clear_error(tmp_path):
