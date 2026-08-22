@@ -1,4 +1,4 @@
-"""Line-sweep lab: our thief vs the partition cop that beat us (yanell11 g03/g05).
+"""Line-sweep lab: our thief vs the partition cop that beat us (friendly g03/g05).
 
 The cop clone builds the recorded wall line (guard col x=2, line col x=3,
 sweeping y=0..6 on STAY-place turns) and then hunts with our FULL minimax —

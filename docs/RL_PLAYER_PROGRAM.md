@@ -27,7 +27,7 @@ behavior cloning, sighted regime (chebyshev + uniform belief).
 
 Findings:
 
-1. **The learned thief beats the strategy that beat us live** (yanell11's
+1. **The learned thief beats the strategy that beat us live** (the sweep opponent's
    line-partition cop), from weights alone, in the sequential (wire-order)
    test where plain minimax at depth 4/6/8 all die at step 26.
 2. **Harness honesty note**: the joint-action thief arena turned out to be

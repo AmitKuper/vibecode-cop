@@ -1,4 +1,4 @@
-"""Pins the confined-mode thief (anti-partition, yanell11 postmortem 2026-08-21)."""
+"""Pins the confined-mode thief (anti-partition, sweep-friendly postmortem 2026-08-21)."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ def test_silent_with_scattered_non_line_walls():
 
 
 def test_threat_detected_on_forming_line():
-    # the recorded yanell11 sweep: walls marching down x=3
+    # the recorded sweep: walls marching down x=3
     assert _threat_line(frozenset({(3, 0), (3, 1)}), 12, 7) is True
 
 

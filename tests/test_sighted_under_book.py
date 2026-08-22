@@ -1,4 +1,4 @@
-"""Pins the sighted-under-book path (yanell11 pairing prep, 2026-08-21).
+"""Pins the sighted-under-book path (book-scent pairing prep, 2026-08-21).
 
 Under a locked ``multiplicative_book_v1`` the raw field saturates by ~step 10
 and the chebyshev tracker goes blind; with ``decode_book_scent`` the search

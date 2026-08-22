@@ -144,9 +144,11 @@ hypothesis (stall timing needs a GRU) rejected: the MLP ties the GRU.
 Recommendation recorded: keep search in production; experiment stands as
 report evidence. Full writeup: docs/RL_BARRIER_EXPERIMENT.md.
 
-## 2026-08-21 — yanell11 pairing: interop verified + sighted-under-book
+## 2026-08-21 — opp-W pairing: interop verified + sighted-under-book
 
-New opponent (yanell11, kit-dialect doc). Verified their spec line-by-line
+New opponent (internally "opp-W" — the name is withheld from the repo
+until a counted game with them concludes; kit-dialect doc). Verified
+their spec line-by-line
 vs our code: seal/tools/terms/scent-law/settlement/uid/tie-add/timing all
 byte-identical. Two reconciliation items sent in writing: (1) scent model —
 AGREED multiplicative_book_v1 934c220d, both greetings declare it; (2) turn
@@ -166,16 +168,16 @@ wrap_with_search → SearchRolePolicy(decode_book_scent). Both roles gain.
 Chebyshev pairings byte-identical (decode off default). Gates: 5 new pins
 in tests/test_sighted_under_book.py (incl. plateau-step action ==
 best_cop_action on the TRUE cell), suite 1961/4, peersim rehearsal
-6/6 (captures @7/6/8). Profile config/opponents/yanell11/ staged (Haifa
-terms; URLs + operator inbox to fill from chat).
+6/6 (captures @7/6/8). Opponent profile staged locally OUTSIDE the repo
+tree (Haifa terms; URLs + operator inbox to fill from chat).
 
-## 2026-08-21 (later) — yanell11: thief-first CONFIRMED; series-label folding shipped
+## 2026-08-21 (later) — opp-W: thief-first CONFIRMED; series-label folding shipped
 
-yanell11 verified our kit citations upstream and CONFIRMED
+opp-W verified our kit citations upstream and CONFIRMED
 `turn_order = thief_first` in writing (they flip their engine + re-gate
 their strategy; sparring-peer dry-run on their side; they ping with an
 endpoint + window in ~2 days). Scent stays locked book/934c220d. Ack sent
-(reply-yanell11-ack.md) incl. a sequencing tell for their dry-run.
+(ack reply, kept off-repo) incl. a sequencing tell for their dry-run.
 
 Shipped kit §5 series-label folding end to end: derive_game_id/uid take an
 optional label (labeled uid seeds on the LABELED game_id; unlabeled bytes
@@ -186,9 +188,9 @@ artifacts_io. 5 pins in tests/test_series_label_uid.py; suite 1966/4;
 size-gate allowances bumped with justification (subgame_setup 170,
 series_split 155); peersim rehearsal 6/6 on the unlabeled default.
 
-## 2026-08-21 (night) — anti-squeeze thief (yanell11 postmortem response)
+## 2026-08-21 (night) — anti-squeeze thief (opp-W postmortem response)
 
-Friendly vs yanell11: LOST all 4 played windows (60-20; sg1-2 burned on
+Friendly vs opp-W: LOST all 4 played windows (60-20; sg1-2 burned on
 their stale-driver desync, report withheld). Postmortem from sealed
 records: NO bugs on our side (decoder exact 120/120 vs audit-true
 positions; live chase correct; claims-convention consistent) — outplayed
@@ -212,7 +214,7 @@ a stall-squeeze-style cop can trip the trigger and evader mode is
 wall-myopic — but the minimax thief already loses to such cops, floor
 holds. Open offensive half: corridor-planner cop (their strategy, ours to
 industrialize) — required before any counted-game consideration vs
-yanell11.
+opp-W.
 
 ## 2026-08-22 — learned-player program Phase 1 (operator-directed)
 
@@ -233,7 +235,7 @@ first) defined. Production untouched.
 ## 2026-08-22 — corridor-planner cop (offensive half, operator-directed)
 
 `cop_worker/rl/corridor_plan.py` + priority wiring in search_policy (cop:
-corridor > stall-squeeze > minimax). yanell11's line-partition strategy
+corridor > stall-squeeze > minimax). opp-W's line-partition strategy
 industrialized: on a sustained CLOSE oscillation (6 turns, d 2..6, spread
 <=1, step>=8, budget>=9) the plan builds a wall line 2 cells off the thief
 on the widest axis from a guard lane, seals to ONE door, then goes silent —
@@ -247,7 +249,7 @@ defense). Trigger hardened twice: spread<=1 (never a slow close),
 max(recent)<=6 (a far thief is not evading — caught by the sighted-book
 test). 7 pins in test_corridor_plan.py; suite 1980/4; peersim 6/6
 (captures @5/@6 — trigger silent vs weak thieves). Rematch projection vs
-yanell11 same brains: WIN if their thief is wall-myopic (mirror2-class),
+opp-W same brains: WIN if their thief is wall-myopic (mirror2-class),
 DRAW if confined-quality; loss requires an unseen strategy.
 
 ## 2026-08-22 overnight — operator-driven strength program (pre-vm__fabi)

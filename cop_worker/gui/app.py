@@ -104,7 +104,7 @@ async def replay_steps(log: str) -> JSONResponse:
     if is_game_record(doc0):
         # observational record: recorded wire scent, no commit verification here
         overall, entries = record_timeline(doc0)
-        groups = doc0.get("groups") or []  # sorted pair, e.g. ["vibecode","yanell11"]
+        groups = doc0.get("groups") or []  # sorted pair, e.g. ["vibecode","wgroup"]
         our_role = "police" if doc0.get("our_role") == "police" else "thief"
         opp = next((g for g in groups if g != "vibecode"), "opponent")
         meta = {

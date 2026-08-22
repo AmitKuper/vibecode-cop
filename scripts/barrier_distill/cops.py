@@ -1,6 +1,6 @@
 """Cop opponent pool for THIEF distillation (sweep cops, hook cops, chasers).
 
-The sweep cop is the yanell11 strategy parameterized — line position,
+The sweep cop is a real opponent's strategy parameterized — line position,
 orientation, and sweep direction are randomized per episode so students
 learn partition-avoidance as a concept, not a memorized column.
 """

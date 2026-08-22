@@ -1,4 +1,4 @@
-"""Corridor plan: the cop's line-partition strategy (yanell11's, industrialized).
+"""Corridor plan: the cop's line-partition strategy (an opponent's, industrialized).
 
 Against an evader that plain pursuit provably cannot catch (open-board
 pursuit is thief-win), the winning plan demonstrated live on 2026-08-21 is:

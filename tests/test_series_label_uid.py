@@ -1,4 +1,4 @@
-"""Pins kit §5 series-label folding into game_id/game_uid (yanell11 counted prep).
+"""Pins kit §5 series-label folding into game_id/game_uid (wgroup counted prep).
 
 Two counted series between the same teams must not collapse to one uid: with
 a label, the uid seed switches from the sorted pair to the LABELED game_id.
@@ -31,23 +31,23 @@ def _spec_uid(terms: dict, seed_tail: str) -> str:
 
 def test_labeled_uid_matches_the_kit_section5_formula():
     # their spec: seed_tail = game_id (incl. label) when a label is used
-    assert derive_game_id("yanell11", "vibecode", "counted1") == "vibecode-vs-yanell11-counted1"
-    assert derive_game_uid(TERMS, "yanell11", "vibecode", "counted1") == _spec_uid(
-        TERMS, "vibecode-vs-yanell11-counted1"
+    assert derive_game_id("wgroup", "vibecode", "counted1") == "vibecode-vs-wgroup-counted1"
+    assert derive_game_uid(TERMS, "wgroup", "vibecode", "counted1") == _spec_uid(
+        TERMS, "vibecode-vs-wgroup-counted1"
     )
 
 
 def test_unlabeled_derivation_is_byte_identical_to_history():
     # seed_tail = "|".join(sorted pair) — the form every played series used
-    assert derive_game_id("yanell11", "vibecode") == "vibecode-vs-yanell11"
-    assert derive_game_uid(TERMS, "yanell11", "vibecode") == _spec_uid(TERMS, "vibecode|yanell11")
+    assert derive_game_id("wgroup", "vibecode") == "vibecode-vs-wgroup"
+    assert derive_game_uid(TERMS, "wgroup", "vibecode") == _spec_uid(TERMS, "vibecode|wgroup")
     assert derive_game_uid(TERMS, "a", "b", None) == derive_game_uid(TERMS, "b", "a")
 
 
 def test_label_changes_the_uid():
-    plain = derive_game_uid(TERMS, "yanell11", "vibecode")
-    labeled = derive_game_uid(TERMS, "yanell11", "vibecode", "counted1")
-    relabeled = derive_game_uid(TERMS, "yanell11", "vibecode", "counted2")
+    plain = derive_game_uid(TERMS, "wgroup", "vibecode")
+    labeled = derive_game_uid(TERMS, "wgroup", "vibecode", "counted1")
+    relabeled = derive_game_uid(TERMS, "wgroup", "vibecode", "counted2")
     assert len({plain, labeled, relabeled}) == 3
 
 
@@ -65,17 +65,17 @@ def _greeting(group: str, role: str, label=None, opponent=None):
 
 
 def test_handshake_agrees_when_both_fold_the_same_label():
-    ours = _greeting("vibecode", "police", "counted1", opponent="yanell11")
-    theirs = _greeting("yanell11", "thief", "counted1", opponent="vibecode")
+    ours = _greeting("vibecode", "police", "counted1", opponent="wgroup")
+    theirs = _greeting("wgroup", "thief", "counted1", opponent="vibecode")
     negotiated = verify_negotiation(ours, theirs, "counted1")
-    assert negotiated.game_id == "vibecode-vs-yanell11-counted1"
+    assert negotiated.game_id == "vibecode-vs-wgroup-counted1"
     assert negotiated.game_uid == theirs["game_uid"] == ours["game_uid"]
 
 
 def test_handshake_refuses_a_label_disagreement():
     # we fold the agreed label; a peer that forgot it declares the unlabeled uid
-    ours = _greeting("vibecode", "police", "counted1", opponent="yanell11")
-    theirs = _greeting("yanell11", "thief", None, opponent="vibecode")
+    ours = _greeting("vibecode", "police", "counted1", opponent="wgroup")
+    theirs = _greeting("wgroup", "thief", None, opponent="vibecode")
     try:
         verify_negotiation(ours, theirs, "counted1")
     except ReferenceV3Error as exc:

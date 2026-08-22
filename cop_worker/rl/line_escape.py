@@ -1,6 +1,6 @@
 """Confined-mode thief: exact survival play against partition-building cops.
 
-Measured 2026-08-21 (yanell11 friendly, records g03/g05): a cop that builds
+Measured 2026-08-21 (sweep-cop friendly, records g03/g05): a cop that builds
 a wall LINE with one door, crosses, and pockets the thief captures our
 depth-4 minimax thief at ~step 25 — depth 6/8 die identically (the pocket
 refutation lies beyond any practical horizon). What survives, measured in
