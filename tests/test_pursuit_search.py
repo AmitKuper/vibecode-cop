@@ -27,8 +27,7 @@ class TestTracker:
         assert exact_opponent_cell(grid, 7) == (5, 2)  # (row 2, col 5) -> (x, y)
 
     def test_fresh_deposit_convention_also_resolves(self) -> None:
-        # A 0.9-peak peer (the league's other reading of the locked doc).
-        grid = [[0.0] * 7 for _ in range(7)]
+        grid = [[0.0] * 7 for _ in range(7)]  # 0.9-peak peer (other reading)
         grid[3][3] = 0.9
         grid[3][4] = 0.6
         assert exact_opponent_cell(grid, 7) == (3, 3)
@@ -49,13 +48,7 @@ class TestCopSearch:
         assert best_cop_action((3, 2), (3, 3), [], 0, 20, depth=2) == "S"
 
     def test_places_onto_the_thief_when_stepping_is_blocked(self) -> None:
-        # Moving S is illegal (barrier is ON the thief? no — cop cannot step onto a
-        # barrier cell; here the thief cell is open but flanked so a move would be
-        # suboptimal — force it: surround the cop so S-move is illegal via a barrier
-        # BETWEEN? co-location cell can't hold a barrier. Instead: thief due south,
-        # cop out of moves that reach it this turn is impossible — so pin the direct
-        # rule-46 preference when the move engine must forfeit: cop immobile except
-        # placement.)
+        # flanked cop: both the S-move and the rule-46 place settle the capture
         action = best_cop_action((3, 2), (3, 3), [[2, 2], [4, 2], [3, 1]], 5, 20, depth=2)
         assert action in {"S", "PLACE_S"}  # either settles the capture this half-move
 
@@ -141,21 +134,15 @@ class TestServingAdapter:
 
 
 def test_survival_leaf_ungraded_by_default_thief_byte_identity():
-    """The thief's search must stay byte-identical: without grad, a clock-
-    exhausted leaf is exactly the flat SURVIVAL constant."""
+    # thief search byte-identity: without grad the leaf is the flat constant
     from cop_worker.rl.pursuit_search import SURVIVAL, _round_value
 
-    v, a = _round_value((0, 0), (3, 3), frozenset(), 14, 0, 3, 7,
-                        float("-inf"), float("inf"))
+    v, a = _round_value((0, 0), (3, 3), frozenset(), 14, 0, 3, 7, float("-inf"), float("inf"))
     assert v == SURVIVAL and a == "STAY"
 
 
 def test_graded_survival_keeps_the_cop_chasing_when_the_clock_wins():
-    """Counted g02 vs cosmos77 (2026-08-22), step 32: cop (0,2), thief (0,4)
-    fleeing down the west edge, BFS 2, three steps left. Every line is
-    survival, so the flat leaf tied all moves and the root took first-legal
-    N — away from the thief (observed in three live series). The graded leaf
-    must keep the chase: S."""
+    # live g02 s32: flat leaves tied all lines -> first-legal N; graded must chase S
     from cop_worker.rl.pursuit_search import best_cop_action
 
     walls = [(2, 2), (3, 4), (2, 4), (1, 3), (3, 2), (4, 1), (2, 0), (1, 2)]

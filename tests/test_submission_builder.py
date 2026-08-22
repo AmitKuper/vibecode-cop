@@ -10,59 +10,32 @@ from tools.pdf_parser.reader import PdfParserError
 from tools.submission_builder import compute_totals, load_games, unfilled_placeholders
 
 
+def _entry(op, winner, us, them):
+    gid, ts = f"{op}-vs-vibecode", {"vibecode": us, op: them}
+    return {"game_id": gid, "opponent": op, "winner_group": winner, "total_score": ts}
+
+
 def _write_fixture_results(tmp_path, with_draw=False):
-    series = [
-        {
-            "game_id": "oppa-vs-vibecode",
-            "opponent": "oppa",
-            "winner_group": "oppa",
-            "total_score": {"vibecode": 35, "oppa": 75},
-        },
-        {
-            "game_id": "oppb-vs-vibecode",
-            "opponent": "oppb",
-            "winner_group": "vibecode",
-            "total_score": {"vibecode": 90, "oppb": 30},
-        },
-    ]
+    series = [_entry("oppa", "oppa", 35, 75), _entry("oppb", "vibecode", 90, 30)]
     days = [("oppa", "08"), ("oppb", "10")]
     if with_draw:
-        series.append(
-            {
-                "game_id": "oppc-vs-vibecode",
-                "opponent": "oppc",
-                "winner_group": None,
-                "total_score": {"vibecode": 47, "oppc": 47},
-            }
-        )
+        series.append(_entry("oppc", None, 47, 47))
         days.append(("oppc", "20"))
     (tmp_path / "counted_series.json").write_text(
-        json.dumps(
-            {"group_id": "vibecode", "counted_games_played": len(series), "series": series}
-        ),
+        json.dumps({"group_id": "vibecode", "counted_games_played": len(series), "series": series}),
         encoding="utf-8",
     )
     for name, day in days:
         final = {"games_played_including_this": {name: 2, "vibecode": 1}}
         if name == "oppc":
             final["series_tie"] = True
+        p = f"2026-08-{day}T"
+        subs = [
+            {"started_at": p + "19:14:06+00:00", "ended_at": p + "19:15:00+00:00"},
+            {"started_at": p + "19:15:30+00:00", "ended_at": p + "19:16:13+00:00"},
+        ]
         (tmp_path / f"result_{name}-vs-vibecode.json").write_text(
-            json.dumps(
-                {
-                    "final_result": final,
-                    "sub_games": [
-                        {
-                            "started_at": f"2026-08-{day}T19:14:06+00:00",
-                            "ended_at": f"2026-08-{day}T19:15:00+00:00",
-                        },
-                        {
-                            "started_at": f"2026-08-{day}T19:15:30+00:00",
-                            "ended_at": f"2026-08-{day}T19:16:13+00:00",
-                        },
-                    ],
-                }
-            ),
-            encoding="utf-8",
+            json.dumps({"final_result": final, "sub_games": subs}), encoding="utf-8"
         )
 
 

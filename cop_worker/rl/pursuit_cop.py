@@ -20,8 +20,17 @@ def _cop_reply(
         if depth <= 1:
             return evaluate(c_pos, thief, walls, n, steps_left - 1)
         value, _ = _round_value(
-            c_pos, thief, walls, b_left, steps_left - 1, depth - 1, n, alpha, beta,
-            reorder=True, grad=grad,
+            c_pos,
+            thief,
+            walls,
+            b_left,
+            steps_left - 1,
+            depth - 1,
+            n,
+            alpha,
+            beta,
+            reorder=True,
+            grad=grad,
         )
         return value
 

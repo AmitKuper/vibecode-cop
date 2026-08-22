@@ -156,8 +156,7 @@ def test_steps_api_reconstructs_boards_with_both_agents_and_scent():
     results = root / "results"
     logs = sorted(p.name for p in results.glob("log_nis-yar1*_g*.json"))
     seeded = None
-    if not logs:  # fresh clone (CI): results/ is a runtime dir — seed the
-        # replay input from the TRACKED evidence copy of the same wire log.
+    if not logs:  # fresh clone (CI): seed from the TRACKED evidence copy
         tracked = sorted((root / "evidence" / "game_vs_nis-yar1").glob("log_nis-yar1*_g*.json"))
         assert tracked, "nis-yar1 logs are tracked under evidence/ in this repo"
         results.mkdir(parents=True, exist_ok=True)

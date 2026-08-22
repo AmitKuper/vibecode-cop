@@ -1,22 +1,17 @@
 """Stall-squeeze: barrier override for the cop against optimal evaders.
 
-Measured 2026-08-20 (post-SMNGRP05 47-47): without barriers a 7x7 pursuit is
-thief-win from EVERY start under optimal play (exact backward induction), so
-a cop that never walls can never beat an exact-evader thief — it stalls at
-distance 2 forever. This hook detects that stall and places the adjacent
-barrier that most shrinks the thief's exactly-solved surviving-move set; the
-evader's own table then turns against it (lab: capture in 10-21 steps vs
-re-solving evaders that survived all 35 against plain minimax).
+Measured 2026-08-20 (post-SMNGRP05 47-47): a 7x7 pursuit without barriers is
+thief-win from EVERY start under optimal play, so a wall-less cop stalls at
+distance 2 forever. The hook detects that stall and places the adjacent
+barrier that most shrinks the thief's exactly-solved surviving-move set
+(lab: capture in 10-21 steps vs evaders that survived all 35 without it).
 
 Fires only after ``STALL_TURNS`` consecutive stable-distance close-range
-turns — states where minimax provably oscillates without capture — so it
-cannot interfere with a converging chase. Never walls the cop's own last
-exit, never places without strict metric improvement, never places a wall
-that lengthens the cop's own BFS path to the thief (counted g02 vs an
-evader, 2026-08-22: the hook's walls formed a chain that left the thief's
-pocket reachable only via a 16-step detour with 12 steps on the clock —
-the squeeze sealed the cop OUT, not the thief in), and stops after
-``MAX_HOOK_WALLS`` placements.
+turns, so it cannot interfere with a converging chase. Never walls the
+cop's own last exit, never places without strict metric improvement, never
+lengthens the cop's own BFS path to the thief by more than +2 (live g02,
+2026-08-22: a hook-wall chain sealed the COP out — the thief's pocket became
+a 16-step detour), and stops after ``MAX_HOOK_WALLS`` placements.
 """
 
 from __future__ import annotations
@@ -25,9 +20,8 @@ from cop_worker.rl.action_space import PLACE_DIRS
 from cop_worker.rl.pursuit_eval import _bfs_distance
 
 ORTHO = ((-1, 0), (1, 0), (0, -1), (0, 1))
-# Delta -> action name in the PRODUCTION convention (action_space / domain
-# transition / minimax all agree PLACE_N == (0, -1)). Derived, not hand-typed:
-# a hand-typed copy once rotated every hook wall 90 degrees on the wire.
+# Delta -> PRODUCTION action name, derived (a hand-typed copy once rotated
+# every hook wall 90 degrees on the wire).
 _PLACE = {tuple(delta): name for name, delta in PLACE_DIRS.items()}
 STALL_TURNS = 4
 MAX_HOOK_WALLS = 8
@@ -113,8 +107,7 @@ class StallSqueeze:
         stable = self._last_d is not None and abs(d - self._last_d) <= 1 and d <= 4
         self._stall = self._stall + 1 if stable else 0
         self._last_d = d
-        # d <= 1 is capture-in-hand: minimax takes the thief this half-move
-        # (step onto it, or rule-46 place onto its cell) — never preempt that.
+        # d <= 1 is capture-in-hand (move or rule-46 place): never preempt it.
         if (
             d <= 1
             or self._stall < STALL_TURNS
@@ -135,9 +128,8 @@ class StallSqueeze:
                 or name not in legal_actions
             ):
                 continue
-            # Self-cutoff guard: the squeeze's between-cell wall legitimately
-            # re-routes the cop by +2 (around one cell); anything worse is
-            # sealing the cop OUT of the thief's region, not squeezing it.
+            # Self-cutoff guard: +2 is the between-cell wall's legitimate
+            # re-route; anything worse seals the cop OUT, not the thief in.
             if _bfs_distance(tuple(cop), tuple(thief), walls | {cell}, self.n) > base_bfs + 2:
                 continue
             exits = sum(
