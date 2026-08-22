@@ -114,6 +114,12 @@ async def _handshake(
         scent_model=scent_model,
         series_label=series_label or None,
     )
+    # Stage our greeting on the INBOUND session first: a reply-dialect peer
+    # (cosmos77) completes Step-0 from our negotiate ack alone, so any single
+    # overlap suffices — no push-cadence-vs-handshake-budget lottery.
+    if not hasattr(in_session, "staged_greetings"):
+        in_session.staged_greetings = {}
+    in_session.staged_greetings[sub_game] = greeting
     await out_session.send_negotiation(greeting)
     # Match the greeting by sub_game_number (not FIFO) — the peer's re-dials pile up.
     theirs = await _poll_agreement(

@@ -111,7 +111,15 @@ def register_reference_v3_tools(mcp, session: ReferenceV3Session) -> None:
 
     @mcp.tool
     def negotiate(message: dict) -> dict:
-        """Receive the opponent's signed game agreement."""
+        """Receive the opponent's signed game agreement.
+
+        Reply-greeting dialect (cosmos77 pairing, 2026-08-22): when our own
+        greeting for the requested sub_game is already staged, the ack
+        carries it as ``message`` — a strict superset of the bare ack, so
+        push-dialect peers are unaffected while reply-dialect peers complete
+        Step-0 from any single overlap instead of racing push cadences
+        against handshake budgets.
+        """
         if not _guard.allow():
             return _flooded("negotiate")
         _log.info(
@@ -119,7 +127,15 @@ def register_reference_v3_tools(mcp, session: ReferenceV3Session) -> None:
             list(message.keys()) if isinstance(message, dict) else type(message),
         )
         session.receive_negotiation(message)
-        return {"ok": True}
+        reply: dict = {"ok": True}
+        try:
+            sg = int(message.get("sub_game_number", 0)) if isinstance(message, dict) else 0
+            staged = getattr(session, "staged_greetings", {}).get(sg)
+            if staged is not None:
+                reply["message"] = staged
+        except (TypeError, ValueError):
+            pass
+        return reply
 
     @mcp.tool
     def receive_turn(message: dict) -> dict:

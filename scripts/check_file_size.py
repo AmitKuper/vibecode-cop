@@ -43,8 +43,9 @@ ALLOWED: dict[str, tuple[int, str]] = {
     ),
     "cop_worker/gui/hub_api.py": (195, "One read-only hub API surface incl. human-play history."),
     "cop_worker/protocol/reference_v3/session.py": (
-        165,
-        "One wire session; the four tools are one protocol unit.",
+        185,
+        "One wire session; the four tools are one protocol unit (incl. the "
+        "reply-greeting dialect).",
     ),
     "scripts/ref3_match/artifacts_io.py": (
         170,
@@ -59,8 +60,9 @@ ALLOWED: dict[str, tuple[int, str]] = {
         "The turn loop; call-site ordering is pinned by tests.",
     ),
     "scripts/ref3_match/subgame_setup.py": (
-        170,
-        "Handshake + step-0 seal, one atomic sequence (grew by the kit §5 series-label fold).",
+        180,
+        "Handshake + step-0 seal, one atomic sequence (kit §5 series-label "
+        "fold + reply-greeting staging).",
     ),
     "scripts/ref3_match/series_split.py": (
         155,
