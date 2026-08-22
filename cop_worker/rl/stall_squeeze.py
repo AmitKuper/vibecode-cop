@@ -11,13 +11,18 @@ re-solving evaders that survived all 35 against plain minimax).
 Fires only after ``STALL_TURNS`` consecutive stable-distance close-range
 turns — states where minimax provably oscillates without capture — so it
 cannot interfere with a converging chase. Never walls the cop's own last
-exit, never places without strict metric improvement, and stops after
+exit, never places without strict metric improvement, never places a wall
+that lengthens the cop's own BFS path to the thief (counted g02 vs an
+evader, 2026-08-22: the hook's walls formed a chain that left the thief's
+pocket reachable only via a 16-step detour with 12 steps on the clock —
+the squeeze sealed the cop OUT, not the thief in), and stops after
 ``MAX_HOOK_WALLS`` placements.
 """
 
 from __future__ import annotations
 
 from cop_worker.rl.action_space import PLACE_DIRS
+from cop_worker.rl.pursuit_eval import _bfs_distance
 
 ORTHO = ((-1, 0), (1, 0), (0, -1), (0, 1))
 # Delta -> action name in the PRODUCTION convention (action_space / domain
@@ -119,6 +124,7 @@ class StallSqueeze:
             return None
         walls = frozenset(map(tuple, barriers))
         base = self._surviving_moves(cop, thief, walls, steps_left)
+        base_bfs = _bfs_distance(tuple(cop), tuple(thief), walls, self.n)
         best_action, best_score = None, base
         for (dr, dc), name in _PLACE.items():
             cell = (cop[0] + dr, cop[1] + dc)
@@ -128,6 +134,11 @@ class StallSqueeze:
                 or cell == thief
                 or name not in legal_actions
             ):
+                continue
+            # Self-cutoff guard: the squeeze's between-cell wall legitimately
+            # re-routes the cop by +2 (around one cell); anything worse is
+            # sealing the cop OUT of the thief's region, not squeezing it.
+            if _bfs_distance(tuple(cop), tuple(thief), walls | {cell}, self.n) > base_bfs + 2:
                 continue
             exits = sum(
                 1

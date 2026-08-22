@@ -82,3 +82,22 @@ def test_never_walls_last_exit():
     assert _stall(sq, (0, 0), (0, 2), STALL_TURNS + 2, barriers=[(0, 1)]) is None
     act = sq.override((0, 0), (2, 0), [(0, 1)], 13, 20, LEGAL)
     assert act is None
+
+
+def test_never_walls_the_cop_out_of_the_thiefs_region():
+    """Counted g02 vs cosmos77 (2026-08-22), step 23: cop (5,0), thief (3,0),
+    hook walls already at (4,1),(3,2),(2,2),(1,3),(2,4),(3,4). PLACE_W onto
+    (4,0) shrank the thief's surviving-move set AND raised the cop's own BFS
+    path to the thief from 2 to 10+ — the cop then chased a 16-step detour
+    with 12 steps left. The self-cutoff guard must refuse that wall."""
+    walls = [(4, 1), (3, 2), (2, 2), (1, 3), (2, 4), (3, 4)]
+    sq = StallSqueeze()
+    out = _stall(sq, (5, 0), (3, 0), STALL_TURNS + 2, barriers=walls, b_left=8)
+    assert out != "PLACE_W"
+
+
+def test_guard_allows_walls_that_keep_the_path():
+    """The guard must not kill the hook: the SMNGRP05 mirror wall (3,3) keeps
+    bfs(cop, thief) at 2 and still fires."""
+    sq = StallSqueeze()
+    assert _stall(sq, (3, 2), (3, 4), STALL_TURNS + 1) == "PLACE_S"
