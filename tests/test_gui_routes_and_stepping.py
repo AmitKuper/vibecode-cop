@@ -152,10 +152,23 @@ def test_steps_api_reconstructs_boards_with_both_agents_and_scent():
     action+state_digest instead - their pieces legitimately cannot be placed,
     and the board shows only what the revealed data supports.)
     """
-    results = Path(__file__).resolve().parents[1] / "results"
+    root = Path(__file__).resolve().parents[1]
+    results = root / "results"
     logs = sorted(p.name for p in results.glob("log_nis-yar1*_g*.json"))
-    assert logs, "nis-yar1 logs are tracked in this repo"
-    d = live_client.get("/api/replay/steps", params={"log": logs[0]}).json()
+    seeded = None
+    if not logs:  # fresh clone (CI): results/ is a runtime dir — seed the
+        # replay input from the TRACKED evidence copy of the same wire log.
+        tracked = sorted((root / "evidence" / "game_vs_nis-yar1").glob("log_nis-yar1*_g*.json"))
+        assert tracked, "nis-yar1 logs are tracked under evidence/ in this repo"
+        results.mkdir(parents=True, exist_ok=True)
+        seeded = results / tracked[0].name
+        seeded.write_bytes(tracked[0].read_bytes())
+        logs = [seeded.name]
+    try:
+        d = live_client.get("/api/replay/steps", params={"log": logs[0]}).json()
+    finally:
+        if seeded is not None:
+            seeded.unlink()
     boards = [s["board"] for s in d["steps"] if s.get("board")]
     assert boards, "every step must carry a board"
     late = boards[-1]

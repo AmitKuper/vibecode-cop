@@ -157,6 +157,7 @@ def test_archived_history_records_are_listed_and_replayable():
     results/history/ must stay reachable in the viewer (and only records:
     the history prefix is not a directory-traversal door)."""
     hist = RESULTS / "history"
+    hist.mkdir(parents=True, exist_ok=True)  # fresh clone (CI) has no archive yet
     seeded = hist / "record_test-archived_g01_20260101-000000.json"
     seeded.write_text(json.dumps(_record()), encoding="utf-8")
     try:
