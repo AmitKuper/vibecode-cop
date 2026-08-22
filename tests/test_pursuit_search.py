@@ -138,3 +138,26 @@ class TestServingAdapter:
             self._obs((0, 0), blank, step=6), BeliefState.uniform(7, step=6), legal
         )
         assert first in {"S", "E"} and second in {"S", "E"}  # still hunting (3,3)
+
+
+def test_survival_leaf_ungraded_by_default_thief_byte_identity():
+    """The thief's search must stay byte-identical: without grad, a clock-
+    exhausted leaf is exactly the flat SURVIVAL constant."""
+    from cop_worker.rl.pursuit_search import SURVIVAL, _round_value
+
+    v, a = _round_value((0, 0), (3, 3), frozenset(), 14, 0, 3, 7,
+                        float("-inf"), float("inf"))
+    assert v == SURVIVAL and a == "STAY"
+
+
+def test_graded_survival_keeps_the_cop_chasing_when_the_clock_wins():
+    """Counted g02 vs cosmos77 (2026-08-22), step 32: cop (0,2), thief (0,4)
+    fleeing down the west edge, BFS 2, three steps left. Every line is
+    survival, so the flat leaf tied all moves and the root took first-legal
+    N — away from the thief (observed in three live series). The graded leaf
+    must keep the chase: S."""
+    from cop_worker.rl.pursuit_search import best_cop_action
+
+    walls = [(2, 2), (3, 4), (2, 4), (1, 3), (3, 2), (4, 1), (2, 0), (1, 2)]
+    a = best_cop_action((0, 2), (0, 4), walls, 6, 3, depth=3, n=7, time_budget_s=5.0)
+    assert a == "S"

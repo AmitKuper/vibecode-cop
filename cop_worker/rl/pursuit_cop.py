@@ -11,14 +11,17 @@ from cop_worker.rl.pursuit_eval import CAPTURE, _legal_moves
 from cop_worker.rl.pursuit_search import _round_value
 
 
-def _cop_reply(cop, thief, barriers, barriers_left, steps_left, depth, n, alpha, beta) -> float:
+def _cop_reply(
+    cop, thief, barriers, barriers_left, steps_left, depth, n, alpha, beta, grad=False
+) -> float:
     evaluate = pursuit_cache.evaluate_cached
 
     def _descend(c_pos, walls, b_left) -> float:
         if depth <= 1:
             return evaluate(c_pos, thief, walls, n, steps_left - 1)
         value, _ = _round_value(
-            c_pos, thief, walls, b_left, steps_left - 1, depth - 1, n, alpha, beta, reorder=True
+            c_pos, thief, walls, b_left, steps_left - 1, depth - 1, n, alpha, beta,
+            reorder=True, grad=grad,
         )
         return value
 
@@ -53,7 +56,7 @@ def _cop_reply(cop, thief, barriers, barriers_left, steps_left, depth, n, alpha,
     return best
 
 
-def _cop_root(cop, thief, barriers, barriers_left, steps_left, depth, n) -> str:
+def _cop_root(cop, thief, barriers, barriers_left, steps_left, depth, n, grad=True) -> str:
     best_action, best_value = "STAY", float("-inf")
     for action, c_pos in _legal_moves(cop, barriers, n):
         if c_pos == thief:
@@ -69,6 +72,7 @@ def _cop_root(cop, thief, barriers, barriers_left, steps_left, depth, n) -> str:
             float("-inf"),
             float("inf"),
             reorder=True,  # interior ordering only; this root child's VALUE stays exact
+            grad=grad,
         )
         if value > best_value:
             best_value, best_action = value, action
@@ -90,6 +94,7 @@ def _cop_root(cop, thief, barriers, barriers_left, steps_left, depth, n) -> str:
                 float("-inf"),
                 float("inf"),
                 reorder=True,
+                grad=grad,
             )
             if value > best_value:
                 best_value, best_action = value, action

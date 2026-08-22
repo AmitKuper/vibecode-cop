@@ -174,6 +174,9 @@ class SearchRolePolicy:
                 steps_left=steps_left,
                 depth=self.depth,
                 n=observation.grid_size,
+                # 18s of the signed 30s turn budget: the 10s default made
+                # midgame depth-4 unaffordable under the x10 deepening guard.
+                time_budget_s=18.0,
             )
         else:
             # The cop's spent walls are visible on the board; the rest can still come.

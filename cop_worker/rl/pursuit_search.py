@@ -22,7 +22,8 @@ from cop_worker.rl.pursuit_eval import (  # noqa: F401  (public re-exports)
 
 
 def _round_value(
-    cop, thief, barriers, barriers_left, steps_left, depth, n, alpha, beta, reorder=False
+    cop, thief, barriers, barriers_left, steps_left, depth, n, alpha, beta, reorder=False,
+    grad=False,
 ) -> tuple[float, str]:
     """Value of a round boundary (thief to move, cop replies). Returns (value, thief action).
 
@@ -31,6 +32,15 @@ def _round_value(
     action tie-breaking is bit-identical; interior callers consume only the VALUE,
     which alpha-beta returns exactly under any child order (root children run full
     windows). Pinned by the golden corpus.
+
+    ``grad=True`` (COP drivers only — the thief's search stays byte-identical at
+    the default): clock-exhausted leaves return SURVIVAL plus a tiny static-eval
+    gradient instead of one flat constant. Without it, every line past the clock
+    ties at SURVIVAL, the root argmax degrades to first-legal-move order, and the
+    cop turns AWAY from a fleeing thief (counted g02 vs an evader peer,
+    2026-08-22, step 32: chase at BFS 2 with 3 steps left chose N — observed in
+    three live series). The gradient also prices mid-chase walls: a wall ahead of
+    the flight path cuts territory even when capture is beyond the horizon.
     """
     thief_moves = _legal_moves(thief, barriers, n)
     # Rule 47: STAY does not rescue — enclosed means no NON-STAY move. (_legal_moves
@@ -40,6 +50,8 @@ def _round_value(
     if not any(a != "STAY" for a, _pos in thief_moves):
         return CAPTURE + steps_left, "STAY"
     if steps_left <= 0:
+        if grad:
+            return SURVIVAL + 1e-3 * evaluate(cop, thief, barriers, n, 0), "STAY"
         return SURVIVAL, "STAY"
     if reorder and len(thief_moves) > 1:
         from cop_worker.rl.pursuit_cache import evaluate_cached
@@ -51,7 +63,8 @@ def _round_value(
             value = CAPTURE + steps_left  # walked onto the cop: co-location
         else:
             value = _cop_reply(
-                cop, t_pos, barriers, barriers_left, steps_left, depth, n, alpha, beta
+                cop, t_pos, barriers, barriers_left, steps_left, depth, n, alpha, beta,
+                grad=grad,
             )
         if value < best_value:
             best_value, best_action = value, t_action
