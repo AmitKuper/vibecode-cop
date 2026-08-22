@@ -42,6 +42,30 @@ def test_human_cop_gets_model_thief_opening_and_can_place_barriers():
     assert g2["barriers_left"] == 13 and [1, 0] in g2["barriers"]
 
 
+def test_the_gui_cop_walls_an_evading_thief():
+    # The GUI cop is the committed-hunt chain (operator playbook): against a
+    # thief that keeps its distance it must start walling, not chase forever.
+    deltas = {"N": (0, -1), "S": (0, 1), "E": (1, 0), "W": (-1, 0), "STAY": (0, 0)}
+    g = client.post("/api/play/new", json={"role": "thief", "budget": 1.0}).json()
+    for _ in range(24):
+        if g["over"] or g["barriers"]:
+            break
+        cop, me = g["cop"], g["thief"]
+        best = None
+        for a, (dx, dy) in deltas.items():
+            q = [me[0] + dx, me[1] + dy]
+            if not (0 <= q[0] < 7 and 0 <= q[1] < 7) or q in g["barriers"] or q == cop:
+                continue
+            d = abs(q[0] - cop[0]) + abs(q[1] - cop[1])
+            if best is None or d > best[0]:
+                best = (d, a)
+        r = client.post("/api/play/move", json={"game": g["id"], "action": best[1]})
+        if r.status_code != 200:
+            break
+        g = r.json()
+    assert g["barriers"] or g["outcome"] == "capture", "hunt cop neither walled nor captured"
+
+
 def test_scent_fields_flow_during_play():
     g = client.post("/api/play/new", json={"role": "thief", "budget": 1.0}).json()
     g = client.post("/api/play/move", json={"game": g["id"], "action": "N"}).json()

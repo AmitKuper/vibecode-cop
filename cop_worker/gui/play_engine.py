@@ -97,14 +97,18 @@ def _model_reply(g: dict) -> None:
         if g["thief"] == g["cop"]:
             g["over"], g["outcome"] = True, "capture"
     else:
-        if "_corridor" not in g:
-            from cop_worker.rl.corridor_plan import CorridorPlan
+        if "_hunt" not in g:
+            from cop_worker.rl.committed_hunt import CommittedHunt
             from cop_worker.rl.stall_squeeze import StallSqueeze
 
-            g["_corridor"], g["_squeeze"] = CorridorPlan(), StallSqueeze()
-        action = g["_corridor"].override(
+            # GUI fields the COMMITTED-HUNT cop (operator playbook): it is
+            # the only cop that captures our own thief class (@31) — the
+            # operator, playing thief, is its acceptance test. The counted
+            # wire chain keeps the corridor default (see search_policy).
+            g["_hunt"], g["_squeeze"] = CommittedHunt(), StallSqueeze()
+        action = g["_hunt"].override(
             tuple(g["cop"]), tuple(g["thief"]), list(barriers),
-            g["barriers_left"], g["step"], list(COP_ACTIONS),
+            g["barriers_left"], steps_left, list(COP_ACTIONS),
         )  # fmt: skip
         if action is None:
             action = g["_squeeze"].override(

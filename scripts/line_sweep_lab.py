@@ -54,7 +54,7 @@ class LineSweepCop:
             return ("move", cop)
         # phase C: hunt (minimax may also place pocket walls)
         act = best_cop_action(
-            cop, thief, list(walls), self.b_left, 35, depth=4, n=N, time_budget_s=1.0
+            cop, thief, list(walls), self.b_left, 35, depth=4, n=N, time_budget_s=5.0
         )
         if act.startswith("PLACE_") and self.b_left > 0:
             from cop_worker.rl.action_space import PLACE_DIRS
@@ -74,7 +74,7 @@ def thief_move(thief, cop, walls, cop_b_left, steps_left, escape: LineEscape | N
     barriers = list(walls)
     action = best_thief_action(
         cop, thief, barriers, steps_left, depth=4, n=N,
-        cop_barriers_left=cop_b_left, time_budget_s=1.0,
+        cop_barriers_left=cop_b_left, time_budget_s=5.0,
     )  # fmt: skip
     fired = False
     if escape is not None:

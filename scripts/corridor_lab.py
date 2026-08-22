@@ -48,7 +48,7 @@ def make_thief(kind: str):
     def searcher(cop, thief, walls, b_left, sl, escape=esc):
         act = best_thief_action(
             cop, thief, list(walls), sl, depth=4, n=N,
-            cop_barriers_left=b_left, time_budget_s=1.0,
+            cop_barriers_left=b_left, time_budget_s=5.0,
         )  # fmt: skip
         if escape is not None:
             legal = [name for name, _q in _legal_thief_moves(thief, cop, walls)]
@@ -64,12 +64,17 @@ def make_thief(kind: str):
     return searcher if kind in ("minimax", "confined") else away
 
 
-def run(kind: str, corridor: bool):
+def run(kind: str, mode: str):
+    """mode: 'old' (squeeze+minimax), 'corridor' (wire default), 'hunt'
+    (COPTHIEF_HUNT_MODE / GUI chain)."""
+    from cop_worker.rl.committed_hunt import CommittedHunt
+
     cop, thief = (0, 0), (3, 3)
     walls: set = set()
     b_left = 14
     thief_fn = make_thief(kind)
-    plan = CorridorPlan() if corridor else None
+    plan = CorridorPlan() if mode == "corridor" else None
+    hunt = CommittedHunt() if mode == "hunt" else None
     squeeze = StallSqueeze()
     for step in range(1, 36):
         exits = [q for n_, q in _legal_thief_moves(thief, cop, walls) if n_ != "STAY"]
@@ -82,11 +87,13 @@ def run(kind: str, corridor: bool):
         act = None
         if plan is not None:
             act = plan.override(cop, thief, list(walls), b_left, step, LEGAL_COP)
+        if act is None and hunt is not None:
+            act = hunt.override(cop, thief, list(walls), b_left, 36 - step, LEGAL_COP)
         if act is None:
             act = squeeze.override(cop, thief, list(walls), b_left, 36 - step, LEGAL_COP)
         if act is None:
             act = best_cop_action(
-                cop, thief, list(walls), b_left, 36 - step, depth=4, n=N, time_budget_s=1.0
+                cop, thief, list(walls), b_left, 36 - step, depth=4, n=N, time_budget_s=5.0
             )
         if act in PLACE_DIRS and b_left > 0:
             dx, dy = PLACE_DIRS[act]
@@ -108,11 +115,10 @@ def run(kind: str, corridor: bool):
 
 def main() -> None:
     kinds = [*VARIANTS, "confined", "minimax", "away"]
-    print(f"{'thief':<10} {'OLD stack':>16} {'NEW (corridor)':>16}")
+    print(f"{'thief':<10} {'OLD stack':>16} {'corridor (wire)':>16} {'hunt (GUI)':>16}")
     for kind in kinds:
-        old = run(kind, corridor=False)
-        new = run(kind, corridor=True)
-        print(f"{kind:<10} {old:>16} {new:>16}")
+        row = [run(kind, mode) for mode in ("old", "corridor", "hunt")]
+        print(f"{kind:<10} {row[0]:>16} {row[1]:>16} {row[2]:>16}")
 
 
 if __name__ == "__main__":

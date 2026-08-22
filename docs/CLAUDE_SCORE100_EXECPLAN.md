@@ -249,3 +249,25 @@ test). 7 pins in test_corridor_plan.py; suite 1980/4; peersim 6/6
 (captures @5/@6 — trigger silent vs weak thieves). Rematch projection vs
 yanell11 same brains: WIN if their thief is wall-myopic (mirror2-class),
 DRAW if confined-quality; loss requires an unseen strategy.
+
+## 2026-08-22 overnight — operator-driven strength program (pre-vm__fabi)
+
+Operator (playing both roles in the GUI) exposed and drove fixes for four
+thief kill patterns and one cop gap. All work gated by the deterministic
+lab battery (5s search budgets, idle CPU — 1s budgets under load produced
+false verdicts, corrected in db8a5a5) plus the full suite and a peersim
+rehearsal per production-affecting commit.
+
+| Commit | What | Evidence |
+|---|---|---|
+| 628f6db | Thief: sealability min-cut + turn-parity fix in confined-mode survival | pocketer lab: pocket survival; suite 1843; peersim 6/6 |
+| e65b8a8 | Thief: wall-safe one-ply lookahead (corner-seal counter) | line-hunt lab arm; suite 1845; peersim 6/6 |
+| 5fdd37a/69fb5dd | RL: operator strategies as training pool + arena opponents | v8/v9 trained; arena: search 20/20 > v7 18/20 > v8 16/20 > v9 14/20 (imitation ceiling; no promotion) |
+| 1ff0ed4 | Thief: cop-blocked min-cut (cage-cork counter) + seal-gated survival | cage lab arm; suite 1846; peersim 6/6 |
+| db8a5a5 | Labs made deterministic (5s budgets); verdict corrections on record | pocketer 3x2 idle truth |
+| (tonight) | Cop: CommittedHunt plan (operator playbook) — GUI chain + COPTHIEF_HUNT_MODE opt-in; wire default stays corridor | corridor_lab 3-column matrix; hunt captures confined @31 (first cop to beat our own thief class); suite 1856 |
+
+Open, documented as theory-bound: the minimax-dance thief survives every
+cop chain; the full-depth line-hunt/cage cops beat every thief (7x7 with
+14 walls appears cop-favored under strong play; the operator converged on
+the winning strategy class independently).

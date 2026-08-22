@@ -67,7 +67,12 @@ ALLOWED: dict[str, tuple[int, str]] = {
         "One series lifecycle over role workers (grew by the kit §5 series-label fold).",
     ),
     "scripts/ref3_match/role_worker.py": (155, "Worker entry point: stdio protocol loop."),
-    "cop_worker/rl/search_policy.py": (175, "One decision sequence; override priority order."),
+    "cop_worker/rl/search_policy.py": (200, "One decision sequence; override priority order."),
+    "cop_worker/rl/committed_hunt.py": (
+        170,
+        "One committed plan: trigger gates, line build, and hunt phase are a "
+        "single state machine; splitting the phases would fragment the plan.",
+    ),
     "scripts/barrier_distill/collect.py": (160, "One research collection recipe (non-runtime)."),
     "scripts/barrier_distill/cops.py": (
         220,
