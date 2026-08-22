@@ -54,6 +54,15 @@ def _resolve_args(args) -> None:
         import os
 
         os.environ["COPTHIEF_COP_CHAIN"] = chain
+    # Per-pairing label scope ([protocol] label_scope = game_id_only): the
+    # series label names the game_id only; game_uid stays the kit CORE
+    # derivation. Agreed in writing per pairing (2026-08-22). Unset = our
+    # historical folding behavior.
+    scope = str(rt.get("protocol", {}).get("label_scope", "")).strip().lower()
+    if scope == "game_id_only":
+        import os
+
+        os.environ["COPTHIEF_LABEL_SCOPE"] = scope
     if getattr(args, "series_label", None) is None:
         # Distinct per-series label (kit §5): folded into game_id/game_uid so two
         # counted series vs the same team cannot collapse to one uid. Empty = off.

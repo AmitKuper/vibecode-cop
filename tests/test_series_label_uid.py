@@ -82,3 +82,32 @@ def test_handshake_refuses_a_label_disagreement():
         assert "SPAR-N10" in str(exc)
     else:
         raise AssertionError("a label disagreement must refuse (SPAR-N10)")
+
+
+def test_game_id_only_scope_keeps_the_core_uid(monkeypatch):
+    # per-pairing dialect (agreed in writing 2026-08-22): the label names the
+    # game_id ONLY; the uid stays the kit CORE derivation for every series
+    monkeypatch.setenv("COPTHIEF_LABEL_SCOPE", "game_id_only")
+    core = _spec_uid(TERMS, "vibecode|wgroup")
+    assert derive_game_uid(TERMS, "wgroup", "vibecode") == core
+    assert derive_game_uid(TERMS, "wgroup", "vibecode", "F001") == core
+    assert derive_game_uid(TERMS, "wgroup", "vibecode", "C001") == core
+    # the label still separates artifacts via the game_id
+    assert derive_game_id("wgroup", "vibecode", "F001") == "vibecode-vs-wgroup-F001"
+
+
+def test_game_id_only_scope_handshake_reconciles_with_a_core_peer(monkeypatch):
+    # our labeled greeting must carry the CORE uid a core-only peer derives
+    monkeypatch.setenv("COPTHIEF_LABEL_SCOPE", "game_id_only")
+    ours = _greeting("vibecode", "police", "F001", opponent="wgroup")
+    theirs = _greeting("wgroup", "thief", "F001", opponent="vibecode")
+    negotiated = verify_negotiation(ours, theirs, "F001")
+    assert negotiated.game_id == "vibecode-vs-wgroup-F001"
+    assert negotiated.game_uid == _spec_uid(TERMS, "vibecode|wgroup")
+
+
+def test_default_scope_is_unchanged(monkeypatch):
+    monkeypatch.delenv("COPTHIEF_LABEL_SCOPE", raising=False)
+    assert derive_game_uid(TERMS, "wgroup", "vibecode", "counted1") == _spec_uid(
+        TERMS, "vibecode-vs-wgroup-counted1"
+    )

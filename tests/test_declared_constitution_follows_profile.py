@@ -67,14 +67,14 @@ def test_profile_without_a_game_json_falls_back_to_base(tmp_path):
         apply_runtime_config({})
 
 
-def test_ahk_yosi_profile_declares_this_pairing():
-    """The pairing we send ahk-yosi for their byte-diff is the one we emit."""
-    profile = GAME_JSON_PATH.parent / "opponents" / "ahk-yosi"
+def test_opponent_profile_declares_its_own_pairing():
+    """The pairing an opponent byte-diffs against is the one we emit — pinned
+    on a CONCLUDED pairing's profile (pending pairings live outside the repo
+    per the operator's naming policy)."""
+    profile = GAME_JSON_PATH.parent / "opponents" / "vm__fabi"
     apply_runtime_config({"profile": {"dir": str(profile)}})
     try:
-        assert load_constitution()["agreed_between"] == ["ahk-yosi", "vibecode"]
-        assert config_sha256() == (
-            "9b55a5d93174825c55530cb854404e168fd25dee22c05d6d0bba8b98876faa7f"
-        )
+        assert load_constitution()["agreed_between"] == ["vibecode", "vm__fabi"]
+        assert config_sha256() == _sha_of(profile / "game.json")
     finally:
         apply_runtime_config({})

@@ -1,6 +1,6 @@
 # vm__fabi pairing (Vasily Mironovich & Fahed Bitar, University of Haifa).
 # ONE process, both roles, ONE static ngrok domain (does not rotate) — both
-# opp URLs point at the same endpoint (ahk-yosi precedent). Between windows
+# opp URLs point at the same endpoint (single-door peer precedent). Between windows
 # it answers 502; during a window a bare probe answers 406. They REFUSE
 # dials from unconfigured groups and outside agreed windows.
 # OPEN ITEM before any game: ROLE PARITY — their rule (alpha-first = police

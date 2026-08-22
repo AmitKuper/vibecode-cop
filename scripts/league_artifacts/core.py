@@ -46,7 +46,7 @@ def game_json_path() -> Path:
     declared whichever pair the base file happened to name (it still said
     imreeyal/vibecode six counted games later) while the opponent profile's own
     game.json — loaded by ``--config`` and byte-diffed with the peer — never
-    reached the wire (found 2026-08-18, ahk-yosi pairing). Falls back to the
+    reached the wire (found 2026-08-18, opp byte-diff). Falls back to the
     base file when no profile is selected or the profile carries no game.json.
     """
     try:
