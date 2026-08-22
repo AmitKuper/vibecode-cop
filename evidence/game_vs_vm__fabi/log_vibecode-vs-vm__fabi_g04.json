@@ -1,0 +1,676 @@
+{
+  "_schema": "p2p-police-artifacts",
+  "game_id": "vibecode-vs-vm__fabi",
+  "game_uid": "6268e7d5-3ece-cb39-e25b-767cc8c3e735",
+  "links": {
+    "config": "config_vibecode-vs-vm__fabi_g04.json",
+    "declaration": "declaration_vibecode-vs-vm__fabi.json",
+    "log": "log_vibecode-vs-vm__fabi_g04.json",
+    "result": "result_vibecode-vs-vm__fabi.json"
+  },
+  "opponent_records": [
+    {
+      "commit": "e6fea42324f4462c4b923b42e0e35851ba13c29ac54ded55a80f2fa16a71f84e",
+      "declared": {},
+      "nonce": "9d9a2bf749ce79a1413b6651d9083bc7",
+      "payload": {
+        "step": 0,
+        "type": "system_spec",
+        "spec": {
+          "os": "Linux 6.6.87.2-microsoft-standard-WSL2",
+          "cpu_type": "x86_64",
+          "cpu_cores": 16,
+          "cpu_freq_mhz": "unknown",
+          "ram_gb": 15.5,
+          "gpu_model": "unknown",
+          "vram_gb": "unknown"
+        },
+        "model": "template",
+        "code_version": "1.0.0",
+        "group_name": "VM-Fabi",
+        "sub_game_number": 4
+      }
+    },
+    {
+      "commit": "70be0d4dfcf766be8edc16c812d541efe0d7e3c7ae63fc40a533a952c4eb8b42",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Catch me if you can - I'm slipping past Central Park!"
+      },
+      "nonce": "31be016e06b947a3a0978c5385724bb8",
+      "payload": {
+        "step": 1,
+        "state": "grid=7x7;self=[3, 4];barriers=[]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "MOVE:E",
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Catch me if you can - I'm slipping past Central Park!",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "",
+          "bluff_classification": "lie"
+        },
+        "model": "template",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "random_move": false
+      }
+    },
+    {
+      "commit": "00f04498e10374326f5ea5ec223440e273acede2c9a777372559d7281e49cbd9",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Catch me if you can - I'm slipping past Wall Street!"
+      },
+      "nonce": "db7851cf5a8dd633f1e0dbd7186ea3df",
+      "payload": {
+        "step": 2,
+        "state": "grid=7x7;self=[4, 4];barriers=[]",
+        "position": [
+          4,
+          4
+        ],
+        "move": "MOVE:S",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Catch me if you can - I'm slipping past Wall Street!",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "",
+          "bluff_classification": "truth"
+        },
+        "model": "template",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "random_move": false
+      }
+    },
+    {
+      "commit": "9c1d713ddaf48ca5fd2d361111b6b563b05a8a39d2795f0b282e4a49e63bc015",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "You'll never pin me down around Wall Street."
+      },
+      "nonce": "c402320c9bc7a4d9cb48a7266ae4a253",
+      "payload": {
+        "step": 3,
+        "state": "grid=7x7;self=[4, 5];barriers=[]",
+        "position": [
+          4,
+          5
+        ],
+        "move": "MOVE:E",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "You'll never pin me down around Wall Street.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "",
+          "bluff_classification": "truth"
+        },
+        "model": "template",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "random_move": false
+      }
+    },
+    {
+      "commit": "58c98ba852616ae789f49c02b752335614ab781d62c61d6d706960a6df5abc37",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "You'll never pin me down around Central Park."
+      },
+      "nonce": "033d6c7ff009b0fede2d146b3e34c2cc",
+      "payload": {
+        "step": 4,
+        "state": "grid=7x7;self=[5, 5];barriers=[]",
+        "position": [
+          5,
+          5
+        ],
+        "move": "MOVE:S",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "You'll never pin me down around Central Park.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "",
+          "bluff_classification": "truth"
+        },
+        "model": "template",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "random_move": false
+      }
+    },
+    {
+      "commit": "a7bf539caa7c5e24cb63f83d02a7dc510efcf94251b3914e1123f9a25e1cba57",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "You'll never pin me down around Harlem."
+      },
+      "nonce": "71fbdc38539547194e776845db78d3c5",
+      "payload": {
+        "step": 5,
+        "state": "grid=7x7;self=[6, 5];barriers=[]",
+        "position": [
+          6,
+          5
+        ],
+        "move": "MOVE:S",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "You'll never pin me down around Harlem.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "",
+          "bluff_classification": "truth"
+        },
+        "model": "template",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "random_move": false
+      }
+    },
+    {
+      "commit": "e94ed1903382c348f2dccf3b20e9f69c37df71d8a4370bfac12f96d5ddf01c4a",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Still one step ahead, near Harlem."
+      },
+      "nonce": "8e6197cb29da432a04236d0cab1326e2",
+      "payload": {
+        "step": 6,
+        "state": "grid=7x7;self=[6, 6];barriers=[]",
+        "position": [
+          6,
+          6
+        ],
+        "move": "MOVE:E",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Still one step ahead, near Harlem.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "",
+          "bluff_classification": "truth"
+        },
+        "model": "template",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "random_move": false
+      }
+    },
+    {
+      "commit": "ff829cc8db248bc9232bb9067108fc3a7a5600f18941dd80adf44763bf5c7c08",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Catch me if you can - I'm slipping past the East Village!"
+      },
+      "nonce": "e1229be72b881a468caacacc5de6f4a8",
+      "payload": {
+        "step": 7,
+        "state": "grid=7x7;self=[5, 6];barriers=[]",
+        "position": [
+          5,
+          6
+        ],
+        "move": "MOVE:N",
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Catch me if you can - I'm slipping past the East Village!",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "",
+          "bluff_classification": "lie"
+        },
+        "model": "template",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "random_move": false
+      }
+    },
+    {
+      "commit": "642d2c60d12e6d2c3da42fc8fb395a32888f84d2c645408febb49de8f1ecf7ed",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "You'll never pin me down around Central Park."
+      },
+      "nonce": "2a5088bebec124a1dca6c2c37e41ce33",
+      "payload": {
+        "step": 8,
+        "state": "grid=7x7;self=[4, 6];barriers=[]",
+        "position": [
+          4,
+          6
+        ],
+        "move": "MOVE:N",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "You'll never pin me down around Central Park.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "",
+          "bluff_classification": "truth"
+        },
+        "model": "template",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "random_move": false
+      }
+    },
+    {
+      "commit": "248a9e5d9e6b224057cd5c0ae1835f8066df32eb745f691ae169c1b392ed0a86",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Still one step ahead, near Wall Street."
+      },
+      "nonce": "7257da7cd6a4626e8250ae8a41e625ef",
+      "payload": {
+        "step": 9,
+        "state": "grid=7x7;self=[3, 6];barriers=[]",
+        "position": [
+          3,
+          6
+        ],
+        "move": "MOVE:N",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Still one step ahead, near Wall Street.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "",
+          "bluff_classification": "truth"
+        },
+        "model": "template",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "random_move": false
+      }
+    },
+    {
+      "commit": "bd3468cbf1123397ce3bcaed6001db5dde25b60686a954319443022181c01d8b",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Too slow, officer - Central Park is mine."
+      },
+      "nonce": "64d0f173eac283b8fa7efab0300ab174",
+      "payload": {
+        "step": 10,
+        "state": "grid=7x7;self=[2, 6];barriers=[]",
+        "position": [
+          2,
+          6
+        ],
+        "move": "MOVE:N",
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Too slow, officer - Central Park is mine.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "",
+          "bluff_classification": "lie"
+        },
+        "model": "template",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "random_move": false
+      }
+    },
+    {
+      "commit": "922f788eec856edbe51883802b8b2fcbe961c8d1459438a1c53f91f3530ec73d",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Still one step ahead, near the Brooklyn Bridge."
+      },
+      "nonce": "00b485386049385af0f1b101bc146dcd",
+      "payload": {
+        "step": 11,
+        "state": "grid=7x7;self=[1, 6];barriers=[]",
+        "position": [
+          1,
+          6
+        ],
+        "move": "MOVE:N",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "Still one step ahead, near the Brooklyn Bridge.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "",
+          "bluff_classification": "truth"
+        },
+        "model": "template",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "random_move": false
+      }
+    },
+    {
+      "commit": "98df10e62509f0331520c1bb0c99065073b7e1bc133fb73c4eb2b75a311d655a",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Still one step ahead, near Times Square."
+      },
+      "nonce": "e9e0c615ef8aeb25b800414a5a15bb6a",
+      "payload": {
+        "step": 12,
+        "state": "grid=7x7;self=[1, 5];barriers=[]",
+        "position": [
+          1,
+          5
+        ],
+        "move": "MOVE:W",
+        "intent": "lie",
+        "verdict": "lie",
+        "hint": "Still one step ahead, near Times Square.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "",
+          "bluff_classification": "lie"
+        },
+        "model": "template",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "random_move": false
+      }
+    },
+    {
+      "commit": "aa45f49e239b22ad5b1c5a488347388de055748346ea79c72ab0a5ab2e0f517a",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "You got me."
+      },
+      "nonce": "ea603887083801a3c18decee16985b13",
+      "payload": {
+        "step": 13,
+        "state": "grid=7x7;self=[1, 5];barriers=[]",
+        "position": [
+          1,
+          5
+        ],
+        "move": "HOLD:-",
+        "intent": "truth",
+        "verdict": "truth",
+        "hint": "You got me.",
+        "prompt_discussion": {
+          "llm_prompt": "",
+          "llm_reasoning": "",
+          "bluff_classification": "truth"
+        },
+        "model": "template",
+        "tokens_step": 0,
+        "tokens_total": 0,
+        "response_seconds": 0.0,
+        "random_move": false
+      }
+    }
+  ],
+  "records": [
+    {
+      "commit": "fb38ea401565f7a07f937c12842eb1cb4b774548195f40fd856108058ff3ece3",
+      "nonce": "5c8fbd3e0908dafb9a07b1c3a2341d34",
+      "payload": {
+        "declaration_ref": "declaration_vibecode-vs-vm__fabi.json",
+        "github_commit": "043e4fdd21e0b0ceb67b3f452445c1291d31d279",
+        "group_id": "vibecode",
+        "role": "police",
+        "spec": {
+          "cpu_cores": 16,
+          "cpu_type": "Intel64 Family 6 Model 158 Stepping 13, GenuineIntel",
+          "machine": "AMD64",
+          "os": "Windows 11",
+          "python": "3.13.14",
+          "ram_gb": 34
+        },
+        "step": 0,
+        "sub_game_number": 4,
+        "type": "step_zero"
+      }
+    },
+    {
+      "commit": "abc3500f1a5244fa231c361ceec9f7c8035e7759e34942cae147ac63bf3e058a",
+      "nonce": "ebff5055c32982c9119ae009dc129147",
+      "payload": {
+        "step": 1,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          1,
+          0
+        ],
+        "move": "S",
+        "intent": "ambiguous"
+      }
+    },
+    {
+      "commit": "23845ff0aa4c9ce8d193559b0ca5ad4ee76a301a5cca0e78a8ffb75ec5d50e1f",
+      "nonce": "05598999b61c08b10bbd977b235f873c",
+      "payload": {
+        "step": 2,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          0
+        ],
+        "move": "S",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "6eaf0d6d2ae76cf632a06422c52ea43615bbeee318f8a61693b590a6a0265106",
+      "nonce": "96d1d5210e8c1851b66e17a198a8e0fa",
+      "payload": {
+        "step": 3,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          0
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "d38e5575b6fa8d14e5d33f3fe1accfcf071e3592bf26128fb33e133255ef9c66",
+      "nonce": "5e4d10a12c1998a7a856aa3b621f8511",
+      "payload": {
+        "step": 4,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          1
+        ],
+        "move": "E",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "7e4c3f5428c9aa796caf864e619a465e706670422184c45a0f5970dcc58365f5",
+      "nonce": "9f42f465a52011ac054add5538d2b91e",
+      "payload": {
+        "step": 5,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          4,
+          1
+        ],
+        "move": "S",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "58e2d1f361e109a9332a7129fca5daf6982814d8d62c076684fac5b5d60fdf8c",
+      "nonce": "1c053eb3e9b72f9f3c7a32c160015d42",
+      "payload": {
+        "step": 6,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          4,
+          2
+        ],
+        "move": "E",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "4b7c5ba7425e89cafdd7eea5e9d216dc01e1375767a607ef78ad0297e88c9c7a",
+      "nonce": "d1619fc42294f1b611fe0f2cb01a009b",
+      "payload": {
+        "step": 7,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          4,
+          3
+        ],
+        "move": "E",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "5ef82c8dfe483f5504495743248b1bada9af6c41b7138fefbc081e2c46056461",
+      "nonce": "66c0b84958ea185ab69be34e1a4f4960",
+      "payload": {
+        "step": 8,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          4,
+          4
+        ],
+        "move": "E",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "a4fc145fbfc52ec54336e6600223506219d4c459c8257b1fecbb44f364d98300",
+      "nonce": "e1cc370d4022ac87dd7f3e03e5a36ccf",
+      "payload": {
+        "step": 9,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          4
+        ],
+        "move": "N",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "850290629ebf15935a4fdf23bb26de436e0f616168c02402a2c8075c8edf1a42",
+      "nonce": "46e3bb73e8c25caebb108c67f50ebb7b",
+      "payload": {
+        "step": 10,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          5
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "8319181773d7b4721b06c80d95dd1fe59964c1d10db35726f1f024190866c5fe",
+      "nonce": "362d0857e4b7649af969e95df2cc7dac",
+      "payload": {
+        "step": 11,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          5
+        ],
+        "move": "N",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "d583f85eed564fdcb591c9806aadfc2924b0e0869c4739048f41ede19256e880",
+      "nonce": "50cdb82ae460e263d0c8ce72279bc2d2",
+      "payload": {
+        "step": 12,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          1,
+          5
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    }
+  ],
+  "report_type": "log",
+  "schema_version": "1.3",
+  "sub_game_number": 4,
+  "summary": {
+    "audit": "Verified OK",
+    "outcome": "capture",
+    "digest_match": null,
+    "disputed_capture": null,
+    "turns_completed": 12,
+    "steps_sealed": 13,
+    "opponent_step_zero": {
+      "step": 0,
+      "type": "system_spec",
+      "spec": {
+        "os": "Linux 6.6.87.2-microsoft-standard-WSL2",
+        "cpu_type": "x86_64",
+        "cpu_cores": 16,
+        "cpu_freq_mhz": "unknown",
+        "ram_gb": 15.5,
+        "gpu_model": "unknown",
+        "vram_gb": "unknown"
+      },
+      "model": "template",
+      "code_version": "1.0.0",
+      "group_name": "VM-Fabi",
+      "sub_game_number": 4
+    },
+    "step_zero_mismatch": null,
+    "started_at": "2026-08-22T13:26:21.812502+00:00",
+    "ended_at": "2026-08-22T13:26:41.516719+00:00",
+    "role": "police",
+    "group_id": "vibecode",
+    "opponent_group_id": "vm__fabi"
+  },
+  "wire_shape": "reference"
+}

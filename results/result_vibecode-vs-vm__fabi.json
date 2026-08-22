@@ -1,0 +1,253 @@
+{
+  "_schema": "Summary and final result for the WHOLE series between two teams: per-sub-game scores + aggregate; identity lives in the declaration.",
+  "schema_version": "1.1",
+  "report_type": "final_game_result",
+  "game_id": "vibecode-vs-vm__fabi",
+  "game_uid": "6268e7d5-3ece-cb39-e25b-767cc8c3e735",
+  "links": {
+    "declaration": "declaration_vibecode-vs-vm__fabi.json",
+    "config": "config_vibecode-vs-vm__fabi_g<NN>.json",
+    "log": "log_vibecode-vs-vm__fabi_g<NN>.json",
+    "result": "result_vibecode-vs-vm__fabi.json",
+    "github": {
+      "vibecode": {
+        "cop": "https://github.com/AmitKuper/vibecode-cop",
+        "thief": "https://github.com/AmitKuper/vibecode-thief"
+      },
+      "vm__fabi": {
+        "cop": "https://github.com/mironovich-v/cop-rob-p2p-police",
+        "thief": "https://github.com/mironovich-v/cop-rob-p2p-thief"
+      }
+    }
+  },
+  "timezone": "Asia/Jerusalem",
+  "groups": [
+    "vibecode",
+    "vm__fabi"
+  ],
+  "num_sub_games": 6,
+  "sub_games": [
+    {
+      "sub_game_number": 1,
+      "roles": {
+        "vibecode": "thief",
+        "vm__fabi": "police"
+      },
+      "started_at": "2026-08-22T13:24:45.081758+00:00",
+      "ended_at": "2026-08-22T13:25:10.431525+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "038ec0aa33b286932935308e5f6e8c726ea4fa2c",
+        "vm__fabi": "cabcb074f7ce9e5851a050630d95b3a8bdeb01ba"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "vm__fabi": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "vm__fabi": 5
+      },
+      "log_files": {
+        "vibecode": "log_vibecode-vs-vm__fabi_g01.json",
+        "vm__fabi": "log_vibecode-vs-vm__fabi_g01.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 2,
+      "roles": {
+        "vibecode": "police",
+        "vm__fabi": "thief"
+      },
+      "started_at": "2026-08-22T13:25:14.786819+00:00",
+      "ended_at": "2026-08-22T13:25:35.796722+00:00",
+      "result": "capture",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "043e4fdd21e0b0ceb67b3f452445c1291d31d279",
+        "vm__fabi": "cabcb074f7ce9e5851a050630d95b3a8bdeb01ba"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "vm__fabi": 0
+      },
+      "score": {
+        "vibecode": 20,
+        "vm__fabi": 5
+      },
+      "log_files": {
+        "vibecode": "log_vibecode-vs-vm__fabi_g02.json",
+        "vm__fabi": "log_vibecode-vs-vm__fabi_g02.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 3,
+      "roles": {
+        "vibecode": "thief",
+        "vm__fabi": "police"
+      },
+      "started_at": "2026-08-22T13:25:40.185525+00:00",
+      "ended_at": "2026-08-22T13:26:17.433472+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "038ec0aa33b286932935308e5f6e8c726ea4fa2c",
+        "vm__fabi": "cabcb074f7ce9e5851a050630d95b3a8bdeb01ba"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "vm__fabi": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "vm__fabi": 5
+      },
+      "log_files": {
+        "vibecode": "log_vibecode-vs-vm__fabi_g03.json",
+        "vm__fabi": "log_vibecode-vs-vm__fabi_g03.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 4,
+      "roles": {
+        "vibecode": "police",
+        "vm__fabi": "thief"
+      },
+      "started_at": "2026-08-22T13:26:21.812502+00:00",
+      "ended_at": "2026-08-22T13:26:41.516719+00:00",
+      "result": "capture",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "043e4fdd21e0b0ceb67b3f452445c1291d31d279",
+        "vm__fabi": "cabcb074f7ce9e5851a050630d95b3a8bdeb01ba"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "vm__fabi": 0
+      },
+      "score": {
+        "vibecode": 20,
+        "vm__fabi": 5
+      },
+      "log_files": {
+        "vibecode": "log_vibecode-vs-vm__fabi_g04.json",
+        "vm__fabi": "log_vibecode-vs-vm__fabi_g04.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 5,
+      "roles": {
+        "vibecode": "thief",
+        "vm__fabi": "police"
+      },
+      "started_at": "2026-08-22T13:26:45.784740+00:00",
+      "ended_at": "2026-08-22T13:27:33.368241+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "038ec0aa33b286932935308e5f6e8c726ea4fa2c",
+        "vm__fabi": "cabcb074f7ce9e5851a050630d95b3a8bdeb01ba"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "vm__fabi": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "vm__fabi": 5
+      },
+      "log_files": {
+        "vibecode": "log_vibecode-vs-vm__fabi_g05.json",
+        "vm__fabi": "log_vibecode-vs-vm__fabi_g05.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 6,
+      "roles": {
+        "vibecode": "police",
+        "vm__fabi": "thief"
+      },
+      "started_at": "2026-08-22T13:27:37.682595+00:00",
+      "ended_at": "2026-08-22T13:27:51.107722+00:00",
+      "result": "capture",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "043e4fdd21e0b0ceb67b3f452445c1291d31d279",
+        "vm__fabi": "cabcb074f7ce9e5851a050630d95b3a8bdeb01ba"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "vm__fabi": 0
+      },
+      "score": {
+        "vibecode": 20,
+        "vm__fabi": 5
+      },
+      "log_files": {
+        "vibecode": "log_vibecode-vs-vm__fabi_g06.json",
+        "vm__fabi": "log_vibecode-vs-vm__fabi_g06.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    }
+  ],
+  "final_result": {
+    "total_score": {
+      "vibecode": 90,
+      "vm__fabi": 30
+    },
+    "sub_games_won": {
+      "vibecode": 6,
+      "vm__fabi": 0
+    },
+    "ties": 0,
+    "winner_group": "vibecode",
+    "series_tie": false,
+    "tokens_total_series": {
+      "vibecode": 0,
+      "vm__fabi": 0
+    },
+    "games_played_including_this": {
+      "vibecode": 9,
+      "vm__fabi": 2
+    },
+    "first_meeting_between_groups": true,
+    "diversity_reward_applied": {
+      "vibecode": true,
+      "vm__fabi": false
+    }
+  },
+  "mutual_agreement": {
+    "sha256": "c307dc51abbced175c73933874d94761616ceb2e10b04f5f12d9de27b04913df",
+    "confirmed": true
+  }
+}
