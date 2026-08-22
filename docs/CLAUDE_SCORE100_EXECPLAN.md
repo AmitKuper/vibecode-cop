@@ -286,3 +286,43 @@ Our report id 1a029a8052a59583 to rmisegal+uoh26finalgame@gmail.com
 report reconciles byte-level (uid 6268e7d5, 90-30, mutual sha c307dc51,
 league-address-only). Evidence + emls committed both repos, tag
 game_vs_vm__fabi, backup branch backup/post-vm__fabi-counted, PDF row 9.
+
+## 2026-08-23 — COUNTED #10 vs cosmos77: DRAW 47-47 (ledger 7W-1L-2D) + submission freeze
+
+Friendly settled 47-47 (six survivals; rows 45-45 + tie rule). Counted took
+FOUR launches, four root causes closed (two per side):
+1) 22:42 + 23:16 attempts withheld 5/6 — their sg1 receive_turn refused x6
+   then 404. Their "file the 5/6" proposal DECLINED: zeroed w1 scores 40-35
+   to them, and their claim our engine co-signed sha 130897a7 was refuted
+   from our artifact (confirmed=false, sha 01f9c0f6, no w1 row).
+2) Our fixes, each labs+suite gated and re-frozen in writing: squeeze
+   self-cutoff guard (5c51cd9 — g02 replay proved our own walls raised
+   bfs(cop,thief) to 16, minimax "fled" = correct detour); graded SURVIVAL
+   leaves COP-ONLY + 18s budget (2915e7a — flat leaves made beyond-horizon
+   argmax first-legal-move; golden case 9 re-pinned N->S, its own d3/d4
+   pins disagreed = tie-break noise); agreement_poll_sec 120->10 (their
+   instant seal + signed 30s turn clock vs our slow re-dial cadence).
+3) Their fix: ARM-FIRST choreography (their standing shell owned sg1's
+   first session; they arm and dial at our closed doors, we bounce once).
+4) Attempt 4 (00:24-00:27): 6/6 verified, 47-47, uid 06f81d92 (unlabeled by
+   written agreement), mutual sha 3601bd73 confirmed both engines. Report
+   id 1a02b5f8c431cfb2 (league address only). Rule 35 CLOSED: their id
+   1a02b655d0cba1cb, sealed copy byte-reconciled (file sha bdfb2601).
+   Commits played: cop 2915e7a / thief a17af03 vs their b8508a86c211/a7d3a5b4.
+   Evidence + tag game_vs_cosmos77 + backup-20260823-cosmos77-counted.
+
+Submission freeze (same night):
+- Cop default chain corridor -> PLAIN (3ade416): re-measured post-fixes,
+  plain dominates/ties corridor on every corridor_lab row and beat it live.
+- Submission builder bug FOUND BY OPERATOR on the built form: drawn series
+  filed as losses (series_tie read from the ledger row where it never
+  existed). Fixed both repos (cop rows.py 14fc4e9, thief ledger.py 4eb34a3
+  — thief has its own module; first sync commit was dead code, corrected).
+  Form now 7W/1L/2D, 759 points, 10 legal games.
+- CI was RED since 08-22 13:29 (both repos): two replay-viewer tests
+  assumed a populated results/ dir (fresh-clone unsafe) + one ruff-format
+  nit. Fixed (cop bab0186, thief 152909a).
+- v1.0-submission re-created ANNOTATED (Appendix C requires -a; the -f
+  re-points had degraded it to lightweight) at final HEADs, both repos.
+- Coverage cop 97.29% / thief 96.95% (gate 94). Suites 1997/1301 green.
+- PDF vibecode-ex07 rebuilt and uploaded to Moodle by operator.
