@@ -1,0 +1,340 @@
+00:24:15.129 [match] logging to D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\reports\ref3_matches\match_cosmos77_20260823-002415.log
+00:24:17.062 [tw] [08/23/26 00:24:17] INFO     Starting MCP server               transport.py:361
+00:24:17.062 [pw] [08/23/26 00:24:17] INFO     Starting MCP server               transport.py:361
+00:24:17.062 [pw]                              'vibecode-police' with transport
+00:24:17.063 [pw]                              'http' on
+00:24:17.063 [tw]                              'vibecode-thief' with transport
+00:24:17.063 [tw]                              'http' on
+00:24:17.063 [tw]                              http://0.0.0.0:61223/mcp
+00:24:17.067 [pw]                              http://0.0.0.0:61224/mcp
+00:24:17.092 [pw] INFO:     Started server process [23684]
+00:24:17.092 [tw] INFO:     Started server process [9620]
+00:24:17.092 [pw] INFO:     Waiting for application startup.
+00:24:17.092 [tw] INFO:     Waiting for application startup.
+00:24:17.096 [tw] INFO:     Application startup complete.
+00:24:17.096 [pw] INFO:     Application startup complete.
+00:24:17.096 [tw] INFO:     Uvicorn running on http://0.0.0.0:61223 (Press CTRL+C to quit)
+00:24:17.097 [pw] INFO:     Uvicorn running on http://0.0.0.0:61224 (Press CTRL+C to quit)
+00:24:17.453 [pw] [police-worker] live GUI on http://127.0.0.1:8781
+00:24:17.453 [pw] [police-worker] endpoint live on :61224 (pid=23684, log=D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\reports\ref3_matches\worker_police_20260823-002415.log)
+00:24:17.453 [tw] [thief-worker] live GUI on http://127.0.0.1:8782
+00:24:17.453 [tw] [thief-worker] endpoint live on :61223 (pid=9620, log=D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\reports\ref3_matches\worker_thief_20260823-002415.log)
+00:24:17.453 [match] police worker ready (pid=13832)
+00:24:17.453 [match] thief worker ready (pid=17844)
+00:24:17.461 [match] SPLIT arch: cop pid=13832 thief pid=17844 orchestrator holds no game state
+00:24:17.461 [match] sg1 (thief) — dispatching to thief worker
+00:24:17.994 [tw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='cosmos77' role='police' sub_game=1 uid='06f81d92-73bb' scent=81ebee59 wire=229ae648
+00:24:18.893 [tw] [match] peer endpoint UP: https://cosmos77-arena-production.up.railway.app/mcp
+00:24:19.732 [tw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='cosmos77' role='police' sub_game=1 uid='06f81d92-73bb' scent=81ebee59 wire=229ae648
+00:24:22.945 [tw] [match] sg1 peer greeting sub_game=1 role=police
+00:24:22.945 [tw] [match] sg1 role=thief handshake OK vs cosmos77 uid=06f81d92-73b
+00:24:24.741 [tw] [wire<-] turn step=1 sender='police' commit=5b186c3f ts='2026-08-23T00:24:23+03:' cells=12 barrier=None claim=None answer=None win=None
+00:24:24.796 [tw] [scent] sg1 step2: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+00:24:25.312 [tw] [wire<-] turn step=2 sender='police' commit=4dc23cc0 ts='2026-08-23T00:24:23+03:' cells=15 barrier=None claim=None answer=None win=None
+00:24:26.908 [tw] [wire<-] turn step=3 sender='police' commit=caa9d6a7 ts='2026-08-23T00:24:25+03:' cells=18 barrier=None claim=None answer=None win=None
+00:24:27.493 [tw] [wire<-] turn step=4 sender='police' commit=26dee2bb ts='2026-08-23T00:24:26+03:' cells=23 barrier=None claim=None answer=None win=None
+00:24:28.217 [tw] [wire<-] turn step=5 sender='police' commit=c5d403f8 ts='2026-08-23T00:24:26+03:' cells=27 barrier=None claim=None answer=None win=None
+00:24:29.460 [tw] [wire<-] turn step=6 sender='police' commit=b2a43f9d ts='2026-08-23T00:24:28+03:' cells=32 barrier=None claim=None answer=None win=None
+00:24:30.212 [tw] [wire<-] turn step=7 sender='police' commit=b04aafee ts='2026-08-23T00:24:28+03:' cells=37 barrier=None claim=None answer=None win=None
+00:24:30.864 [tw] [wire<-] turn step=8 sender='police' commit=2799fec4 ts='2026-08-23T00:24:29+03:' cells=37 barrier=[3, 5] claim=None answer=None win=None
+00:24:31.955 [tw] [wire<-] turn step=9 sender='police' commit=7bf22030 ts='2026-08-23T00:24:30+03:' cells=42 barrier=None claim=None answer=None win=None
+00:24:32.527 [tw] [wire<-] turn step=10 sender='police' commit=9935f9aa ts='2026-08-23T00:24:31+03:' cells=42 barrier=[3, 4] claim=None answer=None win=None
+00:24:33.068 [tw] [wire<-] turn step=11 sender='police' commit=40b53cea ts='2026-08-23T00:24:31+03:' cells=42 barrier=[4, 5] claim=None answer=None win=None
+00:24:34.077 [tw] [wire<-] turn step=12 sender='police' commit=0703562b ts='2026-08-23T00:24:32+03:' cells=42 barrier=[4, 3] claim=None answer=None win=None
+00:24:34.504 [tw] [wire<-] turn step=13 sender='police' commit=67c8e009 ts='2026-08-23T00:24:33+03:' cells=42 barrier=None claim=None answer=None win=None
+00:24:34.998 [tw] [wire<-] turn step=14 sender='police' commit=e0398410 ts='2026-08-23T00:24:33+03:' cells=45 barrier=None claim=None answer=None win=None
+00:24:35.934 [tw] [wire<-] turn step=15 sender='police' commit=3d234d92 ts='2026-08-23T00:24:34+03:' cells=45 barrier=[5, 4] claim=None answer=None win=None
+00:24:36.392 [tw] [wire<-] turn step=16 sender='police' commit=15978321 ts='2026-08-23T00:24:34+03:' cells=45 barrier=[6, 3] claim=None answer=None win=None
+00:24:36.827 [tw] [wire<-] turn step=17 sender='police' commit=cea0ce4a ts='2026-08-23T00:24:35+03:' cells=49 barrier=None claim=None answer=None win=None
+00:24:37.907 [tw] [wire<-] turn step=18 sender='police' commit=553c9238 ts='2026-08-23T00:24:36+03:' cells=49 barrier=[5, 3] claim=None answer=None win=None
+00:24:38.418 [tw] [wire<-] turn step=19 sender='police' commit=7a4e2a77 ts='2026-08-23T00:24:36+03:' cells=49 barrier=[4, 2] claim=None answer=None win=None
+00:24:38.857 [tw] [wire<-] turn step=20 sender='police' commit=c91752db ts='2026-08-23T00:24:37+03:' cells=49 barrier=[6, 2] claim=None answer=None win=None
+00:24:39.969 [tw] [wire<-] turn step=21 sender='police' commit=c36bc288 ts='2026-08-23T00:24:38+03:' cells=49 barrier=None claim=None answer=None win=None
+00:24:40.389 [tw] [wire<-] turn step=22 sender='police' commit=a35135b3 ts='2026-08-23T00:24:38+03:' cells=49 barrier=[5, 2] claim=None answer=None win=None
+00:24:40.827 [tw] [wire<-] turn step=23 sender='police' commit=f2bf5b14 ts='2026-08-23T00:24:39+03:' cells=49 barrier=[4, 1] claim=None answer=None win=None
+00:24:41.633 [tw] [wire<-] turn step=24 sender='police' commit=b18bc506 ts='2026-08-23T00:24:40+03:' cells=49 barrier=[6, 1] claim=None answer=None win=None
+00:24:42.015 [tw] [wire<-] turn step=25 sender='police' commit=fe3a492c ts='2026-08-23T00:24:40+03:' cells=49 barrier=None claim=None answer=None win=None
+00:24:42.548 [tw] [wire<-] turn step=26 sender='police' commit=8bff8104 ts='2026-08-23T00:24:40+03:' cells=49 barrier=None claim=None answer=None win=None
+00:24:43.461 [tw] [wire<-] turn step=27 sender='police' commit=d56b1786 ts='2026-08-23T00:24:42+03:' cells=49 barrier=None claim=None answer=None win=None
+00:24:43.951 [tw] [wire<-] turn step=28 sender='police' commit=62f207cc ts='2026-08-23T00:24:42+03:' cells=49 barrier=None claim=None answer=None win=None
+00:24:44.435 [tw] [wire<-] turn step=29 sender='police' commit=8c070cb3 ts='2026-08-23T00:24:43+03:' cells=49 barrier=None claim=None answer=None win=None
+00:24:45.346 [tw] [wire<-] turn step=30 sender='police' commit=e0afa8f9 ts='2026-08-23T00:24:43+03:' cells=49 barrier=None claim=None answer=None win=None
+00:24:45.769 [tw] [wire<-] turn step=31 sender='police' commit=12d7e9bb ts='2026-08-23T00:24:44+03:' cells=49 barrier=None claim=None answer=None win=None
+00:24:46.331 [tw] [wire<-] turn step=32 sender='police' commit=e664c79a ts='2026-08-23T00:24:44+03:' cells=49 barrier=None claim=None answer=None win=None
+00:24:47.317 [tw] [wire<-] turn step=33 sender='police' commit=fce498d9 ts='2026-08-23T00:24:45+03:' cells=49 barrier=None claim=None answer=None win=None
+00:24:47.674 [tw] [wire<-] turn step=34 sender='police' commit=0f3fad11 ts='2026-08-23T00:24:46+03:' cells=49 barrier=None claim=None answer=None win=None
+00:24:48.094 [tw] [wire<-] audit sender='police' records=35 claim='survival'
+00:24:48.440 [tw] [match] sg1 audit ok=True errors=[] outcome=survival rl_moves=35 distinct=5 sample=['S', 'S', 'N', 'S', 'E', 'W', 'W', 'N']
+00:24:48.674 [match] sg1 complete
+00:24:48.675 [match] sg2 (police) — dispatching to police worker
+00:24:50.002 [pw] [match] peer endpoint UP: https://cosmos77-arena-production.up.railway.app/mcp
+00:24:50.219 [pw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='cosmos77' role='thief' sub_game=2 uid='06f81d92-73bb' scent=81ebee59 wire=229ae648
+00:24:51.716 [pw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='cosmos77' role='thief' sub_game=2 uid='06f81d92-73bb' scent=81ebee59 wire=229ae648
+00:24:53.720 [pw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='cosmos77' role='thief' sub_game=2 uid='06f81d92-73bb' scent=81ebee59 wire=229ae648
+00:24:53.886 [pw] [wire<-] turn step=1 sender='thief' commit=b40b3863 ts='2026-08-23T00:24:52+03:' cells=25 barrier=None claim=None answer=None win=None
+00:24:54.048 [pw] [match] sg2 peer greeting sub_game=2 role=thief
+00:24:54.048 [pw] [match] sg2 role=police handshake OK vs cosmos77 uid=06f81d92-73b
+00:24:55.753 [pw] [scent] sg2 step1: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+00:24:56.811 [pw] [wire<-] turn step=2 sender='thief' commit=db729666 ts='2026-08-23T00:24:55+03:' cells=25 barrier=None claim=None answer=False win=None
+00:24:59.348 [pw] [wire<-] turn step=3 sender='thief' commit=fd96223b ts='2026-08-23T00:24:57+03:' cells=25 barrier=None claim=None answer=False win=None
+00:25:00.754 [pw] [wire<-] turn step=4 sender='thief' commit=3548fffd ts='2026-08-23T00:24:59+03:' cells=25 barrier=None claim=None answer=False win=None
+00:25:02.026 [pw] [wire<-] turn step=5 sender='thief' commit=d8cf1488 ts='2026-08-23T00:25:00+03:' cells=25 barrier=None claim=None answer=False win=None
+00:25:04.346 [pw] [wire<-] turn step=6 sender='thief' commit=c228fc9d ts='2026-08-23T00:25:02+03:' cells=30 barrier=None claim=None answer=False win=None
+00:25:04.828 [pw] [wire<-] turn step=7 sender='thief' commit=7acc3d97 ts='2026-08-23T00:25:03+03:' cells=35 barrier=None claim=None answer=False win=None
+00:25:06.655 [pw] [wire<-] turn step=8 sender='thief' commit=7967c882 ts='2026-08-23T00:25:05+03:' cells=35 barrier=None claim=None answer=False win=None
+00:25:09.223 [pw] [wire<-] turn step=9 sender='thief' commit=2a4a8c9e ts='2026-08-23T00:25:07+03:' cells=36 barrier=None claim=None answer=False win=None
+00:25:10.702 [pw] [wire<-] turn step=10 sender='thief' commit=5b4f3966 ts='2026-08-23T00:25:09+03:' cells=41 barrier=None claim=None answer=False win=None
+00:25:12.163 [pw] [wire<-] turn step=11 sender='thief' commit=4373b718 ts='2026-08-23T00:25:09+03:' cells=41 barrier=None claim=None answer=False win=None
+00:25:13.938 [pw] [wire<-] turn step=12 sender='thief' commit=f58b70c0 ts='2026-08-23T00:25:12+03:' cells=41 barrier=None claim=None answer=False win=None
+00:25:15.344 [pw] [wire<-] turn step=13 sender='thief' commit=345a8999 ts='2026-08-23T00:25:13+03:' cells=41 barrier=None claim=None answer=False win=None
+00:25:16.271 [pw] [wire<-] turn step=14 sender='thief' commit=16327e34 ts='2026-08-23T00:25:14+03:' cells=41 barrier=None claim=None answer=False win=None
+00:25:17.280 [pw] [wire<-] turn step=15 sender='thief' commit=32ce4f12 ts='2026-08-23T00:25:15+03:' cells=41 barrier=None claim=None answer=False win=None
+00:25:17.743 [pw] [wire<-] turn step=16 sender='thief' commit=76ee3533 ts='2026-08-23T00:25:16+03:' cells=41 barrier=None claim=None answer=False win=None
+00:25:18.446 [pw] [wire<-] turn step=17 sender='thief' commit=6b931276 ts='2026-08-23T00:25:17+03:' cells=41 barrier=None claim=None answer=False win=None
+00:25:20.588 [pw] [wire<-] turn step=18 sender='thief' commit=b4d3deaf ts='2026-08-23T00:25:19+03:' cells=41 barrier=None claim=None answer=False win=None
+00:25:21.746 [pw] [wire<-] turn step=19 sender='thief' commit=a620629b ts='2026-08-23T00:25:20+03:' cells=41 barrier=None claim=None answer=False win=None
+00:25:22.159 [pw] [wire<-] turn step=20 sender='thief' commit=bdf15030 ts='2026-08-23T00:25:20+03:' cells=41 barrier=None claim=None answer=False win=None
+00:25:23.435 [pw] [wire<-] turn step=21 sender='thief' commit=c1dd7c9c ts='2026-08-23T00:25:22+03:' cells=41 barrier=None claim=None answer=False win=None
+00:25:24.501 [pw] [wire<-] turn step=22 sender='thief' commit=09042751 ts='2026-08-23T00:25:23+03:' cells=41 barrier=None claim=None answer=False win=None
+00:25:25.131 [pw] [wire<-] turn step=23 sender='thief' commit=c0fdef86 ts='2026-08-23T00:25:23+03:' cells=41 barrier=None claim=None answer=False win=None
+00:25:26.141 [pw] [wire<-] turn step=24 sender='thief' commit=a71b6eae ts='2026-08-23T00:25:24+03:' cells=44 barrier=None claim=None answer=False win=None
+00:25:26.599 [pw] [wire<-] turn step=25 sender='thief' commit=2c852b41 ts='2026-08-23T00:25:25+03:' cells=44 barrier=None claim=None answer=False win=None
+00:25:27.022 [pw] [wire<-] turn step=26 sender='thief' commit=5bf8ef5a ts='2026-08-23T00:25:25+03:' cells=45 barrier=None claim=None answer=False win=None
+00:25:28.076 [pw] [wire<-] turn step=27 sender='thief' commit=72e6a51f ts='2026-08-23T00:25:26+03:' cells=45 barrier=None claim=None answer=False win=None
+00:25:28.499 [pw] [wire<-] turn step=28 sender='thief' commit=69f6ecbe ts='2026-08-23T00:25:27+03:' cells=45 barrier=None claim=None answer=False win=None
+00:25:28.992 [pw] [wire<-] turn step=29 sender='thief' commit=79632351 ts='2026-08-23T00:25:27+03:' cells=46 barrier=None claim=None answer=False win=None
+00:25:29.809 [pw] [wire<-] turn step=30 sender='thief' commit=11e248ef ts='2026-08-23T00:25:28+03:' cells=46 barrier=None claim=None answer=False win=None
+00:25:30.357 [pw] [wire<-] turn step=31 sender='thief' commit=555d49f4 ts='2026-08-23T00:25:28+03:' cells=47 barrier=None claim=None answer=False win=None
+00:25:30.846 [pw] [wire<-] turn step=32 sender='thief' commit=9d5977cd ts='2026-08-23T00:25:29+03:' cells=49 barrier=None claim=None answer=False win=None
+00:25:31.782 [pw] [wire<-] turn step=33 sender='thief' commit=e514f48f ts='2026-08-23T00:25:30+03:' cells=49 barrier=None claim=None answer=False win=None
+00:25:32.151 [pw] [wire<-] turn step=34 sender='thief' commit=7537d60a ts='2026-08-23T00:25:30+03:' cells=49 barrier=None claim=None answer=False win=None
+00:25:32.559 [pw] [wire<-] turn step=35 sender='thief' commit=a51b5dcf ts='2026-08-23T00:25:31+03:' cells=49 barrier=None claim=None answer=False win=survival
+00:25:32.618 [pw] [match] sg2 thief declared survival terminal at step 35; cop stops (no post-terminal move)
+00:25:32.827 [pw] [wire<-] audit sender='thief' records=36 claim='survival'
+00:25:33.099 [pw] [match] sg2 audit ok=True errors=[] outcome=survival rl_moves=34 distinct=8 sample=['S', 'S', 'S', 'E', 'E', 'PLACE_N', 'E', 'N']
+00:25:33.340 [match] sg2 complete
+00:25:33.340 [match] sg3 (thief) — dispatching to thief worker
+00:25:34.321 [tw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='cosmos77' role='police' sub_game=3 uid='06f81d92-73bb' scent=81ebee59 wire=229ae648
+00:25:34.619 [tw] [match] peer endpoint UP: https://cosmos77-arena-production.up.railway.app/mcp
+00:25:36.326 [tw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='cosmos77' role='police' sub_game=3 uid='06f81d92-73bb' scent=81ebee59 wire=229ae648
+00:25:37.571 [tw] [match] sg3 peer greeting sub_game=3 role=police
+00:25:37.571 [tw] [match] sg3 role=thief handshake OK vs cosmos77 uid=06f81d92-73b
+00:25:37.887 [tw] [wire<-] turn step=1 sender='police' commit=c243f325 ts='2026-08-23T00:25:36+03:' cells=12 barrier=None claim=None answer=None win=None
+00:25:37.936 [tw] [scent] sg3 step2: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+00:25:38.443 [tw] [wire<-] turn step=2 sender='police' commit=9f5d4695 ts='2026-08-23T00:25:37+03:' cells=15 barrier=None claim=None answer=None win=None
+00:25:39.361 [tw] [wire<-] turn step=3 sender='police' commit=df40ea76 ts='2026-08-23T00:25:37+03:' cells=18 barrier=None claim=None answer=None win=None
+00:25:39.887 [tw] [wire<-] turn step=4 sender='police' commit=bef7ecdc ts='2026-08-23T00:25:38+03:' cells=23 barrier=None claim=None answer=None win=None
+00:25:40.613 [tw] [wire<-] turn step=5 sender='police' commit=74f593e8 ts='2026-08-23T00:25:39+03:' cells=27 barrier=None claim=None answer=None win=None
+00:25:41.776 [tw] [wire<-] turn step=6 sender='police' commit=7b98e4ea ts='2026-08-23T00:25:40+03:' cells=32 barrier=None claim=None answer=None win=None
+00:25:42.526 [tw] [wire<-] turn step=7 sender='police' commit=143f94cd ts='2026-08-23T00:25:41+03:' cells=37 barrier=None claim=None answer=None win=None
+00:25:43.260 [tw] [wire<-] turn step=8 sender='police' commit=4a6d14ee ts='2026-08-23T00:25:41+03:' cells=37 barrier=[3, 5] claim=None answer=None win=None
+00:25:44.350 [tw] [wire<-] turn step=9 sender='police' commit=1d79d144 ts='2026-08-23T00:25:42+03:' cells=42 barrier=None claim=None answer=None win=None
+00:25:44.910 [tw] [wire<-] turn step=10 sender='police' commit=83441b7b ts='2026-08-23T00:25:43+03:' cells=42 barrier=[3, 4] claim=None answer=None win=None
+00:25:45.412 [tw] [wire<-] turn step=11 sender='police' commit=c36de888 ts='2026-08-23T00:25:43+03:' cells=42 barrier=[4, 5] claim=None answer=None win=None
+00:25:46.383 [tw] [wire<-] turn step=12 sender='police' commit=36e11777 ts='2026-08-23T00:25:44+03:' cells=42 barrier=[4, 3] claim=None answer=None win=None
+00:25:46.860 [tw] [wire<-] turn step=13 sender='police' commit=d5becae8 ts='2026-08-23T00:25:45+03:' cells=42 barrier=None claim=None answer=None win=None
+00:25:47.346 [tw] [wire<-] turn step=14 sender='police' commit=5cd12074 ts='2026-08-23T00:25:45+03:' cells=45 barrier=None claim=None answer=None win=None
+00:25:48.318 [tw] [wire<-] turn step=15 sender='police' commit=9f04e901 ts='2026-08-23T00:25:46+03:' cells=45 barrier=[5, 4] claim=None answer=None win=None
+00:25:48.753 [tw] [wire<-] turn step=16 sender='police' commit=d4dd3d97 ts='2026-08-23T00:25:47+03:' cells=45 barrier=[6, 3] claim=None answer=None win=None
+00:25:49.185 [tw] [wire<-] turn step=17 sender='police' commit=b174937a ts='2026-08-23T00:25:47+03:' cells=49 barrier=None claim=None answer=None win=None
+00:25:50.162 [tw] [wire<-] turn step=18 sender='police' commit=62c88c58 ts='2026-08-23T00:25:48+03:' cells=49 barrier=[5, 3] claim=None answer=None win=None
+00:25:50.642 [tw] [wire<-] turn step=19 sender='police' commit=de595f94 ts='2026-08-23T00:25:49+03:' cells=49 barrier=[4, 2] claim=None answer=None win=None
+00:25:51.072 [tw] [wire<-] turn step=20 sender='police' commit=d7992ba8 ts='2026-08-23T00:25:49+03:' cells=49 barrier=[6, 2] claim=None answer=None win=None
+00:25:51.957 [tw] [wire<-] turn step=21 sender='police' commit=45d1dba4 ts='2026-08-23T00:25:50+03:' cells=49 barrier=None claim=None answer=None win=None
+00:25:52.382 [tw] [wire<-] turn step=22 sender='police' commit=e36203bd ts='2026-08-23T00:25:50+03:' cells=49 barrier=[5, 2] claim=None answer=None win=None
+00:25:52.810 [tw] [wire<-] turn step=23 sender='police' commit=b1558b8d ts='2026-08-23T00:25:51+03:' cells=49 barrier=[4, 1] claim=None answer=None win=None
+00:25:53.722 [tw] [wire<-] turn step=24 sender='police' commit=c1d5f950 ts='2026-08-23T00:25:52+03:' cells=49 barrier=[6, 1] claim=None answer=None win=None
+00:25:54.121 [tw] [wire<-] turn step=25 sender='police' commit=7fd70443 ts='2026-08-23T00:25:52+03:' cells=49 barrier=None claim=None answer=None win=None
+00:25:54.535 [tw] [wire<-] turn step=26 sender='police' commit=ba4eb215 ts='2026-08-23T00:25:53+03:' cells=49 barrier=None claim=None answer=None win=None
+00:25:55.435 [tw] [wire<-] turn step=27 sender='police' commit=19120d24 ts='2026-08-23T00:25:54+03:' cells=49 barrier=None claim=None answer=None win=None
+00:25:55.876 [tw] [wire<-] turn step=28 sender='police' commit=c14ac826 ts='2026-08-23T00:25:54+03:' cells=49 barrier=None claim=None answer=None win=None
+00:25:56.351 [tw] [wire<-] turn step=29 sender='police' commit=c6144bb4 ts='2026-08-23T00:25:54+03:' cells=49 barrier=None claim=None answer=None win=None
+00:25:57.275 [tw] [wire<-] turn step=30 sender='police' commit=cd94d313 ts='2026-08-23T00:25:55+03:' cells=49 barrier=None claim=None answer=None win=None
+00:25:57.676 [tw] [wire<-] turn step=31 sender='police' commit=c063f028 ts='2026-08-23T00:25:56+03:' cells=49 barrier=None claim=None answer=None win=None
+00:25:58.236 [tw] [wire<-] turn step=32 sender='police' commit=0c1bc6fa ts='2026-08-23T00:25:56+03:' cells=49 barrier=None claim=None answer=None win=None
+00:25:59.054 [tw] [wire<-] turn step=33 sender='police' commit=0292dd46 ts='2026-08-23T00:25:57+03:' cells=49 barrier=None claim=None answer=None win=None
+00:25:59.434 [tw] [wire<-] turn step=34 sender='police' commit=9b1dbb40 ts='2026-08-23T00:25:58+03:' cells=49 barrier=None claim=None answer=None win=None
+00:25:59.857 [tw] [wire<-] audit sender='police' records=35 claim='survival'
+00:26:00.205 [tw] [match] sg3 audit ok=True errors=[] outcome=survival rl_moves=35 distinct=5 sample=['S', 'S', 'N', 'S', 'E', 'W', 'W', 'N']
+00:26:00.446 [match] sg3 complete
+00:26:00.446 [match] sg4 (police) — dispatching to police worker
+00:26:01.050 [pw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='cosmos77' role='thief' sub_game=4 uid='06f81d92-73bb' scent=81ebee59 wire=229ae648
+00:26:01.736 [pw] [match] peer endpoint UP: https://cosmos77-arena-production.up.railway.app/mcp
+00:26:03.059 [pw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='cosmos77' role='thief' sub_game=4 uid='06f81d92-73bb' scent=81ebee59 wire=229ae648
+00:26:04.508 [pw] [wire<-] turn step=1 sender='thief' commit=12d01834 ts='2026-08-23T00:26:03+03:' cells=25 barrier=None claim=None answer=None win=None
+00:26:04.677 [pw] [match] sg4 peer greeting sub_game=4 role=thief
+00:26:04.677 [pw] [match] sg4 role=police handshake OK vs cosmos77 uid=06f81d92-73b
+00:26:04.685 [pw] [scent] sg4 step1: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+00:26:05.734 [pw] [wire<-] turn step=2 sender='thief' commit=9af0f18b ts='2026-08-23T00:26:04+03:' cells=25 barrier=None claim=None answer=False win=None
+00:26:07.787 [pw] [wire<-] turn step=3 sender='thief' commit=f3e669fe ts='2026-08-23T00:26:06+03:' cells=25 barrier=None claim=None answer=False win=None
+00:26:09.330 [pw] [wire<-] turn step=4 sender='thief' commit=fc5a7495 ts='2026-08-23T00:26:07+03:' cells=25 barrier=None claim=None answer=False win=None
+00:26:10.771 [pw] [wire<-] turn step=5 sender='thief' commit=8c5d61b0 ts='2026-08-23T00:26:09+03:' cells=25 barrier=None claim=None answer=False win=None
+00:26:13.154 [pw] [wire<-] turn step=6 sender='thief' commit=276f1297 ts='2026-08-23T00:26:11+03:' cells=30 barrier=None claim=None answer=False win=None
+00:26:13.742 [pw] [wire<-] turn step=7 sender='thief' commit=6b5ab592 ts='2026-08-23T00:26:12+03:' cells=35 barrier=None claim=None answer=False win=None
+00:26:15.838 [pw] [wire<-] turn step=8 sender='thief' commit=2cec3667 ts='2026-08-23T00:26:14+03:' cells=35 barrier=None claim=None answer=False win=None
+00:26:18.535 [pw] [wire<-] turn step=9 sender='thief' commit=bc341736 ts='2026-08-23T00:26:17+03:' cells=36 barrier=None claim=None answer=False win=None
+00:26:20.050 [pw] [wire<-] turn step=10 sender='thief' commit=ee3aa031 ts='2026-08-23T00:26:18+03:' cells=41 barrier=None claim=None answer=False win=None
+00:26:20.491 [pw] [wire<-] turn step=11 sender='thief' commit=8190a556 ts='2026-08-23T00:26:19+03:' cells=41 barrier=None claim=None answer=False win=None
+00:26:22.310 [pw] [wire<-] turn step=12 sender='thief' commit=f3a3b97f ts='2026-08-23T00:26:20+03:' cells=41 barrier=None claim=None answer=False win=None
+00:26:23.688 [pw] [wire<-] turn step=13 sender='thief' commit=27ddd6a7 ts='2026-08-23T00:26:22+03:' cells=41 barrier=None claim=None answer=False win=None
+00:26:24.622 [pw] [wire<-] turn step=14 sender='thief' commit=10805708 ts='2026-08-23T00:26:23+03:' cells=41 barrier=None claim=None answer=False win=None
+00:26:25.690 [pw] [wire<-] turn step=15 sender='thief' commit=ddae2183 ts='2026-08-23T00:26:24+03:' cells=41 barrier=None claim=None answer=False win=None
+00:26:26.091 [pw] [wire<-] turn step=16 sender='thief' commit=7927a070 ts='2026-08-23T00:26:24+03:' cells=41 barrier=None claim=None answer=False win=None
+00:26:26.818 [pw] [wire<-] turn step=17 sender='thief' commit=46a9dc8d ts='2026-08-23T00:26:25+03:' cells=41 barrier=None claim=None answer=False win=None
+00:26:28.985 [pw] [wire<-] turn step=18 sender='thief' commit=7cdf46b7 ts='2026-08-23T00:26:27+03:' cells=41 barrier=None claim=None answer=False win=None
+00:26:30.199 [pw] [wire<-] turn step=19 sender='thief' commit=afd43e72 ts='2026-08-23T00:26:28+03:' cells=41 barrier=None claim=None answer=False win=None
+00:26:30.616 [pw] [wire<-] turn step=20 sender='thief' commit=11c0eaa8 ts='2026-08-23T00:26:29+03:' cells=41 barrier=None claim=None answer=False win=None
+00:26:31.842 [pw] [wire<-] turn step=21 sender='thief' commit=3c054645 ts='2026-08-23T00:26:30+03:' cells=41 barrier=None claim=None answer=False win=None
+00:26:32.937 [pw] [wire<-] turn step=22 sender='thief' commit=e8fcc65d ts='2026-08-23T00:26:31+03:' cells=41 barrier=None claim=None answer=False win=None
+00:26:33.597 [pw] [wire<-] turn step=23 sender='thief' commit=fbe6afa8 ts='2026-08-23T00:26:32+03:' cells=41 barrier=None claim=None answer=False win=None
+00:26:34.630 [pw] [wire<-] turn step=24 sender='thief' commit=6393fa8d ts='2026-08-23T00:26:33+03:' cells=44 barrier=None claim=None answer=False win=None
+00:26:35.137 [pw] [wire<-] turn step=25 sender='thief' commit=7065ad0b ts='2026-08-23T00:26:33+03:' cells=44 barrier=None claim=None answer=False win=None
+00:26:35.547 [pw] [wire<-] turn step=26 sender='thief' commit=02adb99c ts='2026-08-23T00:26:34+03:' cells=45 barrier=None claim=None answer=False win=None
+00:26:36.519 [pw] [wire<-] turn step=27 sender='thief' commit=5822abc1 ts='2026-08-23T00:26:35+03:' cells=45 barrier=None claim=None answer=False win=None
+00:26:36.987 [pw] [wire<-] turn step=28 sender='thief' commit=fed35aeb ts='2026-08-23T00:26:35+03:' cells=45 barrier=None claim=None answer=False win=None
+00:26:37.502 [pw] [wire<-] turn step=29 sender='thief' commit=e21073af ts='2026-08-23T00:26:36+03:' cells=46 barrier=None claim=None answer=False win=None
+00:26:38.351 [pw] [wire<-] turn step=30 sender='thief' commit=80bd3ed4 ts='2026-08-23T00:26:36+03:' cells=46 barrier=None claim=None answer=False win=None
+00:26:38.845 [pw] [wire<-] turn step=31 sender='thief' commit=8a3d6b9f ts='2026-08-23T00:26:37+03:' cells=47 barrier=None claim=None answer=False win=None
+00:26:39.462 [pw] [wire<-] turn step=32 sender='thief' commit=941588fc ts='2026-08-23T00:26:38+03:' cells=49 barrier=None claim=None answer=False win=None
+00:26:40.297 [pw] [wire<-] turn step=33 sender='thief' commit=1312ae70 ts='2026-08-23T00:26:38+03:' cells=49 barrier=None claim=None answer=False win=None
+00:26:40.688 [pw] [wire<-] turn step=34 sender='thief' commit=f995d138 ts='2026-08-23T00:26:39+03:' cells=49 barrier=None claim=None answer=False win=None
+00:26:41.098 [pw] [wire<-] turn step=35 sender='thief' commit=e0ccc2b1 ts='2026-08-23T00:26:39+03:' cells=49 barrier=None claim=None answer=False win=survival
+00:26:41.150 [pw] [match] sg4 thief declared survival terminal at step 35; cop stops (no post-terminal move)
+00:26:41.376 [pw] [wire<-] audit sender='thief' records=36 claim='survival'
+00:26:41.629 [pw] [match] sg4 audit ok=True errors=[] outcome=survival rl_moves=34 distinct=8 sample=['S', 'S', 'S', 'E', 'E', 'PLACE_N', 'E', 'N']
+00:26:41.880 [match] sg4 complete
+00:26:41.880 [match] sg5 (thief) — dispatching to thief worker
+00:26:42.229 [tw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='cosmos77' role='police' sub_game=5 uid='06f81d92-73bb' scent=81ebee59 wire=229ae648
+00:26:43.195 [tw] [match] peer endpoint UP: https://cosmos77-arena-production.up.railway.app/mcp
+00:26:44.237 [tw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='cosmos77' role='police' sub_game=5 uid='06f81d92-73bb' scent=81ebee59 wire=229ae648
+00:26:46.132 [tw] [match] sg5 peer greeting sub_game=5 role=police
+00:26:46.133 [tw] [match] sg5 role=thief handshake OK vs cosmos77 uid=06f81d92-73b
+00:26:46.438 [tw] [wire<-] turn step=1 sender='police' commit=0a601021 ts='2026-08-23T00:26:45+03:' cells=12 barrier=None claim=None answer=None win=None
+00:26:46.492 [tw] [scent] sg5 step2: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+00:26:46.997 [tw] [wire<-] turn step=2 sender='police' commit=0e8d67ad ts='2026-08-23T00:26:45+03:' cells=15 barrier=None claim=None answer=None win=None
+00:26:48.008 [tw] [wire<-] turn step=3 sender='police' commit=24c23c49 ts='2026-08-23T00:26:46+03:' cells=18 barrier=None claim=None answer=None win=None
+00:26:48.620 [tw] [wire<-] turn step=4 sender='police' commit=19a9006b ts='2026-08-23T00:26:47+03:' cells=23 barrier=None claim=None answer=None win=None
+00:26:49.331 [tw] [wire<-] turn step=5 sender='police' commit=15494b4d ts='2026-08-23T00:26:47+03:' cells=27 barrier=None claim=None answer=None win=None
+00:26:50.506 [tw] [wire<-] turn step=6 sender='police' commit=f439bf33 ts='2026-08-23T00:26:49+03:' cells=32 barrier=None claim=None answer=None win=None
+00:26:51.271 [tw] [wire<-] turn step=7 sender='police' commit=1be5f918 ts='2026-08-23T00:26:49+03:' cells=37 barrier=None claim=None answer=None win=None
+00:26:51.927 [tw] [wire<-] turn step=8 sender='police' commit=cb71ef08 ts='2026-08-23T00:26:50+03:' cells=37 barrier=[3, 5] claim=None answer=None win=None
+00:26:53.170 [tw] [wire<-] turn step=9 sender='police' commit=3a163652 ts='2026-08-23T00:26:51+03:' cells=42 barrier=None claim=None answer=None win=None
+00:26:53.696 [tw] [wire<-] turn step=10 sender='police' commit=a9147464 ts='2026-08-23T00:26:52+03:' cells=42 barrier=[3, 4] claim=None answer=None win=None
+00:26:54.216 [tw] [wire<-] turn step=11 sender='police' commit=751ab29e ts='2026-08-23T00:26:52+03:' cells=42 barrier=[4, 5] claim=None answer=None win=None
+00:26:55.175 [tw] [wire<-] turn step=12 sender='police' commit=5a23603f ts='2026-08-23T00:26:53+03:' cells=42 barrier=[4, 3] claim=None answer=None win=None
+00:26:55.634 [tw] [wire<-] turn step=13 sender='police' commit=d3629d41 ts='2026-08-23T00:26:54+03:' cells=42 barrier=None claim=None answer=None win=None
+00:26:56.130 [tw] [wire<-] turn step=14 sender='police' commit=28ca9479 ts='2026-08-23T00:26:54+03:' cells=45 barrier=None claim=None answer=None win=None
+00:26:57.084 [tw] [wire<-] turn step=15 sender='police' commit=89b5ee4f ts='2026-08-23T00:26:55+03:' cells=45 barrier=[5, 4] claim=None answer=None win=None
+00:26:57.565 [tw] [wire<-] turn step=16 sender='police' commit=c4c7181b ts='2026-08-23T00:26:56+03:' cells=45 barrier=[6, 3] claim=None answer=None win=None
+00:26:58.000 [tw] [wire<-] turn step=17 sender='police' commit=1bd696d8 ts='2026-08-23T00:26:56+03:' cells=49 barrier=None claim=None answer=None win=None
+00:26:59.009 [tw] [wire<-] turn step=18 sender='police' commit=4e868504 ts='2026-08-23T00:26:57+03:' cells=49 barrier=[5, 3] claim=None answer=None win=None
+00:26:59.509 [tw] [wire<-] turn step=19 sender='police' commit=c46ad0fb ts='2026-08-23T00:26:58+03:' cells=49 barrier=[4, 2] claim=None answer=None win=None
+00:26:59.941 [tw] [wire<-] turn step=20 sender='police' commit=3f381909 ts='2026-08-23T00:26:58+03:' cells=49 barrier=[6, 2] claim=None answer=None win=None
+00:27:00.842 [tw] [wire<-] turn step=21 sender='police' commit=67fd17c5 ts='2026-08-23T00:26:59+03:' cells=49 barrier=None claim=None answer=None win=None
+00:27:01.288 [tw] [wire<-] turn step=22 sender='police' commit=dc7c5a03 ts='2026-08-23T00:26:59+03:' cells=49 barrier=[5, 2] claim=None answer=None win=None
+00:27:01.719 [tw] [wire<-] turn step=23 sender='police' commit=9baa50c2 ts='2026-08-23T00:27:00+03:' cells=49 barrier=[4, 1] claim=None answer=None win=None
+00:27:02.568 [tw] [wire<-] turn step=24 sender='police' commit=2401dd94 ts='2026-08-23T00:27:01+03:' cells=49 barrier=[6, 1] claim=None answer=None win=None
+00:27:02.947 [tw] [wire<-] turn step=25 sender='police' commit=4f746ee3 ts='2026-08-23T00:27:01+03:' cells=49 barrier=None claim=None answer=None win=None
+00:27:03.351 [tw] [wire<-] turn step=26 sender='police' commit=c75f9074 ts='2026-08-23T00:27:01+03:' cells=49 barrier=None claim=None answer=None win=None
+00:27:04.211 [tw] [wire<-] turn step=27 sender='police' commit=d0c662bc ts='2026-08-23T00:27:02+03:' cells=49 barrier=None claim=None answer=None win=None
+00:27:04.709 [tw] [wire<-] turn step=28 sender='police' commit=c04244f2 ts='2026-08-23T00:27:03+03:' cells=49 barrier=None claim=None answer=None win=None
+00:27:05.198 [tw] [wire<-] turn step=29 sender='police' commit=8b7e5bb8 ts='2026-08-23T00:27:03+03:' cells=49 barrier=None claim=None answer=None win=None
+00:27:06.210 [tw] [wire<-] turn step=30 sender='police' commit=46e5faf8 ts='2026-08-23T00:27:04+03:' cells=49 barrier=None claim=None answer=None win=None
+00:27:06.633 [tw] [wire<-] turn step=31 sender='police' commit=fdc93941 ts='2026-08-23T00:27:05+03:' cells=49 barrier=None claim=None answer=None win=None
+00:27:07.204 [tw] [wire<-] turn step=32 sender='police' commit=33a4c99d ts='2026-08-23T00:27:05+03:' cells=49 barrier=None claim=None answer=None win=None
+00:27:08.114 [tw] [wire<-] turn step=33 sender='police' commit=cb7c44ed ts='2026-08-23T00:27:06+03:' cells=49 barrier=None claim=None answer=None win=None
+00:27:08.473 [tw] [wire<-] turn step=34 sender='police' commit=2f438dc7 ts='2026-08-23T00:27:07+03:' cells=49 barrier=None claim=None answer=None win=None
+00:27:08.912 [tw] [wire<-] audit sender='police' records=35 claim='survival'
+00:27:09.598 [pw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='cosmos77' role='thief' sub_game=6 uid='06f81d92-73bb' scent=81ebee59 wire=229ae648
+00:27:10.687 [tw] [match] sg5 audit ok=True errors=[] outcome=survival rl_moves=35 distinct=5 sample=['S', 'S', 'N', 'S', 'E', 'W', 'W', 'N']
+00:27:10.932 [match] sg5 complete
+00:27:10.932 [match] sg6 (police) — dispatching to police worker
+00:27:11.602 [pw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='cosmos77' role='thief' sub_game=6 uid='06f81d92-73bb' scent=81ebee59 wire=229ae648
+00:27:12.226 [pw] [match] peer endpoint UP: https://cosmos77-arena-production.up.railway.app/mcp
+00:27:13.602 [pw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='cosmos77' role='thief' sub_game=6 uid='06f81d92-73bb' scent=81ebee59 wire=229ae648
+00:27:15.223 [pw] [match] sg6 peer greeting sub_game=6 role=thief
+00:27:15.223 [pw] [match] sg6 role=police handshake OK vs cosmos77 uid=06f81d92-73b
+00:27:15.808 [pw] [wire<-] negotiate keys=['game_uid', 'group_id', 'identity', 'info_mode_sha256', 'nonce', 'role', 'scent_model_sha256', 'signature', 'sub_game_number', 'terms', 'wire_shape_sha256'] group='cosmos77' role='thief' sub_game=6 uid='06f81d92-73bb' scent=81ebee59 wire=229ae648
+00:27:16.151 [pw] [wire<-] turn step=1 sender='thief' commit=88c75151 ts='2026-08-23T00:27:14+03:' cells=25 barrier=None claim=None answer=None win=None
+00:27:16.209 [pw] [scent] sg6 step1: peer transmits subtractive_chebyshev_v1 — MATCHES ours
+00:27:20.857 [pw] [wire<-] turn step=2 sender='thief' commit=8a30bcfd ts='2026-08-23T00:27:19+03:' cells=25 barrier=None claim=None answer=False win=None
+00:27:22.844 [pw] [wire<-] turn step=3 sender='thief' commit=d900fecf ts='2026-08-23T00:27:21+03:' cells=25 barrier=None claim=None answer=False win=None
+00:27:24.272 [pw] [wire<-] turn step=4 sender='thief' commit=56a2d248 ts='2026-08-23T00:27:22+03:' cells=25 barrier=None claim=None answer=False win=None
+00:27:25.663 [pw] [wire<-] turn step=5 sender='thief' commit=02c141ed ts='2026-08-23T00:27:24+03:' cells=25 barrier=None claim=None answer=False win=None
+00:27:28.009 [pw] [wire<-] turn step=6 sender='thief' commit=5f0fe8ff ts='2026-08-23T00:27:26+03:' cells=30 barrier=None claim=None answer=False win=None
+00:27:28.466 [pw] [wire<-] turn step=7 sender='thief' commit=1893bb9e ts='2026-08-23T00:27:27+03:' cells=35 barrier=None claim=None answer=False win=None
+00:27:30.298 [pw] [wire<-] turn step=8 sender='thief' commit=791271ea ts='2026-08-23T00:27:28+03:' cells=35 barrier=None claim=None answer=False win=None
+00:27:32.955 [pw] [wire<-] turn step=9 sender='thief' commit=55f6c3ed ts='2026-08-23T00:27:31+03:' cells=36 barrier=None claim=None answer=False win=None
+00:27:34.459 [pw] [wire<-] turn step=10 sender='thief' commit=90a6351a ts='2026-08-23T00:27:33+03:' cells=41 barrier=None claim=None answer=False win=None
+00:27:34.996 [pw] [wire<-] turn step=11 sender='thief' commit=5a948425 ts='2026-08-23T00:27:33+03:' cells=41 barrier=None claim=None answer=False win=None
+00:27:36.675 [pw] [wire<-] turn step=12 sender='thief' commit=fc7238c2 ts='2026-08-23T00:27:35+03:' cells=41 barrier=None claim=None answer=False win=None
+00:27:38.056 [pw] [wire<-] turn step=13 sender='thief' commit=ab0f59ba ts='2026-08-23T00:27:36+03:' cells=41 barrier=None claim=None answer=False win=None
+00:27:38.992 [pw] [wire<-] turn step=14 sender='thief' commit=cd57618b ts='2026-08-23T00:27:37+03:' cells=41 barrier=None claim=None answer=False win=None
+00:27:40.100 [pw] [wire<-] turn step=15 sender='thief' commit=e97dcb65 ts='2026-08-23T00:27:38+03:' cells=41 barrier=None claim=None answer=False win=None
+00:27:40.513 [pw] [wire<-] turn step=16 sender='thief' commit=a5fe5780 ts='2026-08-23T00:27:39+03:' cells=41 barrier=None claim=None answer=False win=None
+00:27:41.232 [pw] [wire<-] turn step=17 sender='thief' commit=518a9fde ts='2026-08-23T00:27:39+03:' cells=41 barrier=None claim=None answer=False win=None
+00:27:43.491 [pw] [wire<-] turn step=18 sender='thief' commit=bbe1f436 ts='2026-08-23T00:27:42+03:' cells=41 barrier=None claim=None answer=False win=None
+00:27:44.703 [pw] [wire<-] turn step=19 sender='thief' commit=b1efc170 ts='2026-08-23T00:27:43+03:' cells=41 barrier=None claim=None answer=False win=None
+00:27:45.129 [pw] [wire<-] turn step=20 sender='thief' commit=7635a41b ts='2026-08-23T00:27:43+03:' cells=41 barrier=None claim=None answer=False win=None
+00:27:46.451 [pw] [wire<-] turn step=21 sender='thief' commit=a743c875 ts='2026-08-23T00:27:45+03:' cells=41 barrier=None claim=None answer=False win=None
+00:27:47.522 [pw] [wire<-] turn step=22 sender='thief' commit=c61330e8 ts='2026-08-23T00:27:46+03:' cells=41 barrier=None claim=None answer=False win=None
+00:27:48.155 [pw] [wire<-] turn step=23 sender='thief' commit=41638e2b ts='2026-08-23T00:27:46+03:' cells=41 barrier=None claim=None answer=False win=None
+00:27:49.156 [pw] [wire<-] turn step=24 sender='thief' commit=ebb7d988 ts='2026-08-23T00:27:47+03:' cells=44 barrier=None claim=None answer=False win=None
+00:27:49.649 [pw] [wire<-] turn step=25 sender='thief' commit=2447c061 ts='2026-08-23T00:27:48+03:' cells=44 barrier=None claim=None answer=False win=None
+00:27:50.053 [pw] [wire<-] turn step=26 sender='thief' commit=155538eb ts='2026-08-23T00:27:48+03:' cells=45 barrier=None claim=None answer=False win=None
+00:27:51.122 [pw] [wire<-] turn step=27 sender='thief' commit=63e526d4 ts='2026-08-23T00:27:49+03:' cells=45 barrier=None claim=None answer=False win=None
+00:27:51.574 [pw] [wire<-] turn step=28 sender='thief' commit=9acd04d6 ts='2026-08-23T00:27:50+03:' cells=45 barrier=None claim=None answer=False win=None
+00:27:52.076 [pw] [wire<-] turn step=29 sender='thief' commit=4b7d5be0 ts='2026-08-23T00:27:50+03:' cells=46 barrier=None claim=None answer=False win=None
+00:27:52.932 [pw] [wire<-] turn step=30 sender='thief' commit=5922bc29 ts='2026-08-23T00:27:51+03:' cells=46 barrier=None claim=None answer=False win=None
+00:27:53.419 [pw] [wire<-] turn step=31 sender='thief' commit=55638170 ts='2026-08-23T00:27:51+03:' cells=47 barrier=None claim=None answer=False win=None
+00:27:53.911 [pw] [wire<-] turn step=32 sender='thief' commit=9dcce12e ts='2026-08-23T00:27:52+03:' cells=49 barrier=None claim=None answer=False win=None
+00:27:54.893 [pw] [wire<-] turn step=33 sender='thief' commit=a1b33138 ts='2026-08-23T00:27:53+03:' cells=49 barrier=None claim=None answer=False win=None
+00:27:55.278 [pw] [wire<-] turn step=34 sender='thief' commit=6af49c88 ts='2026-08-23T00:27:53+03:' cells=49 barrier=None claim=None answer=False win=None
+00:27:55.683 [pw] [wire<-] turn step=35 sender='thief' commit=529580bb ts='2026-08-23T00:27:54+03:' cells=49 barrier=None claim=None answer=False win=survival
+00:27:55.740 [pw] [match] sg6 thief declared survival terminal at step 35; cop stops (no post-terminal move)
+00:27:55.960 [pw] [wire<-] audit sender='thief' records=36 claim='survival'
+00:27:56.216 [pw] [match] sg6 audit ok=True errors=[] outcome=survival rl_moves=34 distinct=8 sample=['S', 'S', 'S', 'E', 'E', 'PLACE_N', 'E', 'N']
+00:27:56.454 [match] sg6 complete
+00:27:56.457 [pw] ERROR:    Traceback (most recent call last):
+00:27:56.457 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\starlette\routing.py", line 645, in lifespan
+00:27:56.458 [pw]     await receive()
+00:27:56.458 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+00:27:56.458 [pw]     return await self.receive_queue.get()
+00:27:56.458 [pw]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+00:27:56.458 [pw]   File "C:\Users\kuper\AppData\Local\Programs\Python\Python313\Lib\asyncio\queues.py", line 186, in get
+00:27:56.458 [pw]     await getter
+00:27:56.458 [pw] asyncio.exceptions.CancelledError
+00:27:56.458 [tw] ERROR:    Traceback (most recent call last):
+00:27:56.458 [tw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\starlette\routing.py", line 645, in lifespan
+00:27:56.458 [tw]     await receive()
+00:27:56.458 [tw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+00:27:56.458 [tw]     return await self.receive_queue.get()
+00:27:56.458 [tw]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+00:27:56.458 [tw]   File "C:\Users\kuper\AppData\Local\Programs\Python\Python313\Lib\asyncio\queues.py", line 186, in get
+00:27:56.458 [tw]     await getter
+00:27:56.458 [tw] asyncio.exceptions.CancelledError
+00:27:56.459 [pw] ERROR:    Traceback (most recent call last):
+00:27:56.459 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\starlette\routing.py", line 645, in lifespan
+00:27:56.459 [pw]     await receive()
+00:27:56.459 [pw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+00:27:56.459 [pw]     return await self.receive_queue.get()
+00:27:56.459 [pw]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+00:27:56.459 [pw]   File "C:\Users\kuper\AppData\Local\Programs\Python\Python313\Lib\asyncio\queues.py", line 186, in get
+00:27:56.459 [pw]     await getter
+00:27:56.459 [pw] asyncio.exceptions.CancelledError
+00:27:56.459 [tw] ERROR:    Traceback (most recent call last):
+00:27:56.459 [tw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\starlette\routing.py", line 645, in lifespan
+00:27:56.459 [tw]     await receive()
+00:27:56.459 [tw]   File "D:\studies\AI_Agent_Orchestration_Course\submission_project\vibecode-cop\.venv\Lib\site-packages\uvicorn\lifespan\on.py", line 137, in receive
+00:27:56.459 [tw]     return await self.receive_queue.get()
+00:27:56.459 [tw]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+00:27:56.459 [tw]   File "C:\Users\kuper\AppData\Local\Programs\Python\Python313\Lib\asyncio\queues.py", line 186, in get
+00:27:56.459 [tw]     await getter
+00:27:56.459 [tw] asyncio.exceptions.CancelledError
+
+00:27:57.024 [match] STATUS: audits 6/6 ok
+00:27:57.027 [match] saved config profile used vs cosmos77 -> config/opponents/cosmos77/ (existing profile files preserved)
+00:27:57.158 [match] artifacts: 6x(config+log) + declaration + result under results/ and config/games/
+00:27:57.158 [match] result: {'vibecode': 47, 'cosmos77': 47} winner=None
+00:27:58.774 [match] emailed result ONLY to rmisegal+uoh26finalgame@gmail.com (id=1a02b5f8c431cfb2)
+00:27:58.775 [match] counted ledger updated: counted_games_played=10 (results/counted_series.json)

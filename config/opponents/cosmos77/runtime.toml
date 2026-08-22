@@ -1,105 +1,75 @@
-# ================================================================
-# vibecode-cop — RUNTIME configuration (NOT part of any SHA)
-# ================================================================
-# This file holds every runtime/operational parameter for a match:
-# network endpoints, timeouts, LLM settings, identity, and reporting.
-#
-# It is deliberately SEPARATE from config/game.json:
-#   - game.json  = the shared constitution. Its whole-file canonical
-#                  SHA (config_sha256) is exchanged and must match the
-#                  opponent. See config/README.md.
-#   - runtime.toml = private to us. Never hashed, never shared. Edit
-#                    freely; it changes HOW we run, not the game rules.
-#
-# On the next game, ALL main operational params live here. Select a
-# profile with `--config <name>` (loads config/opponents/<name>/ if it
-# exists, else this base). CLI flags always override these values.
-# ================================================================
-
-# Semantic version of this runtime-config schema.
-config_version = "1.0.0"
-
+# vm__fabi pairing (Vasily Mironovich & Fahed Bitar, University of Haifa).
+# ONE process, both roles, ONE static ngrok domain (does not rotate) — both
+# opp URLs point at the same endpoint (single-door peer precedent). Between windows
+# it answers 502; during a window a bare probe answers 406. They REFUSE
+# dials from unconfigured groups and outside agreed windows.
+# OPEN ITEM before any game: ROLE PARITY — their rule (alpha-first = police
+# on odd) makes vibecode police on 1/3/5; our driver hardcodes thief-on-odd.
+# Reconciliation requested in the greeting reply; do NOT schedule before it
+# is settled in writing.
 [network]
-# Our two MCP servers. The local listeners never move; only the PUBLIC URL we
-# declare to the opponent changes with `ingress`:
-#   "ngrok"            — declare a live tunnel URL instead, read from the
-#                        agent API. The free plan has ONE domain, so only
-#                        ONE door can be tunnelled; the other still falls
-#                        back to the IP. See docs/NGROK_INGRESS.md.
-#   "static" (default) — the router-forwarded public IP below. Both doors
-#                        reachable, permanent, nothing to keep running.
-# If ngrok is selected but no tunnel is up, we fall back to the static IP for
-# that role and print why; a match never fails over ingress.
-# Setting our_cop_mcp_url / our_thief_mcp_url explicitly overrides both modes.
 ingress           = "static"
 our_cop_port      = 61224
 our_thief_port    = 61223
+# Live belief-heatmap pages for the operator (observational only; with the
+# keys absent no GUI starts and play is byte-identical).
+gui_cop_port      = 8781
+gui_thief_port    = 8782
 
-# Default opponent (override per game with --opponent-group / --opp-*-url
-# or a saved config/opponents/<group>/runtime.toml).
-opponent_group = "anrbj666"
-opp_cop_url    = "https://cop-mcp.alon.website/mcp"
-opp_thief_url  = "https://thief-mcp.alon.website/mcp"
-
-# Live GUI per role worker (local truth only, 127.0.0.1) - ALWAYS ON by
-# default (decision 2026-08-16, docs/GUI_PRD.md R5). Fail-open: a dead GUI or a
-# busy port is a logged skip and can never delay or block a move. Comment these
-# out to disable; play is byte-identical either way.
-gui_cop_port   = 8781
-gui_thief_port = 8782
+opponent_group = "cosmos77"
+opp_cop_url    = "https://cosmos77-arena-production.up.railway.app/mcp"
+opp_thief_url  = "https://cosmos77-arena-production.up.railway.app/mcp"
 
 [protocol]
-# The pairing defaults. Every opponent profile repeats these explicitly, but the
-# BASE file must carry them too: without a [protocol] section the CLI fell back
-# to multiplicative_book_v1 + move_policy "rl", so a bare --self-test loaded the
-# chebyshev-trained champion under the book field and refused with
-# CountedPolicyLoadError - i.e. the README's own quick-start command failed
-# (found 2026-08-15). These values match what we have played every series on.
+# Locked in their greeting: subtractive_chebyshev_v1 (0.8-peak
+# after-one-decay — kit-exact, matches our ChebyshevTrail), wire reference-v3.
+# Our NATIVE sighted regime: minimax + squeeze + corridor need no decoder.
 scent_model  = "subtractive_chebyshev_v1"
 move_policy  = "hybrid_search"
+# Their thief = PARKER (g02 dwell: 22 straight steps at (2,5), moves only
+# when adjacent). Measured 2026-08-22 parker_chains_lab vs a faithful
+# replica: plain (squeeze+minimax, NO plan layer) captures from the real
+# (3,3) start @23 at wire depth 3; hunt and corridor both survive — the
+# plan layers hijack the override slot and stall the very chase that
+# converts. Their counted SHAs are frozen = the parker plays the counted.
+cop_chain    = "plain"
 mcp_call_sec = 10.0
 
 [timeouts]
-# All seconds unless noted. Previously hardcoded in scripts/live_match_ref3.py.
-agreement_poll_sec = 300.0   # wait for the peer's negotiation greeting
-turn_poll_sec      = 120.0   # wait for the peer's sealed turn
-audit_poll_sec     = 300.0   # wait for the peer's end-of-game audit
-endpoint_await_sec = 900.0   # wait for a per-window opponent endpoint to come up
-probe_sec          = 30.0    # transport probe deadline (tunnelled peers are slow)
-introspect_sec     = 30.0    # MCP introspect deadline
-port_wait_sec      = 15.0    # wait for our own local server ports to open
-git_rev_parse_sec  = 10.0    # subprocess timeout for git rev-parse
-retry_backoff_sec  = 8.0     # endpoint re-dial backoff on 502/530/refused
-poll_interval_sec  = 0.05    # inner poll sleep granularity
-reorder_window     = 4       # ReferenceV3Inbox bounded-reorder window
-
-[llm]
-# Movement is always the RL policy; the LLM only writes free-text hints.
-provider       = "ollama"
-model          = "llama3.1:8b"
-base_url       = "http://localhost:11434"
-temperature    = 0.7
-num_predict    = 30          # max tokens per hint
-hint_timeout_sec = 6.0       # warm calls ~2.5s; cold load needs headroom
-keep_alive     = "30m"       # keep the model resident (avoids GPU cycling)
-
-[identity]
-# What the peer records about us (rules 49/53) and what the declaration carries.
-group_id   = "vibecode"
-group_name = "vibecode"
-members    = ["Ron Marom", "Amit Kuperminz"]
-cop_repo   = "https://github.com/AmitKuper/vibecode-cop"
-thief_repo = "https://github.com/AmitKuper/vibecode-thief"
+# 10s, NOT 120: this is the wait-for-their-greeting timeout = our re-dial
+# cadence. Their reply-dialect peer seals instantly from our dial and starts
+# its signed 30s turn clock; a 120s wait meant our seal (their greeting
+# arriving) came after their session died -> our turn 1 hit a dead session
+# (the sg1 McpError->404 signature, three counted attempts). At 10s each
+# re-dial refreshes their session until both seals land seconds apart.
+agreement_poll_sec = 10.0
+# Their cop worker arms slowly after doors-up: sg1 receive_turn refused for
+# ~13s (6 attempts) in BOTH counted attempts, while sg3+ (their cop again)
+# worked — arm time is between 13s and ~90s. 16 attempts = ~60s of patience
+# (0.5,1,2,4,5,5,...) absorbs it unilaterally. Per-pairing only.
+mcp_call_retries   = 16
 
 [report]
-# SAFETY: the default recipient is OUR OWN inbox. The league/counted address
-# is NEVER stored here or defaulted anywhere — it is passed explicitly at run
-# time (--report-to) for a counted game only. See config/README.md.
-recipient  = "agentsorch@gmail.com"
-mode       = "send"                       # "send" | "dry_run" | "none"
+# FRIENDLY: operator-to-operator only, never the lecturer (their rule too).
+recipient  = "abdallahkh12@icloud.com"
+mode       = "send"
 token_path = "secrets/gmail/token.json"
 
 [counted]
-# Our prior counted-games count (rules 37-38), sourced from the ledger
-# results/counted_series.json. games_played_including_this = this + (counted?1:0).
-counted_played = 1
+counted_played = 9
+
+# cosmos77 identity (CORRECTED 2026-08-22 second mail - IDs were swapped in
+# the first): Abdallah Khaldi 212389712, Tasneem Natour 323118794;
+# abdallahkh12@icloud.com (cc natortasneem@gmail.com); repos private-ish
+# AbdallahKhaldi/COSMOS77-cop + -thief; armed cop ba905318 / thief 39f5e981;
+# counted played 1 (vs MOAAMOHA, won 3-2, 2026-08-20). info_mode belief
+# 020947da VERIFIED at our kit pin. config_sha256 f5598b58... (game.json in
+# this dir, byte-adopted by them). F1 = full six, uid 06f81d92.
+# UPDATED armed commits (their mail just before engage): cop
+# b8508a86797c1b06713443761dbcbc48f43f6b32 / thief
+# a7d3a5b43553184d0adc001fc7a24b631142edc1 (supersede ba905318/39f5e981).
+# 2026-08-22 ~21:15 EXPERIMENT: both our dials re-pointed at their SINGLE /mcp
+# door (was /cop/mcp + /thief/mcp). Hypothesis: their engine+monitor live on
+# the single door; the per-role paths ACK via a router stub — explains their
+# "zero inbound" while our sends (code: subgame_setup L117 active dial, 0 send
+# errors logged) targeted the per-role paths. Revert if disproven.

@@ -1,0 +1,253 @@
+{
+  "_schema": "Summary and final result for the WHOLE series between two teams: per-sub-game scores + aggregate; identity lives in the declaration.",
+  "schema_version": "1.1",
+  "report_type": "final_game_result",
+  "game_id": "cosmos77-vs-vibecode",
+  "game_uid": "06f81d92-73bb-2426-9013-3d6ca94c2c4a",
+  "links": {
+    "declaration": "declaration_cosmos77-vs-vibecode.json",
+    "config": "config_cosmos77-vs-vibecode_g<NN>.json",
+    "log": "log_cosmos77-vs-vibecode_g<NN>.json",
+    "result": "result_cosmos77-vs-vibecode.json",
+    "github": {
+      "vibecode": {
+        "cop": "https://github.com/AmitKuper/vibecode-cop",
+        "thief": "https://github.com/AmitKuper/vibecode-thief"
+      },
+      "cosmos77": {
+        "cop": "https://github.com/AbdallahKhaldi/COSMOS77-cop",
+        "thief": "https://github.com/AbdallahKhaldi/COSMOS77-thief"
+      }
+    }
+  },
+  "timezone": "Asia/Jerusalem",
+  "groups": [
+    "cosmos77",
+    "vibecode"
+  ],
+  "num_sub_games": 6,
+  "sub_games": [
+    {
+      "sub_game_number": 1,
+      "roles": {
+        "vibecode": "thief",
+        "cosmos77": "police"
+      },
+      "started_at": "2026-08-22T18:50:41.935914+00:00",
+      "ended_at": "2026-08-22T18:51:07.347027+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "a17af03ce0cadbd940bc5b01a9a8bc138733c06b",
+        "cosmos77": "b8508a86c2117a7038970966a205b35a8c2b9cc3"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "cosmos77": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "cosmos77": 5
+      },
+      "log_files": {
+        "vibecode": "log_cosmos77-vs-vibecode_g01.json",
+        "cosmos77": "log_cosmos77-vs-vibecode_g01.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 2,
+      "roles": {
+        "vibecode": "police",
+        "cosmos77": "thief"
+      },
+      "started_at": "2026-08-22T18:51:11.461021+00:00",
+      "ended_at": "2026-08-22T18:51:46.838791+00:00",
+      "result": "survival",
+      "winner_group": "cosmos77",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "69afc0b7f9ed617ac66470093842a1e76b0f7ffd",
+        "cosmos77": "a7d3a5b43553184d0adc001fc7a24b631142edc1"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "cosmos77": 0
+      },
+      "score": {
+        "vibecode": 5,
+        "cosmos77": 10
+      },
+      "log_files": {
+        "vibecode": "log_cosmos77-vs-vibecode_g02.json",
+        "cosmos77": "log_cosmos77-vs-vibecode_g02.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 3,
+      "roles": {
+        "vibecode": "thief",
+        "cosmos77": "police"
+      },
+      "started_at": "2026-08-22T18:51:50.859525+00:00",
+      "ended_at": "2026-08-22T18:52:14.181694+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "a17af03ce0cadbd940bc5b01a9a8bc138733c06b",
+        "cosmos77": "b8508a86c2117a7038970966a205b35a8c2b9cc3"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "cosmos77": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "cosmos77": 5
+      },
+      "log_files": {
+        "vibecode": "log_cosmos77-vs-vibecode_g03.json",
+        "cosmos77": "log_cosmos77-vs-vibecode_g03.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 4,
+      "roles": {
+        "vibecode": "police",
+        "cosmos77": "thief"
+      },
+      "started_at": "2026-08-22T18:52:18.167633+00:00",
+      "ended_at": "2026-08-22T18:52:52.620779+00:00",
+      "result": "survival",
+      "winner_group": "cosmos77",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "69afc0b7f9ed617ac66470093842a1e76b0f7ffd",
+        "cosmos77": "a7d3a5b43553184d0adc001fc7a24b631142edc1"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "cosmos77": 0
+      },
+      "score": {
+        "vibecode": 5,
+        "cosmos77": 10
+      },
+      "log_files": {
+        "vibecode": "log_cosmos77-vs-vibecode_g04.json",
+        "cosmos77": "log_cosmos77-vs-vibecode_g04.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 5,
+      "roles": {
+        "vibecode": "thief",
+        "cosmos77": "police"
+      },
+      "started_at": "2026-08-22T18:52:56.623533+00:00",
+      "ended_at": "2026-08-22T18:53:30.253237+00:00",
+      "result": "survival",
+      "winner_group": "vibecode",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "a17af03ce0cadbd940bc5b01a9a8bc138733c06b",
+        "cosmos77": "b8508a86c2117a7038970966a205b35a8c2b9cc3"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "cosmos77": 0
+      },
+      "score": {
+        "vibecode": 10,
+        "cosmos77": 5
+      },
+      "log_files": {
+        "vibecode": "log_cosmos77-vs-vibecode_g05.json",
+        "cosmos77": "log_cosmos77-vs-vibecode_g05.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    },
+    {
+      "sub_game_number": 6,
+      "roles": {
+        "vibecode": "police",
+        "cosmos77": "thief"
+      },
+      "started_at": "2026-08-22T18:53:34.232645+00:00",
+      "ended_at": "2026-08-22T18:54:11.865552+00:00",
+      "result": "survival",
+      "winner_group": "cosmos77",
+      "tie": false,
+      "github_commit": {
+        "vibecode": "69afc0b7f9ed617ac66470093842a1e76b0f7ffd",
+        "cosmos77": "a7d3a5b43553184d0adc001fc7a24b631142edc1"
+      },
+      "tokens": {
+        "vibecode": 0,
+        "cosmos77": 0
+      },
+      "score": {
+        "vibecode": 5,
+        "cosmos77": 10
+      },
+      "log_files": {
+        "vibecode": "log_cosmos77-vs-vibecode_g06.json",
+        "cosmos77": "log_cosmos77-vs-vibecode_g06.json"
+      },
+      "audit": {
+        "log_verified": true,
+        "tampered": false
+      }
+    }
+  ],
+  "final_result": {
+    "total_score": {
+      "vibecode": 47,
+      "cosmos77": 47
+    },
+    "sub_games_won": {
+      "vibecode": 3,
+      "cosmos77": 3
+    },
+    "ties": 0,
+    "winner_group": null,
+    "series_tie": true,
+    "tokens_total_series": {
+      "vibecode": 0,
+      "cosmos77": 0
+    },
+    "games_played_including_this": {
+      "vibecode": 9,
+      "cosmos77": 1
+    },
+    "first_meeting_between_groups": true,
+    "diversity_reward_applied": {
+      "vibecode": false,
+      "cosmos77": false
+    }
+  },
+  "mutual_agreement": {
+    "sha256": "3601bd73a06b83d757072a923e036f01d325d0a821d09c7dd12c8e9c0affa803",
+    "confirmed": true
+  }
+}

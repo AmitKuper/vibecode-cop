@@ -1,0 +1,96 @@
+{
+  "_schema": "p2p-police-artifacts",
+  "consensus_signature": "e0a9fe744bf1917aff187f652ea7d7e6316b817e700453cf07b7b985f0156ba5",
+  "declaration_type": "pre_game_declaration",
+  "declared_at": "2026-08-22T21:24:21.437542+00:00",
+  "game_ended_at": "2026-08-22T21:27:56.216069+00:00",
+  "game_id": "cosmos77-vs-vibecode",
+  "game_started_at": "2026-08-22T21:24:21.437542+00:00",
+  "game_uid": "06f81d92-73bb-2426-9013-3d6ca94c2c4a",
+  "groups": {
+    "group_1": {
+      "code_version": "1.00",
+      "counted_games_played": 9,
+      "counted_matches_played": 9,
+      "opponents_already_counted": [
+        "SMNGRP05",
+        "anrbj666",
+        "bestteam",
+        "imreeyal",
+        "najamjad",
+        "nis-yar1",
+        "rstabcde",
+        "uoh-sqak",
+        "vm__fabi"
+      ],
+      "group_id": "vibecode",
+      "group_name": "vibecode",
+      "hardware_spec": {
+        "cpu_cores": 16,
+        "cpu_type": "Intel64 Family 6 Model 158 Stepping 13, GenuineIntel",
+        "machine": "AMD64",
+        "os": "Windows 11",
+        "python": "3.13.14",
+        "ram_gb": 34
+      },
+      "hardware_spec_sha256": "7caa489c0d9af45783090ac85dba82f01d34b2e8c5929bb63a5671499bc63b46",
+      "llm_model": "none (template hints; pure-Python algorithmic movement)",
+      "mcp_servers": {
+        "cop": "http://62.56.220.143:61224/mcp",
+        "thief": "http://62.56.220.143:61223/mcp"
+      },
+      "members": [
+        "Ron Marom",
+        "Amit Kuperminz"
+      ],
+      "repos": {
+        "cop": "https://github.com/AmitKuper/vibecode-cop",
+        "thief": "https://github.com/AmitKuper/vibecode-thief"
+      },
+      "signature": "sha256:eb37551b7f6d1d8d63e6cd7a31041787e91db8f513553bf4e68e5fde0541a122"
+    },
+    "group_2": {
+      "group_id": "cosmos77",
+      "group_name": "cosmos77",
+      "counted_games_played": 1,
+      "hardware_spec": {
+        "os": "Linux (Docker)",
+        "cpu_type": "x86_64",
+        "cpu_cores": 2,
+        "cpu_freq_ghz": 2.6,
+        "ram_gb": 1,
+        "gpu_type": "none",
+        "vram_gb": 0.0,
+        "platform": "Railway container (Metal, us-east)",
+        "cpu_model": "shared vCPU",
+        "note": "hub-hosted agents; modest cloud tier"
+      },
+      "hardware_spec_sha256": "2101cb6ddb451d592fc2253e96d3c09d9f5d4af9f59d578a3fc6dac22415d52d",
+      "llm_model": "gemini-3.5-flash-lite",
+      "mcp_servers": {
+        "self": "https://cosmos77-arena-production.up.railway.app/cop/mcp"
+      },
+      "members": [
+        "323118794",
+        "212389712"
+      ],
+      "repos": {
+        "cop": "https://github.com/AbdallahKhaldi/COSMOS77-cop",
+        "thief": "https://github.com/AbdallahKhaldi/COSMOS77-thief"
+      },
+      "signature": "undeclared"
+    }
+  },
+  "links": {
+    "config": "config_cosmos77-vs-vibecode_g<NN>.json",
+    "declaration": "declaration_cosmos77-vs-vibecode.json",
+    "log": "log_cosmos77-vs-vibecode_g<NN>.json",
+    "result": "result_cosmos77-vs-vibecode.json"
+  },
+  "max_tokens_per_game": 200000,
+  "num_sub_games": 6,
+  "report_type": "declaration",
+  "schema_version": "1.00",
+  "timezone": "Asia/Jerusalem",
+  "token_budget_per_series": 200000
+}

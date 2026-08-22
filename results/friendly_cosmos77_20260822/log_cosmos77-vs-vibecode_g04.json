@@ -1,0 +1,1454 @@
+{
+  "_schema": "p2p-police-artifacts",
+  "game_id": "cosmos77-vs-vibecode",
+  "game_uid": "06f81d92-73bb-2426-9013-3d6ca94c2c4a",
+  "links": {
+    "config": "config_cosmos77-vs-vibecode_g04.json",
+    "declaration": "declaration_cosmos77-vs-vibecode.json",
+    "log": "log_cosmos77-vs-vibecode_g04.json",
+    "result": "result_cosmos77-vs-vibecode.json"
+  },
+  "opponent_records": [
+    {
+      "commit": "301d705d56730d8b072e71839a758fc3a820509d468c92cd70bc2d612fc9f4a7",
+      "declared": {},
+      "nonce": "0fab9de471f85e4ed6957057d3630ecc",
+      "payload": {
+        "step": 0,
+        "type": "system_spec",
+        "sub_game_number": 4,
+        "group_name": "cosmos77",
+        "model": "gemini-3.5-flash-lite",
+        "code_version": "a7d3a5b43553184d0adc001fc7a24b631142edc1",
+        "github_commit": "a7d3a5b43553184d0adc001fc7a24b631142edc1",
+        "num_games_declared": 1,
+        "spec": {
+          "os": "Linux (Docker)",
+          "cpu_type": "x86_64",
+          "cpu_cores": 2,
+          "cpu_freq_ghz": 2.6,
+          "ram_gb": 1,
+          "gpu_type": "none",
+          "vram_gb": 0.0,
+          "platform": "Railway container (Metal, us-east)",
+          "cpu_model": "shared vCPU",
+          "note": "hub-hosted agents; modest cloud tier"
+        },
+        "hardware_spec": {
+          "os": "Linux (Docker)",
+          "cpu_type": "x86_64",
+          "cpu_cores": 2,
+          "cpu_freq_ghz": 2.6,
+          "ram_gb": 1,
+          "gpu_type": "none",
+          "vram_gb": 0.0,
+          "platform": "Railway container (Metal, us-east)",
+          "cpu_model": "shared vCPU",
+          "note": "hub-hosted agents; modest cloud tier"
+        }
+      }
+    },
+    {
+      "commit": "c4b401a911d8b7e88cc1b8c7ba3c63c5187d27fc91c48c3a20f4ac651bfe990a",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "The center of New York is far too loud for me."
+      },
+      "nonce": "51bf252874bccf40cd7f3108cbbfc4bb",
+      "payload": {
+        "step": 1,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[3, 3];barriers=[]",
+        "position": [
+          3,
+          3
+        ],
+        "move": "MOVE:STAY",
+        "intent": "lie",
+        "hint": "The center of New York is far too loud for me.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "736883eafd6c2bca588eebcf217d565430fe0abae3ab5f1b45053b16f0bc902f",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "The center of New York is far too loud for me."
+      },
+      "nonce": "617c650bb040b8f3f569d121a53ac37c",
+      "payload": {
+        "step": 2,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[3, 3];barriers=[]",
+        "position": [
+          3,
+          3
+        ],
+        "move": "MOVE:STAY",
+        "intent": "lie",
+        "hint": "The center of New York is far too loud for me.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "c5d680a09b5c000ad046e409588031a545c5715a79ecf648aee96b5dbbc70810",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Good luck chasing my shadow through Central Park while I am already asleep in Brooklyn."
+      },
+      "nonce": "73c17007f3d14dcebc291001e680d426",
+      "payload": {
+        "step": 3,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[3, 3];barriers=[]",
+        "position": [
+          3,
+          3
+        ],
+        "move": "MOVE:STAY",
+        "intent": "lie",
+        "hint": "Good luck chasing my shadow through Central Park while I am already asleep in Brooklyn.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "9aa6d67325263a32f89e7ecce5a2fd69405d07d8a458b3f2a761b25b22851fa6",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "No tricks this round, just steady footwork through New York."
+      },
+      "nonce": "a870384a258cc2e5eacdb4b7afe56a03",
+      "payload": {
+        "step": 4,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[3, 3];barriers=[]",
+        "position": [
+          3,
+          3
+        ],
+        "move": "MOVE:STAY",
+        "intent": "truth",
+        "hint": "No tricks this round, just steady footwork through New York.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "17af85e35208db7e028fabbb377010ed6bc86bdd2d8f84644c56df54f626d0ef",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "You will find nothing but pigeons on the north rooftops of New York."
+      },
+      "nonce": "83106d3ee13fb548b564849576071957",
+      "payload": {
+        "step": 5,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[3, 3];barriers=[]",
+        "position": [
+          3,
+          3
+        ],
+        "move": "MOVE:STAY",
+        "intent": "truth",
+        "hint": "You will find nothing but pigeons on the north rooftops of New York.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "e5bc626c60734008742b8609e39713b265847d1b29727fe55760b81e7f159d2b",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Catch me sipping espresso in Brooklyn while you're freezing in Central Park."
+      },
+      "nonce": "d70dcca2fada64b44fc8f673daaa25ea",
+      "payload": {
+        "step": 6,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 3];barriers=[]",
+        "position": [
+          2,
+          3
+        ],
+        "move": "MOVE:N",
+        "intent": "lie",
+        "hint": "Catch me sipping espresso in Brooklyn while you're freezing in Central Park.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "eefe5f3e6fcbb3eab5ee6b05cebb79b8fe88db00adefba238d2fa12a78f8a25b",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "I left the west side of New York ages ago, promise."
+      },
+      "nonce": "d3749187ae2604ed5706348780559323",
+      "payload": {
+        "step": 7,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 4];barriers=[[2, 2]]",
+        "position": [
+          2,
+          4
+        ],
+        "move": "MOVE:E",
+        "intent": "lie",
+        "hint": "I left the west side of New York ages ago, promise.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "91fa7f141ebb21cd907fc51c67f8ee0b258ed89fe31ee1cc85f4f8a0724b4daa",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Keeping my options open, the way New York teaches you to."
+      },
+      "nonce": "f96a2ba1fea2fdccf0945185dd61d39f",
+      "payload": {
+        "step": 8,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 4];barriers=[[2, 2]]",
+        "position": [
+          2,
+          4
+        ],
+        "move": "MOVE:STAY",
+        "intent": "truth",
+        "hint": "Keeping my options open, the way New York teaches you to.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "1f556af40771c2e4e99eecebc6c716846d4b94492a5f78c3337774b1e46c132b",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Catch me dodging yellow cabs in Chinatown while you’re freezing your boots off in Brooklyn."
+      },
+      "nonce": "264b6e481eb16820437f05dbfa8c822d",
+      "payload": {
+        "step": 9,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[3, 4];barriers=[[2, 2]]",
+        "position": [
+          3,
+          4
+        ],
+        "move": "MOVE:S",
+        "intent": "lie",
+        "hint": "Catch me dodging yellow cabs in Chinatown while you’re freezing your boots off in Brooklyn.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "db8a52fad573503c65a2ff71ebb99d862cdfd9af4f5638b81261ffb5d82ab335",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "You will find nothing but pigeons on the north rooftops of New York."
+      },
+      "nonce": "b8ee157d3398d1e518bea0e01372b369",
+      "payload": {
+        "step": 10,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[4, 4];barriers=[[2, 2]]",
+        "position": [
+          4,
+          4
+        ],
+        "move": "MOVE:S",
+        "intent": "lie",
+        "hint": "You will find nothing but pigeons on the north rooftops of New York.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "2878d8bcd629ef5a6e039091878ef13983599dab68836123ede771fd859ee587",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "You will find nothing but pigeons on the north rooftops of New York."
+      },
+      "nonce": "4b42e114df1d3cc78f7d0e0dcaff27b1",
+      "payload": {
+        "step": 11,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[4, 4];barriers=[[2, 2], [4, 3]]",
+        "position": [
+          4,
+          4
+        ],
+        "move": "MOVE:STAY",
+        "intent": "lie",
+        "hint": "You will find nothing but pigeons on the north rooftops of New York.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "0b660ce7d669abb8b8d3aca2b9627e8e8bf194a9fc52efabc2bbedd5b75cd45b",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Chasing shadows in Queens while I am already breathing the salt air of the Battery."
+      },
+      "nonce": "ed1bcd26b4a321373c619e70d7330f7d",
+      "payload": {
+        "step": 12,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[4, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          4,
+          5
+        ],
+        "move": "MOVE:E",
+        "intent": "lie",
+        "hint": "Chasing shadows in Queens while I am already breathing the salt air of the Battery.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "579f08a7e35e6e67e39be1d11d3018b03dae8b71a4b5ee2a546a7e070afc8f56",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "The center of New York is far too loud for me."
+      },
+      "nonce": "1447db173a6c9fec1c775d5a6e826783",
+      "payload": {
+        "step": 13,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[3, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          3,
+          5
+        ],
+        "move": "MOVE:N",
+        "intent": "lie",
+        "hint": "The center of New York is far too loud for me.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "3af068a8c35ac263cf06add8fbda798eea708f227323ede4b4d27ec2376c2c5f",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "The south end of New York suits me fine tonight."
+      },
+      "nonce": "2e140f08c3a66f0ad739298d76f5b450",
+      "payload": {
+        "step": 14,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:N",
+        "intent": "lie",
+        "hint": "The south end of New York suits me fine tonight.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "217162705fd64ca601afd828b7fac4ce87de7dda1c9da92f4395eae279db4824",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Catch me sipping espresso in Little Italy while you shiver on the Brooklyn bridge."
+      },
+      "nonce": "f809a77f66dedff73055ff22a8b86b32",
+      "payload": {
+        "step": 15,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "lie",
+        "hint": "Catch me sipping espresso in Little Italy while you shiver on the Brooklyn bridge.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "2cba107e47fcb8b53111f4a7e25c146dc744371865ad4584306714c6959e9e55",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Heading east toward the river lights of New York, obviously."
+      },
+      "nonce": "fe5630d8e1417594cc2c883fca86eef0",
+      "payload": {
+        "step": 16,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "truth",
+        "hint": "Heading east toward the river lights of New York, obviously.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "aff79b25ce863db010e1691b6084d47700c46d6afc60eefaf19e7f7cd93e8ee4",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Still on the move, same as every turn in New York."
+      },
+      "nonce": "d7dd146871521b3e3ba0d0eb0f731578",
+      "payload": {
+        "step": 17,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "truth",
+        "hint": "Still on the move, same as every turn in New York.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "fceb8c77a57348e12d664ced41f79dbbff0f2e97e75382a9e006e36bcbe0b7ee",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "You are wasting your time chasing shadows down these wet avenues."
+      },
+      "nonce": "7236754e846148529973e34d078ac494",
+      "payload": {
+        "step": 18,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "truth",
+        "hint": "You are wasting your time chasing shadows down these wet avenues.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "03626b6fbfc284ee7358e47b128581a4c5af46fb78a6374aa63d261177448bef",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "You will find nothing but pigeons on the north rooftops of New York."
+      },
+      "nonce": "3f63d9657eeeb0510f98f631caaacc0e",
+      "payload": {
+        "step": 19,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "truth",
+        "hint": "You will find nothing but pigeons on the north rooftops of New York.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "459cf8198cf8c045ef3536a3091b6691daa038e2756c2d40065bea92dd238847",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "You will find nothing but pigeons on the north rooftops of New York."
+      },
+      "nonce": "7fe35237afcd5e42109eb692b9cf6028",
+      "payload": {
+        "step": 20,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "truth",
+        "hint": "You will find nothing but pigeons on the north rooftops of New York.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "9a0e1587e6fa3a99fd84cdb18fa92485efd9fe536c20f7756a965146a29db97b",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Wrong avenue, officer. The bridge traffic makes you much too slow."
+      },
+      "nonce": "5b8bb0392c3a01aa84bd24622ea358ef",
+      "payload": {
+        "step": 21,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "truth",
+        "hint": "Wrong avenue, officer. The bridge traffic makes you much too slow.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "75e21eee6825c5168ac7a0dff1ba05126d33638cc1e54307ef8a0d5d6143728e",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "The south end of New York suits me fine tonight."
+      },
+      "nonce": "3a55bf3dfabbdb57578d2103d2c57804",
+      "payload": {
+        "step": 22,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "lie",
+        "hint": "The south end of New York suits me fine tonight.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "e778bc98d144bc100c44d0ea5dcc61416463b11651f6f86677e6b61c03be16c4",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Still on the move, same as every turn in New York."
+      },
+      "nonce": "1095c6136b61c13cf2fc995030151613",
+      "payload": {
+        "step": 23,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "truth",
+        "hint": "Still on the move, same as every turn in New York.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "555ecaa9430557291c22194a22c4bb6c78ccd3b6d8e84cba5e4ece696efba683",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Catch me by the harbor lights, I am already vanishing up in Harlem."
+      },
+      "nonce": "67c8ca997724d0a8e02da1333cde977c",
+      "payload": {
+        "step": 24,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "lie",
+        "hint": "Catch me by the harbor lights, I am already vanishing up in Harlem.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "f662c9eebb309be22daf18e5a45e7cc44bcc8c72edfa0175381fe48185ae4434",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Heading east toward the river lights of New York, obviously."
+      },
+      "nonce": "dccf7b28adb19369b70ecbf79342e6a7",
+      "payload": {
+        "step": 25,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "truth",
+        "hint": "Heading east toward the river lights of New York, obviously.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "2dde00f393807601123c8d13cb069e843bd5a917fcc106f284b7ae2fa4c8b9ea",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "One step at a time; New York rewards the patient."
+      },
+      "nonce": "935434c48a10b5829fce21114b327426",
+      "payload": {
+        "step": 26,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "truth",
+        "hint": "One step at a time; New York rewards the patient.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "2d578fed3db2fb6624bf95e2bed11b5d46df2dc78965b2a6dabc3049db1cd954",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "You are way too heavy for these fire escapes."
+      },
+      "nonce": "385971818cd0cd13bac24d2851ff53ad",
+      "payload": {
+        "step": 27,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "truth",
+        "hint": "You are way too heavy for these fire escapes.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "ba1b4b1e5eb76ba017e4aeaa023e7f8e54250b2ea5ab9a788ab5a7a9de410bd6",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "I left the west side of New York ages ago, promise."
+      },
+      "nonce": "710f142932f7b2caff4183c0c649c012",
+      "payload": {
+        "step": 28,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "lie",
+        "hint": "I left the west side of New York ages ago, promise.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "972c67299f3ae8b659ca47a7ea2f8ce2e695b87d21f8a5f08b4ec82cc90f5f03",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "I left the west side of New York ages ago, promise."
+      },
+      "nonce": "743855a500afa4194cdff6e9a459e111",
+      "payload": {
+        "step": 29,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "lie",
+        "hint": "I left the west side of New York ages ago, promise.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "c7012dfca7434534d206624c9f1cfe061446d8372c2f388b984787806c7ef777",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Catch me in SoHo, copper, I am already vanishing over the Brooklyn Bridge."
+      },
+      "nonce": "7e5c9af5b9ef34e75c335959337eda46",
+      "payload": {
+        "step": 30,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "lie",
+        "hint": "Catch me in SoHo, copper, I am already vanishing over the Brooklyn Bridge.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "34985f99fe2d6c06e77520062fd2ddac8aad45481d2db73f693f554a630cd78c",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "I left the west side of New York ages ago, promise."
+      },
+      "nonce": "81d59829ba7d1d1efdbd21596bdf2d00",
+      "payload": {
+        "step": 31,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "lie",
+        "hint": "I left the west side of New York ages ago, promise.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "455e8b620ab89225b00984ae81f92197cded6dd6322833bcaa02f4461e87dbc1",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "I left the west side of New York ages ago, promise."
+      },
+      "nonce": "980ddb38e191bc3af88a2eb62666a2c7",
+      "payload": {
+        "step": 32,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "lie",
+        "hint": "I left the west side of New York ages ago, promise.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "bbec274c8b7144f08bf553c6d4a86251759539016e38d544035461c1157b091b",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "You are wasting your breath on these crowded streets, copper."
+      },
+      "nonce": "80b4c5231e8cf3a29629a479e08e1091",
+      "payload": {
+        "step": 33,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "truth",
+        "hint": "You are wasting your breath on these crowded streets, copper.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "a0b6a4eaf2e17139c6849a680bf9fcecdb1b557f02bdb5a953dc70e09fcef6cc",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "Keeping my options open, the way New York teaches you to."
+      },
+      "nonce": "b98c95c8fcc840a4dc9c9c85e36211a1",
+      "payload": {
+        "step": 34,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "truth",
+        "hint": "Keeping my options open, the way New York teaches you to.",
+        "verdict": "moved"
+      }
+    },
+    {
+      "commit": "bf2d1619b2922737643734d4e61fa1253b19ab221db184884f739f29a54df401",
+      "declared": {
+        "barrier_placed": null,
+        "capture_claim": null,
+        "hint": "The center of New York is far too loud for me."
+      },
+      "nonce": "a5e6365476b0f0a72402417d5fddeeb9",
+      "payload": {
+        "step": 35,
+        "role": "thief",
+        "sub_game": 4,
+        "state": "grid=7x7;self=[2, 5];barriers=[[2, 2], [3, 4], [4, 3]]",
+        "position": [
+          2,
+          5
+        ],
+        "move": "MOVE:STAY",
+        "intent": "lie",
+        "hint": "The center of New York is far too loud for me.",
+        "verdict": "settled"
+      }
+    }
+  ],
+  "records": [
+    {
+      "commit": "3a8c6b441b85dce203843f6b0c81669e96370800a234a43a8907c6bd1155db90",
+      "nonce": "d5a1f1c3676ba32156a2358e113e4041",
+      "payload": {
+        "declaration_ref": "declaration_cosmos77-vs-vibecode.json",
+        "github_commit": "69afc0b7f9ed617ac66470093842a1e76b0f7ffd",
+        "group_id": "vibecode",
+        "role": "police",
+        "spec": {
+          "cpu_cores": 16,
+          "cpu_type": "Intel64 Family 6 Model 158 Stepping 13, GenuineIntel",
+          "machine": "AMD64",
+          "os": "Windows 11",
+          "python": "3.13.14",
+          "ram_gb": 34
+        },
+        "step": 0,
+        "sub_game_number": 4,
+        "type": "step_zero"
+      }
+    },
+    {
+      "commit": "f6021acc8d37b8144c1745093df92470b3cc55e9393d864c56ed5b103bc2c440",
+      "nonce": "a22a40c910f89ed7d2176331ece5d814",
+      "payload": {
+        "step": 1,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          1,
+          0
+        ],
+        "move": "S",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "4fde50d2f22c9b903a086d0b752715a5f6c1ad0b17637f3e75a6c5be04408be7",
+      "nonce": "6c27cac66e13fbff594f53b65f55440b",
+      "payload": {
+        "step": 2,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          0
+        ],
+        "move": "S",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "d04fb62cfe62ccb306018e296f85bf9b5b50bd9ac4b85bc60a1f7acf4a51d340",
+      "nonce": "c942400bcc00d4ed1d332fc8c512e750",
+      "payload": {
+        "step": 3,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          0
+        ],
+        "move": "S",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "7a0cc21a235616aee97a76020fbffbd405252df87764cf30432f707997537863",
+      "nonce": "ddaa39ef450ee4ff94b0616ce2391b5e",
+      "payload": {
+        "step": 4,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          1
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "8312ba3dced69944372389d335db935d2c0d1006dd7ae31db810e21da7e7d795",
+      "nonce": "649722248eacdbb64b26a3e412ba5a6b",
+      "payload": {
+        "step": 5,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          2
+        ],
+        "move": "E",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "6e81f187e20d35f9369735bfc2a6709a843a2230b89359fb7c7b26c3f0cc92c6",
+      "nonce": "0bb75ce253caa7a1b73a86603034d0db",
+      "payload": {
+        "step": 6,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          2
+        ],
+        "move": "PLACE_N",
+        "intent": "bluff",
+        "barrier_placed": [
+          2,
+          2
+        ]
+      }
+    },
+    {
+      "commit": "d16bfe38947bc842c79078df836053893221a65b2ba1d76f7f748310f6596de3",
+      "nonce": "831648fba269d2bac8161626c49ae948",
+      "payload": {
+        "step": 7,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          3
+        ],
+        "move": "E",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "633b56edd767865122c07c3308c4a3198da801f32e47a91defd72babbf037926",
+      "nonce": "f57e05a20853daff8f6c793ec13a5046",
+      "payload": {
+        "step": 8,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "01bb1d09cc8c596d341c52b81449dc86016d2353f83b28fbafe452d07f5807f2",
+      "nonce": "2a41283b9183909efe39e7b742e48af9",
+      "payload": {
+        "step": 9,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          3
+        ],
+        "move": "S",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "af53748b0a31508a83fdd1a064e8a625e5cf55213e90f3c720498673e136aea7",
+      "nonce": "17e368083abf24436b1ce58911141de7",
+      "payload": {
+        "step": 10,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          3
+        ],
+        "move": "PLACE_S",
+        "intent": "truth",
+        "barrier_placed": [
+          4,
+          3
+        ]
+      }
+    },
+    {
+      "commit": "c9de138c9144121dd356cd6e2c805cea43538b1626b86314062a88ff3d6e072e",
+      "nonce": "255f0ec4767f891b8f9a38495faba5f8",
+      "payload": {
+        "step": 11,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          3
+        ],
+        "move": "PLACE_E",
+        "intent": "lie",
+        "barrier_placed": [
+          3,
+          4
+        ]
+      }
+    },
+    {
+      "commit": "d74c5e4fd50bcf9d5f85c255e246e5bb9362d049ae6cf240461b2330b7e754a5",
+      "nonce": "6c5a322123182499884edae80de252a9",
+      "payload": {
+        "step": 12,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "b96030a1d55fbce90dfe4928adf2c5acf9f86cb908aa2a6d327b37802ba10ba3",
+      "nonce": "1b183d3cf8cb53d90edf9b0f3e36b94c",
+      "payload": {
+        "step": 13,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          3
+        ],
+        "move": "S",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "c1146f7fba781a6b409e4b973d1f5c4f3268b2eaefd8d72dd4de9fdd95560db0",
+      "nonce": "6daee6ad43ca654db42460f772f08650",
+      "payload": {
+        "step": 14,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "7c7c3e93c35815efaf815ce742c31ade605272b50ea8178579830be273b260da",
+      "nonce": "5cf51616981d88b8645a52c7b0a4550f",
+      "payload": {
+        "step": 15,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          3
+        ],
+        "move": "S",
+        "intent": "ambiguous"
+      }
+    },
+    {
+      "commit": "1627ca9193581a815e2737b51e96d5ebcea9927ff48465b6bd9148101cb0ee02",
+      "nonce": "6bda92a70061e6f856fc12a2f7ba7e32",
+      "payload": {
+        "step": 16,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "5dac10a9fabd4a0ba6ae5d6fe082e4b022de92d2b17a65bd89370e04aa612702",
+      "nonce": "8fdd9b68abc2a1c5fa43eb4d30c16b00",
+      "payload": {
+        "step": 17,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          3
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "e568d6df3a9b3bf7595a92166cb9475b89230bba8d64e0d8db657b6c7845b957",
+      "nonce": "18f8a5d95a15d058b17997e3462c8a7a",
+      "payload": {
+        "step": 18,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "509f27bb45944408e0ae5d3f0ebbe73620f1255bb91386c30088a5b64304468e",
+      "nonce": "b39faefb96c8d9e99503c48a78008759",
+      "payload": {
+        "step": 19,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          3
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "27f62729686e281fa5aa86449353b9c19b6417601314da216524ec575f24999b",
+      "nonce": "6c1ab0de2b76c129a15913e4c5b3d201",
+      "payload": {
+        "step": 20,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "ff6d850a6a186d7545a5979472ae2a03dc3a8c2e7ca3e51e2e2c8ea3116b1fb3",
+      "nonce": "9e95e837166a8263f75f3009ba2b0d68",
+      "payload": {
+        "step": 21,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          3
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "497946b4bdd04db83dc20b78c9481d20f93fa4382df052fc1fef4ac0f31c237e",
+      "nonce": "c7a908848066ee491269f7fb0b060991",
+      "payload": {
+        "step": 22,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "8cd9f67b844deeee99317ca8339bfc25f4f970bcaa117f6fb8210935059439a8",
+      "nonce": "777e0b6c03a9cc12bd47bd5bab2b51ec",
+      "payload": {
+        "step": 23,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          3
+        ],
+        "move": "S",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "545e6499b9bbb6a4f59c787a3852e4b555902bb11edeb37b5bd05e5765c9b635",
+      "nonce": "3881d377fdd378d32dd258527d34d097",
+      "payload": {
+        "step": 24,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "ee408f247049a84c627007372ebf90d86dae21b80ba48d71473a52e0bf22ba27",
+      "nonce": "ae70e12d75b88d512cb98212a4687880",
+      "payload": {
+        "step": 25,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          3
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "9ad1417a4f19e11b0bf4170d509641c4238e79b96349a525f22cd05a787da275",
+      "nonce": "e852ebc52d4617c5be237ca3c50f9659",
+      "payload": {
+        "step": 26,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "4fadcaaaab341ef7163221fddd838bae7a30c43bd36f3f126ba57b6d32ff9a9a",
+      "nonce": "7712164e38fe02073a0055242af46014",
+      "payload": {
+        "step": 27,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          3
+        ],
+        "move": "S",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "fd706303a3e94f6e46aafd22b2775af17d8cd9f68d58f4378d73fd4179fb00b2",
+      "nonce": "c35bba2a0fef2f454a1062650330c274",
+      "payload": {
+        "step": 28,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "lie"
+      }
+    },
+    {
+      "commit": "cf4dd70454bfd8a245fe0015d92b716d3a0d87f62ee0ee689dc2148e1dd44bb4",
+      "nonce": "fdee9ced38b0dd45a57a233743673926",
+      "payload": {
+        "step": 29,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          3
+        ],
+        "move": "S",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "ab2e770494dd2e829f91608c572ddea65068cdd87b91ed842709d1076420650e",
+      "nonce": "6b9f721ea9e4797c432d214d4b5d8d7f",
+      "payload": {
+        "step": 30,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "c1bc9dd70825553b6c69d3efa8be744adb20362cff47490ec6add096f7235ec2",
+      "nonce": "0901640fc2f77fa09ebf58f6d82dd633",
+      "payload": {
+        "step": 31,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          3
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "e35ba1b5f1037d398b6da629255976270b0193f8bed6c48bbfe7513281908f37",
+      "nonce": "7e3a30f43623684f5a27f4fdb47e577a",
+      "payload": {
+        "step": 32,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "bluff"
+      }
+    },
+    {
+      "commit": "98272d111cc5b355361a7be0d838ad7a14970eebf5eb654e128043b31d0938ec",
+      "nonce": "241f6afa78560be8621fb92ce7d9aaa6",
+      "payload": {
+        "step": 33,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          3,
+          3
+        ],
+        "move": "S",
+        "intent": "truth"
+      }
+    },
+    {
+      "commit": "34e910f3f9fd28fee753e3d8e68914389e7c0905b05482e8ea865053b425a0b6",
+      "nonce": "a48d2fc67e1fe5b9638197d9666972ab",
+      "payload": {
+        "step": 34,
+        "role": "police",
+        "sub_game": 4,
+        "position": [
+          2,
+          3
+        ],
+        "move": "N",
+        "intent": "truth"
+      }
+    }
+  ],
+  "report_type": "log",
+  "schema_version": "1.3",
+  "sub_game_number": 4,
+  "summary": {
+    "audit": "Verified OK",
+    "outcome": "survival",
+    "digest_match": null,
+    "disputed_capture": null,
+    "turns_completed": 34,
+    "steps_sealed": 35,
+    "opponent_step_zero": {
+      "step": 0,
+      "type": "system_spec",
+      "sub_game_number": 4,
+      "group_name": "cosmos77",
+      "model": "gemini-3.5-flash-lite",
+      "code_version": "a7d3a5b43553184d0adc001fc7a24b631142edc1",
+      "github_commit": "a7d3a5b43553184d0adc001fc7a24b631142edc1",
+      "num_games_declared": 1,
+      "spec": {
+        "os": "Linux (Docker)",
+        "cpu_type": "x86_64",
+        "cpu_cores": 2,
+        "cpu_freq_ghz": 2.6,
+        "ram_gb": 1,
+        "gpu_type": "none",
+        "vram_gb": 0.0,
+        "platform": "Railway container (Metal, us-east)",
+        "cpu_model": "shared vCPU",
+        "note": "hub-hosted agents; modest cloud tier"
+      },
+      "hardware_spec": {
+        "os": "Linux (Docker)",
+        "cpu_type": "x86_64",
+        "cpu_cores": 2,
+        "cpu_freq_ghz": 2.6,
+        "ram_gb": 1,
+        "gpu_type": "none",
+        "vram_gb": 0.0,
+        "platform": "Railway container (Metal, us-east)",
+        "cpu_model": "shared vCPU",
+        "note": "hub-hosted agents; modest cloud tier"
+      }
+    },
+    "step_zero_mismatch": null,
+    "started_at": "2026-08-22T18:52:18.167633+00:00",
+    "ended_at": "2026-08-22T18:52:52.620779+00:00",
+    "role": "police",
+    "group_id": "vibecode",
+    "opponent_group_id": "cosmos77"
+  },
+  "wire_shape": "reference"
+}
