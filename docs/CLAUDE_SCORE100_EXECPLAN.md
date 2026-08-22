@@ -271,3 +271,16 @@ Open, documented as theory-bound: the minimax-dance thief survives every
 cop chain; the full-depth line-hunt/cage cops beat every thief (7x7 with
 14 walls appears cop-favored under strong play; the operator converged on
 the winning strategy class independently).
+
+## 2026-08-22 — COUNTED #9 vs vm__fabi: WON 90-30 (ledger 7W-1L-1D)
+
+Launched 16:24:38 on written authorization (rule 52: their declaration +
+our quote-back, T amended in writing to "fire whenever ready"). 6/6 audits,
+max score every window (thief survival g1/g3/g5, cop capture g2/g4/g6).
+Commits played: cop 043e4fdd / thief 038ec0aa (pushed) vs their cabcb074.
+Our report id 1a029a8052a59583 to rmisegal+uoh26finalgame@gmail.com
+(single recipient, verified in Sent). Rule 35 CLOSED same hour: mutual
+.eml forwards (ours 1a029ace4aad094c, theirs 1a029ae9dd72a7e1); their
+report reconciles byte-level (uid 6268e7d5, 90-30, mutual sha c307dc51,
+league-address-only). Evidence + emls committed both repos, tag
+game_vs_vm__fabi, backup branch backup/post-vm__fabi-counted, PDF row 9.
