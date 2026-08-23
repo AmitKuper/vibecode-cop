@@ -13,9 +13,8 @@ The book mandates a tunnelling tool (ngrok/Cloudflare); its stated purpose (§2.
 is NAT traversal for hosts that cannot be reached directly. We instead expose the
 two role endpoints on a router-forwarded **static public IP** (cop 61224 /
 thief 61223), so the requirement's purpose — public reachability — is met without
-the tool. This was demonstrated across the internet in seven counted cross-team
-series (anrbj666, imreeyal, uoh-sqak, rstabcde, najamjad —
-`results/counted_series.json`). ngrok remains
+the tool. This was demonstrated across the internet in ten counted cross-team
+series against ten distinct opponents (`results/counted_series.json`). ngrok remains
 supported and opt-in per pairing (`[network] ingress = "ngrok"`,
 `docs/NGROK_INGRESS.md`); the tunnel/facade topology is documented in
 `docs/DEPLOYMENT_TUNNEL_RUNBOOK.md`.
@@ -38,28 +37,30 @@ league/lecturer address is stored **nowhere** in code or config — test-enforce
 and enters only by hand via `--report-to` on counted day. An address the run
 cannot reach cannot be mailed by accident.
 
-### D4: 150-line module limit — eleven production files over
+### D4: 150-line module limit — 22 files carry documented allowances
 
-The project rule is ≤150 lines per module. Eleven production modules exceed it
-today (measured 2026-08-19; the authoritative, gate-enforced list with per-file
-justifications is `scripts/check_file_size.py::ALLOWED` — four test files carry
-allowances there too). The 2026-08-15 audit's seven grew by the GUI page
-templates (hub/replay pages + hub API, whose length is markup, not logic) and
-one artifact-emission module:
+The project rule is ≤150 lines per module, enforced as a **no-growth ratchet**:
+`scripts/check_file_size.py` fails CI when any file exceeds 150 unless it carries
+a per-file allowance, and fails when an allowed file GROWS past its recorded
+allowance. As of 2026-08-23 the gate-enforced list (`check_file_size.py::ALLOWED`
+is authoritative; `--list` prints the measured state) holds 18 production/script
+modules and 4 test files. The largest and why they are kept whole:
 
 | File | Lines | Why it is kept whole |
 |---|---:|---|
-| `cop_worker/domain/transition.py` | 340 | The single physical-law transition function, byte-pinned by the kit's vectors and mirrored byte-identically in the thief repo. Splitting it adds cross-repo drift risk with no cohesion gain. |
+| `cop_worker/domain/transition.py` | 290 | The single physical-law transition function, byte-pinned by the kit's vectors and mirrored byte-identically in the thief repo. Splitting it adds cross-repo drift risk with no cohesion gain. |
+| `scripts/pocketer_lab.py` | 250 | One deterministic evaluation lab (analysis tool, not production play). |
+| `scripts/barrier_distill/cops.py` | 216 | Research/distillation tooling (not production play). |
+| `cop_worker/rl/search_policy.py` | 208 | One serving policy object: the chain seam (plan → squeeze → minimax) that live-match pins assert in order. |
+| `cop_worker/gui/hub_api.py` / `hub_page.py` / `replay_page.py` | 191/174/164 | GUI surfaces; page-template length is markup, not logic. |
+| `cop_worker/protocol/reference_v3/session.py` | 177 | One wire session object. |
+| `scripts/ref3_match/*` (setup/turns/settle/artifacts/role_worker/series_split) | 152–172 | One lifecycle responsibility each; call-order pins in `tests/` assert their sequencing. |
+| `cop_worker/rl/committed_hunt.py` | 165 | One committed plan state machine. |
 | `cop_worker/net_gateway.py` | 168 | One outbound-call policy object (deadline + at-least-once retry + backoff). |
-| `scripts/ref3_match/subgame_turns.py` | 167 | One sub-game's turn loop; the source-inspection call-site pins in `tests/` assert its ordering. |
-| `scripts/ref3_match/subgame_setup.py` | 160 | One sub-game's handshake/setup path. |
-| `cop_worker/protocol/reference_v3/session.py` | 157 | One wire session object. |
-| `scripts/ref3_match/subgame_settle.py` | 154 | One sub-game's audit + settlement path. |
-| `scripts/ref3_match/role_worker.py` | 153 | One role-worker process: control-frame loop plus play dispatch. |
-| `cop_worker/gui/hub_page.py` | ≤200 | One HTML/JS page template in a string; line count is markup. |
-| `cop_worker/gui/replay_page.py` | ≤175 | Same: one page template; the stylesheet belongs with its markup. |
-| `cop_worker/gui/hub_api.py` | ≤165 | One read-only hub API surface. |
-| `scripts/ref3_match/artifacts_io.py` | ≤170 | One emission unit: every league artifact written in a single pass. |
+
+Splitting proven counted-game production seams purely for the line count was
+judged a regression risk larger than the style benefit; the ratchet guarantees
+the debt only shrinks.
 
 Everything above 390 lines was already split into ≤150-line packages/mixins (the
 reference-v3 wire, kit fixtures, the trainer, the gamelet, replay, the adaptive

@@ -67,7 +67,7 @@ secret scan — all green on `master`.
 ## Live evidence chain (the tests that were played, not run)
 
 The counted ledger (`results/counted_series.json`) records
-`counted_games_played: 7` against seven distinct opponents — the league's
+`counted_games_played: 10` against ten distinct opponents — the league's
 `min_games_to_pass = 2` (`config/game.json`) satisfied more than twice over. Counted
 series were preceded by friendly rehearsals over the same wire path (friendlies
 default to the own-inbox report and increment no counter).

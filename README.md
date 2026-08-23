@@ -10,18 +10,21 @@ Companion repository: [vibecode-thief](https://github.com/AmitKuper/vibecode-thi
 distributed product; this repo hosts the orchestrator, which spawns **one OS process
 per role** (cop and thief) for every series.
 
-**Match record**: seven counted series played (`results/counted_series.json`,
-`counted_games_played: 7`) — **won six, lost one**:
+**Match record**: ten counted series played (`results/counted_series.json`,
+`counted_games_played: 10`) — **won seven, lost one, drew two** (759 points):
 
 | Opponent | Result | Sub-games | Date |
 |---|---|---|---|
 | `anrbj666` | **lost 35–75** (previous pure-RL engine) | 1–5 | 2026-08-08 |
 | `imreeyal` | **won 90–30** | 6–0 | 2026-08-10 |
-| `uoh-sqak` | **won 90–30** | 6–0 | 2026-08-11 |
+| `uoh-sqak` | **won 90–30** | 6–0 | 2026-08-12 |
 | `rstabcde` | **won 90–30** | 6–0 | 2026-08-14 |
 | `najamjad` | **won 90–30** | 6–0 | 2026-08-14 |
 | `nis-yar1` | **won 90–30** | 6–0 | 2026-08-16 |
 | `bestteam` | **won 90–30** | 6–0 | 2026-08-19 |
+| `SMNGRP05` | **drew 47–47** (all-survival stalemate) | 3–3 | 2026-08-20 |
+| `vm__fabi` | **won 90–30** | 6–0 | 2026-08-22 |
+| `cosmos77` | **drew 47–47** (all-survival stalemate) | 3–3 | 2026-08-23 |
 
 Every series settled 6/6 mutual audits *Verified OK* with a confirmed mutual-agreement
 hash; per-series evidence is in `evidence/game_vs_<opponent>/`.
@@ -71,8 +74,9 @@ cd vibecode-cop && uv sync --frozen
 uv run pytest tests/ cop_worker/tests/ league_manager/tests/ -q
 ```
 
-Expected: **1,942 passed, 4 skipped** (the same suite CI gates, with branch coverage
->= 94%).
+Expected: **all tests pass** (the same suite CI gates, with branch coverage >= 94%;
+the exact test count grows with the project — CI and `docs/TEST_EVIDENCE.md` carry
+the dated numbers).
 
 ## Quick start — self-test against the bundled sparring peer
 
@@ -214,7 +218,7 @@ Design authority: [`docs/DESIGN.md`](docs/DESIGN.md) (C4 diagrams, sub-game
 sequence, numbered architecture decisions).
 
 Hardware disclosure: [`docs/HARDWARE_STATEMENT.md`](docs/HARDWARE_STATEMENT.md) —
-we played seven counted games and the dev machine's GPU was used in none of
+we played ten counted games and the dev machine's GPU was used in none of
 them; all production paths are
 CPU-pinned, and measured decision latency (p99 ≈ 1.2 ms vs the signed 30 s
 window) shows the hardware spec conferred no competitive advantage.
@@ -493,29 +497,32 @@ diagnose from `[wire<-]` and `[diag]` lines, not guesswork.
    `uv run ruff format --check .`, and the full pytest suite with branch
    coverage >= 94% (`--cov-fail-under=94` in `.github/workflows/ci.yml`,
    `fail_under = 94` in `pyproject.toml`).
-3. Aspire to <= 150 lines per module (project rule; the eleven remaining oversized
-   modules are recorded as an accepted deviation in `docs/KNOWN_DEVIATIONS.md`).
+3. Aspire to <= 150 lines per module (project rule; a CI ratchet
+   (`scripts/check_file_size.py`) blocks growth, and the remaining oversized
+   modules carry per-file allowances recorded as an accepted deviation in
+   `docs/KNOWN_DEVIATIONS.md`).
 4. Never edit `evidence/`, `config/game.json` hashes, or the external kit.
 
 ## Self-grade (code quality)
 
 This grade covers **code quality only** — never league results. Basis, all
-reproducible from the repo: 1,946 tests collected (1,942 passed, 4 skipped),
-branch coverage **96.18%** (measured 2026-08-19; CI-gated at 94), `ruff check` + `ruff format --check`
-gating every commit, and a 150-line-per-module discipline (eleven documented
-production exceptions in [`docs/KNOWN_DEVIATIONS.md`](docs/KNOWN_DEVIATIONS.md)).
+reproducible from the repo: the full suite green (1,985 passed, 4 skipped as of
+2026-08-23), branch coverage **97.29%** (measured 2026-08-23; CI-gated at 94),
+`ruff check` + `ruff format --check` gating every commit, and a
+150-line-per-module discipline enforced by a no-growth ratchet (documented
+allowances in [`docs/KNOWN_DEVIATIONS.md`](docs/KNOWN_DEVIATIONS.md)).
 
 **Self-grade: 92/100**
 
 | Dimension | Grade | Why |
 |---|---|---|
 | Correctness | 93 | Physics is one pure conformance-pinned function; kit vectors fail closed; serving guards refuse mismatched checkpoints |
-| Tests | 93 | 1,942 passing tests, 96.18% branch coverage, conformance vectors, source-pin tests on the production seams |
+| Tests | 93 | 1,985 passing tests, 97.29% branch coverage, conformance vectors, source-pin tests on the production seams |
 | Documentation | 90 | DESIGN/PRDs/runbooks current; deviations documented rather than hidden |
-| Architecture | 92 | Single transition source of truth, mixin-decomposed gamelet, ≤150-line modules with 11 justified production exceptions |
+| Architecture | 92 | Single transition source of truth, mixin-decomposed gamelet, ≤150-line ratchet with justified per-file allowances |
 | Style | 92 | ruff + format zero-finding CI; docstrings throughout |
 
-What would raise it: eliminating the last seven over-150 modules and lifting the
+What would raise it: eliminating the remaining over-150 modules and lifting the
 weakest per-module coverage pockets to the suite average.
 
 ## Submission

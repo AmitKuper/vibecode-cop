@@ -1,9 +1,9 @@
 # DESIGN — vibecode-cop architecture authority
 
-Status: current as of 2026-08-19, after seven counted series
-(`results/counted_series.json`: won vs imreeyal, uoh-sqak, rstabcde and najamjad
-90–30 each; lost 35–75 vs anrbj666). This document is the architecture reference
-other docs cite.
+Status: current as of 2026-08-23, after ten counted series
+(`results/counted_series.json`: 7W–1L–2D, 759 points; the draws are the 47–47
+all-survival stalemates vs SMNGRP05 and cosmos77). This document is the
+architecture reference other docs cite.
 Requirements live in `docs/PRD_cop_worker.md`, `docs/PRD_league_manager.md`,
 `docs/PRD_search_engine.md`; prompts in `docs/PROMPTS.md`.
 

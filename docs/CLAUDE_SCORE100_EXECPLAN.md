@@ -7,17 +7,20 @@ artifacts, not typed from memory. (This file was reconstructed 2026-08-19
 after an earlier docs purge removed it; the underlying evidence was never
 lost.)
 
-## Counted league record — 7 series, 6W–1L, 575 points
+## Counted league record — 10 series, 7W–1L–2D, 759 points (current)
 
 | # | Date | Series | Score | Winner | Report message-id |
 |---|------|--------|-------|--------|-------------------|
 | 1 | 2026-08-08 | anrbj666-vs-vibecode | 35–75 | anrbj666 | 19fe2cdea7a51125 |
 | 2 | 2026-08-10 | imreeyal-vs-vibecode | 90–30 | vibecode | 19fecf55c1b5eea0 |
-| 3 | 2026-08-11 | uoh-sqak-vs-vibecode | 90–30 | vibecode | 19ff3140bfdfea7c |
+| 3 | 2026-08-12 | uoh-sqak-vs-vibecode | 90–30 | vibecode | 19ff3140bfdfea7c |
 | 4 | 2026-08-14 | rstabcde-vs-vibecode | 90–30 | vibecode | 1a000e76ccd62963 |
 | 5 | 2026-08-14 | najamjad-vs-vibecode | 90–30 | vibecode | 1a001a7f77c911c3 |
 | 6 | 2026-08-16 | nis-yar1-vs-vibecode | 90–30 | vibecode | 1a00c1363a39a870 |
-| 7 | 2026-08-18 | bestteam-vs-vibecode | 90–30 | vibecode | 1a016f83951523c1 |
+| 7 | 2026-08-19 | bestteam-vs-vibecode | 90–30 | vibecode | 1a016f83951523c1 |
+| 8 | 2026-08-20 | SMNGRP05-vs-vibecode | 47–47 | draw | 1a01be963af0cc06 |
+| 9 | 2026-08-22 | vm__fabi-vs-vibecode | 90–30 | vibecode | 1a029a8052a59583 |
+| 10 | 2026-08-23 | cosmos77-vs-vibecode | 47–47 | draw | 1a02b5f8c431cfb2 |
 
 Every counted report went ONLY to the league address; each `.eml` (ours and
 the opponent's forwarded copy where obtained) is preserved under

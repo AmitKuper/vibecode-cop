@@ -12,10 +12,10 @@ deviations are tracked separately in `docs/KNOWN_DEVIATIONS.md`.
 - [x] Production runtime is `--arch split`: the orchestrator
       (`scripts/ref3_match/series_split.py`) spawns one OS process per role via
       `scripts/ref3_role_worker.py` (Appendix E rules 1–2; DESIGN AD-1).
-- [x] Seven counted series played and settled (`results/counted_series.json`,
-      `counted_games_played: 5`): lost 35–75 vs anrbj666; won 90–30 vs imreeyal,
-      uoh-sqak, rstabcde and najamjad. 6/6 mutual audits `Verified OK` each, every
-      report emailed and filed under `evidence/game_vs_*/`.
+- [x] Ten counted series played and settled (`results/counted_series.json`,
+      `counted_games_played: 10`): 7W–1L–2D, 759 points — lost 35–75 vs anrbj666,
+      seven 90–30 wins, two 47–47 draws (SMNGRP05, cosmos77). 6/6 mutual audits
+      `Verified OK` each, every report emailed and filed under `evidence/game_vs_*/`.
 - [x] Suite green: 1,887 passed / 4 skipped, **94.90%** branch coverage against a
       CI gate of 94 (`pyproject.toml` `fail_under = 94`,
       `.github/workflows/ci.yml --cov-fail-under=94`).

@@ -42,12 +42,12 @@ CPU-only laptop with the commands in `docs/RL_REPRODUCTION.md`.
 We understand scoring may take the declared hardware spec into account. We ask
 that ours not be counted against us, on the following evidence:
 
-1. **Seven counted games were played; the GPU was used in none of them.** Every counted
+1. **Ten counted games were played; the GPU was used in none of them.** Every counted
    series (anrbj666, imreeyal, uoh-sqak, rstabcde, najamjad, nis-yar1,
-   bestteam) was played through the CPU-pinned production path described
-   above; the signed `hardware_spec` in each Step-0 declaration records
-   CPU/RAM/OS/Python and no GPU, and that declaration matches what actually
-   ran.
+   bestteam, SMNGRP05, vm__fabi, cosmos77) was played through the CPU-pinned
+   production path described above; the signed `hardware_spec` in each Step-0
+   declaration records CPU/RAM/OS/Python and no GPU, and that declaration
+   matches what actually ran.
 
 2. **CPU strength was not the binding constraint — the protocol was.**
    Measured decision latency on this machine is p99 ≈ 1.2 ms
