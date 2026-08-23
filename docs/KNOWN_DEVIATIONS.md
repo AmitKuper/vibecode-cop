@@ -7,12 +7,13 @@ at the end for what changed.
 
 ## Active deviations
 
-### D1: Public reachability without a tunnel — DEMONSTRATED
+### D1: Network-ingress implementation choice — public reachability without a tunnel
 
-The book mandates a tunnelling tool (ngrok/Cloudflare); its stated purpose (§2.4)
-is NAT traversal for hosts that cannot be reached directly. We instead expose the
-two role endpoints on a router-forwarded **static public IP** (cop 61224 /
-thief 61223), so the requirement's purpose — public reachability — is met without
+The book describes tunnelling tools (ngrok/Cloudflare, §2.4) whose stated purpose
+is NAT traversal for hosts that cannot be reached directly; the binding source
+(Appendix F) mandates no specific ingress tool. We expose the two role endpoints
+on a router-forwarded **static public IP** (cop 61224 / thief 61223), so the
+requirement's purpose — public Internet reachability — is met without
 the tool. This was demonstrated across the internet in ten counted cross-team
 series against ten distinct opponents (`results/counted_series.json`). ngrok remains
 supported and opt-in per pairing (`[network] ingress = "ngrok"`,

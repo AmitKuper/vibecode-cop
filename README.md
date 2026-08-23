@@ -8,7 +8,12 @@ exact scent tracking** with a trained RL fallback, and reports results by Gmail.
 Companion repository: [vibecode-thief](https://github.com/AmitKuper/vibecode-thief)
 (the thief-side model and mirror implementation). The two repos are operated as one
 distributed product; this repo hosts the orchestrator, which spawns **one OS process
-per role** (cop and thief) for every series.
+per role** (cop and thief) for every series. The orchestrator is a launcher, not a
+central game server: each role process runs its **own local FastMCP server** (cop
+**61224**, thief **61223**, publicly reachable over a router-forwarded static IP),
+dials the opponent as an **outbound MCP client**, and holds its own state, secrets,
+and move selection — sub-games settle by mutual commit-reveal audit between the
+peers, never by a central judge.
 
 **Match record**: ten counted series played (`results/counted_series.json`,
 `counted_games_played: 10`) — **won seven, lost one, drew two** (759 points):
