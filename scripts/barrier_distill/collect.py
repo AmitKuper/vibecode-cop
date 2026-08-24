@@ -42,8 +42,8 @@ def collect(
     """
     import torch
 
+    from barrier_distill.pool_select import pick_pool
     from barrier_distill.teacher import ChampionTeacher, SearchHookTeacher, ThiefStackTeacher
-    from barrier_distill.thieves import make_pool
     from cop_worker.belief_engine import BeliefEngine
     from cop_worker.domain.transition import apply_joint_action
     from cop_worker.rl.action_space import COP_ACTIONS, THIEF_ACTIONS
@@ -66,23 +66,7 @@ def collect(
         driver, _meta = load_student(str(RESULTS / driver_ckpt))
     t0 = time.time()
     for ep in range(episodes):
-        if role == "cop":
-            if pool_kind == "weak":  # targeted round: the student's weakest families
-                from barrier_distill.thieves import FamilyThief
-
-                pool = [
-                    FamilyThief(f)
-                    for f in ("wall", "anti_loop", "targeted_exploit", "deceptive_language")
-                ]
-            else:
-                pool = make_pool()
-        else:
-            from barrier_distill.cops import StackCop, SweepCop, make_cop_pool
-
-            if pool_kind == "sweep":  # targeted round: the diluted skill
-                pool = [SweepCop(rng), SweepCop(rng), SweepCop(rng), StackCop(hook=True)]
-            else:
-                pool = make_cop_pool(rng)
+        pool = pick_pool(role, pool_kind, rng)
         opponent = pool[ep % len(pool)]
         is_family = type(opponent).__name__ in ("FamilyCop", "FamilyThief")
         teacher = champion_teacher if is_family else stack_teacher

@@ -15,7 +15,37 @@ Both doors are permanently reachable on the static IP, so an opponent can probe
 us hours before T, nothing has to stay running between games, and a restart
 never changes an address we have already put in writing. The free ngrok plan
 can only ever tunnel **one** of the two doors (see below), so choosing it as the
-default would mean declaring a mixed pair for no gain.
+default would mean declaring a mixed pair for no gain — and tunneling both doors
+properly (per-role paths / a second domain) is a **paid** feature, an ongoing fee
+the static IP makes unnecessary.
+
+**The tunnel path is tested end to end with OUR OWN door behind the tunnel,
+not theoretical.** On 2026-08-24 a full six-window bench series was played with
+our cop door served through a live ngrok tunnel
+(`https://wilt-habitant-reopen.ngrok-free.dev` → `localhost:61224`) while the
+thief door stayed on the static path — exactly the mixed pair the free tier
+forces. The realistic peer simulator (`scripts/peer_sim.py --cop-door-url
+<tunnel>/mcp`) dialed every cop window through the tunnel: **6/6 mutual audits
+`Verified OK`**, cop captures in all three tunnel-served windows (sg2/4/6),
+and ngrok's inspection API (`:4040/api/requests/http`) showed the `/mcp`
+commit-reveal traffic traversing the tunnel. Earlier evidence layers: the
+agent was first live-verified on 2026-08-14 (the single-domain endpoint-pool
+behavior and the `ERR_NGROK_9038` path rejection below are empirical findings
+from that session); the resolution/fallback logic is pinned by
+`tests/test_ingress_default_ngrok.py`; and as the *dialing* side our wire also
+crossed an opponent's real ngrok tunnel in counted game 9 (vm__fabi, won
+90-30, their `cop-rob-p2p.ngrok.app` endpoint).
+
+**Static-IP ingress is a deliberate, configured choice — not the path of
+least resistance.** Supporting it required operator-side network
+administration: defining **two port-forwarding rules in the router** (public
+`62.56.220.143:61224` → the match host's cop door, `:61223` → the thief door)
+and keeping those addresses stable across every declared pairing. In exchange,
+both doors are simultaneously and permanently reachable with no third-party
+dependency and **no subscription fees** — whereas serving both doors over
+ngrok requires a paid plan (the free tier tunnels one door and load-balances
+extra endpoints randomly). Tested tunnel, chosen static: a preference backed
+by measurements, not a gap.
 
 Turn ngrok on per pairing with `ingress = "ngrok"` in that opponent's profile —
 useful when a peer cannot reach a high port and needs HTTPS on 443.

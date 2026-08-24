@@ -74,7 +74,7 @@ anything short of a clean 6/6.
 
 ```
 python -m pytest -q                      # full suite
-python scripts/check_file_size.py        # 150-line ratchet
+python scripts/check_file_size.py        # 150-line gate (strict, no exemptions)
 python -m ruff check . && python -m ruff format --check .
 python scripts/preflight_opponent.py <url> [...]   # peer surface probe
 ```
@@ -329,3 +329,49 @@ Submission freeze (same night):
   re-points had degraded it to lightweight) at final HEADs, both repos.
 - Coverage cop 97.29% / thief 96.95% (gate 94). Suites 1997/1301 green.
 - PDF vibecode-ex07 rebuilt and uploaded to Moodle by operator.
+
+## 2026-08-24 — STRICT 150-line compliance: every Python file, no exemptions
+
+Operator directive: the 150-line rule is a rule, not a ratchet. All 29
+oversized files across both repos (cop 22, thief 7) refactored by cohesive
+extraction; the checker's ALLOWED ledger emptied and REMOVED — any .py over
+150 now fails CI outright, both repos.
+
+Method per risk class: labs/research scripts split into class/runner modules
+(pocketer_cops, cops_scripted, pool_select); long tests split into focused
+modules with shared helpers (helpers_game_record, helpers_split_arch,
+helpers_game_end_audit, test_gui_cli_stepper, test_game_record_api,
+test_codex_game_end_audit) — no test deleted or weakened; GUI page-template
+script halves extracted to *_js.py string modules (byte-identical concat,
+verified by rendered-page tests); hub row-builders to hub_games.py; policy
+seams: search_policy_cop.py + hunt_walls.py (chain rationale moved with the
+code), play_engine_cop.py; gateway rates to net_gateway_rates.py; wire
+session tools to session_tools.py (TYPE_CHECKING guard breaks the import
+cycle); match lifecycle: setup_identity / turns_inbound / settle_disputed /
+artifacts_profile / worker_strays (the _run_turns source-pin block kept
+inline, pins green); and the physics core: transition.py's four identical
+26-line result blocks became transition_result._finish — mirrored to the
+thief repo byte-for-byte modulo package name, plus removal of two provably
+redundant STAY branches (STAY's zero delta already preserves position).
+
+Proof of behavior preservation: full suites 1,985/1,301 green; golden
+corpora untouched and passing; anti_evader + corridor lab matrices
+byte-identical; flee replicas 5/8 + 8/8 unchanged; six-window split
+rehearsal reproduces the pre-refactor outcomes (captures @12, survivals 35,
+same move samples); coverage ROSE to 97.38% (cop) / 96.98% (thief).
+KNOWN_DEVIATIONS D4 marked resolved; README claims updated to the strict
+truth.
+
+### Addendum, same day: tunnel ingress exercised with OUR door behind it
+
+Operator follow-up: the ngrok claim must rest on our side serving, not just
+dialing. Executed: `ngrok http 61224` (live tunnel
+wilt-habitant-reopen.ngrok-free.dev), realistic peer simulator dialing every
+cop window through the tunnel (`scripts/peer_sim.py --cop-door-url
+<tunnel>/mcp`), full six-window series -> **6/6 audits Verified OK**, cop
+captures in all three tunnel-served windows, /mcp traffic confirmed via
+ngrok's :4040 inspection API. Docs updated (NGROK_INGRESS, DEPLOYMENT,
+KNOWN_DEVIATIONS D1 both repos): tunnel tested end-to-end; static-IP is the
+production choice because it serves BOTH doors always-on at no fee and
+required real operator router administration (two port-forwarding rules,
+final_project_cop/final_project_thief).

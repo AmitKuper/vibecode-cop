@@ -5,37 +5,13 @@ from __future__ import annotations
 import secrets
 from datetime import UTC, datetime
 
-from league_artifacts.declaration import _hardware_spec, counted_opponents
+from league_artifacts.declaration import _hardware_spec
 
 from ref3_match import gui_context, settled_row
 from ref3_match.net import _poll_agreement
-from ref3_match.runtime_cfg import REPO_ROOT, _git_head, _t
-
-
-def _print_refusal_diag(sub_game: int, greeting: dict, theirs: dict, exc: Exception) -> None:
-    """A refusal is only actionable if it names the DIFF, not just the rule."""
-    t_terms = theirs.get("terms") if isinstance(theirs.get("terms"), dict) else {}
-    ours_terms = greeting["terms"]
-    key_diff = sorted(set(ours_terms) ^ set(t_terms))
-    val_diff = {
-        k: (ours_terms.get(k), t_terms.get(k))
-        for k in ours_terms
-        if k in t_terms and ours_terms[k] != t_terms[k]
-    }
-    print(f"[match] sg{sub_game} HANDSHAKE REFUSED: {exc}")
-    print(f"[diag ] terms key diff (ours^theirs): {key_diff or 'none'}")
-    print(f"[diag ] terms value diff (ours vs theirs): {val_diff or 'none'}")
-    print(
-        f"[diag ] locks ours scent={greeting.get('scent_model_sha256', '')[:12]} "
-        f"wire={greeting.get('wire_shape_sha256', '')[:12]} | theirs "
-        f"scent={str(theirs.get('scent_model_sha256'))[:12]} "
-        f"wire={str(theirs.get('wire_shape_sha256'))[:12]}"
-    )
-    print(
-        f"[diag ] uid ours={greeting.get('game_uid')} theirs={theirs.get('game_uid')} "
-        f"role ours={greeting.get('role')} theirs={theirs.get('role')} "
-        f"sub_game ours={sub_game} theirs={theirs.get('sub_game_number')}"
-    )
+from ref3_match.runtime_cfg import _t
+from ref3_match.setup_identity import build_identity
+from ref3_match.setup_identity import print_refusal_diag as _print_refusal_diag
 
 
 async def _handshake(
@@ -54,7 +30,6 @@ async def _handshake(
     series_label: str = "",
 ):
     """Exchange + verify greetings; seal step-0. Returns the handshake context dict."""
-    from ref3_artifacts import OUR_REPOS, our_mcp
 
     from cop_worker.protocol.reference_v3 import (
         ReferenceV3Inbox,
@@ -63,29 +38,9 @@ async def _handshake(
         verify_negotiation,
     )
 
-    # Our step-zero identity on the wire (rules 49/53): repos, per-role github_commit,
-    # counted count, members — so the peer records what we actually declare.
-    our_repo = REPO_ROOT if role == "police" else REPO_ROOT.parent / "vibecode-thief"
-    our_commit = _git_head(our_repo)
-    our_identity = {
-        "group_id": group_id,
-        "group_name": group_name,
-        # Honest declaration: the verbal layer is template-generated (no language model is
-        # called during play, so no LLM tokens are consumed). Movement is deliberately
-        # described only as algorithmic Python — the book requires declaring the LLM, not
-        # the movement strategy, and hints provably cannot affect ours (local_obs_to_tensor
-        # never reads last_hint).
-        "llm_model": "none (template hints; pure-Python algorithmic movement)",
-        "mcp_servers": our_mcp(),
-        "repos": OUR_REPOS,
-        "members": members or [],
-        "github_commit": our_commit,
-        "hardware_spec": _hardware_spec(),
-        "counted_games_played": our_counted,
-        # Both spellings, same integer, plus the list rule 38 consistency-checks against.
-        "counted_matches_played": our_counted,
-        "opponents_already_counted": counted_opponents(),
-    }
+    # Step-zero identity (rules 49/53) — built in setup_identity.build_identity.
+    our_identity = build_identity(role, group_id, group_name, members, our_counted)
+    our_commit = our_identity["github_commit"]
     # Fresh per-sub-game state: sealed records and the inbox must never leak across
     # sub-games (else step 1 of the next sub-game equivocates against the last one).
     settled_row.forget(in_session)  # a previous window's row must not answer for this one

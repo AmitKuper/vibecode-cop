@@ -16,7 +16,8 @@ from cop_worker.rl.committed_hunt import CommittedHunt
 from cop_worker.rl.corridor_plan import CorridorPlan
 from cop_worker.rl.line_escape import LineEscape
 from cop_worker.rl.opponent_fix import OpponentFix
-from cop_worker.rl.pursuit_search import best_cop_action, best_thief_action
+from cop_worker.rl.pursuit_search import best_thief_action
+from cop_worker.rl.search_policy_cop import cop_action, resolve_chain
 from cop_worker.rl.stall_squeeze import StallSqueeze
 
 
@@ -51,23 +52,9 @@ class SearchRolePolicy:
         # invert multiplicative_book_v1 frames so the search stays sighted in
         # book-scent pairings; chebyshev pairings resolve byte-identically.
         self._fix = OpponentFix(decode_book_scent)
-        # Cop plan selection, COPTHIEF_COP_CHAIN = plain (default: squeeze +
-        # graded minimax, no committed plan) | corridor | hunt.
-        # COPTHIEF_HUNT_MODE=1 remains an alias for hunt. Default re-measured
-        # 2026-08-23 after the squeeze self-cutoff guard and the graded
-        # search leaves landed: plain now dominates or ties the corridor on
-        # every corridor_lab row (mobility @10 vs @30, mirror2 @15 vs @29,
-        # rest equal) and outperformed it live against a real evader peer
-        # (corridor lost the chase outright in the killed run; plain drove
-        # the same thief to adjacent range). hunt stays the per-pairing
-        # counter for the confined class (@31), which no other chain takes;
-        # the plans do NOT compose.
-        import os
-
-        chain = os.environ.get("COPTHIEF_COP_CHAIN", "").strip().lower()
-        if chain not in ("corridor", "hunt", "plain"):
-            chain = "hunt" if os.environ.get("COPTHIEF_HUNT_MODE") == "1" else "plain"
-        self._cop_chain = chain
+        # Cop chain selection (plain default | corridor | hunt): rationale and
+        # measurements in cop_worker/rl/search_policy_cop.py.
+        self._cop_chain = resolve_chain()
         self._squeeze = StallSqueeze() if self.role == "cop" else None
         self._corridor = CorridorPlan() if self.role == "cop" else None
         self._hunt = CommittedHunt() if self.role == "cop" else None
@@ -132,56 +119,8 @@ class SearchRolePolicy:
         barriers = [tuple(b) for b in observation.known_barriers]
         steps_left = max(1, self.max_steps - int(observation.step) + 1)
         if self.role == "cop":
-            # Corridor plan first: a sustained non-converging chase means the
-            # winning strategy is a wall line + door + strip hunt, not more
-            # pursuit. While the plan builds, it drives; once the line stands
-            # it goes silent and minimax + stall-squeeze hunt the strip.
-            plan = None
-            if self._cop_chain == "hunt":
-                plan = self._hunt.override(
-                    own,
-                    opp,
-                    barriers,
-                    int(observation.own_barriers_remaining),
-                    steps_left,
-                    legal_actions,
-                )
-            elif self._cop_chain == "corridor":
-                plan = self._corridor.override(
-                    own,
-                    opp,
-                    barriers,
-                    int(observation.own_barriers_remaining),
-                    int(observation.step),
-                    legal_actions,
-                )
-            if plan is not None:  # "plain" skips the plan layer entirely
-                return plan
-            # Anti-evader override next: a stalled minimax provably never
-            # captures (open-board pursuit is thief-win), so a squeezing wall
-            # strictly dominates whatever move it would have picked.
-            squeeze = self._squeeze.override(
-                own,
-                opp,
-                barriers,
-                int(observation.own_barriers_remaining),
-                steps_left,
-                legal_actions,
-            )
-            if squeeze is not None:
-                return squeeze
-            action = best_cop_action(
-                own,
-                opp,
-                barriers,
-                barriers_left=int(observation.own_barriers_remaining),
-                steps_left=steps_left,
-                depth=self.depth,
-                n=observation.grid_size,
-                # 18s of the signed 30s turn budget: the 10s default made
-                # midgame depth-4 unaffordable under the x10 deepening guard.
-                time_budget_s=18.0,
-            )
+            # plan layer -> stall-squeeze -> graded minimax (search_policy_cop)
+            action = cop_action(self, own, opp, observation, steps_left, legal_actions)
         else:
             # The cop's spent walls are visible on the board; the rest can still come.
             cop_left = max(0, self.barriers_max - len(barriers))

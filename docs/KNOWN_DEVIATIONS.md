@@ -15,7 +15,16 @@ is NAT traversal for hosts that cannot be reached directly; the binding source
 on a router-forwarded **static public IP** (cop 61224 / thief 61223), so the
 requirement's purpose — public Internet reachability — is met without
 the tool. This was demonstrated across the internet in ten counted cross-team
-series against ten distinct opponents (`results/counted_series.json`). ngrok remains
+series against ten distinct opponents (`results/counted_series.json`). The tunnel
+path itself is implemented AND exercised with our own door behind the tunnel: a
+full six-window bench series settled 6/6 `Verified OK` on 2026-08-24 with our
+cop door served through a live ngrok tunnel (traffic confirmed via ngrok's
+inspection API; details in `docs/NGROK_INGRESS.md`), on top of the 2026-08-14
+live agent verification and counted game 9 (vm__fabi, won 90-30) dialing the
+opponent's ngrok tunnel. Static ingress is itself a configured capability, not
+a shortcut — it required router administration (two port-forwarding rules,
+public 61224/61223 → the match host) — and it was chosen because it serves BOTH
+doors always-on at no fee, while the free ngrok tier tunnels only one. ngrok remains
 supported and opt-in per pairing (`[network] ingress = "ngrok"`,
 `docs/NGROK_INGRESS.md`); the tunnel/facade topology is documented in
 `docs/DEPLOYMENT_TUNNEL_RUNBOOK.md`.
@@ -38,30 +47,23 @@ league/lecturer address is stored **nowhere** in code or config — test-enforce
 and enters only by hand via `--report-to` on counted day. An address the run
 cannot reach cannot be mailed by accident.
 
-### D4: 150-line module limit — 22 files carry documented allowances
+### D4 — RESOLVED 2026-08-24: 150-line module limit now strictly met
 
-The project rule is ≤150 lines per module, enforced as a **no-growth ratchet**:
-`scripts/check_file_size.py` fails CI when any file exceeds 150 unless it carries
-a per-file allowance, and fails when an allowed file GROWS past its recorded
-allowance. As of 2026-08-23 the gate-enforced list (`check_file_size.py::ALLOWED`
-is authoritative; `--list` prints the measured state) holds 18 production/script
-modules and 4 test files. The largest and why they are kept whole:
-
-| File | Lines | Why it is kept whole |
-|---|---:|---|
-| `cop_worker/domain/transition.py` | 290 | The single physical-law transition function, byte-pinned by the kit's vectors and mirrored byte-identically in the thief repo. Splitting it adds cross-repo drift risk with no cohesion gain. |
-| `scripts/pocketer_lab.py` | 250 | One deterministic evaluation lab (analysis tool, not production play). |
-| `scripts/barrier_distill/cops.py` | 216 | Research/distillation tooling (not production play). |
-| `cop_worker/rl/search_policy.py` | 208 | One serving policy object: the chain seam (plan → squeeze → minimax) that live-match pins assert in order. |
-| `cop_worker/gui/hub_api.py` / `hub_page.py` / `replay_page.py` | 191/174/164 | GUI surfaces; page-template length is markup, not logic. |
-| `cop_worker/protocol/reference_v3/session.py` | 177 | One wire session object. |
-| `scripts/ref3_match/*` (setup/turns/settle/artifacts/role_worker/series_split) | 152–172 | One lifecycle responsibility each; call-order pins in `tests/` assert their sequencing. |
-| `cop_worker/rl/committed_hunt.py` | 165 | One committed plan state machine. |
-| `cop_worker/net_gateway.py` | 168 | One outbound-call policy object (deadline + at-least-once retry + backoff). |
-
-Splitting proven counted-game production seams purely for the line count was
-judged a regression risk larger than the style benefit; the ratchet guarantees
-the debt only shrinks.
+Every Python file in the repository is at or under 150 lines and
+`scripts/check_file_size.py` enforces the limit **strictly — the former
+per-file allowance ledger was emptied and removed**. The 22 remaining
+oversized modules were refactored by cohesive extraction (never line-count
+tricks): the transition core's four identical result-construction blocks
+became `transition_result._finish` (mirrored in the thief repo; kit vectors
+and cross-repo conformance suites pin behavior), the wire session's tool
+registration moved to `session_tools.py`, the match lifecycle's
+identity/inbound/settlement helpers into `setup_identity.py` /
+`turns_inbound.py` / `settle_disputed.py` / `artifacts_profile.py` /
+`worker_strays.py`, the cop chain into `search_policy_cop.py` +
+`hunt_walls.py`, GUI page templates' script halves into `*_js.py` modules,
+and lab/test scenarios into focused modules. Full suites, golden corpora,
+lab matrices, and a six-window split rehearsal all reproduce their
+pre-refactor results.
 
 Everything above 390 lines was already split into ≤150-line packages/mixins (the
 reference-v3 wire, kit fixtures, the trainer, the gamelet, replay, the adaptive

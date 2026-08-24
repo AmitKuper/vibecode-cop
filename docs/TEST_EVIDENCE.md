@@ -40,8 +40,9 @@ uv run pytest tests/ cop_worker/tests/ league_manager/tests/ \
   --cov-report=xml --cov-fail-under=94
 ```
 
-Result: **97.29% branch coverage** (25,003 statements measured, re-measured
-2026-08-23 with 1,985 passed / 4 skipped; earlier readings: 96.18% on
+Result: **97.38% branch coverage** (25,078 statements measured, re-measured
+2026-08-24 post the strict-150 refactor with 1,985 passed / 4 skipped; earlier
+readings: 97.29% on 2026-08-23, 96.18% on
 2026-08-19, 94.90% on 2026-08-15) — gate ≥ 94% passed. Branch coverage is stricter than line coverage;
 the enforced floor is 94 in both CI and `pyproject.toml` (`fail_under = 94`), which
 is above the course guideline target of 85 (see `docs/TESTING.md`).

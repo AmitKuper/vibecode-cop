@@ -1,10 +1,7 @@
-"""The series loop on the SPLIT architecture: three processes, same semantics.
-
-Spawns one cop worker and one thief worker (Appendix E rules 1-3) and preserves
-series.py's conventions: role alternation, index-hold convergence, settled-row
-discipline, teardown-noise absorption. Holds no game secrets — nonces, commits
-and movers live inside the role workers.
-"""
+"""Series loop on the SPLIT architecture: one cop worker + one thief worker
+(Appendix E rules 1-3), preserving series.py's conventions (role alternation,
+index-hold, settled rows, teardown absorption); no game secrets here —
+nonces, commits, movers live in the role workers."""
 
 from __future__ import annotations
 

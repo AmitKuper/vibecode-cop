@@ -15,6 +15,8 @@ import contextlib
 import json
 import sys
 
+from ref3_match.worker_strays import _drain_strays  # noqa: E402
+
 _EMIT = None  # the real stdout handle, reserved for protocol frames only
 
 
@@ -26,23 +28,6 @@ def _emit(obj: dict) -> None:
 async def _read_line() -> str:
     """Blocking stdin readline in a thread (Windows-safe: no connect_read_pipe)."""
     return await asyncio.get_event_loop().run_in_executor(None, sys.stdin.readline)
-
-
-def _drain_strays(session, *, beyond: int = 0) -> list[dict]:
-    """Remove and return greetings for sub-games beyond `beyond` from our inbox.
-
-    A single-URL peer (kit sparring; a single-service opponent) can deliver the
-    NEXT window's Step-0 greeting to whichever of our endpoints it last dialed.
-    Greetings are the opponent's public broadcast — relaying them through the
-    orchestrator to the right role worker is routing, not shared role state.
-    """
-    strays, keep = [], []
-    for msg in list(session.agreements):
-        n = msg.get("sub_game_number")
-        (strays if isinstance(n, int) and n > beyond else keep).append(msg)
-    session.agreements.clear()
-    session.agreements.extend(keep)
-    return strays
 
 
 async def _play_window(cmd: dict, session, init: dict) -> dict:

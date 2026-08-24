@@ -21,13 +21,12 @@ forced, if its lane is blocked.
 from __future__ import annotations
 
 from cop_worker.rl.action_space import MOVE_DELTAS
-from cop_worker.rl.sealability import ORTHO, sealability
+from cop_worker.rl.hunt_walls import CUT_MAX, best_cut_wall  # noqa: F401  (re-export)
 from cop_worker.rl.stall_squeeze import _PLACE
 
 FUSE = 6  # consecutive no-net-progress turns before committing to the plan
 MIN_BUDGET = 6  # walls needed: 4 line + at least 2 cage
 MIN_STEPS = 18  # measured kill takes ~15-20 steps from commit
-CUT_MAX = 4
 MAX_HUNT_WALLS = 6
 
 _MOVE_NAME = {tuple(d): a for a, d in MOVE_DELTAS.items()}
@@ -123,43 +122,7 @@ class CommittedHunt:
         # HUNT: cut-reducing wall on either dance cell; else defer to pursuit
         if self._hunt_walls >= MAX_HUNT_WALLS or int(barriers_left) <= 0:
             return None
-        targets = {thief: sealability(thief, cop, walls, self.n)}
-        if prev is not None and prev != thief and prev not in walls:
-            targets[prev] = sealability(prev, cop, walls, self.n)
-        if min(targets.values()) > CUT_MAX:
-            return None
-        best_action, best_key = None, None
-        for (dx, dy), name in _PLACE.items():
-            if name not in legal_actions:
-                continue
-            cell = (cop[0] + dx, cop[1] + dy)
-            if (
-                not (0 <= cell[0] < self.n and 0 <= cell[1] < self.n)
-                or cell in walls
-                or cell == thief
-            ):
-                continue
-            exits = sum(
-                1
-                for dx2, dy2 in ORTHO
-                if 0 <= cop[0] + dx2 < self.n
-                and 0 <= cop[1] + dy2 < self.n
-                and (cop[0] + dx2, cop[1] + dy2) not in walls | {cell}
-            )
-            if exits < 2:  # never wall our own last exits
-                continue
-            gain = None
-            for t, c0 in targets.items():
-                if cell == t:
-                    continue
-                nc = sealability(t, cop, walls | {cell}, self.n)
-                if nc < c0 and (gain is None or nc < gain):
-                    gain = nc
-            if gain is None:
-                continue
-            key = (gain, abs(cell[0] - thief[0]) + abs(cell[1] - thief[1]))
-            if best_key is None or key < best_key:
-                best_key, best_action = key, name
+        best_action = best_cut_wall(cop, thief, prev, walls, legal_actions, self.n)
         if best_action is not None:
             self._hunt_walls += 1
         return best_action

@@ -7,8 +7,7 @@ game the model is optimizing.
 
 from __future__ import annotations
 
-from cop_worker.rl.action_space import PLACE_DIRS
-from cop_worker.rl.pursuit_search import best_cop_action, best_thief_action
+from cop_worker.rl.pursuit_search import best_thief_action
 
 _GAMES: dict = {}
 N, MAX_STEPS, BARRIERS = 7, 35, 14
@@ -98,65 +97,9 @@ def _model_reply(g: dict) -> None:
         if g["thief"] == g["cop"]:
             g["over"], g["outcome"] = True, "capture"
     else:
-        if "_squeeze" not in g:
-            from cop_worker.rl.stall_squeeze import StallSqueeze
+        from cop_worker.gui.play_engine_cop import cop_reply
 
-            # Selectable model cop (operator request): "hunt" (default —
-            # committed-hunt, the only cop that captures our own thief
-            # class), "corridor" (the counted-wire default chain), or
-            # "plain" (squeeze + minimax only). The plan layer differs;
-            # squeeze + minimax are common to all three.
-            g["_squeeze"] = StallSqueeze()
-            chain = g.get("cop_chain", "hunt")
-            if chain == "hunt":
-                from cop_worker.rl.committed_hunt import CommittedHunt
-
-                g["_plan"] = CommittedHunt()
-            elif chain == "corridor":
-                from cop_worker.rl.corridor_plan import CorridorPlan
-
-                g["_plan"] = CorridorPlan()
-            else:
-                g["_plan"] = None
-        action = None
-        if g["_plan"] is not None:
-            if g.get("cop_chain", "hunt") == "corridor":
-                action = g["_plan"].override(
-                    tuple(g["cop"]), tuple(g["thief"]), list(barriers),
-                    g["barriers_left"], g["step"], list(COP_ACTIONS),
-                )  # fmt: skip
-            else:
-                action = g["_plan"].override(
-                    tuple(g["cop"]), tuple(g["thief"]), list(barriers),
-                    g["barriers_left"], steps_left, list(COP_ACTIONS),
-                )  # fmt: skip
-        if action is None and g.get("squeeze_on", True):
-            action = g["_squeeze"].override(
-                tuple(g["cop"]), tuple(g["thief"]), list(barriers),
-                g["barriers_left"], steps_left, list(COP_ACTIONS),
-            )  # fmt: skip
-        if action is None:
-            action = best_cop_action(
-                tuple(g["cop"]),
-                tuple(g["thief"]),
-                barriers,
-                g["barriers_left"],
-                steps_left,
-                time_budget_s=g["budget"],
-            )
-        if action in PLACE_DIRS and g["barriers_left"] > 0:
-            dx, dy = PLACE_DIRS[action]
-            cell = (g["cop"][0] + dx, g["cop"][1] + dy)
-            if 0 <= cell[0] < N and 0 <= cell[1] < N and cell not in barriers:
-                g["barriers"].append(list(cell))
-                g["barriers_left"] -= 1
-                placed = list(cell)
-                if list(cell) == g["thief"]:
-                    g["over"], g["outcome"] = True, "capture"  # rule 46
-        else:
-            new = _move(g["cop"], action, barriers)
-            if new:
-                g["cop"] = new
+        action, placed = cop_reply(g, barriers, steps_left, _move, COP_ACTIONS)
         _emit(g, "cop")
         if g["cop"] == g["thief"]:
             g["over"], g["outcome"] = True, "capture"

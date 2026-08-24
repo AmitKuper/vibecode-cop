@@ -131,3 +131,10 @@ If no router control or public IP is available, the older
 runbook — including the direct-worker variant over a tunnel — is kept as
 `docs/DEPLOYMENT_TUNNEL_RUNBOOK.md`. It is the fallback, not the production path;
 port numbers there agree with this document (cop 61224 / thief 61223 / LM 61222).
+
+The tunnel path is not theoretical: on 2026-08-24 a full six-window bench
+series settled 6/6 `Verified OK` with our cop door served through a live ngrok
+tunnel (see `docs/NGROK_INGRESS.md` for the evidence, and for why the free tier
+cannot carry both doors). The production choice above — static IP with two
+operator-configured router port-forwarding rules — was made because it serves
+both doors always-on with no third-party dependency and no subscription fees.

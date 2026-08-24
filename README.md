@@ -502,33 +502,32 @@ diagnose from `[wire<-]` and `[diag]` lines, not guesswork.
    `uv run ruff format --check .`, and the full pytest suite with branch
    coverage >= 94% (`--cov-fail-under=94` in `.github/workflows/ci.yml`,
    `fail_under = 94` in `pyproject.toml`).
-3. Aspire to <= 150 lines per module (project rule; a CI ratchet
-   (`scripts/check_file_size.py`) blocks growth, and the remaining oversized
-   modules carry per-file allowances recorded as an accepted deviation in
-   `docs/KNOWN_DEVIATIONS.md`).
+3. Keep every module at or under 150 lines (project rule, enforced strictly by
+   `scripts/check_file_size.py` in CI — no exemption list).
 4. Never edit `evidence/`, `config/game.json` hashes, or the external kit.
 
 ## Self-grade (code quality)
 
 This grade covers **code quality only** — never league results. Basis, all
 reproducible from the repo: the full suite green (1,985 passed, 4 skipped as of
-2026-08-23), branch coverage **97.29%** (measured 2026-08-23; CI-gated at 94),
+2026-08-24), branch coverage **97.38%** (measured 2026-08-24; CI-gated at 94),
 `ruff check` + `ruff format --check` gating every commit, and a
-150-line-per-module discipline enforced by a no-growth ratchet (documented
-allowances in [`docs/KNOWN_DEVIATIONS.md`](docs/KNOWN_DEVIATIONS.md)).
+150-line-per-module rule met strictly across the repository (gate:
+`scripts/check_file_size.py`, no exemptions — see
+[`docs/KNOWN_DEVIATIONS.md`](docs/KNOWN_DEVIATIONS.md) D4-resolved).
 
 **Self-grade: 92/100**
 
 | Dimension | Grade | Why |
 |---|---|---|
 | Correctness | 93 | Physics is one pure conformance-pinned function; kit vectors fail closed; serving guards refuse mismatched checkpoints |
-| Tests | 93 | 1,985 passing tests, 97.29% branch coverage, conformance vectors, source-pin tests on the production seams |
+| Tests | 93 | 1,985 passing tests, 97.38% branch coverage, conformance vectors, source-pin tests on the production seams |
 | Documentation | 90 | DESIGN/PRDs/runbooks current; deviations documented rather than hidden |
-| Architecture | 92 | Single transition source of truth, mixin-decomposed gamelet, ≤150-line ratchet with justified per-file allowances |
+| Architecture | 92 | Single transition source of truth, mixin-decomposed gamelet, strict ≤150-line modules repo-wide |
 | Style | 92 | ruff + format zero-finding CI; docstrings throughout |
 
-What would raise it: eliminating the remaining over-150 modules and lifting the
-weakest per-module coverage pockets to the suite average.
+What would raise it: lifting the weakest per-module coverage pockets to the
+suite average.
 
 ## Submission
 

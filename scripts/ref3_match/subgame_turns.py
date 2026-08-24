@@ -14,24 +14,13 @@ from ref3_match.mover import RLMover
 from ref3_match.net import _latest_turn, _poll_turn
 from ref3_match.runtime_cfg import _t
 from ref3_match.subgame_moves import (
-    _absorb_inbound_caught,
+    _absorb_inbound_caught,  # noqa: F401  (facade re-export)
     _compose_and_send_turn,
     _prep_claim_answer,
     _send_done_control,
 )
+from ref3_match.turns_inbound import cop_inbound, result_claim  # noqa: F401  (re-export)
 from ref3_match.wire import _from_wire_cell, _to_wire_cell
-
-
-def result_claim(captured: bool) -> str:
-    """How the GAME ended, not how the exchange ended.
-
-    With no capture the thief survived the step limit, so BOTH roles claim
-    "survival" — which is what our own result rows and filed report already say.
-    We used to claim "timeout" here (true of the wire, false of the game): it
-    contradicted our own result and made peers who dispute contradicted endings
-    record mutual_agreement=false while ours said true (najamjad, 2026-08-14).
-    """
-    return "capture" if captured else "survival"
 
 
 async def _run_turns(
@@ -67,24 +56,15 @@ async def _run_turns(
 
     for step in range(1, max_steps + 1):
         if not we_move_first:
-            # cop: wait for the thief's sealed turn first, absorb its scent/hint.
-            await _poll_turn(
-                in_session.turns, step, timeout=_t("turn_poll_sec", 120.0), session=in_session
+            # cop: wait for the thief's sealed turn first, absorb its scent/hint
+            # (turns_inbound.cop_inbound: caught settlement + survival terminal).
+            opp, ended, cell, disputed = await cop_inbound(
+                in_session, mover, our_last_claim, sub_game, step
             )
-            opp = _latest_turn(in_session, step)
-            cell, disputed, done = _absorb_inbound_caught(
-                opp, mover, our_last_claim, sub_game, step
-            )
-            if done:
+            if ended == "captured":
                 settled_caught_cell, disputed_capture, captured = cell, disputed, True
                 break
-            # Thief declared the survival terminal on its final step: settled before the
-            # cop moves. Stop sealing — a post-terminal cop move could write a capture-
-            # shaped record into a settled survival (anrbj666's flagged wart).
-            if (opp.get("win_claim") or {}).get("type") == "survival":
-                print(
-                    f"[match] sg{sub_game} thief declared survival terminal at step {step}; cop stops (no post-terminal move)"
-                )
+            if ended == "survival":
                 break
         else:
             # Thief moves FIRST: at round r the cop's newest turn is numbered r-1
