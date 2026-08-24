@@ -16,8 +16,8 @@ deviations are tracked separately in `docs/KNOWN_DEVIATIONS.md`.
       `counted_games_played: 10`): 7W–1L–2D, 759 points — lost 35–75 vs anrbj666,
       seven 90–30 wins, two 47–47 draws (SMNGRP05, cosmos77). 6/6 mutual audits
       `Verified OK` each, every report emailed and filed under `evidence/game_vs_*/`.
-- [x] Suite green: 1,887 passed / 4 skipped, **94.90%** branch coverage against a
-      CI gate of 94 (`pyproject.toml` `fail_under = 94`,
+- [x] Suite green: 1,985 passed / 4 skipped (2026-08-23), **97.29%** branch
+      coverage against a CI gate of 94 (`pyproject.toml` `fail_under = 94`,
       `.github/workflows/ci.yml --cov-fail-under=94`).
 - [x] `ruff check` + `ruff format --check` clean and CI-gated.
 - [x] `config/runtime.toml` carries a `[protocol]` block

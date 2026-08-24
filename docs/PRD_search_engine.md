@@ -63,8 +63,9 @@ started unless the predicted ~10x cost of the next ply fits (measured d3 → d4:
 
 ## 2. Requirements
 
-- **Latency**: < 10 s per half-move (budget in `best_*_action`), against the
-  series' 180 s turn allowance; worst observed post-fix ~7 s, typical ~3 s at
+- **Latency**: bounded per half-move by the iterative-deepening budget in
+  `best_*_action` — cop 18 s (raised from 10 s on 2026-08-23, inside the signed
+  30 s turn deadline), thief 10 s; worst observed live ~7 s, typical ~3 s at
   depth 4.
 - **Correctness**: never emit an illegal move — the adapter checks the chosen
   action against the canonical domain's `legal_actions` and falls back otherwise.
@@ -95,8 +96,8 @@ started unless the predicted ~10x cost of the next ply fits (measured d3 → d4:
 | Arena matrix vs RL | search cop 12/12 (x2 thief families); RL cop 0/12 vs search thief |
 | Search-vs-search sanity | cop d3 beats thief d3 12/12; cop d4 beats thief d4 4/4 (mean step 18, ~3 s/half-move) |
 | Live friendly vs imreeyal | won 90–30, captures at steps 14/16/16, survivals x3 |
-| Live counted vs imreeyal | won 90–30, 6/6 audits Verified OK |
-| Latency | every live half-move inside the 10 s budget |
+| Live counted record with this engine | 7W–1L–2D over ten series (`results/counted_series.json`), 6/6 audits Verified OK every series |
+| Latency | every live half-move inside the per-role budget (cop 18 s / thief 10 s) |
 
 ## 5. Test scenarios (`tests/test_pursuit_search.py`)
 

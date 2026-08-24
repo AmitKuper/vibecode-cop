@@ -81,7 +81,7 @@ Every turn flows through the same stack for both roles:
 ```mermaid
 flowchart LR
     FRAME["Received opponent<br/>scent frame"] --> TRK["chebyshev_tracker<br/>exact_opponent_cell()<br/>unique 0.8 peak = emitter cell"]
-    TRK -->|"fix (x, y)"| SEARCH["pursuit_search<br/>depth-limited minimax, alpha-beta,<br/>iterative deepening, 10 s budget"]
+    TRK -->|"fix (x, y)"| SEARCH["pursuit_search<br/>depth-limited minimax, alpha-beta,<br/>iterative deepening, 18 s cop budget"]
     TRK -->|"None (blind/ambiguous frame)"| FB["RL fallback<br/>counted_policy loads<br/>cop_chebyshev_champion.pt"]
     GUARD["obs-mode guard<br/>env vs MANIFEST obs_mode"] -->|"refuses mismatched load"| FB
     SEARCH --> LEGAL["legal-action check<br/>(canonical domain)"]
@@ -198,11 +198,13 @@ model's observation layout.
 ### AD-6 Per-call 10 s cap and at-least-once retries
 
 Every outbound MCP call carries a 10 s deadline and an at-least-once retry
-wrapper; the search engine uses the same 10 s figure as its per-move
-iterative-deepening budget (a depth is not started unless its predicted ~10x
-cost fits). **Rationale**: raw depth-4 measured up to ~74 s in the open midgame
-against a 180 s live turn budget; unbounded calls against a flaky tunnel peer
-stall a whole window. **Trade-off**: retries require idempotent receivers —
+wrapper. The search engine uses the same iterative-deepening budget mechanism
+(a depth is not started unless its predicted ~10x cost fits); the cop's
+per-move budget was raised from 10 s to **18 s** of the signed 30 s turn
+deadline on 2026-08-23 (the 10 s default made midgame depth-4 unaffordable),
+while the thief keeps the 10 s default. **Rationale**: raw depth-4 measured up
+to ~74 s in the open midgame against the live turn budget; unbounded calls
+against a flaky tunnel peer stall a whole window. **Trade-off**: retries require idempotent receivers —
 re-sends must carry identical bytes (equivocation is a refusal), which
 commit-reveal already enforces.
 

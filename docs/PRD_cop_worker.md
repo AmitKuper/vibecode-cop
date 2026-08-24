@@ -75,10 +75,10 @@ Architecture context: `docs/DESIGN.md`. Move-engine theory: `docs/PRD_search_eng
 
 | Indicator | Target | Actual |
 |---|---|---|
-| Mutual audit verdicts, live series | 100% Verified OK | 12/12 (friendly + counted vs imreeyal) |
-| Counted result | win | 90–30 vs imreeyal (cop captured sg2/4/6) |
-| Test suite | green, no skips of live paths | 1,942 pass, 4 environment-conditional skips (2026-08-19) |
-| Branch coverage (CI gate) | >= 94% | 96.18%, passing |
+| Mutual audit verdicts, live series | 100% Verified OK | 60/60 across the ten counted series (plus every friendly) |
+| Counted results | competitive league record | 7W–1L–2D, 759 points across ten counted series (`results/counted_series.json`) |
+| Test suite | green, no skips of live paths | 1,985 pass, 4 environment-conditional skips (2026-08-23) |
+| Branch coverage (CI gate) | >= 94% | 97.29% (2026-08-23), passing |
 | Kit conformance | all vectors | 125 checks / 15 fixtures PASS |
 
 ## 5. Test scenarios

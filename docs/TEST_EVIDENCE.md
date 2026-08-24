@@ -21,7 +21,8 @@ Command:
 uv run pytest tests/ cop_worker/tests/ league_manager/tests/ -q --tb=short
 ```
 
-Result: **1,887 passed, 4 skipped** in 88.69 s (1,891 collected). The four skips are
+Result: **1,985 passed, 4 skipped** (re-run 2026-08-23; the 2026-08-15 audit read
+1,887 passed of 1,891 collected in 88.69 s). The four skips are
 environment-conditional, never defects: `tests/reference_v3/test_survival_terminal.py`
 (`thief_worker not on path` — cross-repo test, runs when the sibling
 `vibecode-thief` checkout is importable) and three `python-docx not installed in
@@ -39,9 +40,9 @@ uv run pytest tests/ cop_worker/tests/ league_manager/tests/ \
   --cov-report=xml --cov-fail-under=94
 ```
 
-Result: **96.18% branch coverage** (24,199 statements / 3,056 branches measured,
-re-measured 2026-08-19 with 1,942 passed / 4 skipped; the 2026-08-15 audit read
-94.90%) — gate ≥ 94% passed. Branch coverage is stricter than line coverage;
+Result: **97.29% branch coverage** (25,003 statements measured, re-measured
+2026-08-23 with 1,985 passed / 4 skipped; earlier readings: 96.18% on
+2026-08-19, 94.90% on 2026-08-15) — gate ≥ 94% passed. Branch coverage is stricter than line coverage;
 the enforced floor is 94 in both CI and `pyproject.toml` (`fail_under = 94`), which
 is above the course guideline target of 85 (see `docs/TESTING.md`).
 
