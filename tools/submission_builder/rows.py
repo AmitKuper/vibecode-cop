@@ -31,7 +31,15 @@ def load_games(results_dir: str | Path, group_id: str = "vibecode") -> list[dict
         start = datetime.fromisoformat(sub[0]["started_at"]).astimezone(IL)
         end = datetime.fromisoformat(sub[-1]["ended_at"]).astimezone(IL)
         opponent = entry["opponent"]
-        declared = result["final_result"].get("games_played_including_this", {})
+        # The form's "opponent team's declared number of games" carries the
+        # value the opponent declared AT THE HANDSHAKE — their counted games
+        # BEFORE facing us (rules 37-38). The result artifact stores
+        # games_played_including_this = declared + 1, so subtract the 1 back
+        # out; a 0 therefore reads unambiguously as "we were their first".
+        declared = {
+            k: (v - 1 if isinstance(v, int) and v >= 1 else v)
+            for k, v in (result["final_result"].get("games_played_including_this") or {}).items()
+        }
         games.append(
             {
                 "date": start.strftime("%Y-%m-%d"),

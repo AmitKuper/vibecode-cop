@@ -47,7 +47,8 @@ def test_load_games_derives_rows_from_ledger(tmp_path):
     assert games[1]["us"] == 90 and games[1]["won"]
     # 19:14 UTC == 22:14 league time (Asia/Jerusalem)
     assert games[0]["start"] == "22:14" and games[0]["end"] == "22:16"
-    assert games[0]["declared"] == 2
+    # handshake-declared count = games_played_including_this - 1 (BEFORE us)
+    assert games[0]["declared"] == 1
 
 
 def test_compute_totals(tmp_path):
